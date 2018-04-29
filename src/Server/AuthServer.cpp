@@ -1,0 +1,111 @@
+#include "AuthServer.hpp"
+
+#include <WinSock2.h>
+#ifdef _LINUX || MAC
+#include <unistd.h>
+#endif
+#ifdef WIN32
+#include <windows.h>
+#endif
+#include <ws2tcpip.h>
+#include <stdio.h>
+
+#include <RakNet/BitStream.h>
+#include <RakNet/MessageIdentifiers.h>
+#include <RakNet/RakPeerInterface.h>
+#include <RakNet/RakNetworkFactory.h>
+#include <RakNet/RakSleep.h>
+
+
+#include "../Enums/EPackets.hpp"
+#include "../Enums/ERemoteConnection.hpp"
+
+#include "../Utils/Logger.hpp"
+
+AuthServer::AuthServer() {
+	// Initializes the RakPeerInterface used for the auth server
+	RakPeerInterface* rakServer = RakNetworkFactory().GetRakPeerInterface();
+
+	// Initializes Securiry
+	// TODO: Init Security
+	rakServer->SetIncomingPassword("3.25 ND1", 8);
+
+	// Initializes SocketDescriptor
+	SocketDescriptor socketDescriptor((unsigned short)1001, 0);
+	Logger::log("AUTH", "Starting Auth...");
+
+	rakServer->SetMaximumIncomingConnections((unsigned short)2);
+
+	// Check startup
+	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
+		system("pause");
+		return;
+	}
+
+	Packet* packet;
+	//initDone = true;
+
+	while (true) {
+		RakSleep(1);
+		while (packet = rakServer->Receive()) {
+			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
+			unsigned char packetID;
+			data->Read(packetID);
+
+			switch (packetID) {
+			case ID_USER_PACKET_ENUM: {
+				unsigned short networkType;
+				data->Read(networkType);
+				unsigned long packetType;
+				data->Read(packetType);
+				unsigned char pad;
+				data->Read(pad);
+
+				switch (static_cast<ERemoteConnection>(networkType)) {
+				case ERemoteConnection::GENERAL: {
+					/// Do Handshake
+					Logger::log("AUTH", "Handshaking with client...");
+					// TODO: Add Handshake
+				} break;
+				case ERemoteConnection::AUTH: {
+					/// Do Login
+					Logger::log("AUTH", "Login requested");
+					// TODO: Handle Login
+				} break;
+				default: {
+					Logger::log("AUTH", "Recieved unknown packet");
+				}
+				}
+
+			} break;
+			case ID_NEW_INCOMING_CONNECTION: {
+				Logger::log("AUTH", "Recieving new Connection...");
+				// TODO: Connect as Session
+			} break;
+			case ID_DISCONNECTION_NOTIFICATION: {
+				Logger::log("AUTH", "User Disconnected from AUTH...");
+				// TODO: Disconnect as Session
+			} break;
+			default: {
+				Logger::log("AUTH", "Recieved unknown packet #" + (byte)packetID);
+			}
+			}
+
+			// Deallocate the packet to conserve memory
+			delete data;
+			rakServer->DeallocatePacket(packet);
+		}
+	}
+
+	// QUIT
+	std::cout << ("AUTH", "Recieved QUIT, shutting down...");
+
+	rakServer->Shutdown(0);
+	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
+	
+}
+
+
+AuthServer::~AuthServer()
+{
+}
