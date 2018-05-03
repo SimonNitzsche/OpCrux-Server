@@ -1,6 +1,6 @@
 #pragma once
 
-enum class ERemoteConnection : unsigned char {
+enum class ERemoteConnection : WORD {
 	GENERAL = 0,
 	AUTH,
 	CHAT,

@@ -1,4 +1,4 @@
-#include "AuthServer.hpp"
+#include "MasterServer.hpp"
 
 #include <WinSock2.h>
 #ifdef _LINUX || MAC
@@ -9,6 +9,10 @@
 #endif
 #include <ws2tcpip.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <unordered_map>
+#include <iostream>
 
 #include <RakNet/BitStream.h>
 #include <RakNet/MessageIdentifiers.h>
@@ -22,17 +26,17 @@
 
 #include "../Utils/Logger.hpp"
 
-AuthServer::AuthServer(std::string masterServerIP) {
+MasterServer::MasterServer() {
 	// Initializes the RakPeerInterface used for the auth server
-	RakPeerInterface* rakServer = RakNetworkFactory().GetRakPeerInterface();
+	rakServer = RakNetworkFactory().GetRakPeerInterface();
 
 	// Initializes Securiry
 	// TODO: Init Security
-	rakServer->SetIncomingPassword("3.25 ND1", 8);
+	rakServer->SetIncomingPassword("3.25 ND2", 8);
 
 	// Initializes SocketDescriptor
-	SocketDescriptor socketDescriptor((unsigned short)1001, 0);
-	Logger::log("AUTH", "Starting Auth...");
+	SocketDescriptor socketDescriptor((unsigned short)1000, 0);
+	Logger::log("MASTER", "Starting Master...");
 
 	rakServer->SetMaximumIncomingConnections((unsigned short)2);
 
@@ -42,11 +46,15 @@ AuthServer::AuthServer(std::string masterServerIP) {
 		return;
 	}
 
+	listenThread = std::thread([](MasterServer * srv) { srv->Listen(); }, this);
+}
+
+void MasterServer::Listen() {
 	Packet* packet;
-	initDone = true;
 
 	while (true) {
 		RakSleep(1);
+		if (!isDone) isDone = true;
 		while (packet = rakServer->Receive()) {
 			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
 			unsigned char packetID;
@@ -65,7 +73,7 @@ AuthServer::AuthServer(std::string masterServerIP) {
 				case ERemoteConnection::GENERAL: {
 					/// Do Handshake
 					Logger::log("AUTH", "Handshaking with client...");
-					
+
 					RakNet::BitStream returnBS;
 					// Head
 					returnBS.Write(static_cast<byte>(ID_USER_PACKET_ENUM));
@@ -76,33 +84,29 @@ AuthServer::AuthServer(std::string masterServerIP) {
 					returnBS.Write(171022UL); // version
 					returnBS.Write(0x93UL); // ???
 					returnBS.Write(1UL); // connType
-					returnBS.Write(GetProcessId(this));
+					returnBS.Write(GetProcessId(GetCurrentProcess()));
 					returnBS.Write(static_cast<unsigned short>(0xff));
 					returnBS.Write(RakNet::RakString("127.0.0.1"), 264);
 
 					rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 				} break;
-				case ERemoteConnection::AUTH: {
-					/// Do Login
-					Logger::log("AUTH", "Login requested");
-					// TODO: Handle Login
-				} break;
+
 				default: {
-					Logger::log("AUTH", "Recieved unknown packet");
+					Logger::log("MASTER", "Recieved unknown packet");
 				}
 				}
 
 			} break;
 			case ID_NEW_INCOMING_CONNECTION: {
-				Logger::log("AUTH", "Recieving new Connection...");
+				Logger::log("MASTER", "Recieving new Connection...");
 				// TODO: Connect as Session
 			} break;
 			case ID_DISCONNECTION_NOTIFICATION: {
-				Logger::log("AUTH", "User Disconnected from AUTH...");
+				Logger::log("MASTER", "User Disconnected from Master...");
 				// TODO: Disconnect as Session
 			} break;
 			default: {
-				Logger::log("AUTH", "Recieved unknown packet #" + (byte)packetID);
+				Logger::log("MASTER", "Recieved unknown packet #" + (byte)packetID);
 			}
 			}
 
@@ -113,14 +117,13 @@ AuthServer::AuthServer(std::string masterServerIP) {
 	}
 
 	// QUIT
-	std::cout << ("AUTH", "Recieved QUIT, shutting down...");
+	std::cout << ("MASTER", "Recieved QUIT, shutting down...");
 
 	rakServer->Shutdown(0);
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
-	
 }
 
 
-AuthServer::~AuthServer()
-{
+MasterServer::~MasterServer() {
+	listenThread.~thread();
 }

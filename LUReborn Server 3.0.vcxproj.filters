@@ -252,6 +252,12 @@
     <ClCompile Include="src\Utils\ServerInfo.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="src\Server\MasterServer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Server\Bridges\BridgeMasterServer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Server\WorldServer.hpp">
@@ -635,5 +641,14 @@
     <ClInclude Include="src\Utils\ServerInfo.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="src\Server\Bridges\BridgeMasterServer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Server\MasterServer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
   </ItemGroup>
 </Project>

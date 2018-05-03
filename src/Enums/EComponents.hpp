@@ -102,9 +102,10 @@ enum class ECOMPONENT_TYPE : long {
 	IGNORE_LIST_COMPONENT,
 	MULTI_ZONE_ENTRANCE, //only two in table, both are Starbase 3001 launcher related
 	BUFF_COMPONENT,
-	UNKOWN_100_COMPONENT = 100, //brick donation component
-
-	UNKOWN_102_COMPONENT = 102, //only two in table, commendation vendor component?
+	INTERACTION_MANAGER,
+	DONATION_VENDOR_COMPONENT, //brick donation component
+	COMBAT_MEDIATOR_COMPONENT,
+	UNKOWN_102_COMPONENT, //only two in table, commendation vendor component?
 	UNKOWN_103_COMPONENT, //only two in table, nothing in objects
 	RAIL_ACTIVATOR_COMPONENT, //rail activator related
 	UNKOWN_105_COMPONENT, //only three in table, ? I haven't a clue as to what this is supposed to be

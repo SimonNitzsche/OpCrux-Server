@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Server\Bridges\BridgeMasterServer.cpp" />
     <ClCompile Include="libs\RakNet\AsynchronousFileIO.cpp" />
     <ClCompile Include="libs\RakNet\AutoRPC.cpp" />
     <ClCompile Include="libs\RakNet\BitStream.cpp" />
@@ -93,6 +94,7 @@
     <ClCompile Include="libs\RakNet\TelnetTransport.cpp" />
     <ClCompile Include="libs\RakNet\ThreadsafePacketLogger.cpp" />
     <ClCompile Include="libs\RakNet\_FindFirst.cpp" />
+    <ClCompile Include="src\Server\MasterServer.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="src\Server\AuthServer.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -100,6 +102,7 @@
     <ClCompile Include="src\Utils\ServerInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Server\Bridges\BridgeMasterServer.hpp" />
     <ClInclude Include="libs\RakNet\AsynchronousFileIO.h" />
     <ClInclude Include="libs\RakNet\AutopatcherPatchContext.h" />
     <ClInclude Include="libs\RakNet\AutopatcherRepositoryInterface.h" />
@@ -217,6 +220,7 @@
     <ClInclude Include="libs\RakNet\TransportInterface.h" />
     <ClInclude Include="libs\RakNet\Types.h" />
     <ClInclude Include="libs\RakNet\_FindFirst.h" />
+    <ClInclude Include="src\Server\MasterServer.hpp" />
     <ClInclude Include="src\Utils\Logger.hpp" />
     <ClInclude Include="src\Enums\EComponents.hpp" />
     <ClInclude Include="src\Enums\EGameMessages.hpp" />
@@ -227,6 +231,9 @@
     <ClInclude Include="src\Server\WorldServer.hpp" />
     <ClInclude Include="src\Types\LWOOBJID.hpp" />
     <ClInclude Include="src\Utils\ServerInfo.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

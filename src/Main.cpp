@@ -1,11 +1,19 @@
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
+#include <thread>
 
+#include "RakNet\RakSleep.h"
+
+#include "Server\Bridges\BridgeMasterServer.hpp"
+#include "Server\MasterServer.hpp"
 #include "Server\AuthServer.hpp"
 #include "Server\WorldServer.hpp"
 
 std::vector<ILUServer *> virtualServerInstances;
+
+MasterServer *mS;
+BridgeMasterServer *masterServerBridge;
 
 int main(int argc, char* argv[]) {
 	enum class SERVERMODE { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
@@ -35,8 +43,18 @@ int main(int argc, char* argv[]) {
 
 		break;
 	}
+	std::thread aM([]() { mS = new MasterServer(); });
+	aM.detach();
 
-	new AuthServer();
+	masterServerBridge = new BridgeMasterServer(ipMaster);
+	masterServerBridge->Connect();
+	masterServerBridge->Listen();
+	//masterServerBridge->SendTest();
+
+	std::thread aT([]() { while (mS == nullptr || !mS->isDone) RakSleep(30); new AuthServer("127.0.0.1"); });
+	aT.detach();
+
+	while (true)RakSleep(30);
 
 	std::system("pause");
 }
