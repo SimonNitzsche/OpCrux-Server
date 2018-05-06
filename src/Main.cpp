@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	std::system("title LUReborn Server 3.0 (Standalone)");
-	for (int i = 1; i < argc; i++) {
+	for (int i = 0; i < argc; i++) {
 		std::string arg = std::string(argv[i]);
 		if (arg == "--master") {
 			//MODE_SERVER = SERVER_MODE::MASTER;
