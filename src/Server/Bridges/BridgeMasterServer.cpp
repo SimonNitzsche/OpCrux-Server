@@ -6,7 +6,7 @@
 #include "../../Utils/Logger.hpp"
 
 BridgeMasterServer::BridgeMasterServer(std::string masterServerIP) : masterServerIP (masterServerIP) {
-	rakMasterClient = RakNetworkFactory().GetRakPeerInterface();
+	rakMasterClient = RakNetworkFactory::GetRakPeerInterface();
 	Packet* msPacket;
 
 	SocketDescriptor msSocketDesscriptor(0, 0);

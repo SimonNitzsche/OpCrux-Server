@@ -28,7 +28,7 @@
 
 MasterServer::MasterServer() {
 	// Initializes the RakPeerInterface used for the auth server
-	rakServer = RakNetworkFactory().GetRakPeerInterface();
+	rakServer = RakNetworkFactory::GetRakPeerInterface();
 
 	// Initializes Securiry
 	// TODO: Init Security

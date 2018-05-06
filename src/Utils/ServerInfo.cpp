@@ -1,4 +1,5 @@
 #include "ServerInfo.hpp"
+#include <processthreadsapi.h>
 
 clock_t ServerInfo::appstart;
 bool ServerInfo::initDone = false;
