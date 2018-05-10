@@ -23,7 +23,7 @@
 #include "../Utils/Logger.hpp"
 #include "../Utils/ServerInfo.hpp"
 
-AuthServer::AuthServer(std::string masterServerIP) : ILUServer(masterServerIP) {
+AuthServer::AuthServer() : ILUServer() {
 	// Initializes the RakPeerInterface used for the auth server
 	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
 

@@ -94,7 +94,6 @@
     <ClCompile Include="libs\RakNet\TelnetTransport.cpp" />
     <ClCompile Include="libs\RakNet\ThreadsafePacketLogger.cpp" />
     <ClCompile Include="libs\RakNet\_FindFirst.cpp" />
-    <ClCompile Include="src\Server\Interfaces\ILUServer.cpp" />
     <ClCompile Include="src\Server\MasterServer.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="src\Server\AuthServer.cpp" />

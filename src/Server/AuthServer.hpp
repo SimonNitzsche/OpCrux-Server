@@ -3,7 +3,7 @@
 
 class AuthServer : public ILUServer {
 public:
-	AuthServer(std::string masterServerIP);
+	AuthServer();
 	void Listen();
 	~AuthServer();
 };

@@ -12,9 +12,8 @@
 class ILUServer {
 public:
 	bool initDone;
-	BridgeMasterServer* masterServerBridge;
 
-	ILUServer(std::string masterServerIP);
+	ILUServer() {};
 	~ILUServer() {};
 };
 

@@ -258,9 +258,6 @@
     <ClCompile Include="src\Server\Bridges\BridgeMasterServer.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="src\Server\Interfaces\ILUServer.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Server\WorldServer.hpp">

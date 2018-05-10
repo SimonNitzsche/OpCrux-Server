@@ -3,6 +3,6 @@
 
 class WorldServer : ILUServer {
 public:
-	WorldServer(std::string masterServerIP);
+	WorldServer();
 	~WorldServer();
 };

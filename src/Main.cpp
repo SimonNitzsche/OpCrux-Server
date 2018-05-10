@@ -50,13 +50,19 @@ int main(int argc, char* argv[]) {
 		mT.detach();
 	}
 
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
+		BridgeMasterServer* masterServerBridge = new BridgeMasterServer(ipMaster);
+		masterServerBridge->Connect();
+		masterServerBridge->Listen();
+	}
+
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
-		std::thread aT([=]() { new AuthServer(ipMaster); });
+		std::thread aT([]() { new AuthServer(); });
 		aT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-		//std::thread wT([=]() { new WorldServer(ipMaster); });
+		//std::thread wT([]() { new WorldServer(); });
 		//wT.detach();
 	}
 
