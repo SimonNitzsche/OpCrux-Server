@@ -1,10 +1,9 @@
 #pragma once
 #include "Interfaces/ILUServer.hpp"
 
-class AuthServer : public ILUServer
-{
+class AuthServer : public ILUServer {
 public:
-	AuthServer();
+	AuthServer(std::string masterServerIP);
 	void Listen();
 	~AuthServer();
 };

@@ -14,8 +14,7 @@ public:
 	bool initDone;
 	BridgeMasterServer* masterServerBridge;
 
-	ILUServer(std::string masterServerIP) {};
-	ILUServer() {};
+	ILUServer(std::string masterServerIP);
 	~ILUServer() {};
 };
 

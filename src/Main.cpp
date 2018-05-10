@@ -5,15 +5,12 @@
 
 #include <RakNet\RakSleep.h>
 
-#include "Server\Bridges\BridgeMasterServer.hpp"
 #include "Server\MasterServer.hpp"
 #include "Server\AuthServer.hpp"
 #include "Server\WorldServer.hpp"
+#include "Utils\ServerInfo.hpp"
 
 std::vector<ILUServer *> virtualServerInstances;
-
-MasterServer *mS;
-BridgeMasterServer *masterServerBridge;
 
 int main(int argc, char* argv[]) {
 	enum class SERVERMODE { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
@@ -46,27 +43,24 @@ int main(int argc, char* argv[]) {
 		break;
 	}
 
-	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
-		std::thread aM([]() { mS = new MasterServer(); });
-		aM.detach();
-	}
+	ServerInfo::init();
 
-	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
-		masterServerBridge = new BridgeMasterServer(ipMaster);
-		masterServerBridge->Connect();
-		masterServerBridge->Listen();
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
+		std::thread mT([]() { new MasterServer(); });
+		mT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
-		std::thread aT([]() { while (mS == nullptr || !mS->isDone) RakSleep(30); new AuthServer(); });
+		std::thread aT([=]() { new AuthServer(ipMaster); });
 		aT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-
+		//std::thread wT([=]() { new WorldServer(ipMaster); });
+		//wT.detach();
 	}
 
-	while (true)RakSleep(30);
+	while (ServerInfo::bRunning) RakSleep(30);
 
 	std::system("pause");
 }

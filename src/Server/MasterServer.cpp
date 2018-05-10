@@ -25,6 +25,7 @@
 #include "../Enums/ERemoteConnection.hpp"
 
 #include "../Utils/Logger.hpp"
+#include "../Utils/ServerInfo.hpp"
 
 MasterServer::MasterServer() {
 	// Initializes the RakPeerInterface used for the auth server
@@ -51,10 +52,10 @@ MasterServer::MasterServer() {
 
 void MasterServer::Listen() {
 	Packet* packet;
+	if (!isDone) isDone = true;
 
-	while (true) {
+	while (ServerInfo::bRunning) {
 		RakSleep(1);
-		if (!isDone) isDone = true;
 		while (packet = rakServer->Receive()) {
 			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
 			unsigned char packetID;
@@ -117,7 +118,7 @@ void MasterServer::Listen() {
 	}
 
 	// QUIT
-	std::cout << ("MASTER", "Recieved QUIT, shutting down...");
+	Logger::log("MASTER", "Recieved QUIT, shutting down...");
 
 	rakServer->Shutdown(0);
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);

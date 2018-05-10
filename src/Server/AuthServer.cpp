@@ -21,8 +21,9 @@
 #include "../Enums/ERemoteConnection.hpp"
 
 #include "../Utils/Logger.hpp"
+#include "../Utils/ServerInfo.hpp"
 
-AuthServer::AuthServer() {
+AuthServer::AuthServer(std::string masterServerIP) : ILUServer(masterServerIP) {
 	// Initializes the RakPeerInterface used for the auth server
 	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
 
@@ -45,7 +46,7 @@ AuthServer::AuthServer() {
 	Packet* packet;
 	initDone = true;
 
-	while (true) {
+	while (ServerInfo::bRunning) {
 		RakSleep(1);
 		while (packet = rakServer->Receive()) {
 			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
@@ -113,7 +114,7 @@ AuthServer::AuthServer() {
 	}
 
 	// QUIT
-	std::cout << ("AUTH", "Recieved QUIT, shutting down...");
+	Logger::log("AUTH", "Recieved QUIT, shutting down...");
 
 	rakServer->Shutdown(0);
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
