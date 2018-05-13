@@ -5,10 +5,10 @@
 
 #include <RakNet\RakSleep.h>
 
-#include "Server\Bridges\BridgeMasterServer.hpp"
 #include "Server\MasterServer.hpp"
 #include "Server\AuthServer.hpp"
 #include "Server\WorldServer.hpp"
+#include "Utils\ServerInfo.hpp"
 
 std::vector<ILUServer *> virtualServerInstances;
 
@@ -46,39 +46,30 @@ int main(int argc, char* argv[]) {
 		break;
 	}
 
+	ServerInfo::init();
+
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
-		std::thread aM([]() { mS = new MasterServer(); });
-		aM.detach();
+		std::thread mT([]() { new MasterServer(); });
+		mT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
-		masterServerBridge = new BridgeMasterServer(ipMaster);
+		BridgeMasterServer* masterServerBridge = new BridgeMasterServer(ipMaster);
 		masterServerBridge->Connect();
 		masterServerBridge->Listen();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
-		std::thread aT([]() { while (mS == nullptr || !mS->isDone) RakSleep(30); new AuthServer(); });
+		std::thread aT([]() { new AuthServer(); });
 		aT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-
+		//std::thread wT([]() { new WorldServer(); });
+		//wT.detach();
 	}
 
-	// Test
-
-
-	//unsigned char * data = new unsigned char [16] { 0x09, 0x01, 0x0f, 0x76, 0x69, 0x73, 0x69, 0x62, 0x6c, 0x65, 0x02, 0x01, 0x0a, 0x00, 0x00, 0x00 };
-	
-	unsigned char * data = new unsigned char[4]{ 0xf7, 0xbf, 0xbf, 0xbf };
-
-	RakNet::BitStream *bs = new RakNet::BitStream(data, sizeof(data), false);
-	//AMF3::Read(bs);
-
-	U29 a = U29(bs);
-
-	while (true)RakSleep(30);
+	while (ServerInfo::bRunning) RakSleep(30);
 
 	std::system("pause");
 }
