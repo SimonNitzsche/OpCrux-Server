@@ -3,7 +3,7 @@
 #include <vector>
 #include <thread>
 
-#include "RakNet\RakSleep.h"
+#include <RakNet\RakSleep.h>
 
 #include "Server\Bridges\BridgeMasterServer.hpp"
 #include "Server\MasterServer.hpp"
@@ -17,7 +17,7 @@ BridgeMasterServer *masterServerBridge;
 #include "DataTypes\AMF3.hpp"
 int main(int argc, char* argv[]) {
 	enum class SERVERMODE { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
-	std::string ipMaster;
+	std::string ipMaster = "127.0.0.1";
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	std::system("title LUReborn Server 3.0 (Standalone)");
@@ -38,21 +38,33 @@ int main(int argc, char* argv[]) {
 		else {
 			continue;
 		}
-		
-		ipMaster = ( (argc > i) ? argv[i + 1] : "127.0.0.1" );
+
+		if (argc >= 3) {
+			ipMaster = argv[i + 1]; //Configfile?
+		}
 
 		break;
 	}
-	std::thread aM([]() { mS = new MasterServer(); });
-	aM.detach();
 
-	masterServerBridge = new BridgeMasterServer(ipMaster);
-	masterServerBridge->Connect();
-	masterServerBridge->Listen();
-	//masterServerBridge->SendTest();
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
+		std::thread aM([]() { mS = new MasterServer(); });
+		aM.detach();
+	}
 
-	std::thread aT([]() { while (mS == nullptr || !mS->isDone) RakSleep(30); new AuthServer("127.0.0.1"); });
-	aT.detach();
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
+		masterServerBridge = new BridgeMasterServer(ipMaster);
+		masterServerBridge->Connect();
+		masterServerBridge->Listen();
+	}
+
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
+		std::thread aT([]() { while (mS == nullptr || !mS->isDone) RakSleep(30); new AuthServer(); });
+		aT.detach();
+	}
+
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
+
+	}
 
 	// Test
 

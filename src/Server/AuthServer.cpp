@@ -22,9 +22,9 @@
 
 #include "../Utils/Logger.hpp"
 
-AuthServer::AuthServer(std::string masterServerIP) {
+AuthServer::AuthServer() {
 	// Initializes the RakPeerInterface used for the auth server
-	RakPeerInterface* rakServer = RakNetworkFactory().GetRakPeerInterface();
+	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
 
 	// Initializes Securiry
 	// TODO: Init Security

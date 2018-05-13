@@ -26,7 +26,7 @@ public:
 	static long long uptime();
 	static float uptime_normalized();
 	static long long time_gone(long long uptime);
-	static float CompareTimes(long long Time1, long long Time2);
+	static float CompareTimes(long long startTime, long long endTime);
 	static std::string getDatabaseConfig(std::string key, std::string defaultVal);
 	static std::string getComputerName();
 	static std::string getOsName();
