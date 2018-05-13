@@ -266,9 +266,6 @@
     <ClInclude Include="src\Server\AuthServer.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="src\Types\LWOOBJID.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="src\Enums\EPackets.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -645,6 +642,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="src\Server\MasterServer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DataTypes\LWOOBJID.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DataTypes\AMF3.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

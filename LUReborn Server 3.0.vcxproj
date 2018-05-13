@@ -102,6 +102,7 @@
     <ClCompile Include="src\Utils\ServerInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\DataTypes\AMF3.hpp" />
     <ClInclude Include="src\Server\Bridges\BridgeMasterServer.hpp" />
     <ClInclude Include="libs\RakNet\AsynchronousFileIO.h" />
     <ClInclude Include="libs\RakNet\AutopatcherPatchContext.h" />
@@ -229,7 +230,7 @@
     <ClInclude Include="src\Server\AuthServer.hpp" />
     <ClInclude Include="src\Server\Interfaces\ILUServer.hpp" />
     <ClInclude Include="src\Server\WorldServer.hpp" />
-    <ClInclude Include="src\Types\LWOOBJID.hpp" />
+    <ClInclude Include="src\DataTypes\LWOOBJID.hpp" />
     <ClInclude Include="src\Utils\ServerInfo.hpp" />
   </ItemGroup>
   <ItemGroup>
