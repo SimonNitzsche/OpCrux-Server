@@ -229,3 +229,6 @@ add_executable(LUReborn_Server_3_0
 if(WIN32)
     target_link_libraries(LUReborn_Server_3_0 wsock32 ws2_32)
 endif()
+if(UNIX)
+    target_link_libraries(LUReborn_Server_3_0 pthread)
+endif()
