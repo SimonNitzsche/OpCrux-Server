@@ -102,6 +102,7 @@
     <ClCompile Include="src\Utils\ServerInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Common\CrossPlatform.hpp" />
     <ClInclude Include="src\DataTypes\AMF3.hpp" />
     <ClInclude Include="src\Server\Bridges\BridgeMasterServer.hpp" />
     <ClInclude Include="libs\RakNet\AsynchronousFileIO.h" />

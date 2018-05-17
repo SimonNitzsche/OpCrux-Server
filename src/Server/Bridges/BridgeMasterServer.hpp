@@ -2,19 +2,11 @@
 #ifndef _BRIDGEMASTERSERVER_HPP
 #define _BRIDGEMASTERSERVER_HPP
 
-#include <WinSock2.h>
-#ifdef LINUX || MAC
-#include <unistd.h>
-#endif
-#ifdef WIN32
-#include <windows.h>
-#endif
-#include <ws2tcpip.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <thread>
-
+#include "../../Common/CrossPlatform.hpp"
 #include <RakNet/BitStream.h>
 #include <RakNet/MessageIdentifiers.h>
 #include <RakNet/RakPeerInterface.h>

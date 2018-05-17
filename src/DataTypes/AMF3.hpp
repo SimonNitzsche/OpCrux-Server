@@ -4,7 +4,7 @@
 
 #include <string>
 #include <exception>
-#include <RakNet\BitStream.h>
+#include <RakNet/BitStream.h>
 
 enum class AMF3_TYPE_MARKER : unsigned char {
 	undefined_marker = 0,
@@ -67,7 +67,7 @@ class AMF3;
 
 class AMF3_TYPE {
 public:
-	AMF3_TYPE_MARKER get_type_marker() { throw new std::exception("Can't execute on interface."); }
+	AMF3_TYPE_MARKER get_type_marker() { throw new std::runtime_error("Can't execute on interface."); }
 };
 
 class amf3_undefined : public AMF3_TYPE {
@@ -137,7 +137,7 @@ public:
 			return amf3_array(bs);
 
 		default:
-			throw new std::exception("Unknown marker.");
+			throw new std::runtime_error("Unknown marker.");
 		}
 	}
 };

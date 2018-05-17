@@ -3,18 +3,18 @@
 #include <vector>
 #include <thread>
 
-#include <RakNet\RakSleep.h>
+#include <RakNet/RakSleep.h>
 
-#include "Server\MasterServer.hpp"
-#include "Server\AuthServer.hpp"
-#include "Server\WorldServer.hpp"
-#include "Utils\ServerInfo.hpp"
+#include "Server/MasterServer.hpp"
+#include "Server/AuthServer.hpp"
+#include "Server/WorldServer.hpp"
+#include "Utils/ServerInfo.hpp"
 
 std::vector<ILUServer *> virtualServerInstances;
 
 MasterServer *mS;
 BridgeMasterServer *masterServerBridge;
-#include "DataTypes\AMF3.hpp"
+#include "DataTypes/AMF3.hpp"
 int main(int argc, char* argv[]) {
 	enum class SERVERMODE { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 	std::string ipMaster = "127.0.0.1";
@@ -49,7 +49,8 @@ int main(int argc, char* argv[]) {
 	ServerInfo::init();
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
-		std::thread mT([]() { new MasterServer(); });
+		MasterServer * mS;
+		std::thread mT([](MasterServer * ms) { ms = new MasterServer(); }, mS);
 		mT.detach();
 	}
 
@@ -60,7 +61,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
-		std::thread aT([]() { new AuthServer(); });
+		AuthServer * aS;
+		std::thread aT([](AuthServer * as) { as = new AuthServer(); }, aS);
 		aT.detach();
 	}
 

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <string>
-#ifdef _LINUX || MAC
+#if defined(__unix__) || defined(MAC)
 #include <unistd.h>
 #endif
 #ifdef WIN32

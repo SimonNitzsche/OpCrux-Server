@@ -20,22 +20,22 @@ void BridgeMasterServer::ListenHandle() {
 
 void BridgeMasterServer::Connect() {
 	if (_connected) {
-		throw std::exception("Already connected to Master Server.");
+		throw std::runtime_error("Already connected to Master Server.");
 	}
 	if (rakMasterClient->Connect(masterServerIP.c_str(), 1000, "3.25 ND2", 8)) {
 		_connected = true;
 	}
 	else {
-		throw std::exception("Couldn't connect to Master Server.");
+		throw std::runtime_error("Couldn't connect to Master Server.");
 	}
 }
 
 void BridgeMasterServer::Listen() {
 	if(!_connected) {
-		throw std::exception("Not connected to Master Server.");
+		throw std::runtime_error("Not connected to Master Server.");
 	}
 	if (_listening) {
-		throw std::exception("Already listening to the Master Server.");
+		throw std::runtime_error("Already listening to the Master Server.");
 	}
 	bridgeThread = std::thread([](BridgeMasterServer * srv) {
 		srv->ListenHandle();

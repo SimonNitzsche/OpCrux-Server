@@ -1,13 +1,6 @@
 #include "AuthServer.hpp"
 
-#include <WinSock2.h>
-#ifdef _LINUX || MAC
-#include <unistd.h>
-#endif
-#ifdef WIN32
-#include <windows.h>
-#endif
-#include <ws2tcpip.h>
+#include "../Common/CrossPlatform.hpp"
 #include <stdio.h>
 
 #include <RakNet/BitStream.h>
