@@ -3,12 +3,15 @@
 #include <vector>
 #include <thread>
 
+#include "Common/CrossPlatform.hpp"
+
 #include <RakNet/RakSleep.h>
 
 #include "Server/MasterServer.hpp"
 #include "Server/AuthServer.hpp"
 #include "Server/WorldServer.hpp"
 #include "Utils/ServerInfo.hpp"
+#include "Server/Bridges/BridgeMasterServer.hpp"
 
 std::vector<ILUServer *> virtualServerInstances;
 

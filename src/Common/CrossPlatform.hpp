@@ -6,14 +6,15 @@
 #include <sys/socket.h>
 #endif
 #ifdef WIN32
+
 #include <WinSock2.h>
-#include <ws2tcpip.h>
 #endif
 
 #if defined(__unix__) || defined(MAC)
 #include <unistd.h>
 #endif
 #ifdef WIN32
+#include <ws2tcpip.h>
 #include <windows.h>
 #endif
 

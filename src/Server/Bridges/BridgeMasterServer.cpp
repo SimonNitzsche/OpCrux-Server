@@ -1,9 +1,9 @@
 #include "BridgeMasterServer.hpp"
 
-#include "Enums/EPackets.hpp"
-#include "Enums/ERemoteConnection.hpp"
+#include "../../Enums/EPackets.hpp"
+#include "../../Enums/ERemoteConnection.hpp"
 
-#include "Utils/Logger.hpp"
+#include "../../Utils/Logger.hpp"
 
 BridgeMasterServer::BridgeMasterServer(std::string masterServerIP) : masterServerIP (masterServerIP) {
 	rakMasterClient = RakNetworkFactory::GetRakPeerInterface();
