@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (argc >= 3) {
-			ipMaster = argv[i + 1]; //Configfile?
+			ipMaster = argv[i + 1];
 		}
 
 		break;
