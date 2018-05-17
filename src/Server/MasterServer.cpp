@@ -1,6 +1,6 @@
 #include "MasterServer.hpp"
 
-#include "../Common/CrossPlatform.hpp"
+#include "Common/CrossPlatform.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -14,11 +14,11 @@
 #include <RakNet/RakSleep.h>
 
 
-#include "../Enums/EPackets.hpp"
-#include "../Enums/ERemoteConnection.hpp"
+#include "Enums/EPackets.hpp"
+#include "Enums/ERemoteConnection.hpp"
 
-#include "../Utils/Logger.hpp"
-#include "../Utils/ServerInfo.hpp"
+#include "Utils/Logger.hpp"
+#include "Utils/ServerInfo.hpp"
 
 MasterServer::MasterServer() {
 	// Initializes the RakPeerInterface used for the auth server

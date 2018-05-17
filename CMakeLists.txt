@@ -204,6 +204,9 @@ add_executable(LUReborn_Server_3_0
         libs/RakNet/ThreadsafePacketLogger.h
         libs/RakNet/TransportInterface.h
         libs/RakNet/Types.h
+        src/Common/CrossPlatform.hpp
+        src/DataTypes/AMF3.hpp
+        src/DataTypes/LWOOBJID.hpp
         src/Enums/EComponents.hpp
         src/Enums/EGameMessages.hpp
         src/Enums/EPackets.hpp
@@ -217,7 +220,6 @@ add_executable(LUReborn_Server_3_0
         src/Server/MasterServer.hpp
         src/Server/WorldServer.cpp
         src/Server/WorldServer.hpp
-        src/Types/LWOOBJID.hpp
         src/Utils/Logger.cpp
         src/Utils/Logger.hpp
         src/Utils/ServerInfo.cpp

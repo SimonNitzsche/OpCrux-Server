@@ -4,9 +4,7 @@
 #include <stdio.h>
 #include <string>
 #include <time.h>
-#include "../Common/CrossPlatform.hpp"
-
-typedef long clock_t;
+#include "Common/CrossPlatform.hpp"
 
 class ServerInfo {
 private:

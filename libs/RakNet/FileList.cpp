@@ -655,7 +655,12 @@ void FileList::DeleteFiles(const char *applicationDirectory)
 #ifdef _MSC_VER
 #pragma warning( disable : 4966 ) // unlink declared depreciated by Microsoft in order to make it harder to be cross platform.  I don't agree it's depreciated.
 #endif
-        int result = _unlink(fullPath);
+#ifdef __unix__
+        int result = unlink(fullPath);
+#endif
+#ifdef WIN32
+		int result = _unlink(fullPath);
+#endif
 		if (result!=0)
 		{
 			printf("FileList::DeleteFiles: unlink (%s) failed.\n", fullPath);

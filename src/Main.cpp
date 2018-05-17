@@ -23,20 +23,28 @@ int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
+#ifdef WIN32
 	std::system("title LUReborn Server 3.0 (Standalone)");
+#endif
 	for (int i = 0; i < argc; i++) {
 		std::string arg = std::string(argv[i]);
 		if (arg == "--master") {
 			//MODE_SERVER = SERVER_MODE::MASTER;
+#ifdef WIN32
 			std::system("title LUReborn Server 3.0 (Master only)");
+#endif
 		}
 		if (arg == "--world") {
 			//MODE_SERVER = SERVER_MODE::WORLD;
+#ifdef WIN32
 			std::system("title LUReborn Server 3.0 (World only)");
+#endif
 		}
 		if (arg == "--auth") {
 			//MODE_SERVER = SERVER_MODE::AUTH;
+#ifdef WIN32
 			std::system("title LUReborn Server 3.0 (Auth only)");
+#endif
 		}
 		else {
 			continue;
