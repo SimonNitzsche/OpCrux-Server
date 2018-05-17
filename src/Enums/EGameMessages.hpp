@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-CLIENT packets are recieved by the server
+CLIENT packets are received by the server
 
 SERVER packets are sent by the server to the client
 

@@ -10,11 +10,11 @@
 #include <RakNet/RakSleep.h>
 
 
-#include "../Enums/EPackets.hpp"
-#include "../Enums/ERemoteConnection.hpp"
+#include "Enums/EPackets.hpp"
+#include "Enums/ERemoteConnection.hpp"
 
-#include "../Utils/Logger.hpp"
-#include "../Utils/ServerInfo.hpp"
+#include "Utils/Logger.hpp"
+#include "Utils/ServerInfo.hpp"
 
 AuthServer::AuthServer() : ILUServer() {
 	// Initializes the RakPeerInterface used for the auth server

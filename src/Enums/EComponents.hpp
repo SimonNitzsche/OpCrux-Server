@@ -68,7 +68,7 @@ enum class ECOMPONENT_TYPE : long {
 	SHOWCASE_MODEL_COMPONENT, //showcase component? (LOT 6545)
 	RACING_MODULE_COMPONENT, //another modular related component
 	GENERIC_ACTIVATOR_COMPONENT, //only three in table, a middle module component?
-	PROPERTY_VENDOR_COMPONENT, //only two in table, property selling venders
+	PROPERTY_VENDOR_COMPONENT, //only two in table, property selling vendors
 	HF_LIGHT_DIRECTION_COMPONENT, //only one in table, LOT 6968, a light direction component?
 	ROCKET_LAUNCHPAD_CONTROL_COMPONENT, //launchpad related component
 	ROCKET_LANDING_COMPONENT, //only two in table, and those are the player objects

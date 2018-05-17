@@ -1537,7 +1537,8 @@ namespace RakNet
 			y=0.0;
 		else
 		{
-			ReadCompressed(cy);
+			float& ref = cy;
+			ReadCompressed(ref);
 			y=cy;
 			//Read(sy);
 			//y=((float)sy / 32767.5f - 1.0f);
@@ -1554,7 +1555,8 @@ namespace RakNet
 			//		return false;
 
 			//	z=((float)sz / 32767.5f - 1.0f);
-			if (!ReadCompressed(cz))
+			float& ref = cz;
+			if (!ReadCompressed(ref))
 				return false;
 			z=cz;
 		}

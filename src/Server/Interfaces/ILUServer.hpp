@@ -7,8 +7,6 @@
 #include <unordered_map>
 #include <iostream>
 
-#include "../Bridges/BridgeMasterServer.hpp"
-
 class ILUServer {
 public:
 	bool initDone;

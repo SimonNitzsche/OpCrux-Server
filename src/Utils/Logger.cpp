@@ -2,7 +2,9 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#ifdef _WIN32
 #include <Windows.h>
+#endif
 #include <fstream>
 #include <ctime>
 #include "ServerInfo.hpp"
