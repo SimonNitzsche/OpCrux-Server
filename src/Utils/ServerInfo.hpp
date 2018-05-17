@@ -3,15 +3,8 @@
 
 #include <stdio.h>
 #include <string>
-#if defined(__unix__) || defined(MAC)
-#include <unistd.h>
-#endif
-#ifdef WIN32
-#include <windows.h>
-#endif
 #include <time.h>
-
-typedef long clock_t;
+#include "Common/CrossPlatform.hpp"
 
 class ServerInfo {
 private:

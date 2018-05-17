@@ -1,5 +1,7 @@
 #include "ServerInfo.hpp"
 
+#include "Common/CrossPlatform.hpp"
+
 clock_t ServerInfo::appstart;
 bool ServerInfo::initDone = false;
 bool ServerInfo::bRunning = true;

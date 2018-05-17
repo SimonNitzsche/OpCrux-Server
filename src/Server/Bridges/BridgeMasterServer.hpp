@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <thread>
-#include "../../Common/CrossPlatform.hpp"
+#include "Common/CrossPlatform.hpp"
 #include <RakNet/BitStream.h>
 #include <RakNet/MessageIdentifiers.h>
 #include <RakNet/RakPeerInterface.h>

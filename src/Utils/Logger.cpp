@@ -2,11 +2,9 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#ifdef _WIN32
-#include <Windows.h>
-#endif
 #include <fstream>
 #include <ctime>
+#include "Common/CrossPlatform.hpp"
 #include "ServerInfo.hpp"
 
 void write_to_log_file(const std::string &text);
@@ -18,12 +16,18 @@ bool Logger::inUse = false; // Fix Multithreading
 void Logger::log(std::string from, std::string message, LogType type) {
 	while (inUse) {}
 	inUse = true;
+
+#ifdef __unix__
+	std::cout << "\033[" << (int)type << "m[" << from << "] " << message << "\033[0m" << std::endl;
+#endif
+#ifdef WIN32
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, (int)type);
 
 	std::cout << "[" << from << "] " << message << std::endl;
 
 	SetConsoleTextAttribute(hConsole, (int)15);
+#endif
 
 	write_to_log_file("[" + from + "] " + message + "\n");
 	inUse = false;

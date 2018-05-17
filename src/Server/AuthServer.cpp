@@ -1,6 +1,6 @@
 #include "AuthServer.hpp"
 
-#include "../Common/CrossPlatform.hpp"
+#include "Common/CrossPlatform.hpp"
 #include <stdio.h>
 
 #include <RakNet/BitStream.h>
@@ -10,11 +10,11 @@
 #include <RakNet/RakSleep.h>
 
 
-#include "../Enums/EPackets.hpp"
-#include "../Enums/ERemoteConnection.hpp"
+#include "Enums/EPackets.hpp"
+#include "Enums/ERemoteConnection.hpp"
 
-#include "../Utils/Logger.hpp"
-#include "../Utils/ServerInfo.hpp"
+#include "Utils/Logger.hpp"
+#include "Utils/ServerInfo.hpp"
 
 AuthServer::AuthServer() : ILUServer() {
 	// Initializes the RakPeerInterface used for the auth server
@@ -27,6 +27,12 @@ AuthServer::AuthServer() : ILUServer() {
 	// Initializes SocketDescriptor
 	SocketDescriptor socketDescriptor((unsigned short)1001, 0);
 	Logger::log("AUTH", "Starting Auth...");
+	Logger::log("AUTH", "Normal", NORMAL);
+	Logger::log("AUTH", "INFO", INFO);
+	Logger::log("AUTH", "WARN", WARN);
+	Logger::log("AUTH", "ERR", ERR);
+	Logger::log("AUTH", "PASSED", PASSED);
+	Logger::log("AUTH", "UNEXPECTED", UNEXPECTED);
 
 	rakServer->SetMaximumIncomingConnections((unsigned short)2);
 
