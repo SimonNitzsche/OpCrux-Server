@@ -7,8 +7,6 @@
 
 BridgeMasterServer::BridgeMasterServer(std::string masterServerIP) : masterServerIP (masterServerIP) {
 	rakMasterClient = RakNetworkFactory::GetRakPeerInterface();
-	Packet* msPacket;
-
 	SocketDescriptor msSocketDesscriptor(0, 0);
 	rakMasterClient->Startup(1, 30, &msSocketDesscriptor, 1);
 	rakMasterClient->SetOccasionalPing(true);

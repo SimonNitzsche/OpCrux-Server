@@ -10,14 +10,14 @@
 #include "Server/MasterServer.hpp"
 #include "Server/AuthServer.hpp"
 #include "Server/WorldServer.hpp"
-#include "Utils/ServerInfo.hpp"
 #include "Server/Bridges/BridgeMasterServer.hpp"
+
+#include "DataTypes/AMF3.hpp"
+
+#include "Utils/ServerInfo.hpp"
 
 std::vector<ILUServer *> virtualServerInstances;
 
-MasterServer *mS;
-BridgeMasterServer *masterServerBridge;
-#include "DataTypes/AMF3.hpp"
 int main(int argc, char* argv[]) {
 	enum class SERVERMODE { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 	std::string ipMaster = "127.0.0.1";

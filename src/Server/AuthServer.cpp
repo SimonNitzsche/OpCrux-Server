@@ -70,7 +70,7 @@ AuthServer::AuthServer() : ILUServer() {
 					returnBS.Write(171022UL); // version
 					returnBS.Write(0x93UL); // ???
 					returnBS.Write(1UL); // connType
-					returnBS.Write(GetProcessId(this));
+					returnBS.Write(GetCurrentProcessId());
 					returnBS.Write(static_cast<unsigned short>(0xff));
 					returnBS.Write(RakNet::RakString("127.0.0.1"), 264);
 
@@ -114,7 +114,6 @@ AuthServer::AuthServer() : ILUServer() {
 	
 }
 
+AuthServer::~AuthServer() {
 
-AuthServer::~AuthServer()
-{
 }

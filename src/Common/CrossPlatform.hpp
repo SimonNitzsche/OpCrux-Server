@@ -16,7 +16,6 @@ typedef unsigned char byte;
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned int DWORD;
-#define GetProcessId(x) getpid()
 #define GetCurrentProcessId() getpid()
 #endif
 #ifdef WIN32

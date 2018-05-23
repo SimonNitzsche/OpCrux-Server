@@ -4,7 +4,6 @@
 class AuthServer : public ILUServer {
 public:
 	AuthServer();
-	void Listen();
 	~AuthServer();
 };
 
