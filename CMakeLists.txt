@@ -3,6 +3,8 @@ project(LUReborn_Server_3_0)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" #[[additional compiler flags:]])
+set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}"/bin")
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -222,6 +224,7 @@ add_executable(LUReborn_Server_3_0
         src/Server/WorldServer.hpp
         src/Utils/Logger.cpp
         src/Utils/Logger.hpp
+		src/Utils/PacketUtil.hpp
         src/Utils/ServerInfo.cpp
         src/Utils/ServerInfo.hpp
         src/Main.cpp)

@@ -17,9 +17,9 @@ std::vector<ILUServer *> virtualServerInstances;
 
 MasterServer *mS;
 BridgeMasterServer *masterServerBridge;
+enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 #include "DataTypes/AMF3.hpp"
 int main(int argc, char* argv[]) {
-	enum class SERVERMODE { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 	std::string ipMaster = "127.0.0.1";
 
 	MODE_SERVER = SERVERMODE::STANDALONE;

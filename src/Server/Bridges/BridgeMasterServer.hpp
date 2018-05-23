@@ -29,6 +29,7 @@ public:
 	~BridgeMasterServer();
 	void Connect();
 	void Listen();
+	void SayHello();
 };
 
 #endif
