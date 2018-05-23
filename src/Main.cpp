@@ -29,19 +29,19 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i < argc; i++) {
 		std::string arg = std::string(argv[i]);
 		if (arg == "--master") {
-			//MODE_SERVER = SERVER_MODE::MASTER;
+			MODE_SERVER = SERVERMODE::MASTER;
 #ifdef WIN32
 			std::system("title LUReborn Server 3.0 (Master only)");
 #endif
 		}
 		if (arg == "--world") {
-			//MODE_SERVER = SERVER_MODE::WORLD;
+			MODE_SERVER = SERVERMODE::WORLD;
 #ifdef WIN32
 			std::system("title LUReborn Server 3.0 (World only)");
 #endif
 		}
 		if (arg == "--auth") {
-			//MODE_SERVER = SERVER_MODE::AUTH;
+			MODE_SERVER = SERVERMODE::AUTH;
 #ifdef WIN32
 			std::system("title LUReborn Server 3.0 (Auth only)");
 #endif
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (argc >= 3) {
-			ipMaster = argv[i + 1]; //Configfile?
+			ipMaster = argv[i + 1];
 		}
 
 		break;
