@@ -27,12 +27,6 @@ AuthServer::AuthServer() : ILUServer() {
 	// Initializes SocketDescriptor
 	SocketDescriptor socketDescriptor((unsigned short)1001, 0);
 	Logger::log("AUTH", "Starting Auth...");
-	Logger::log("AUTH", "Normal", NORMAL);
-	Logger::log("AUTH", "INFO", INFO);
-	Logger::log("AUTH", "WARN", WARN);
-	Logger::log("AUTH", "ERR", ERR);
-	Logger::log("AUTH", "PASSED", PASSED);
-	Logger::log("AUTH", "UNEXPECTED", UNEXPECTED);
 
 	rakServer->SetMaximumIncomingConnections((unsigned short)2);
 
