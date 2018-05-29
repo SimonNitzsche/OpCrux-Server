@@ -1,0 +1,157 @@
+<div id="loadingModal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Loading</h5>
+      </div>
+      <div class="modal-body">
+          <center>
+              <div class="lds-css ng-scope">
+                  <div style="width:100%;height:100%" class="lds-rolling">
+                      <div></div>
+                  </div>
+              </div>
+              <p class="modal-text"></p>
+          </center>
+      </div>
+
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="loginModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Login</h5>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Username:</label>
+            <input type="text" class="form-control" autocomplete="username" id="username">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Password:</label>
+            <input type="password" class="form-control" autocomplete="current-password" id="password">
+          </div>
+        </form>
+        <div id="errorText"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="Dashboard.performLogin();">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-side-menu">
+    <div class="brand padding"></div>
+    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+
+        <div class="menu-list">
+            <ul id="menu-content" class="menu-content collapse out">
+
+            </ul>
+     </div>
+</div>
+
+<view></view>
+
+<templates name="nav-bar">
+
+    <template id="template-nav-item-master">
+        <li>
+          <a href="#master">
+              <i class="fa fa-sitemap fa-lg"></i> Master Server
+          </a>
+        </li>
+    </template>
+
+    <template id="template-nav-item-db">
+        <li>
+            <a href="#database">
+                <i class="fa fa-database fa-lg"></i> Database Server
+            </a>
+        </li>
+    </template>
+
+    <template id="template-nav-item-auth">
+        <li  data-toggle="collapse" data-target="#nav-auth" class="collapsed">
+          <a href="#"><i class="fa fa-key fa-lg"></i> Auth Servers <span class="arrow"></span></a>
+        </li>
+        <ul class="sub-menu icon-gears collapse" id="nav-auth">
+            <li><a href="#auth/machine1">Machine 1</a></li>
+            <li><a href="#auth/machine2">Machine 2</a></li>
+        </ul>
+    </template>
+
+    <template id="template-nav-item-world">
+        <li data-toggle="collapse" data-target="#nav-world" class="collapsed">
+          <a href="#"><i class="fa fa-globe fa-lg"></i> World Servers <span class="arrow"></span></a>
+        </li>
+        <ul class="sub-menu icon-gears collapse" id="nav-world">
+            <li><a href="#world/machine1">Machine 1</a></li>
+            <li><a href="#world/machine2">Machine 2</a></li>
+        </ul>
+    </template>
+
+    <template id="template-nav-item-moderation">
+        <li data-toggle="collapse" data-target="#nav-mod" class="collapsed">
+            <a href="#"><i class="fa fa-pencil-square-o"></i> Moderation <span class="arrow"></span></a>
+        </li>
+
+        <ul class="sub-menu collapse" id="nav-mod">
+            <li class="icon-lightbulb"><a href="#mod/names">Name Requests</a></li>
+        </ul>
+    </template>
+
+</templates>
+
+<templates name="view">
+
+    <template id="template-view-master">
+        <div class="info-panel" id="machine-info">
+            <img id="os-img" data-ajax-src="/resources/img/os/{machine.machine_os}.png"></img>
+            <div id="machine-name" data-ajax="Machine ID: {machine.machine_name}"></div>
+            <div id="machine-os" data-ajax="Machine OS: {machine.machine_os}"></div>
+        </div>
+    </template>
+
+    <template id="template-view-mod-names">
+        <div class="info-panel moderation-navbar">
+            <div class="row">
+                <div class="col-sm tab-minifig"><i class="fa fa-smile-o"></i> Minifig names</div>
+                <div class="col-sm tab-pet"><i class="fa fa-paw"></i> Pet names</div>
+                <!-- <div class="col-sm"><i class="fa fa-smile-o"></i> Property</div> -->
+            </div>
+        </div>
+        <div class="info-panel moderation-container">
+            <div class="row header">
+                <div class="col-sm">ID</div>
+                <div class="col-sm">Current Name</div>
+                <div class="col-sm">New Name</div>
+                <div class="col-sm">Action</div>
+            </div>
+            <div class="row data">
+                <div class="col-sm">0000</div>
+                <div class="col-sm">WhisperDisperLogger</div>
+                <div class="col-sm">Simon</div>
+                <div class="col-sm">accept?</div>
+            </div>
+            <div class="row data">
+                <div class="col-sm">3452</div>
+                <div class="col-sm">WhisperDisperBrick</div>
+                <div class="col-sm">Simon2 (Test)</div>
+                <div class="col-sm">accept?</div>
+            </div>
+            <div class="row data">
+                <div class="col-sm">1123</div>
+                <div class="col-sm">HappyFortuneTeller</div>
+                <div class="col-sm">Simon3 (Test)</div>
+                <div class="col-sm">accept?</div>
+            </div>
+        </div>
+    </template>
+</templates>
