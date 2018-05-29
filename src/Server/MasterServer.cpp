@@ -27,7 +27,7 @@ MasterServer::MasterServer() {
 	// Initializes the RakPeerInterface used for the auth server
 	rakServer = RakNetworkFactory::GetRakPeerInterface();
 
-	// Initializes Securiry
+	// Initializes Security
 	// TODO: Init Security
 	rakServer->SetIncomingPassword("3.25 ND2", 8);
 
@@ -71,6 +71,7 @@ void MasterServer::Listen() {
 				case ERemoteConnection::MASTER: {
 					switch (static_cast<EMasterPacketID>(packetType)) {
 					case EMasterPacketID::MSG_MASTER_AUTHENTIFICATE_PROCESS: {
+						// Read
 						struct {
 							RakNet::RakString computerName;
 							RakNet::RakString osName;
@@ -83,8 +84,37 @@ void MasterServer::Listen() {
 						data->Read(contentStruct.processID);
 						data->Read(contentStruct.serverMode);
 
-						std::string cn = contentStruct.computerName;
-						std::string on = contentStruct.osName;
+						
+						// Log
+						Logger::log("MASTER", "Received Hello from Server ("+ std::string(packet->systemAddress.ToString()) +"):");
+						Logger::log("MASTER", std::string("\tComputerName: " + contentStruct.computerName));
+						Logger::log("MASTER", std::string("\tOperationSystem: " + contentStruct.osName));
+						Logger::log("MASTER", std::string("\tProcessID: " + std::to_string(contentStruct.processID)));
+						Logger::log("MASTER", std::string("\tServerMode: " + std::to_string((int)contentStruct.serverMode)));
+
+						// Create
+						Machine machine = Machine();
+						machine.machineName = contentStruct.computerName;
+						machine.machineOS = contentStruct.osName;
+						machine.dottedIP = packet->systemAddress.ToString(false);
+						
+						MachineProcess proc;
+						proc.port = packet->systemAddress.port;
+						proc.processID = contentStruct.processID;
+						proc.server_mode = contentStruct.serverMode;
+						machine.processes.push_back(proc);
+
+						// Check if in list
+						bool alreadyExists = false;
+						for (Machine m : connected_machines)
+							if (m.machineName == machine.machineName)
+								if (m.machineOS == machine.machineOS)
+									if (m.dottedIP == machine.dottedIP)
+										if (alreadyExists = true)
+											{ m.processes.push_back(proc); break; }
+
+						if (!alreadyExists)
+							connected_machines.push_back(machine);
 
 						int c = 3; // I personally use c=3 for breakpoints, so this line get's removed in the future.
 					} break;

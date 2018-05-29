@@ -14,8 +14,12 @@ void ServerInfo::init() {
 	if (!initDone) {
 		initDone = true; //Should be up there
 
+#ifdef WIN32
 		processID = (int)((unsigned int)GetCurrentProcessId());
-		appstart = clock();
+#else
+		processID = (int)getpid();
+#endif
+appstart = clock();
 		StartupTime = time(0);
 	}
 }

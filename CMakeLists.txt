@@ -15,6 +15,9 @@ include_directories(libs)
 include_directories(src)
 
 add_executable(LUReborn_Server_3_0
+		libs/json/json.hpp
+		libs/Mongoose/mongoose.c
+		libs/Mongoose/mongoose.h
         libs/RakNet/_FindFirst.cpp
         libs/RakNet/_FindFirst.h
         libs/RakNet/AsynchronousFileIO.cpp
@@ -227,6 +230,12 @@ add_executable(LUReborn_Server_3_0
 		src/Utils/PacketUtil.hpp
         src/Utils/ServerInfo.cpp
         src/Utils/ServerInfo.hpp
+		src/Utils/StringUtils.hpp
+		src/WebInterface/DashboardAPI.cpp
+		src/WebInterface/DashboardAPI.hpp
+		src/WebInterface/DashboardResources.hpp
+		src/WebInterface/DashboardTools.hpp
+		src/WebInterface/WebInterface.hpp
         src/Main.cpp)
 
 if(WIN32)

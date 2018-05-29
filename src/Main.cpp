@@ -12,6 +12,7 @@
 #include "Server/WorldServer.hpp"
 #include "Utils/ServerInfo.hpp"
 #include "Server/Bridges/BridgeMasterServer.hpp"
+#include "WebInterface/WebInterface.hpp"
 
 std::vector<ILUServer *> virtualServerInstances;
 
@@ -63,6 +64,9 @@ int main(int argc, char* argv[]) {
 		MasterServer * mS;
 		std::thread mT([](MasterServer * ms) { ms = new MasterServer(); }, mS);
 		mT.detach();
+
+		std::thread wiT([]() { WebInterface::WebInterfaceLoop(); });
+		wiT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
@@ -85,4 +89,5 @@ int main(int argc, char* argv[]) {
 	while (ServerInfo::bRunning) RakSleep(30);
 
 	std::system("pause");
+
 }
