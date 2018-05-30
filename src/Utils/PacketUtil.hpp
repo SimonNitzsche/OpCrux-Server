@@ -9,7 +9,7 @@
 
 namespace PacketUtils {
 	static std::unique_ptr<RakNet::BitStream> initPacket(ERemoteConnection connectionType, uint32_t packetID) {
-		std::unique_ptr<RakNet::BitStream> bs(new RakNet::BitStream());
+		auto bs = std::make_unique<RakNet::BitStream>();
 
 		bs->Write(static_cast<uint8_t>(ID_USER_PACKET_ENUM));
 		bs->Write(connectionType);
