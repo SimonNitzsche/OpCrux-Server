@@ -1,3 +1,6 @@
+#define HOST_ENDIAN_IS_BIG
+#define BIG_ENDIAN
+
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
