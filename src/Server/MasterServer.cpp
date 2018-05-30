@@ -19,12 +19,15 @@
 
 #include "Utils/Logger.hpp"
 #include "Utils/ServerInfo.hpp"
+#include "Utils/PacketUtil.hpp"
+
+extern enum class SERVERMODE : uint8_t;
 
 MasterServer::MasterServer() {
 	// Initializes the RakPeerInterface used for the auth server
 	rakServer = RakNetworkFactory::GetRakPeerInterface();
 
-	// Initializes Securiry
+	// Initializes Security
 	// TODO: Init Security
 	rakServer->SetIncomingPassword("3.25 ND2", 8);
 
@@ -50,6 +53,7 @@ void MasterServer::Listen() {
 	while (ServerInfo::bRunning) {
 		RakSleep(1);
 		while (packet = rakServer->Receive()) {
+			//Logger::log("MASTER", "Packet received");
 			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
 			unsigned char packetID;
 			data->Read(packetID);
@@ -64,36 +68,71 @@ void MasterServer::Listen() {
 				data->Read(pad);
 
 				switch (static_cast<ERemoteConnection>(networkType)) {
-				case ERemoteConnection::GENERAL: {
-					/// Do Handshake
-					Logger::log("AUTH", "Handshaking with client...");
+				case ERemoteConnection::MASTER: {
+					switch (static_cast<EMasterPacketID>(packetType)) {
+					case EMasterPacketID::MSG_MASTER_AUTHENTIFICATE_PROCESS: {
+						// Read
+						struct {
+							RakNet::RakString computerName;
+							RakNet::RakString osName;
+							int processID;
+							SERVERMODE serverMode;
+						} contentStruct;
+						
+						data->Read(contentStruct.computerName);
+						data->Read(contentStruct.osName);
+						data->Read(contentStruct.processID);
+						data->Read(contentStruct.serverMode);
 
-					RakNet::BitStream returnBS;
-					// Head
-					returnBS.Write(static_cast<byte>(ID_USER_PACKET_ENUM));
-					returnBS.Write(ERemoteConnection::GENERAL);
-					returnBS.Write(EServerPacketID::VERSION_CONFIRM);
-					returnBS.Write(static_cast<byte>(0x00));
-					//Data
-					returnBS.Write(171022UL); // version
-					returnBS.Write(0x93UL); // ???
-					returnBS.Write(1UL); // connType
-					returnBS.Write(GetCurrentProcessId());
-					returnBS.Write(static_cast<unsigned short>(0xff));
-					returnBS.Write(RakNet::RakString("127.0.0.1"), 264);
+						
+						// Log
+						Logger::log("MASTER", "Received Hello from Server ("+ std::string(packet->systemAddress.ToString()) +"):");
+						Logger::log("MASTER", std::string("\tComputerName: " + contentStruct.computerName));
+						Logger::log("MASTER", std::string("\tOperationSystem: " + contentStruct.osName));
+						Logger::log("MASTER", std::string("\tProcessID: " + std::to_string(contentStruct.processID)));
+						Logger::log("MASTER", std::string("\tServerMode: " + std::to_string((int)contentStruct.serverMode)));
 
-					rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+						// Create
+						Machine machine = Machine();
+						machine.machineName = contentStruct.computerName;
+						machine.machineOS = contentStruct.osName;
+						machine.dottedIP = packet->systemAddress.ToString(false);
+						
+						MachineProcess proc;
+						proc.port = packet->systemAddress.port;
+						proc.processID = contentStruct.processID;
+						proc.server_mode = contentStruct.serverMode;
+						machine.processes.push_back(proc);
+
+						// Check if in list
+						bool alreadyExists = false;
+						for (Machine m : connected_machines)
+							if (m.machineName == machine.machineName)
+								if (m.machineOS == machine.machineOS)
+									if (m.dottedIP == machine.dottedIP)
+										if (alreadyExists = true)
+											{ m.processes.push_back(proc); break; }
+
+						if (!alreadyExists)
+							connected_machines.push_back(machine);
+
+						int c = 3; // I personally use c=3 for breakpoints, so this line get's removed in the future.
+					} break;
+					}
 				} break;
 
 				default: {
-					Logger::log("MASTER", "Recieved unknown packet");
+					Logger::log("MASTER", "Recieved unknown packet type.");
 				}
 				}
 
 			} break;
 			case ID_NEW_INCOMING_CONNECTION: {
 				Logger::log("MASTER", "Recieving new Connection...");
-				// TODO: Connect as Session
+				auto cpacket = PacketUtils::initPacket(ERemoteConnection::GENERAL, static_cast<uint8_t>(EMasterPacketID::MSG_CLIENT_REQUEST_AUTHENTIFACTE_PROCESS));
+				
+				RakNet::BitStream * cpacketPTR = cpacket.get();
+				rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			} break;
 			case ID_DISCONNECTION_NOTIFICATION: {
 				Logger::log("MASTER", "User Disconnected from Master...");

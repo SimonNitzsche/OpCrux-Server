@@ -11,6 +11,7 @@
 #include "Server/AuthServer.hpp"
 #include "Server/WorldServer.hpp"
 #include "Server/Bridges/BridgeMasterServer.hpp"
+#include "WebInterface/WebInterface.hpp"
 
 #include "DataTypes/AMF3.hpp"
 
@@ -18,8 +19,9 @@
 
 std::vector<ILUServer *> virtualServerInstances;
 
+enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
+
 int main(int argc, char* argv[]) {
-	enum class SERVERMODE { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 	std::string ipMaster = "127.0.0.1";
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
@@ -63,6 +65,9 @@ int main(int argc, char* argv[]) {
 		MasterServer * mS;
 		std::thread mT([](MasterServer * ms) { ms = new MasterServer(); }, mS);
 		mT.detach();
+
+		std::thread wiT([]() { WebInterface::WebInterfaceLoop(); });
+		wiT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
@@ -85,4 +90,5 @@ int main(int argc, char* argv[]) {
 	while (ServerInfo::bRunning) RakSleep(30);
 
 	std::system("pause");
+
 }
