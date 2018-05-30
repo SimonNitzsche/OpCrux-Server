@@ -1,5 +1,6 @@
 #pragma once
 #ifndef UTILS_SERVERINFO_HPP
+//#define UTILS_SERVERINFO_HPP
 
 #include <stdio.h>
 #include <string>

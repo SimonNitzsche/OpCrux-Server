@@ -17,7 +17,7 @@ int DashboardAPI::handleAPIs(mg_connection * nc, int ev, http_message * hm) {
 
 		std::vector<std::string> command = StringUtils::splitString(std::string(hm->uri.p, hm->uri.len).substr(4), '/');
 		
-		std::vector<std::string> cD; for each(std::string c in command)
+		std::vector<std::string> cD; for (std::string c : command)
 		if (c.size() > 0) cD.push_back(c);
 		command = cD; cD = std::vector<std::string>();
 

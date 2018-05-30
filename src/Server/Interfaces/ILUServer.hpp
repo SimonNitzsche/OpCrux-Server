@@ -6,9 +6,9 @@
 #include <string>
 #include <unordered_map>
 #include <iostream>
-#include "../Bridges/BridgeMasterServer.hpp"
+#include "Server/Bridges/BridgeMasterServer.hpp"
 
-extern enum class SERVERMODE : uint8_t;
+enum class SERVERMODE : uint8_t;
 extern SERVERMODE MODE_SERVER;
 extern BridgeMasterServer * masterServerBridge;
 

@@ -21,7 +21,7 @@
 #include "Utils/ServerInfo.hpp"
 #include "Utils/PacketUtil.hpp"
 
-extern enum class SERVERMODE : uint8_t;
+enum class SERVERMODE : uint8_t;
 
 MasterServer::MasterServer() {
 	// Initializes the RakPeerInterface used for the auth server

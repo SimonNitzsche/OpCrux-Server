@@ -16,7 +16,6 @@ typedef unsigned char byte;
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned int DWORD;
-#define GetCurrentProcessId() getpid()
 #endif
 #ifdef WIN32
 #include <ws2tcpip.h>

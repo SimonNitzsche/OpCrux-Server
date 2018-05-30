@@ -8,7 +8,7 @@
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/Types.h>
 
-extern enum class SERVERMODE : uint8_t;
+enum class SERVERMODE : uint8_t;
 
 struct MachineProcess {
 public:

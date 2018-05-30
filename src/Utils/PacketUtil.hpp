@@ -1,15 +1,15 @@
 #ifndef _PACKETUTIL_HPP__
 #define _PACKETUTIL_HPP__
 
-#include "../Common/CrossPlatform.hpp"
+#include "Common/CrossPlatform.hpp"
 #include <memory>
 #include <RakNet/BitStream.h>
 #include <RakNet/MessageIdentifiers.h>
-#include "../Enums/ERemoteConnection.hpp"
+#include "Enums/ERemoteConnection.hpp"
 
 namespace PacketUtils {
 	static std::unique_ptr<RakNet::BitStream> initPacket(ERemoteConnection connectionType, uint32_t packetID) {
-		auto bs = std::make_unique<RakNet::BitStream>();
+		std::unique_ptr<RakNet::BitStream> bs(new RakNet::BitStream());
 
 		bs->Write(static_cast<uint8_t>(ID_USER_PACKET_ENUM));
 		bs->Write(connectionType);

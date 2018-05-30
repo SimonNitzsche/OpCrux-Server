@@ -7,7 +7,7 @@
 #include "Utils/PacketUtil.hpp"
 #include "Utils/ServerInfo.hpp"
 
-extern enum class SERVERMODE : uint8_t;
+enum class SERVERMODE : uint8_t;
 extern SERVERMODE MODE_SERVER;
 
 BridgeMasterServer::BridgeMasterServer(std::string masterServerIP) : masterServerIP (masterServerIP) {
