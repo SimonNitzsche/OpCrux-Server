@@ -19,10 +19,13 @@ add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
         src/DataTypes/AMF3.hpp
         src/DataTypes/LWOOBJID.hpp
+		src/DataTypes/Position.hpp
+		src/DataTypes/Vector3.hpp
         src/Enums/EComponents.hpp
         src/Enums/EGameMessages.hpp
         src/Enums/EPackets.hpp
         src/Enums/ERemoteConnection.hpp
+		src/Enums/StringEnums.hpp
         src/Server/Bridges/BridgeMasterServer.cpp
         src/Server/Bridges/BridgeMasterServer.hpp
         src/Server/Interfaces/ILUServer.hpp
