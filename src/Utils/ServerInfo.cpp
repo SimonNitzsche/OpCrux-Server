@@ -44,7 +44,7 @@ std::string ServerInfo::getComputerName() {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	return getenv("COMPUTERNAME");
 #endif // WINDOWS
-#if defined(LINUX) || defined(MAC)
+#if defined(LINUX) || defined(MAC) || defined(__CYGWIN__)
 	return getenv("HOSTNAME");
 #endif // LINUX || MAC
 	return ("Function not supported on this operating system.");
