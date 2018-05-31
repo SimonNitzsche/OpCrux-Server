@@ -43,16 +43,16 @@ AuthServer::AuthServer() : ILUServer() {
 		RakSleep(1);
 		while (packet = rakServer->Receive()) {
 			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
-			unsigned char packetID;
+			uint8_t packetID;
 			data->Read(packetID);
 
 			switch (packetID) {
 			case ID_USER_PACKET_ENUM: {
-				unsigned short networkType;
+				uint16_t networkType;
 				data->Read(networkType);
-				unsigned long packetType;
+				uint32_t packetType;
 				data->Read(packetType);
-				unsigned char pad;
+				uint8_t pad;
 				data->Read(pad);
 
 				switch (static_cast<ERemoteConnection>(networkType)) {
