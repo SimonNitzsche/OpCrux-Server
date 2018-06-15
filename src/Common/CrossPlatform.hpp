@@ -12,6 +12,7 @@
 #if defined(__unix__) || defined(MAC)
 #include <unistd.h>
 //Wintypes
+#include <cstdint.h>
 typedef uint8_t byte;
 typedef uint8_t BYTE;
 typedef uint16_t WORD;
