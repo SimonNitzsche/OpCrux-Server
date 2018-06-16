@@ -12,11 +12,12 @@
 #if defined(__unix__) || defined(MAC)
 #include <unistd.h>
 //Wintypes
-typedef uint8_t byte;
-typedef uint8_t BYTE;
-typedef uint16_t WORD;
-typedef uint32_t DWORD;
-typedef uint64_t QWORD;
+#include <cstdint.h>
+typedef std::uint8_t byte;
+typedef std::uint8_t BYTE;
+typedef std::uint16_t WORD;
+typedef std::uint32_t DWORD;
+typedef std::uint64_t QWORD;
 #endif
 #ifdef WIN32
 #include <ws2tcpip.h>

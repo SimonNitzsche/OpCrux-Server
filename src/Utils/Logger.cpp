@@ -1,62 +1,56 @@
 #include "Logger.hpp"
+
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <fstream>
 #include <ctime>
-#include "Common/CrossPlatform.hpp"
+#include <mutex>
+
+#ifdef LUR_PLATFORM_WIN32
+	#include <Windows.h>
+#endif
+
 #include "ServerInfo.hpp"
 
-void write_to_log_file(const std::string &text);
-std::string timestamp_to_string(bool day, time_t timeT);
-std::string ftimestamp_to_string(time_t timeT);
+static std::mutex LoggerMutex;
 
-bool Logger::inUse = false; // Fix Multithreading
-
-void Logger::log(std::string from, std::string message, LogType type) {
-	while (inUse) {}
-	inUse = true;
-
-#ifdef __unix__
-	std::cout << "\033[" << (int)type << "m[" << from << "] " << message << "\033[0m" << std::endl;
-#endif
-#ifdef WIN32
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, (int)type);
-
-	std::cout << "[" << from << "] " << message << std::endl;
-
-	SetConsoleTextAttribute(hConsole, (int)15);
-#endif
-
-	write_to_log_file("[" + from + "] " + message + "\n");
-	inUse = false;
+static std::string stringifyTimestamp(std::time_t t, const char *format)
+{
+	const std::tm *timeinfo = std::localtime(&t);
+	
+	char buffer[256];
+	auto len = std::strftime(buffer, 256, format, timeinfo);
+	buffer[len] = '\0'; //string is nullterminated even when strftime fails
+	
+	return buffer;
 }
 
-void write_to_log_file(const std::string &text) {
-	std::ofstream log_file(".//res//Logs//" + ftimestamp_to_string(ServerInfo::StartupTime) + ".txt", std::ios_base::out | std::ios_base::app);
+static std::string formatTimestamp(std::time_t t)
+{
+	return stringifyTimestamp(t, "%Y-%m-%d %I+%M+%S");
+}
+
+static void writeLogfile(const std::string &text)
+{
+	std::ofstream log_file("./res/Logs/" + formatTimestamp(ServerInfo::StartupTime) + ".txt", std::ios::out | std::ios::app);
 	log_file << text;
 }
 
-std::string timestamp_to_string(bool day, time_t timeT) {
-	time_t timeS = timeT;
-	struct tm * timeinfo;
-	char buffer[80];
+void Logger::log(const std::string &from, const std::string &message, LogType type) {
+	
+	std::lock_guard<std::mutex> lock(LoggerMutex);
 
-	time(&timeS);
-	timeinfo = localtime(&timeS);
+#ifdef LUR_PLATFORM_WIN32
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, static_cast<int>(type));
 
-	if (day) {
-		strftime(buffer, 80, "%Y-%m-%d", timeinfo);
-	}
-	else {
-		strftime(buffer, 80, "%I+%M+%S", timeinfo);
-	}
-	std::string str(buffer);
+	std::cout << "[" << from << "] " << message << std::endl;
 
-	return str;
-}
+	SetConsoleTextAttribute(hConsole, 15);
+#else
+	std::cout << "\033[" << static_cast<int>(type) << "m[" << from << "] " << message << "\033[0m" << std::endl;
+#endif
 
-std::string ftimestamp_to_string(time_t timeT) {
-	return timestamp_to_string(true, timeT) + " " + timestamp_to_string(false, timeT);
+	writeLogfile("[" + from + "] " + message + "\n");
 }
