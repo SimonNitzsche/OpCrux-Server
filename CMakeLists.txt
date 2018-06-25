@@ -17,6 +17,8 @@ add_subdirectory(libs)
 
 add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
+		src/Database/FastDatabase.cpp
+		src/Database/FastDatabase.hpp
         src/DataTypes/AMF3.hpp
         src/DataTypes/LWOOBJID.hpp
 		src/DataTypes/Position.hpp
@@ -26,6 +28,8 @@ add_executable(LUReborn_Server_3_0
         src/Enums/EPackets.hpp
         src/Enums/ERemoteConnection.hpp
 		src/Enums/StringEnums.hpp
+		src/FileTypes/LUZFile/LUZone.cpp
+		src/FileTypes/LUZFile/LUZone.hpp
         src/Server/Bridges/BridgeMasterServer.cpp
         src/Server/Bridges/BridgeMasterServer.hpp
         src/Server/Interfaces/ILUServer.hpp
@@ -35,6 +39,7 @@ add_executable(LUReborn_Server_3_0
         src/Server/MasterServer.hpp
         src/Server/WorldServer.cpp
         src/Server/WorldServer.hpp
+		src/Utils/FileUtils.hpp
         src/Utils/Logger.cpp
         src/Utils/Logger.hpp
 		src/Utils/PacketUtil.hpp
