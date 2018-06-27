@@ -7,6 +7,18 @@ namespace FDB {
 
 	class Connection;
 
+	enum class DATA_TYPE : uint32_t {
+		NOTHING = 0,
+		INTEGER,
+		UNKNOWN1,
+		FLOAT,
+		TEXT,
+		BOOLEAN,
+		BIGINT,
+		UNKNOWN2,
+		VARCHAR
+	};
+
 	class PointerString {
 	private:
 		Connection * conn;
@@ -25,7 +37,10 @@ namespace FDB {
 	private:
 		Connection * conn;
 		unsigned char * memlocation;
+	public:
 		ColumnData(Connection * connection, unsigned char * where) : conn(connection), memlocation(where) {}
+		DATA_TYPE getColumnDataType(uint32_t indexOfColumn);
+		PointerString getColumnName(uint32_t indexOfColumn);
 	};
 
 	class ColumnHeader {
@@ -36,7 +51,38 @@ namespace FDB {
 		ColumnHeader(Connection * connection, unsigned char * where) : conn(connection), memlocation(where) {}
 		uint32_t getColumnCount();
 		PointerString getTableName();
-		//ColumnData getColumnData();
+		ColumnData getColumnData();
+	};
+
+	class RowInfo {
+	private:
+		Connection * conn;
+		unsigned char * memlocation;
+	public:
+		RowInfo(Connection * connection, unsigned char * where): conn(connection), memlocation(where) {}
+		bool isRowDataHeaderValid();
+		bool isLinkedRowInfoValid();
+	};
+
+	class RowHeader {
+	private:
+		Connection * conn;
+		unsigned char * memlocation;
+	public:
+		RowHeader(Connection * connection, unsigned char * where) : conn(connection), memlocation(where) {}
+		RowInfo getRowInfo(uint32_t indexOfRow);
+		bool isRowInfoValid(uint32_t indexOfRow);
+	};
+
+	class RowTopHeader {
+	private:
+		Connection * conn;
+		unsigned char * memlocation;
+	public:
+		RowTopHeader(Connection * connection, unsigned char * where) : conn(connection), memlocation(where) {}
+		uint32_t getRowCount();
+		RowHeader getRowHeader();
+		bool isRowHeaderValid();
 	};
 
 	class TableHeader {
@@ -47,7 +93,7 @@ namespace FDB {
 		TableHeader(Connection * connection, unsigned char * where) : conn(connection), memlocation(where) {}
 
 		ColumnHeader getColumnHeader(uint32_t indexOfTable);
-
+		RowTopHeader getRowTopHeader(uint32_t indexOfTable);
 	};
 
 	class Connection {
@@ -62,7 +108,7 @@ namespace FDB {
 
 		TableHeader getTableHeader();
 
-		Connection() {
+		~Connection() {
 			delete fileData;
 		}
 	};
