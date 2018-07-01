@@ -7,9 +7,8 @@
 #include <ctime>
 #include <mutex>
 
-#ifdef LUR_PLATFORM_WIN32
-	#include <Windows.h>
-#endif
+#include "Common/CrossPlatform.hpp"
+
 
 #include "ServerInfo.hpp"
 
