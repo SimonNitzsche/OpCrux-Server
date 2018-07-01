@@ -22,6 +22,8 @@
 		#define LUR_PLATFORM_LINUX
 	#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 		#define LUR_PLATFORM_FREEBSD
+	#elif defined(__CYGWIN__)
+		#define LUR_PLATFORM_CYGWIN
 	#else
 		#error unknown unix operating system
 	#endif
