@@ -2,6 +2,7 @@
 #define __FASTDATABASE_HPP_
 
 #include <string>
+#include <cstring>
 
 namespace FDB {
 
