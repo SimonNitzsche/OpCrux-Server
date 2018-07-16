@@ -54,6 +54,10 @@ add_executable(LUReborn_Server_3_0
         src/Main.cpp
 )
 
+if(NOT ANDROID_ABI)
+    set(ANDROID_ABI armeabi-v7a)
+endif()
+
 target_link_libraries(LUReborn_Server_3_0
 		json
 		Mongoose
