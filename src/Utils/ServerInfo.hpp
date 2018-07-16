@@ -24,6 +24,6 @@ public:
 	static float CompareTimes(long long startTime, long long endTime);
 	static std::string getComputerName();
 	static std::string getOsName();
-	static inline MasterServer * masterServer = nullptr;
+	static MasterServer * masterServer;
 };
 #endif
