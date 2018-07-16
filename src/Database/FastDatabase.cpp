@@ -2,6 +2,8 @@
 #include "Utils/FileUtils.hpp"
 #include "Utils/Logger.hpp"
 
+#include <cstring>
+
 namespace FDB {
 
 	/*
