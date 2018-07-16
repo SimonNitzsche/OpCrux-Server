@@ -1,6 +1,8 @@
 #ifndef __GEN_RPC8_H
 #define __GEN_RPC8_H
-
+#ifndef __i386__
+#define __i386__
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
