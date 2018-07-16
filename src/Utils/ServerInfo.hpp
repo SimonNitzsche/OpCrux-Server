@@ -6,6 +6,7 @@
 #include <string>
 #include <time.h>
 #include "Common/CrossPlatform.hpp"
+class MasterServer;
 
 class ServerInfo {
 private:
@@ -23,5 +24,6 @@ public:
 	static float CompareTimes(long long startTime, long long endTime);
 	static std::string getComputerName();
 	static std::string getOsName();
+	static inline MasterServer * masterServer = nullptr;
 };
 #endif
