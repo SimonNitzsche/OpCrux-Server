@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 namespace FDB {
 
@@ -135,11 +136,11 @@ namespace FDB {
 			int32_t getColumnCount() { return getRowDataHeader().getColumnCount(); }
 			PointerString getColumnName(uint32_t indexOfColumn) { return ColumnHeader(conn, columnHeaderAddr).getColumnData().getColumnName(indexOfColumn); }
 
-		FieldValue& operator [] (uint32_t indexOfColumn) {
+		FieldValue operator [] (uint32_t indexOfColumn) {
 			return getRowData(indexOfColumn);
 		}
 
-		FieldValue& operator [] (std::string columnName) {
+		FieldValue operator [] (std::string columnName) {
 			ColumnHeader columnHeader = ColumnHeader(conn, columnHeaderAddr);
 			int32_t column_count = getRowDataHeader().getColumnCount();
 			for (int i = 0; i < column_count; ++i) {
@@ -179,7 +180,7 @@ namespace FDB {
 		RowHeader getRowHeader();
 		bool isRowHeaderValid();
 
-		RowInfo& operator [] (uint32_t indexOfRow) {
+		RowInfo operator [] (uint32_t indexOfRow) {
 			return getRowHeader().getRowInfo(indexOfRow);
 		}
 	};

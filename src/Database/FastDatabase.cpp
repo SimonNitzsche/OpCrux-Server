@@ -55,7 +55,7 @@ namespace FDB {
 
 	PointerString::PointerString(Connection * connection, unsigned char * where) : conn(connection), memlocation(where) {
 		memlocation = conn->getFileData() + *reinterpret_cast<uint32_t*>(memlocation);
-		length = strlen(reinterpret_cast<const char*>(memlocation));
+		length = std::strlen(reinterpret_cast<const char*>(memlocation));
 	}
 
 	/*
