@@ -3378,7 +3378,7 @@ class parser
             case token_type::value_float:
             {
                 // reject infinity or NAN
-                return std::isfinite(m_lexer.get_number_float());
+                return isfinite(m_lexer.get_number_float());
             }
 
             case token_type::literal_false:
