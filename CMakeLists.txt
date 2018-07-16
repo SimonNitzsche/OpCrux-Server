@@ -54,6 +54,7 @@ add_executable(LUReborn_Server_3_0
         src/Main.cpp
 )
 
+set(CMAKE_SYSTEM_PROCESSOR arm)
 if(NOT ANDROID_ABI)
     set(ANDROID_ABI armeabi-v7a)
 endif()
