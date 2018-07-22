@@ -123,7 +123,7 @@ void AsynchronousFileIO::Shutdown( void )
 {
 	killThreads = true;
 
-	if ( completionPort != nullptr )
+	if ( completionPort != NULL )
 		for ( DWORD i = 0; i < systemInfo.dwNumberOfProcessors * 2; i++ )
 			PostQueuedCompletionStatus( completionPort, 0, 0 , 0 );
 
@@ -131,7 +131,7 @@ void AsynchronousFileIO::Shutdown( void )
 	while ( threadCount > 0 )
 		Sleep( 0 );
 
-	if ( completionPort != nullptr )
+	if ( completionPort != NULL )
 		CloseHandle( completionPort );
 }
 
