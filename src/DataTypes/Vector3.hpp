@@ -2,9 +2,7 @@
 #define _VECTOR3_HPP__
 
 #include <limits>
-#define _USE_MATH_DEFINES
 #include <cmath>
-#include <math.h>
 #include <string>
 #include <stdexcept>
 #include "Common/CrossPlatform.hpp"

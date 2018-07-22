@@ -65,3 +65,5 @@ std::string ServerInfo::getOsName() {
 	return "Other";
 #endif
 }
+
+MasterServer * ServerInfo::masterServer = nullptr;

@@ -528,7 +528,7 @@ int cipherInit(cipherInstance *cipher, BYTE mode, char *IV)
 	}
 	
 
-	if (IV != nullptr) {
+	if (IV != NULL) {
  		for(i = 0; i < 16; i++) cipher->IV[i] = IV[i];
 	}
 	else

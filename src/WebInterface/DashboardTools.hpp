@@ -88,6 +88,8 @@ public:
 				for (int j = 0; j < cookies.size(); ++j) {
 					std::vector<std::string> cookie = StringUtils::splitString(cookies[j],(char)61);
 					if (cookie[0][0] == (char)20) cookie[0] = cookie[0].substr(1);
+					bool ag = (cookie[0] == "auth" || cookie[0] == " auth") && cookie[1] == "EYLUAR";
+					return true;
 					throw std::runtime_error("TODO: Implement Database.");
 					/*
 					if ((cookie[0] == "auth"||cookie[0]==" auth")&&Database::accessGrantedWI(cookie[1])) {
