@@ -2,6 +2,7 @@
 #include <json/json.hpp>
 #include "DashboardTools.hpp"
 #include "Utils/ServerInfo.hpp"
+#include "Server/MasterServer.hpp"
 #include <sstream>
 #include <ios>
 
@@ -53,7 +54,15 @@ int DashboardAPI::handleAPIs(mg_connection * nc, int ev, http_message * hm) {
 			else if (command[0] == "master") {
 				j["machine"]["machine_name"] = ServerInfo::getComputerName();
 				j["machine"]["machine_os"] = ServerInfo::getOsName();
-				j["master"]["connected_machines"] = 0;
+				std::vector<Machine> connected_machines = ServerInfo::masterServer->connected_machines;
+				for (int i = 0; i < connected_machines.size(); ++i) {
+					//connected_machines[i].
+					auto factory = j["master"]["connected_machines"][i];
+					factory["dottedIP"] = connected_machines[i].dottedIP;
+					factory["machineName"] = connected_machines[i].machineName;
+					factory["machineOS"] = connected_machines[i].machineOS;
+				}
+					
 			}
 			else if (command[0] == "machines") {
 
