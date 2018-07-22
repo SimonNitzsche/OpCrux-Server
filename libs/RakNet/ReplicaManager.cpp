@@ -223,7 +223,7 @@ void ReplicaManager::Construct(Replica *replica, bool isCopy, SystemAddress syst
 	}
 
 	// Update immediately, otherwise if we take action on this object the first frame, the action packets will arrive before the object is created
-	// Update(rakPeer);
+	Update(rakPeer);
 }
 void ReplicaManager::Destruct(Replica *replica, SystemAddress systemAddress, bool broadcast)
 {
@@ -750,13 +750,11 @@ void ReplicaManager::Update(RakPeerInterface *peer)
 			command = participantStruct->commandList[commandListIndex].command;
 			//	userFlags=participantStruct->commandList[commandListIndex].userFlags;
 			replicatedObjectsIndex = replicatedObjects.GetIndexFromKey(replica, &objectExists);
-//#ifdef _DEBUG
-//			assert(objectExists);
-//#endif
-			if (objectExists == false) {
-				puts("Object doesn't exist but it should!");
+#ifdef _DEBUG
+			assert(objectExists);
+#endif
+			if (objectExists == false)
 				continue;
-			}
 
 			// If construction is set, call SendConstruction.  The only precondition is that the object was not already created,
 			// which was checked in ReplicaManager::Replicate
