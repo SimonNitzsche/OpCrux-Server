@@ -9,6 +9,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
+    add_definitions(-D_USE_MATH_DEFINES)
 endif()
 
 include_directories(libs)
@@ -17,6 +18,7 @@ add_subdirectory(libs)
 
 add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
+        src/Common/Platformident.hpp
 		src/Database/FastDatabase.cpp
 		src/Database/FastDatabase.hpp
         src/DataTypes/AMF3.hpp
@@ -54,6 +56,9 @@ add_executable(LUReborn_Server_3_0
         src/Main.cpp
 )
 
+set_property(TARGET json PROPERTY CXX_STANDARD 98)
+set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
+set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
 target_link_libraries(LUReborn_Server_3_0
 		json
 		Mongoose

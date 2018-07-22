@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 	uint32_t tblCount = conn.getTableCount();
 	for (int table_index = 0; table_index < tblCount; ++table_index) {
 		FDB::QueryResult qr = conn.Query(table_index, [](std::string col, std::string val) -> bool { return true; });
-		for each(FDB::RowInfo ri in qr) {
+		for (FDB::RowInfo ri : qr) {
 			FDB::RowInfo cri = ri;
 			bool exec = false;
 			while (cri.isLinkedRowInfoValid() || !exec) {

@@ -2,7 +2,6 @@
 #define _VECTOR3_HPP__
 
 #include <limits>
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <string>
 #include <stdexcept>
