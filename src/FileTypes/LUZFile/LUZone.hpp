@@ -9,8 +9,8 @@
 
 struct ZoneString {
 public:
-	uint8_t * length;
-	char * data;
+	uint8_t * length = 0;
+	char * data = nullptr;
 	uint8_t * Read(uint8_t * offset) {
 		length = reinterpret_cast<uint8_t*>(offset);
 		data = reinterpret_cast<char*>(offset + 1);
@@ -18,6 +18,20 @@ public:
 	};
 	std::string ToString() {
 		return std::string(data, *length);
+	};
+};
+
+struct ZoneWString {
+public:
+	uint8_t * length = 0;
+	wchar_t * data = nullptr;
+	uint8_t * Read(uint8_t * offset) {
+		length = reinterpret_cast<uint8_t*>(offset);
+		data = reinterpret_cast<wchar_t*>(offset + 1);
+		return reinterpret_cast<uint8_t*>(data + *length);
+	};
+	std::wstring ToString() {
+		return std::wstring(data, *length);
 	};
 };
 
@@ -34,6 +48,16 @@ struct TerrainInfo {
 	ZoneString description;
 };
 
+struct SceneTransitionPoint {
+	uint64_t sceneID;
+	Vector3 postition;
+};
+
+struct SceneTransition {
+	ZoneString transitionName;
+	std::vector<SceneTransitionPoint*> points;
+};
+
 class LUZone {
 private:
 	unsigned char* data;
@@ -44,6 +68,7 @@ private:
 	Position * spawnPos;
 	std::vector<SceneData> scenes;
 	TerrainInfo terrainInfo;
+	std::vector<SceneTransition> sceneTransitions;
 public:
 	LUZone(const std::string& filename);
 	~LUZone();
