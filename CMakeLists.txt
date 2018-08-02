@@ -68,6 +68,7 @@ set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
 target_link_libraries(LUReborn_Server_3_0
 		json
 		Mongoose
+		pqxx
 		RakNet
 )
 
