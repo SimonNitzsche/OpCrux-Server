@@ -52,5 +52,41 @@ void LUZone::Read() {
 			)
 		);
 
-	int c = 3;
+	// Transisions
+	if (*version >= 0x20) {
+		uint32_t * countOfScenes = reinterpret_cast<uint32_t*>(currentOffset);
+		currentOffset = reinterpret_cast<uint8_t*>(countOfScenes+1);
+		for (int transIndx = 0; transIndx < *countOfScenes; ++transIndx) {
+			SceneTransition transitionFactory;
+			// Transition Name
+			if (*version < 0x25) {
+				++currentOffset = transitionFactory.transitionName.Read(reinterpret_cast<uint8_t*>(currentOffset + 1));
+			}
+			
+			// Transition Lööps time
+			uint8_t loopTimes = (*version <= 0x21 || *version >= 0x27) ? 2 : 5;
+
+			// Transition Points
+			for (int transPtIndx = 0; transPtIndx < loopTimes; ++transPtIndx) {
+				SceneTransitionPoint * transPtFactory = reinterpret_cast<SceneTransitionPoint*>(currentOffset);
+				transitionFactory.points.push_back(transPtFactory);
+				currentOffset = reinterpret_cast<uint8_t*>(transPtFactory) + 20;
+			}
+			sceneTransitions.push_back(transitionFactory);
+		}
+	}
+	
+	// Paths
+	if (*version >= 0x23) {
+		uint32_t * lengthOfRestOfFile = reinterpret_cast<uint32_t*>(currentOffset);
+		uint32_t * unknown1 = lengthOfRestOfFile + 1;
+		uint32_t * countOfPaths = unknown1 + 1;
+		currentOffset = reinterpret_cast<uint8_t*>(countOfPaths + 1);
+		return;
+		for (int pathIndx = 0; pathIndx < *countOfPaths; ++pathIndx) {
+			uint32_t * pathVersion = reinterpret_cast<uint32_t*>(currentOffset);
+			
+			throw;
+		}
+	}
 }

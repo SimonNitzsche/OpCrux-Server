@@ -196,6 +196,10 @@ namespace FDB {
 	*/
 
 	Connection::Connection(std::string database) {
+		Connect(database);
+	}
+
+	void Connection::Connect(std::string database) {
 		fileData = FileUtils::ReadFileCompletely(database);
 	}
 

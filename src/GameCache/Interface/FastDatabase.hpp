@@ -204,10 +204,12 @@ namespace FDB {
 
 	class Connection {
 	private:
-		unsigned char * fileData;
+		unsigned char * fileData = nullptr;
 	public:
 		Connection(std::string database);
-
+		Connection() {}
+		void Connect(std::string database);
+		bool isConnected() { return fileData != nullptr; }
 		uint32_t getTableCount();
 
 		unsigned char * getFileData();
@@ -223,7 +225,8 @@ namespace FDB {
 		QueryResult Query(std::string tablename, bool compare(std::string columnName, std::string columnVal));
 
 		~Connection() {
-			delete fileData;
+			if(fileData != nullptr)
+				delete fileData;
 		}
 	};
 }

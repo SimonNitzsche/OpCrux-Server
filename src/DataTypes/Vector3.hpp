@@ -29,6 +29,7 @@ public:
 	static Vector3 zero() { return  Vector3(0, 0, 0); }
 
 	// Constructors
+	Vector3() : x(0), y(0), z(0) {}
 	Vector3(const Vector3 &base) : x(base.x), y(base.y), z(base.z) {}
 	Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 	Vector3(float a) : x(a), y(a), z(a) {}
@@ -39,6 +40,7 @@ public:
 	bool equals(float other) const { return ((this->x == other) && (this->y == other) && (this->z == other));	}
 	void set(float x, float y, float z) { this->x = x; this->y = y; this->z = z; }
 	std::string toString() const { return "[ " + std::to_string(this->x) + " , " + std::to_string(this->y) + " , " + std::to_string(this->z) + " ]"; }
+	float normalize(bool inverse = false) { float hypo = Dot(*this,*this); if (inverse) hypo = -hypo; this->x /= hypo; this->y /= hypo; this->z /= hypo; return hypo; }
 
 	// Static methods
 	static float Dot(Vector3 lhs, Vector3 rhs) { return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z; }

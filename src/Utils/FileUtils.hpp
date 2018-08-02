@@ -1,6 +1,8 @@
 #ifndef __UTILS_FILEUTILS_HPP_
 #define __UTILS_FILEUTILS_HPP_
 
+#include "Utils/Logger.hpp"
+
 #include <cstdio>
 #include <string>
 #include <memory>
@@ -8,7 +10,10 @@
 namespace FileUtils {
 	inline unsigned char* ReadFileCompletely(std::string filename, uint32_t fsize = 0) {
 		FILE * file = fopen(filename.c_str(), "r+");
-		if (file == nullptr) return nullptr;
+		if (file == nullptr) { 
+			Logger::log("FileUtils::ReadFileCompletely", "Couldn't load file \"" + filename + "\"");
+			return nullptr;
+		}
 		fseek(file, 0, SEEK_END);
 		long int size = ftell(file);
 		fclose(file);
