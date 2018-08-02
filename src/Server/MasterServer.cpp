@@ -116,7 +116,6 @@ void MasterServer::Listen() {
 						if (!alreadyExists)
 							connected_machines.push_back(machine);
 
-						int c = 3; // I personally use c=3 for breakpoints, so this line get's removed in the future.
 					} break;
 					}
 				} break;

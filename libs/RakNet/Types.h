@@ -1,3 +1,11 @@
+// Custom Configuration by User:
+#if !defined(HOST_ENDIAN_IS_BIG)
+	#define HOST_ENDIAN_IS_BIG
+#endif
+#if !defined(BIG_ENDIAN)
+	#define BIG_ENDIAN
+#endif
+
 /// \file Types.h
 /// \brief Used for types used by RSA
 /// 

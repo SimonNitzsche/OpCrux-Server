@@ -111,7 +111,7 @@ struct RAK_DLL_EXPORT ThreadPool : public RakNet::RakMemoryOverride
 	int NumThreadsWorking(void);
 
 	/// Have the threads been signaled to be stopped?
-	bool WasStopped(void);
+	bool WasStopped(void) const;
 
 protected:
 	// It is valid to cancel input before it is processed.  To do so, lock the inputQueue with inputQueueMutex,
@@ -534,7 +534,7 @@ int ThreadPool<InputType, OutputType>::NumThreadsWorking(void)
 }
 
 template <class InputType, class OutputType>
-bool ThreadPool<InputType, OutputType>::WasStopped(void)
+bool ThreadPool<InputType, OutputType>::WasStopped(void) const
 {
 	bool b;
 	runThreadsMutex.Lock();

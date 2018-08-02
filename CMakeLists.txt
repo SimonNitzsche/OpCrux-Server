@@ -17,18 +17,24 @@ include_directories(src)
 add_subdirectory(libs)
 
 add_executable(LUReborn_Server_3_0
-		src/Common/CrossPlatform.hpp
-		src/Common/Platformident.hpp
-		src/Database/FastDatabase.cpp
-		src/Database/FastDatabase.hpp
-		src/DataTypes/AMF3.hpp
-		src/DataTypes/LWOOBJID.hpp
+        src/Common/CrossPlatform.hpp
+		src/GameCache/Interface/FastDatabase.cpp
+		src/GameCache/Interface/FastDatabase.hpp
+		src/GameCache/PetComponent.hpp
+		src/GameCache/WorldConfig.hpp
+        src/DataTypes/AMF3.hpp
+        src/DataTypes/LWOOBJID.hpp
 		src/DataTypes/Position.hpp
+		src/DataTypes/Quaternion.hpp
 		src/DataTypes/Vector3.hpp
-		src/Enums/EComponents.hpp
-		src/Enums/EGameMessages.hpp
-		src/Enums/EPackets.hpp
-		src/Enums/ERemoteConnection.hpp
+        src/Enums/EComponents.hpp
+        src/Enums/EGameMessages.hpp
+        src/Enums/EPackets.hpp
+		src/Enums/EPathBehavior.hpp
+		src/Enums/EPathType.hpp
+		src/Enums/EPropertyAchievement.hpp
+		src/Enums/EPropertyRentalTimeUnit.hpp
+        src/Enums/ERemoteConnection.hpp
 		src/Enums/StringEnums.hpp
 		src/FileTypes/LUZFile/LUZone.cpp
 		src/FileTypes/LUZFile/LUZone.hpp
@@ -62,6 +68,7 @@ set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
 target_link_libraries(LUReborn_Server_3_0
 		json
 		Mongoose
+		pqxx
 		RakNet
 )
 
