@@ -330,4 +330,4 @@ ASALocalRun/
 
 # Assets folder
 bin/*
-!bin/res/
+!bin/res/HTTP/
