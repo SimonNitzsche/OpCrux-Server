@@ -15,7 +15,7 @@
 #include "Server/WorldServer.hpp"
 #include "Server/Bridges/BridgeMasterServer.hpp"
 #include "WebInterface/WebInterface.hpp"
-
+#include "GameCache/Interface/FastDatabase.hpp"
 #include "DataTypes/AMF3.hpp"
 
 #include "Utils/ServerInfo.hpp"
@@ -28,21 +28,17 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 
 // Following Includes are for testing
 #include "FileTypes/LUZFile/LUZone.hpp"
-#include "GameCache/Interface/FastDatabase.hpp"
-#include "GameCache/WorldConfig.hpp"
 
-#include "DataTypes/Quaternion.hpp"
+#define SERVER_TICK_RATE 16
 
 FDB::Connection GameCache = FDB::Connection();
-
 
 int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
 
 	GameCache.Connect("./res/cdclient.fdb");
-
-	/*
-	LUZone("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");*/
+	
+	LUZone luz = LUZone("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	

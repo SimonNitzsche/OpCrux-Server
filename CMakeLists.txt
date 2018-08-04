@@ -20,7 +20,20 @@ add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
 		src/GameCache/Interface/FastDatabase.cpp
 		src/GameCache/Interface/FastDatabase.hpp
+		src/GameCache/BehaviorParameter.hpp
+		src/GameCache/Emotes.hpp
+		src/GameCache/ItemComponent.hpp
+		src/GameCache/LootMatrix.hpp
+		src/GameCache/LootMatrixIndex.hpp
+		src/GameCache/MovingPlatforms.hpp
+		src/GameCache/PetAbilities.hpp
 		src/GameCache/PetComponent.hpp
+		src/GameCache/PhysicsComponent.hpp
+		src/GameCache/Preconditions.hpp
+		src/GameCache/PropertyEntranceComponent.hpp
+		src/GameCache/ScriptComponent.hpp
+		src/GameCache/SkillBehavior.hpp
+		src/GameCache/VendorComponent.hpp
 		src/GameCache/WorldConfig.hpp
         src/DataTypes/AMF3.hpp
         src/DataTypes/LWOOBJID.hpp

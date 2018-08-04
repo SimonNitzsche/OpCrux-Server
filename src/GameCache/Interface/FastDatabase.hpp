@@ -120,6 +120,7 @@ namespace FDB {
 		unsigned char * memlocation;
 		unsigned char * columnHeaderAddr;
 	public:
+		RowInfo() : conn(nullptr), memlocation(nullptr), columnHeaderAddr(nullptr) {}
 		RowInfo(Connection * connection, unsigned char * where, unsigned char * columnHeader): conn(connection), memlocation(where), columnHeaderAddr(columnHeader) {}
 		Connection * getConnection() { return conn; }
 		unsigned char * getMemoryLocation() { return memlocation; }

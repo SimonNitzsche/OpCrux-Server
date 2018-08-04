@@ -2,6 +2,7 @@
 #define __GAMECACHE__BEHAVIORPARAMETER_HPP__
 
 #include "GameCache/Interface/FastDatabase.hpp"
+#include "Utils/Logger.hpp"
 extern FDB::Connection GameCache;
 
 namespace CacheBehaviorParameter {
@@ -11,7 +12,10 @@ namespace CacheBehaviorParameter {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == behaviorID)
 					return i;
-			} catch(...) {}
+			}
+			catch (std::runtime_error e) {
+				Logger::log("Cache:BehaviorParameter", e.what(), ERR);
+			}
 		}
 		return EOF;
 	}
