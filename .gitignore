@@ -330,7 +330,6 @@ ASALocalRun/
 
 # Assets folder
 bin/*
-bin/res/*
 !bin/res/HTTP/
 !bin/res/include_global.txt
 !bin/res/README.txt
