@@ -28,6 +28,7 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 
 // Following Includes are for testing
 #include "FileTypes/LUZFile/LUZone.hpp"
+#include "Entity/GameObject.hpp"
 
 #define SERVER_TICK_RATE 16
 
@@ -38,6 +39,11 @@ int main(int argc, char* argv[]) {
 
 	GameCache.Connect("./res/cdclient.fdb");
 	
+	GameObject * test = new GameObject();
+	test->Test();
+	RakNet::BitStream * testBs = new RakNet::BitStream();
+	test->Serialize(testBs, ReplicaTypes::PacketTypes::CONSTRUCTION);
+
 	LUZone luz = LUZone("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
 
 	MODE_SERVER = SERVERMODE::STANDALONE;

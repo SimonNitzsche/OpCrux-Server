@@ -1,0 +1,1 @@
+Download and extract the assets into this folder from: https://gamefiles.lureborn.org/Server_Assets.zip

@@ -1,0 +1,17 @@
+#Config
+>acceptCompressed = false
+>acceptPK = false
+>accessLevel = "DEV"
+>manualInclude = true
+
+#Folders
+BrickModels/*
+maps/*
+names/*
+Physics/*
+scripts/*
+scripts/*
+scripts_02/*
+scripts_custom/*
+cdclient.fdb
+locale.xml

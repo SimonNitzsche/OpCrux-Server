@@ -18,6 +18,25 @@ add_subdirectory(libs)
 
 add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
+        src/DataTypes/AMF3.hpp
+        src/DataTypes/LWOOBJID.hpp
+		src/DataTypes/Position.hpp
+		src/DataTypes/Quaternion.hpp
+		src/DataTypes/Vector3.hpp
+		src/Entity/Components/Interface/IEntityComponent.hpp
+		src/Entity/GameObject.cpp
+		src/Entity/GameObject.hpp
+        src/Enums/EComponents.hpp
+        src/Enums/EGameMessages.hpp
+        src/Enums/EPackets.hpp
+		src/Enums/EPathBehavior.hpp
+		src/Enums/EPathType.hpp
+		src/Enums/EPropertyAchievement.hpp
+		src/Enums/EPropertyRentalTimeUnit.hpp
+        src/Enums/ERemoteConnection.hpp
+		src/Enums/StringEnums.hpp
+		src/FileTypes/LUZFile/LUZone.cpp
+		src/FileTypes/LUZFile/LUZone.hpp
 		src/GameCache/Interface/FastDatabase.cpp
 		src/GameCache/Interface/FastDatabase.hpp
 		src/GameCache/BehaviorParameter.hpp
@@ -37,22 +56,7 @@ add_executable(LUReborn_Server_3_0
 		src/GameCache/SkillBehavior.hpp
 		src/GameCache/VendorComponent.hpp
 		src/GameCache/WorldConfig.hpp
-        src/DataTypes/AMF3.hpp
-        src/DataTypes/LWOOBJID.hpp
-		src/DataTypes/Position.hpp
-		src/DataTypes/Quaternion.hpp
-		src/DataTypes/Vector3.hpp
-        src/Enums/EComponents.hpp
-        src/Enums/EGameMessages.hpp
-        src/Enums/EPackets.hpp
-		src/Enums/EPathBehavior.hpp
-		src/Enums/EPathType.hpp
-		src/Enums/EPropertyAchievement.hpp
-		src/Enums/EPropertyRentalTimeUnit.hpp
-        src/Enums/ERemoteConnection.hpp
-		src/Enums/StringEnums.hpp
-		src/FileTypes/LUZFile/LUZone.cpp
-		src/FileTypes/LUZFile/LUZone.hpp
+		src/Replica/ReplicaTypes.hpp
 		src/Server/Bridges/BridgeMasterServer.cpp
 		src/Server/Bridges/BridgeMasterServer.hpp
 		src/Server/Interfaces/ILUServer.hpp
