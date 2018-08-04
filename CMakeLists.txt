@@ -21,11 +21,13 @@ add_executable(LUReborn_Server_3_0
 		src/GameCache/Interface/FastDatabase.cpp
 		src/GameCache/Interface/FastDatabase.hpp
 		src/GameCache/BehaviorParameter.hpp
+		src/GameCache/DestructibleComponent.hpp
 		src/GameCache/Emotes.hpp
 		src/GameCache/ItemComponent.hpp
 		src/GameCache/LootMatrix.hpp
 		src/GameCache/LootMatrixIndex.hpp
 		src/GameCache/MovingPlatforms.hpp
+		src/GameCache/Objects.hpp
 		src/GameCache/PetAbilities.hpp
 		src/GameCache/PetComponent.hpp
 		src/GameCache/PhysicsComponent.hpp

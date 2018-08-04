@@ -122,7 +122,17 @@ namespace FDB {
 	/*
 		Class: RowInfo
 	*/
-	
+
+	bool RowInfo::isValid() {
+		if (this->memlocation != nullptr) {
+			int32_t offsetA = *reinterpret_cast<int32_t*>(memlocation);
+			if (offsetA != EOF)
+				if (*reinterpret_cast<int32_t*>(conn->getFileData() + offsetA) != EOF)
+					return true;
+		}
+		return false;
+	}
+
 	bool RowInfo::isRowDataHeaderValid() {
 		return *reinterpret_cast<uint32_t*>(memlocation) != EOF;
 	}

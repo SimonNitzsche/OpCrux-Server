@@ -125,6 +125,7 @@ namespace FDB {
 		Connection * getConnection() { return conn; }
 		unsigned char * getMemoryLocation() { return memlocation; }
 
+		bool isValid();
 		bool isRowDataHeaderValid();
 		bool isLinkedRowInfoValid();
 
