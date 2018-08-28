@@ -14,6 +14,7 @@ endif()
 
 include_directories(libs)
 include_directories(src)
+include_directories(tests)
 add_subdirectory(libs)
 
 add_executable(LUReborn_Server_3_0
@@ -28,13 +29,16 @@ add_executable(LUReborn_Server_3_0
 		src/Entity/GameObject.hpp
         src/Enums/EComponents.hpp
         src/Enums/EGameMessages.hpp
+		src/Enums/EGeneralPackets.hpp
         src/Enums/EPackets.hpp
 		src/Enums/EPathBehavior.hpp
 		src/Enums/EPathType.hpp
 		src/Enums/EPropertyAchievement.hpp
 		src/Enums/EPropertyRentalTimeUnit.hpp
         src/Enums/ERemoteConnection.hpp
+		src/Enums/ESystem.hpp
 		src/Enums/StringEnums.hpp
+		src/Exceptions/ExNetException.hpp
 		src/FileTypes/LUZFile/LUZone.cpp
 		src/FileTypes/LUZFile/LUZone.hpp
 		src/GameCache/Interface/FastDatabase.cpp
@@ -56,6 +60,9 @@ add_executable(LUReborn_Server_3_0
 		src/GameCache/SkillBehavior.hpp
 		src/GameCache/VendorComponent.hpp
 		src/GameCache/WorldConfig.hpp
+		src/NetworkDataTypes/ByteBool.hpp
+		src/NetworkDataTypes/LUPacket.hpp
+		src/PacketFactory/Auth/AuthPackets.hpp
 		src/Replica/ReplicaTypes.hpp
 		src/Server/Bridges/BridgeMasterServer.cpp
 		src/Server/Bridges/BridgeMasterServer.hpp
@@ -66,6 +73,7 @@ add_executable(LUReborn_Server_3_0
 		src/Server/MasterServer.hpp
 		src/Server/WorldServer.cpp
 		src/Server/WorldServer.hpp
+		src/Structs/Networking/General/StructPacketHeader.hpp
 		src/Utils/FileUtils.hpp
 		src/Utils/Logger.cpp
 		src/Utils/Logger.hpp

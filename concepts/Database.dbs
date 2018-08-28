@@ -85,6 +85,13 @@
 				<fk_column name="player_id" pk="player_id" />
 			</fk>
 		</table>
+		<table name="global_numberic_variables" >
+			<column name="name" type="varchar" length="100" jt="12" mandatory="y" />
+			<column name="value" type="bigint" jt="-5" />
+			<index name="pk_global_numberic_variables_name" unique="PRIMARY_KEY" >
+				<column name="name" />
+			</index>
+		</table>
 		<table name="unlocked_emotes" >
 			<column name="player_id" type="bigint" jt="-5" mandatory="y" />
 			<column name="emote_id" type="integer" jt="4" />
@@ -24291,14 +24298,114 @@ AS $function$select pg_catalog.xpath_exists($1, $2, '{}'::pg_catalog.text[])$fun
 			<comment><![CDATA[test XML value against XPath expression]]></comment>
 		</procedure>
 	</schema>
-	<schema name="public" catalogname="postgres" schemaname="public" />
-	<connector name="PostgreSQL" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.2.2.jar" driver_desc="Standard" host="localhost" port="5432" instance="postgres" user="postgres" passwd="RG9rb2tvODQ=" sshEnable="true" sshHost="coolgametube.net" sshPort="22" sshUser="root" sshUseKey="false" sshPassword="Dokoko84" />
+	<schema name="public" catalogname="postgres" schemaname="public" >
+		<table name="Missions" >
+			<column name="player_id" type="bigint" length="19" decimal="0" jt="-5" />
+			<column name="mission_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="mission_progress" type="integer[]" length="10" decimal="0" jt="2003" />
+			<column name="mission_status" type="char" length="1" decimal="0" jt="1" />
+			<index name="unq_missions_player_id" unique="UNIQUE" >
+				<column name="player_id" />
+			</index>
+		</table>
+		<table name="Statistics" >
+			<column name="player_id" type="bigint" length="19" decimal="0" jt="-5" mandatory="y" />
+			<column name="statistic_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="statistic_value" type="integer" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="Pk_Statistics_playerID" unique="PRIMARY_KEY" >
+				<column name="player_id" />
+			</index>
+		</table>
+		<table name="accounts" >
+			<column name="lur_uuid" type="uuid" decimal="0" jt="1111" mandatory="y" />
+			<column name="account_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="last_login" type="timestamp" length="29" decimal="6" jt="93" />
+			<column name="ingame_session_key" type="uuid" decimal="0" jt="1111" />
+			<column name="service_session_key" type="uuid" decimal="0" jt="1111" />
+			<index name="pk_accounts_lur_uuid" unique="PRIMARY_KEY" >
+				<column name="lur_uuid" />
+			</index>
+			<index name="idx_accounts_account_id" unique="NORMAL" >
+				<column name="account_id" />
+			</index>
+			<fk name="fk_accounts_character_map" to_schema="public" to_table="character_map" delete_action="cascade" >
+				<fk_column name="account_id" pk="account_id" />
+			</fk>
+		</table>
+		<table name="character_map" >
+			<column name="account_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="charactera_id" type="bigint" length="19" decimal="0" jt="-5" />
+			<column name="characterb_id" type="bigint" length="19" decimal="0" jt="-5" />
+			<column name="characterc_id" type="bigint" length="19" decimal="0" jt="-5" />
+			<column name="characterd_id" type="bigint" length="19" decimal="0" jt="-5" />
+			<index name="pk_character_map_account_id" unique="PRIMARY_KEY" >
+				<column name="account_id" />
+			</index>
+			<index name="idx_character_map_charactera_id" unique="NORMAL" >
+				<column name="charactera_id" />
+			</index>
+			<index name="idx_character_map_characterb_id" unique="NORMAL" >
+				<column name="characterb_id" />
+			</index>
+			<index name="idx_character_map_characterc_id" unique="NORMAL" >
+				<column name="characterc_id" />
+			</index>
+			<index name="idx_character_map_characterd_id" unique="NORMAL" >
+				<column name="characterd_id" />
+			</index>
+			<fk name="fk_character_map_characters_a" to_schema="public" to_table="characters" delete_action="cascade" >
+				<fk_column name="charactera_id" pk="player_id" />
+			</fk>
+			<fk name="fk_character_map_characters_b" to_schema="public" to_table="characters" delete_action="cascade" >
+				<fk_column name="characterb_id" pk="player_id" />
+			</fk>
+			<fk name="fk_character_map_characters_c" to_schema="public" to_table="characters" delete_action="cascade" >
+				<fk_column name="characterc_id" pk="player_id" />
+			</fk>
+			<fk name="fk_character_map_characters_d" to_schema="public" to_table="characters" delete_action="cascade" >
+				<fk_column name="characterd_id" pk="player_id" />
+			</fk>
+		</table>
+		<table name="characters" >
+			<column name="player_id" type="bigint" length="19" decimal="0" jt="-5" mandatory="y" >
+				<comment><![CDATA[WIP!]]></comment>
+			</column>
+			<index name="pk_characters_player_id" unique="PRIMARY_KEY" >
+				<column name="player_id" />
+			</index>
+			<fk name="fk_characters_missions" to_schema="public" to_table="Missions" delete_action="cascade" >
+				<fk_column name="player_id" pk="player_id" />
+			</fk>
+			<fk name="fk_characters_statistics" to_schema="public" to_table="Statistics" >
+				<fk_column name="player_id" pk="player_id" />
+			</fk>
+			<fk name="fk_characters_unlocked_emotes" to_schema="public" to_table="unlocked_emotes" >
+				<fk_column name="player_id" pk="player_id" />
+			</fk>
+		</table>
+		<table name="global_numberic_variables" >
+			<column name="name" type="varchar" length="100" decimal="0" jt="12" mandatory="y" />
+			<column name="value" type="bigint" length="19" decimal="0" jt="-5" />
+			<index name="pk_global_numberic_variables_name" unique="PRIMARY_KEY" >
+				<column name="name" />
+			</index>
+		</table>
+		<table name="unlocked_emotes" >
+			<column name="player_id" type="bigint" length="19" decimal="0" jt="-5" mandatory="y" />
+			<column name="emote_id" type="integer" length="10" decimal="0" jt="4" />
+			<index name="pk_unlocked_emotes_player_id" unique="PRIMARY_KEY" >
+				<column name="player_id" />
+			</index>
+		</table>
+	</schema>
+	<connector name="coolgametube.net/LUReborn" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.2.2.jar" driver_desc="Standard" host="coolgametube.net" port="5432" instance="lurserver" user="postgres" passwd="RG9rb2tvODQ=" />
 	<layout name="Default Layout" id="Layout_35daaa1" show_relation="columns" >
-		<entity schema="Default" name="character_map" color="C1D8EE" x="304" y="48" />
-		<entity schema="Default" name="characters" color="C1D8EE" x="560" y="64" />
-		<entity schema="Default" name="Missions" color="C1D8EE" x="48" y="208" />
-		<entity schema="Default" name="Statistics" color="C1D8EE" x="256" y="256" />
-		<entity schema="Default" name="unlocked_emotes" color="C1D8EE" x="416" y="320" />
-		<entity schema="Default" name="accounts" color="C1D8EE" x="96" y="48" />
+		<entity schema="public" name="character_map" color="3986C1" x="64" y="400" />
+		<entity schema="public" name="characters" color="3986C1" x="64" y="576" />
+		<entity schema="public" name="Missions" color="3986C1" x="304" y="208" />
+		<entity schema="public" name="Statistics" color="3986C1" x="320" y="352" />
+		<entity schema="public" name="unlocked_emotes" color="3986C1" x="320" y="480" />
+		<entity schema="public" name="global_numberic_variables" color="3986C1" x="480" y="48" />
+		<entity schema="public" name="accounts" color="3986C1" x="48" y="208" />
 	</layout>
 </project>

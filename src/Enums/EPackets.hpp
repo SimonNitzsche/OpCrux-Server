@@ -1,12 +1,15 @@
 #pragma once
+#ifndef __ENUMS__EPACKETS_HPP__
+#define __ENUMS__EPACKETS_HPP__
+#include <memory>
 
-enum class EServerPacketID : DWORD {
+enum class EServerPacketID : uint32_t {
 	VERSION_CONFIRM = 0,
 	DISCONNECT_NOTIFY,
 	GEnERAL_NOTIFY
 };
 
-enum class EChatPacketID : DWORD {
+enum class EChatPacketID : uint32_t {
 	LOGIN_SESSION_NOTIFY = 0,
 	GENERAL_CHAT_MESSAGE,
 	PRIVATE_CHAT_MESSAGE,
@@ -77,7 +80,7 @@ enum class EChatPacketID : DWORD {
 	UPDATE_FREE_TRIAL_STATUS
 };
 
-enum class EAuthPacketID : DWORD {
+enum class EAuthPacketID : uint32_t {
 	LOGIN_REQUEST = 0,
 	LOGOUT_REQUEST,
 	CREATE_NEW_ACCOUT_REQUEST,
@@ -86,7 +89,7 @@ enum class EAuthPacketID : DWORD {
 	RUNTIME_CONFIG
 };
 
-enum class EWorldPacketID : DWORD {
+enum class EWorldPacketID : uint32_t {
 	CLIENT_VALIDATION = 1,
 	CLIENT_CHARACTER_LIST_REQUEST,
 	CLIENT_CHARACTER_CREATE_REQUEST,
@@ -125,7 +128,7 @@ enum class EWorldPacketID : DWORD {
 	SERVER_STATES = 52
 };
 
-enum class EClientPacketID : DWORD {
+enum class EClientPacketID : uint32_t {
 	MSG_CLIENT_LOAD_STATIC_ZONE = 2,
 	CHARACTER_CREATION_RESPONSE = 7,
 	SERVER_GAME_MSG = 12,
@@ -137,7 +140,7 @@ enum class EClientPacketID : DWORD {
 	MAIL_STUFF = 49
 };
 
-enum class EMasterPacketID : DWORD {
+enum class EMasterPacketID : uint32_t {
 	NO_LEGO_INTERFACE,
 	DB_ERROR,
 	GM_REQUIRED,
@@ -344,3 +347,5 @@ enum class EMasterPacketID : DWORD {
 	MSG_MASTER_GAMESERVER_RESTART,
 	MSG_GAMESERVER_MASTER_NOTIFY_RESTART
 };
+
+#endif

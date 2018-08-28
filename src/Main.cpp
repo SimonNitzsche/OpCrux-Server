@@ -19,6 +19,7 @@
 #include "DataTypes/AMF3.hpp"
 
 #include "Utils/ServerInfo.hpp"
+#include "Utils/StringUtils.hpp"
 #include <chrono>
 using namespace std::chrono;
 
@@ -29,10 +30,11 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 // Following Includes are for testing
 #include "FileTypes/LUZFile/LUZone.hpp"
 #include "Entity/GameObject.hpp"
+#include "GameCache/WorldConfig.hpp"
 
 #define SERVER_TICK_RATE 16
 
-FDB::Connection GameCache = FDB::Connection();
+FDB::Connection GameCache;
 
 int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
@@ -44,7 +46,9 @@ int main(int argc, char* argv[]) {
 	RakNet::BitStream * testBs = new RakNet::BitStream();
 	test->Serialize(testBs, ReplicaTypes::PacketTypes::CONSTRUCTION);
 
-	LUZone luz = LUZone("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
+	LUZone luz("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
+
+	Logger::log("TEST", CacheWorldConfig::GetLevelUpBehaviorEffect(), LogType::UNEXPECTED);
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	

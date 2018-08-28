@@ -14,7 +14,7 @@ namespace PacketUtils {
 		bs->Write(static_cast<uint8_t>(ID_USER_PACKET_ENUM));
 		bs->Write(connectionType);
 		bs->Write(packetID);
-		bs->Write(static_cast<uint8_t>(0x00));
+		bs->Write(static_cast<uint8_t>(0xff));
 
 		return bs;
 	}

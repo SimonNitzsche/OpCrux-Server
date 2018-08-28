@@ -9,7 +9,7 @@
 
 struct ZoneString {
 public:
-	uint8_t * length = 0;
+	uint8_t * length = 0;;
 	char * data = nullptr;
 	uint8_t * Read(uint8_t * offset) {
 		length = reinterpret_cast<uint8_t*>(offset);
@@ -60,6 +60,7 @@ struct SceneTransition {
 
 class LUZone {
 private:
+	std::unique_ptr<unsigned char[]> filePtr;
 	unsigned char* data;
 private:
 	uint32_t * version;

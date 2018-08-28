@@ -2,11 +2,13 @@
 #include "Utils/FileUtils.hpp"
 
 LUZone::LUZone(const std::string& filename) {
-	data = FileUtils::ReadFileCompletely(filename);
+	filePtr = FileUtils::ReadFileCompletely(filename);
+	data = filePtr.get();
 	Read();
 }
 LUZone::~LUZone() {
-	delete data;
+	// handled by FileRef
+	//delete[] data;
 }
 
 void LUZone::Read() {

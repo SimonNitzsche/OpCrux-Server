@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <iostream>
+#include "NetworkDataTypes/LUPacket.hpp"
 #include "Server/Bridges/BridgeMasterServer.hpp"
 
 enum class SERVERMODE : uint8_t;

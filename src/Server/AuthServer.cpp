@@ -12,9 +12,18 @@
 
 #include "Enums/EPackets.hpp"
 #include "Enums/ERemoteConnection.hpp"
+#include "Enums/ESystem.hpp"
+
+#include "Exceptions/ExNetException.hpp"
 
 #include "Utils/Logger.hpp"
 #include "Utils/ServerInfo.hpp"
+#include "Utils/StringUtils.hpp"
+
+#include "Structs/Networking/General/StructPacketHeader.hpp"
+
+#include "PacketFactory/General/GeneralPackets.hpp"
+#include "PacketFactory/Auth/AuthPackets.hpp"
 
 AuthServer::AuthServer() : ILUServer() {
 	// Initializes the RakPeerInterface used for the auth server
@@ -42,67 +51,13 @@ AuthServer::AuthServer() : ILUServer() {
 	while (ServerInfo::bRunning) {
 		RakSleep(1);
 		while (packet = rakServer->Receive()) {
-			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
-			uint8_t packetID;
-			data->Read(packetID);
-
-			switch (packetID) {
-			case ID_USER_PACKET_ENUM: {
-				uint16_t networkType;
-				data->Read(networkType);
-				uint32_t packetType;
-				data->Read(packetType);
-				uint8_t pad;
-				data->Read(pad);
-
-				switch (static_cast<ERemoteConnection>(networkType)) {
-				case ERemoteConnection::GENERAL: {
-					/// Do Handshake
-					Logger::log("AUTH", "Handshaking with client...");
-					
-					RakNet::BitStream returnBS;
-					// Head
-					returnBS.Write(static_cast<byte>(ID_USER_PACKET_ENUM));
-					returnBS.Write(ERemoteConnection::GENERAL);
-					returnBS.Write(EServerPacketID::VERSION_CONFIRM);
-					returnBS.Write(static_cast<byte>(0x00));
-					//Data
-					returnBS.Write(171022UL); // version
-					returnBS.Write(0x93UL); // ???
-					returnBS.Write(1UL); // connType
-					returnBS.Write(ServerInfo::processID);
-					returnBS.Write(static_cast<unsigned short>(0xff));
-					returnBS.Write(RakNet::RakString("127.0.0.1"), 264);
-
-					rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				} break;
-				case ERemoteConnection::AUTH: {
-					/// Do Login
-					Logger::log("AUTH", "Login requested");
-					// TODO: Handle Login
-				} break;
-				default: {
-					Logger::log("AUTH", "Recieved unknown packet");
-				}
-				}
-
-			} break;
-			case ID_NEW_INCOMING_CONNECTION: {
-				Logger::log("AUTH", "Recieving new Connection...");
-				// TODO: Connect as Session
-			} break;
-			case ID_DISCONNECTION_NOTIFICATION: {
-				Logger::log("AUTH", "User Disconnected from AUTH...");
-				// TODO: Disconnect as Session
-			} break;
-			default: {
-				Logger::log("AUTH", "Recieved unknown packet #" + (byte)packetID);
+			try {
+				handlePacket(rakServer, reinterpret_cast<LUPacket*>(packet));
 			}
+			catch (NetException::CorruptPacket e) {
+				Logger::log("AUTH", "Received corrupt packet.", LogType::ERR);
+				// TODO: Kick player.
 			}
-
-			// Deallocate the packet to conserve memory
-			delete data;
-			rakServer->DeallocatePacket(packet);
 		}
 	}
 
@@ -112,6 +67,65 @@ AuthServer::AuthServer() : ILUServer() {
 	rakServer->Shutdown(0);
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
 	
+}
+
+void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
+	RakNet::BitStream *data = new RakNet::BitStream(packet->getData(), packet->getLength(), false);
+	LUPacketHeader packetHeader = packet->getHeader();
+
+	switch (packetHeader.protocolID) {
+	case ID_USER_PACKET_ENUM: {
+
+		switch (static_cast<ERemoteConnection>(packetHeader.remoteType)) {
+		case ERemoteConnection::GENERAL: {
+			if (packetHeader.packetID == 0) {
+				/// Do Handshake
+				Logger::log("AUTH", "Handshaking with client...");
+
+				PacketFactory::General::doHandshake(rakServer, packet->getSystemAddress(), true);
+			}
+			break;
+		}
+		case ERemoteConnection::AUTH: {
+			/// Do Login
+			if (packetHeader.packetID == 0) {
+
+				if (data->GetNumberOfUnreadBits() < 3944) throw new NetException::CorruptPacket();
+
+				Logger::log("AUTH", "Login requested");
+				// TODO: Handle Login
+				std::wstring name = StringUtils::readWStringFromBitStream(data);
+				std::wstring pswd = StringUtils::readWStringFromBitStream(data, 41);
+				uint16_t COMLANG; data->Read(COMLANG);
+				ESystem platform; data->Read(platform);
+				std::wstring procMemInfo = StringUtils::readWStringFromBitStream(data, 256);
+				std::wstring clientGPU = StringUtils::readWStringFromBitStream(data, 128);
+
+				Logger::log("AUTH", "Requesting Login: " + std::string(name.begin(), name.end()) + " <-> " + std::string(pswd.length(), "*"[0]));
+			}
+		} break;
+		default: {
+			Logger::log("AUTH", "Recieved unknown packet");
+		}
+		}
+
+	} break;
+	case ID_NEW_INCOMING_CONNECTION: {
+		Logger::log("AUTH", "Recieving new Connection...");
+		// TODO: Connect as Session
+	} break;
+	case ID_DISCONNECTION_NOTIFICATION: {
+		Logger::log("AUTH", "User Disconnected from AUTH...");
+		// TODO: Disconnect as Session
+	} break;
+	default: {
+		Logger::log("AUTH", "Recieved unknown packet #" + (byte)packetHeader.packetID);
+	}
+	}
+
+	// Deallocate the packet to conserve memory
+	delete data;
+	rakServer->DeallocatePacket(packet->getPacket());
 }
 
 AuthServer::~AuthServer() {

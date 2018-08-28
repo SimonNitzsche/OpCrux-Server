@@ -206,6 +206,7 @@ namespace FDB {
 
 	class Connection {
 	private:
+		std::unique_ptr<unsigned char[]> filePtr;
 		unsigned char * fileData = nullptr;
 	public:
 		Connection(std::string database);
@@ -226,10 +227,7 @@ namespace FDB {
 		QueryResult Query(uint32_t indexOfTable, bool compare(std::string columnName, std::string columnVal));
 		QueryResult Query(std::string tablename, bool compare(std::string columnName, std::string columnVal));
 
-		~Connection() {
-			if(fileData != nullptr)
-				delete fileData;
-		}
+		~Connection() {}
 	};
 }
 

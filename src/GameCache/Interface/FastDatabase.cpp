@@ -210,7 +210,8 @@ namespace FDB {
 	}
 
 	void Connection::Connect(std::string database) {
-		fileData = FileUtils::ReadFileCompletely(database);
+		filePtr = FileUtils::ReadFileCompletely(database);
+		fileData = filePtr.get();
 	}
 
 	uint32_t Connection::getTableCount() {
