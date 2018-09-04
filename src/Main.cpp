@@ -48,8 +48,6 @@ int main(int argc, char* argv[]) {
 
 	LUZone luz("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
 
-	Logger::log("TEST", CacheWorldConfig::GetLevelUpBehaviorEffect(), LogType::UNEXPECTED);
-
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	
 #ifdef WIN32

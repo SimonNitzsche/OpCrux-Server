@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include <time.h>
+#include <stdint.h>
 #include "Common/CrossPlatform.hpp"
 class MasterServer;
 
@@ -25,5 +26,7 @@ public:
 	static std::string getComputerName();
 	static std::string getOsName();
 	static MasterServer * masterServer;
+	static std::string gameVersion;
+	static void numericGameVersion(uint16_t * major, uint16_t * current, uint16_t * minor);
 };
 #endif

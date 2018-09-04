@@ -102,6 +102,8 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				std::wstring clientGPU = StringUtils::readWStringFromBitStream(data, 128);
 
 				Logger::log("AUTH", "Requesting Login: " + std::string(name.begin(), name.end()) + " <-> " + std::string(pswd.length(), "*"[0]));
+
+				PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::ACCOUNT_FORBIDDEN, L"Hello, there is no DB, so there is no Login.");
 			}
 		} break;
 		default: {

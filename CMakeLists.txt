@@ -20,10 +20,12 @@ add_subdirectory(libs)
 add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
         src/DataTypes/AMF3.hpp
+		src/DataTypes/LEGO_GUID.hpp
         src/DataTypes/LWOOBJID.hpp
 		src/DataTypes/Position.hpp
 		src/DataTypes/Quaternion.hpp
 		src/DataTypes/Vector3.hpp
+		src/DataTypes/ZoneInfo.hpp
 		src/Entity/Components/Interface/IEntityComponent.hpp
 		src/Entity/GameObject.cpp
 		src/Entity/GameObject.hpp
@@ -73,6 +75,8 @@ add_executable(LUReborn_Server_3_0
 		src/Server/MasterServer.hpp
 		src/Server/WorldServer.cpp
 		src/Server/WorldServer.hpp
+		src/Sessions/ClientSession.hpp
+		src/Sessions/SessionManager.hpp
 		src/Structs/Networking/General/StructPacketHeader.hpp
 		src/Utils/FileUtils.hpp
 		src/Utils/Logger.cpp

@@ -6,10 +6,7 @@ LUZone::LUZone(const std::string& filename) {
 	data = filePtr.get();
 	Read();
 }
-LUZone::~LUZone() {
-	// handled by FileRef
-	//delete[] data;
-}
+LUZone::~LUZone() {}
 
 void LUZone::Read() {
 	// Head
@@ -29,7 +26,7 @@ void LUZone::Read() {
 			((*version<0x25) ?
 				*(reinterpret_cast<uint8_t*>(spawnPos + 1))
 				: *(reinterpret_cast<uint32_t*>(spawnPos + 1))
-				)
+			)
 		);
 
 		currentOffset = reinterpret_cast<uint8_t*>(spawnPos) + 28 + ((*version<0x25) ? 1 : 4);

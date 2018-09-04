@@ -1,6 +1,7 @@
 #include "ServerInfo.hpp"
 
 #include "Common/CrossPlatform.hpp"
+#include "StringUtils.hpp"
 
 clock_t ServerInfo::appstart;
 bool ServerInfo::initDone = false;
@@ -65,5 +66,15 @@ std::string ServerInfo::getOsName() {
 	return "Other";
 #endif
 }
+
+std::string ServerInfo::gameVersion = "1.10.64";
+
+void ServerInfo::numericGameVersion(uint16_t * major, uint16_t * current, uint16_t * minor) {
+	std::vector<std::string> str{ StringUtils::splitString(gameVersion,"."[0]) };
+	*major = std::stoi(str[0]);
+	*current = std::stoi(str[1]);
+	*minor = std::stoi(str[2]);
+}
+
 
 MasterServer * ServerInfo::masterServer = nullptr;
