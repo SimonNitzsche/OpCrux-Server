@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <stdlib.h>
+#include <memory>
 #include "DataTypes/Position.hpp"
 
 

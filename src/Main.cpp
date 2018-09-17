@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 	RakNet::BitStream * testBs = new RakNet::BitStream();
 	test->Serialize(testBs, ReplicaTypes::PacketTypes::CONSTRUCTION);
 
-	LUZone luz("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
+	//LUZone luz("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	
@@ -113,6 +113,6 @@ int main(int argc, char* argv[]) {
 
 	while (ServerInfo::bRunning) RakSleep(30);
 
-	std::system("pause");
+	std::cin.get();
 
 }

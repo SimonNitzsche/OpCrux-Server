@@ -39,7 +39,7 @@ MasterServer::MasterServer() {
 
 	// Check startup
 	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
-		system("pause");
+		std::cin.get();
 		return;
 	}
 
