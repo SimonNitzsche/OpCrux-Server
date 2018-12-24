@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <memory>
 #include "DataTypes/Position.hpp"
-
+using namespace DataTypes;
 
 struct ZoneString {
 public:

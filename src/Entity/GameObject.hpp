@@ -14,7 +14,7 @@ class LWOTimer {};
 
 class GameObject : Replica {
 protected:
-	LWOOBJID objectID;
+	DataTypes::LWOOBJID objectID;
 	int32_t LOT;
 	std::wstring name;
 protected:
