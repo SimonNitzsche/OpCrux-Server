@@ -31,6 +31,7 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 #include "FileTypes/LUZFile/LUZone.hpp"
 #include "Entity/GameObject.hpp"
 #include "GameCache/WorldConfig.hpp"
+using namespace Entity;
 
 #define SERVER_TICK_RATE 16
 

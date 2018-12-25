@@ -3,18 +3,24 @@
 
 #include <memory>
 
-enum class EPropertyAchievement : int32_t {
-	None = 0,
-	Builder,
-	Craftsman,
-	SeniorBuilder,
-	Journeyman,
-	MasterBuilder,
-	Architect,
-	SeniorArchitect,
-	MasterArchitect,
-	Visionary,
-	Exemplar
-};
+namespace Enum {
+
+	/*
+		What achievement is it?
+	*/
+	enum class EPropertyAchievement : int32_t {
+		None = 0,
+		Builder,
+		Craftsman,
+		SeniorBuilder,
+		Journeyman,
+		MasterBuilder,
+		Architect,
+		SeniorArchitect,
+		MasterArchitect,
+		Visionary,
+		Exemplar
+	};
+}
 
 #endif

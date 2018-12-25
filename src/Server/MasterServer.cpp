@@ -20,6 +20,7 @@
 #include "Utils/Logger.hpp"
 #include "Utils/ServerInfo.hpp"
 #include "Utils/PacketUtil.hpp"
+using namespace Enums;
 
 enum class SERVERMODE : uint8_t;
 
