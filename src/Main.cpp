@@ -35,12 +35,12 @@ using namespace Entity;
 
 #define SERVER_TICK_RATE 16
 
-FDB::Connection GameCache;
+GameCache::Interface::FDB::Connection Cache;
 
 int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
 
-	GameCache.Connect("./res/cdclient.fdb");
+	Cache.Connect("./res/cdclient.fdb");
 	
 	GameObject * test = new GameObject();
 	test->Test();

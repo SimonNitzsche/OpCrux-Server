@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <memory>
 
-namespace FDB {
+namespace GameCache::Interface::FDB {
 
 	class Connection;
 

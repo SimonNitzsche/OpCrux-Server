@@ -24,6 +24,7 @@
 
 #include "PacketFactory/General/GeneralPackets.hpp"
 #include "PacketFactory/Auth/AuthPackets.hpp"
+using namespace Exceptions;
 
 AuthServer::AuthServer() : ILUServer() {
 	// Initializes the RakPeerInterface used for the auth server
