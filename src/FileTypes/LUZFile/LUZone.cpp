@@ -1,5 +1,6 @@
 #include "LUZone.hpp"
 #include "Utils/FileUtils.hpp"
+using namespace FileTypes::LUZone;
 
 LUZone::LUZone(const std::string& filename) {
 	filePtr = FileUtils::ReadFileCompletely(filename);

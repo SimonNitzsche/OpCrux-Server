@@ -24,6 +24,7 @@
 
 #include "PacketFactory/General/GeneralPackets.hpp"
 #include "PacketFactory/Auth/AuthPackets.hpp"
+using namespace Exceptions;
 
 AuthServer::AuthServer() : ILUServer() {
 	// Initializes the RakPeerInterface used for the auth server
@@ -41,7 +42,7 @@ AuthServer::AuthServer() : ILUServer() {
 
 	// Check startup
 	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
-		system("pause");
+		std::cin.get();
 		return;
 	}
 

@@ -1,6 +1,6 @@
 #include "GameObject.hpp"
 #include "Utils/ServerInfo.hpp"
-
+using namespace Entity;
 
 ReplicaReturnResult GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
 	return REPLICA_PROCESSING_DONE;

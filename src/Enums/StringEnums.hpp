@@ -9,21 +9,32 @@
 
 using namespace std;
 
-namespace StringEnums {
+namespace Enums::Strings {
 
 	class StringEnum {
+		// A Vector of Values.
 		std::vector<std::string> values;
-	public:
-		StringEnum(std::vector<std::string> in) : values(in){}
-		const int & operator[] (const std::string in) {
-			std::ptrdiff_t i = 0; i < values.size(); ++i)
-				if (values[i] == in)
-					return i;
-			Logger::log("StringEnums", "Can't find enum property: " + in, LogType::UNEXPECTED);
-			throw new runtime_error("Can't find enum property!");
-		}
+
+		public:
+			// Constructs a String Enum with the defined strings.
+			StringEnum(std::vector<std::string> in) : values(in){}
+
+			// The Array Operator.
+			const int & operator[] (const std::string in) {
+				// Loop until we find the value, if we did find it, return it.
+				for (int i = 0; i < values.size(); ++i)
+					if (values[i] == in)
+						return i;
+
+				// Value not found! Throw!
+				Logger::log("StringEnums", "Can't find enum property: " + in, LogType::UNEXPECTED);
+				throw new runtime_error("Can't find enum property!");
+			}
 	};
 
+	/*
+		A constant map of string enums.
+	*/
 	const std::map<std::string, StringEnum> get = {
 		{ "eBuildType",
 			StringEnum({

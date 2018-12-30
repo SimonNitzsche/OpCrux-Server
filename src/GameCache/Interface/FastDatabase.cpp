@@ -4,7 +4,7 @@
 
 #include <cstring>
 
-namespace FDB {
+namespace GameCache::Interface::FDB {
 
 	/*
 		Class: FieldValue

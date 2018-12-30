@@ -13,6 +13,7 @@
 #include "Structs/Networking/General/StructPacketHeader.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/EGeneralPackets.hpp"
+using namespace Enums;
 
 #include "Utils/ServerInfo.hpp"
 

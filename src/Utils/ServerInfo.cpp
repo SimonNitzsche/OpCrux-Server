@@ -48,6 +48,14 @@ std::string ServerInfo::getComputerName() {
 #if defined(LINUX) || defined(MAC) || defined(__CYGWIN__)
 	return getenv("HOSTNAME");
 #endif // LINUX || MAC
+#if defined(__unix) || defined(__unix__)
+	char *temp = new char[512];
+	if (gethostname(temp, 512) == 0) {
+		std::string t = temp;
+		delete[] temp;
+		return t;
+	}
+#endif // UNIX
 	return ("Function not supported on this operating system.");
 }
 

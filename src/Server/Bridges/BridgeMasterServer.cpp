@@ -6,6 +6,7 @@
 #include "Utils/Logger.hpp"
 #include "Utils/PacketUtil.hpp"
 #include "Utils/ServerInfo.hpp"
+using namespace Enums;
 
 enum class SERVERMODE : uint8_t;
 extern SERVERMODE MODE_SERVER;

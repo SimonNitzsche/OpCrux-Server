@@ -20,6 +20,7 @@
 #include "Utils/Logger.hpp"
 #include "Utils/ServerInfo.hpp"
 #include "Utils/PacketUtil.hpp"
+using namespace Enums;
 
 enum class SERVERMODE : uint8_t;
 
@@ -39,7 +40,7 @@ MasterServer::MasterServer() {
 
 	// Check startup
 	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
-		system("pause");
+		std::cin.get();
 		return;
 	}
 

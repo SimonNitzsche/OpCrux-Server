@@ -4,12 +4,23 @@
 #include "Replica/ReplicaTypes.hpp"
 #include "RakNet/BitStream.h"
 
-class IEntityComponent {
-public:
-	class GameObject * owner;
+namespace Entity::Components::Interface{
 
-	virtual void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) = 0;
-	virtual void Update() = 0;
-};
+	/*
+		Components require to extend this class.
+	*/
+	class IEntityComponent {
+		public:
+
+			// The Owner Game Object.
+			class GameObject * owner;
+
+			// Called when Component Requires Serialization.
+			virtual void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) = 0;
+
+			// Called when the components needs update.
+			virtual void Update() = 0;
+	};
+}
 
 #endif

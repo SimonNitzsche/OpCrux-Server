@@ -3,10 +3,16 @@
 
 #include <memory>
 
-struct ZoneInfo {
-	uint16_t zoneID;
-	uint16_t zoneInstance;
-	uint32_t zoneClone;
-};
+namespace DataTypes {
+
+	/*
+		Contains all Info we need about a Zone.
+	*/
+	struct ZoneInfo {
+		uint16_t zoneID;
+		uint16_t zoneInstance;
+		uint32_t zoneClone;
+	};
+}
 
 #endif
