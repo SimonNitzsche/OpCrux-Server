@@ -7,7 +7,7 @@ extern FDB::Connection GameCache;
 namespace CacheDestructibleComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
 		FDB::RowTopHeader rth = GameCache.getRows("DestructibleComponent");
-		for (int i = 0; i < rth.getRowCount(); ++i) {
+		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				FDB::RowInfo rowInfo = rth[i];
 				while (rowInfo.isValid()) {

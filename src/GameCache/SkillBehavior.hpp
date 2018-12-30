@@ -8,7 +8,7 @@ extern FDB::Connection GameCache;
 namespace CacheSkillBehavior {
 	inline FDB::RowInfo getRow(int skillID) {
 		FDB::RowTopHeader rth = GameCache.getRows("SkillBehavior");
-		for (int i = 0; i < rth.getRowCount(); ++i) {
+		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == skillID)
 					return rth[i];

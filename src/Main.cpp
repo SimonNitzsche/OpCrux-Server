@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 #ifdef WIN32
 	std::system("title LUReborn Server 3.0 (Standalone)");
 #endif
-	for (int i = 0; i < argc; i++) {
+	for (std::ptrdiff_t i = 0; i < argc; i++) {
 		std::string arg = std::string(argv[i]);
 		if (arg == "--master") {
 			MODE_SERVER = SERVERMODE::MASTER;

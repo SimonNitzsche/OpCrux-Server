@@ -55,7 +55,7 @@ int DashboardAPI::handleAPIs(mg_connection * nc, int ev, http_message * hm) {
 				j["machine"]["machine_name"] = ServerInfo::getComputerName();
 				j["machine"]["machine_os"] = ServerInfo::getOsName();
 				std::vector<Machine> connected_machines = ServerInfo::masterServer->connected_machines;
-				for (int i = 0; i < connected_machines.size(); ++i) {
+				for (std::ptrdiff_t i = 0; i < connected_machines.size(); ++i) {
 					//connected_machines[i].
 					auto factory = j["master"]["connected_machines"][i];
 					factory["dottedIP"] = connected_machines[i].dottedIP;

@@ -6,7 +6,7 @@ extern FDB::Connection GameCache;
 namespace CachePetComponent {
 	inline int32_t GetComponentIndex(int32_t componentID) {
 		FDB::RowTopHeader rth = GameCache.getRows("PetComponent");
-		for (int i = 0; i < rth.getRowCount(); ++i)
+		for(int  i = 0; i < rth.getRowCount(); ++i)
 			if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == componentID)
 				return i;
 		return EOF;

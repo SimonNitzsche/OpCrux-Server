@@ -8,7 +8,7 @@ extern FDB::Connection GameCache;
 namespace CacheBehaviorParameter {
 	inline int32_t GetBehaviorIndex(int32_t behaviorID) {
 		FDB::RowTopHeader rth = GameCache.getRows("BehaviorParameter");
-		for (int i = 0; i < rth.getRowCount(); ++i) {
+		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == behaviorID)
 					return i;

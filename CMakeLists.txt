@@ -12,6 +12,7 @@ if(MSVC)
 	add_definitions(-D_USE_MATH_DEFINES)
 endif()
 
+include_directories(include)
 include_directories(libs)
 include_directories(src)
 include_directories(tests)

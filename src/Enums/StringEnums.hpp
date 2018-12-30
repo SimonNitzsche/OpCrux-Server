@@ -16,7 +16,7 @@ namespace StringEnums {
 	public:
 		StringEnum(std::vector<std::string> in) : values(in){}
 		const int & operator[] (const std::string in) {
-			for (int i = 0; i < values.size(); ++i)
+			std::ptrdiff_t i = 0; i < values.size(); ++i)
 				if (values[i] == in)
 					return i;
 			Logger::log("StringEnums", "Can't find enum property: " + in, LogType::UNEXPECTED);

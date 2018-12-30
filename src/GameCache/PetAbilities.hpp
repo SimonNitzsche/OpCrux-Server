@@ -8,7 +8,7 @@ extern FDB::Connection GameCache;
 namespace CachePetAbilities {
 	inline FDB::RowInfo getRow(int32_t id) {
 		FDB::RowTopHeader rth = GameCache.getRows("PetAbilities");
-		for (int i = 0; i < rth.getRowCount(); ++i) {
+		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
 					return rth[i];

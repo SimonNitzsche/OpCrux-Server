@@ -7,7 +7,7 @@ extern FDB::Connection GameCache;
 namespace CacheObjects {
 	inline FDB::RowInfo getRow(int32_t id) {
 		FDB::RowTopHeader rth = GameCache.getRows("Objects");
-		for (int i = 0; i < rth.getRowCount(); ++i) {
+		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				FDB::RowInfo rowInfo = rth[i];
 				while (rowInfo.isValid()) {

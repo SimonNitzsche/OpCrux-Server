@@ -145,7 +145,7 @@ namespace FDB {
 		FieldValue operator [] (std::string columnName) {
 			ColumnHeader columnHeader = ColumnHeader(conn, columnHeaderAddr);
 			int32_t column_count = getRowDataHeader().getColumnCount();
-			for (int i = 0; i < column_count; ++i) {
+			for (std::ptrdiff_t i = 0; i < column_count; ++i) {
 				if (static_cast<std::string>(columnHeader.getColumnData().getColumnName(i)) == columnName) {
 					return getRowData(i);
 				}

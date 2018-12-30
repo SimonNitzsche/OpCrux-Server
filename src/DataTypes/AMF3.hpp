@@ -35,7 +35,7 @@ public:
 	U29(int input) { data = (input >> 3); }
 	U29(RakNet::BitStream * input) {
 		data = 0;
-		for (int i = 0; i < 4; ++i) {
+		for (std::ptrdiff_t i = 0; i < 4; ++i) {
 			unsigned char buffer;
 			input->Read(buffer);
 			data += ((buffer & 0x7F)<<(8*i));
@@ -50,7 +50,7 @@ public:
 
 	void write(RakNet::BitStream * output) {
 		unsigned long matcher = 0x7F;
-		for (int i = 0; i < 4; i++) {
+		for (std::ptrdiff_t i = 0; i < 4; i++) {
 			bool needNewByteAfter = data & (matcher << (i + 1));
 			char buffer = (data & (matcher << i)) + (needNewByteAfter << 7);
 			output->Write(buffer);

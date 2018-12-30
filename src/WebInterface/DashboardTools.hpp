@@ -14,7 +14,7 @@
 
 class DashboardTools {
 public:
-	static const char* resPath() { return "./res/HTTP/"; }
+	static constexpr char* resPath() { return "./res/HTTP/"; }
 	static std::string getFileContent(std::string file) {
 		std::string out = "";
 		std::ifstream infile(std::string(resPath() + file), std::ifstream::in);
@@ -81,11 +81,11 @@ public:
 	}
 
 	static bool isLoggedIn(mg_connection * nc, http_message * hm) {
-		for (int i = 0; i < sizeof(hm->header_names); ++i) {
+		for (std::ptrdiff_t i = 0; i < sizeof(hm->header_names); ++i) {
 			std::string headerName = std::string(hm->header_names[i].p, hm->header_names[i].len);
 			if (headerName == "Cookie") {
 				std::vector<std::string> cookies = StringUtils::splitString(std::string(hm->header_values[i].p, hm->header_values[i].len), (char)59);
-				for (int j = 0; j < cookies.size(); ++j) {
+				for (std::ptrdiff_t j = 0; j < cookies.size(); ++j) {
 					std::vector<std::string> cookie = StringUtils::splitString(cookies[j],(char)61);
 					if (cookie[0][0] == (char)20) cookie[0] = cookie[0].substr(1);
 					bool ag = (cookie[0] == "auth" || cookie[0] == " auth") && cookie[1] == "EYLUAR";

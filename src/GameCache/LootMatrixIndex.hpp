@@ -8,7 +8,7 @@ extern FDB::Connection GameCache;
 namespace CacheLootMatrixIndex {
 	inline FDB::RowInfo getRow(int lootMatrixIndex) {
 		FDB::RowTopHeader rth = GameCache.getRows("LootMatrixIndex");
-		for (int i = 0; i < rth.getRowCount(); ++i) {
+		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == lootMatrixIndex)
 					return rth[i];

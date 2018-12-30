@@ -31,7 +31,7 @@ void LUZone::Read() {
 
 		currentOffset = reinterpret_cast<uint8_t*>(spawnPos) + 28 + ((*version<0x25) ? 1 : 4);
 
-		for (int i = 0; i < count; ++i) {
+		for (std::ptrdiff_t i = 0; i < count; ++i) {
 			SceneData sd;
 
 			currentOffset = sd.fileName.Read(currentOffset);
@@ -52,10 +52,10 @@ void LUZone::Read() {
 		);
 
 	// Transisions
-	if (*version >= 0x20) {
+	if (*version >= 0x1f) {
 		uint32_t * countOfScenes = reinterpret_cast<uint32_t*>(currentOffset);
 		currentOffset = reinterpret_cast<uint8_t*>(countOfScenes+1);
-		for (int transIndx = 0; transIndx < *countOfScenes; ++transIndx) {
+		for (std::ptrdiff_t transIndx = 0; transIndx < *countOfScenes; ++transIndx) {
 			SceneTransition transitionFactory;
 			// Transition Name
 			if (*version < 0x25) {
@@ -66,7 +66,7 @@ void LUZone::Read() {
 			uint8_t loopTimes = (*version <= 0x21 || *version >= 0x27) ? 2 : 5;
 
 			// Transition Points
-			for (int transPtIndx = 0; transPtIndx < loopTimes; ++transPtIndx) {
+			for (std::ptrdiff_t transPtIndx = 0; transPtIndx < loopTimes; ++transPtIndx) {
 				SceneTransitionPoint * transPtFactory = reinterpret_cast<SceneTransitionPoint*>(currentOffset);
 				transitionFactory.points.push_back(transPtFactory);
 				currentOffset = reinterpret_cast<uint8_t*>(transPtFactory) + 20;
@@ -82,7 +82,7 @@ void LUZone::Read() {
 		uint32_t * countOfPaths = unknown1 + 1;
 		currentOffset = reinterpret_cast<uint8_t*>(countOfPaths + 1);
 		return;
-		for (int pathIndx = 0; pathIndx < *countOfPaths; ++pathIndx) {
+		for (std::ptrdiff_t pathIndx = 0; pathIndx < *countOfPaths; ++pathIndx) {
 			uint32_t * pathVersion = reinterpret_cast<uint32_t*>(currentOffset);
 			
 			throw;
