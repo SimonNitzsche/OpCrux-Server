@@ -1,0 +1,1 @@
+Those tools convert xml into C++ code. This makes it easy to easily edit for example GMs and such without doing much writing.

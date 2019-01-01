@@ -49,13 +49,13 @@ namespace StringUtils {
 		bitstream->Write(std::string(count, 0x00).c_str(), count);
 	}
 
-	inline void writeStringToBitStream(RakNet::BitStream * bitstream, std::string text, int len = 33) {
+	inline void writeStringToBitStream(RakNet::BitStream * bitstream, std::string text, unsigned int len = 33) {
 		if (text.length() > len) text = text.substr(0, len);
 		bitstream->Write(text.c_str(), text.length());
 		FillZero(bitstream, len - text.length());
 	}
 
-	inline void writeWstringToBitStream(RakNet::BitStream * bitstream, std::wstring text, int len = 33) {
+	inline void writeWstringToBitStream(RakNet::BitStream * bitstream, std::wstring text, unsigned int len = 33) {
 		if (text.length() > len) text = text.substr(0, len);
 		bitstream->Write(reinterpret_cast<const char*>(text.c_str()), text.length() * 2);
 		FillZero(bitstream, (len - text.length()) * 2);

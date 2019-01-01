@@ -51,7 +51,7 @@ namespace PacketFactory {
 			returnBS.Write<ByteBool>(false); // is FTP
 			returnBS.Write<uint64_t>(0);
 
-			returnBS.Write<uint16_t>(customErrorMessage.length());
+			returnBS.Write<uint16_t>(customErrorMessage.length()&0xFFFF);
 			StringUtils::writeWstringToBitStream(&returnBS, customErrorMessage, customErrorMessage.length());
 
 			// Stamp stuff

@@ -96,7 +96,7 @@ namespace DataTypes {
 			*/
 			unsigned char getFlags() {
 				// Return the flag.
-				return this->data >> (idSize - 1);
+				return (this->data >> (idSize - 1)) & 0xFF;
 			}
 
 			/*
@@ -124,7 +124,7 @@ namespace DataTypes {
 					return CATEGORY::GLOBAL;
 
 				// Check for Local obj id.
-				if ((flags & (1 << (57 - idSize))) && (flags & (1 << (45 - idSize))))
+				if ((flags & (1ULL << (57 - idSize))) && (flags & (1ULL << (45 - idSize))))
 					return CATEGORY::LOCAL;
 
 				// Check for Static obj id.

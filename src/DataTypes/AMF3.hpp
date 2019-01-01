@@ -72,7 +72,7 @@ namespace DataTypes {
 				Writes a U29 to a bit stream.
 			*/
 			void write(RakNet::BitStream * output) {
-				unsigned long matcher = 0x7F;
+				std::uint32_t matcher = 0x7F;
 				for (int i = 0; i < 4; i++) {
 					bool needNewByteAfter = data & (matcher << (i + 1));
 					char buffer = (data & (matcher << i)) + (needNewByteAfter << 7);

@@ -1,6 +1,7 @@
 #ifndef __GAMECACHE__PETCOMPONENT_HPP__
 #define __GAMECACHE__PETCOMPONENT_HPP__
 #include "GameCache/Interface/FastDatabase.hpp"
+using namespace GameCache::Interface;
 extern FDB::Connection GameCache;
 
 namespace CachePetComponent {

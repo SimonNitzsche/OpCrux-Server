@@ -1,0 +1,40 @@
+#ifndef _STRINGENUM_HPP__
+#define _STRINGENUM_HPP__
+
+#include <map>
+#include <vector>
+#include <set>
+#include <string>
+#include "Utils/Logger.hpp"
+#include <stdlib.h>
+#include <memory>
+
+
+// Draft
+namespace Enums::StringEnums {
+
+	enum class Ese_Test {
+		ABC,
+		DEF
+	};
+	class se_Test {
+		template<int T>
+		std::string get() {
+			if (T == Ese_Test::ABC)
+				return "ABC";
+			if (T == Ese_Test::DEF)
+				return "DEF";
+			throw new out_of_range::exception();
+		}
+		template<unsigned char* T>
+		Ese_Test get() {
+			if (&T == "ABC")
+				return Ese_Test::ABC;
+			if (&T == "DEF")
+				return Ese_Test::DEF;
+			throw new out_of_range::exception();
+		}
+	};
+}
+
+#endif // !_STRINGENUM_HPP__

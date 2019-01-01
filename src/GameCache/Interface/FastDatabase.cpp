@@ -227,7 +227,7 @@ namespace GameCache::Interface::FDB {
 	}
 
 	uint32_t Connection::getTableIndex(std::string tableName) {
-		for (std::ptrdiff_t i = 0; i < getTableCount(); ++i) {
+		for (int i = 0; i < getTableCount(); ++i) {
 			if (static_cast<std::string>(getTableHeader().getTableName(i)) == tableName) {
 				return i;
 			}
@@ -246,7 +246,7 @@ namespace GameCache::Interface::FDB {
 			RowTopHeader rowTopHeader = getRows(indexOfTable);
 			uint32_t max_row_count = rowTopHeader.getRowCount();
 			if (rowTopHeader.isRowHeaderValid()) {
-				for (std::ptrdiff_t i = 0; i < max_row_count; ++i) {
+				for (int i = 0; i < max_row_count; ++i) {
 					if (rowTopHeader.getRowHeader().isRowInfoValid(i)) {
 						RowInfo rowInfo = rowTopHeader[i];
 						int32_t column_count = rowInfo.getColumnCount();

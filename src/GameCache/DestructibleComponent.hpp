@@ -2,6 +2,7 @@
 #define __GAMECACHE__DESTRUCTIBLECOMPONENT_HPP__
 
 #include "Interface/FastDatabase.hpp"
+using namespace GameCache::Interface;
 extern FDB::Connection GameCache;
 
 namespace CacheDestructibleComponent {

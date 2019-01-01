@@ -3,6 +3,7 @@
 
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
+using namespace GameCache::Interface;
 extern FDB::Connection GameCache;
 
 namespace CachePropertyEntranceComponent {

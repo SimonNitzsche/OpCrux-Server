@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <settings>
+        <useLicense>true</useLicense>
+        <useDisclaimer>true</useDisclaimer>
+        <splitIntoOwnFiles>false</splitIntoOwnFiles>
+        <filePath>Enums</filePath>
+        <fileName>StringEnums.hpp</fileName>
+        <definitionName>_STRINGENUMS_HPP__</definitionName>
+        <namespace>Enums::StringEnums</namespace>
+        <enumPrefix>Ese_</enumPrefix>
+        <classPrefix>se_</classPrefix>
+    </settings>
+    <include>
+        <i name='!map'></i>
+        <i name='!vector'></i>
+        <i name='!set'></i>
+        <i name='!string'></i>
+        <i name='"Utils/Logger.hpp"'></i>
+        <i name='!stdlib.h'></i>
+        <i name='!memory'></i>
+    </include>
+    <disclaimer>
+        <l>This file is auto-generated and should not be edited because changes</l>
+        <l>will be lost. Generated with pyEnumGen, written by Simon Nitzsche 2019.</l>
+    </disclaimer>
+    <license>
+        <l>Copyright (c) 2019 Simon Nitzsche All Rights Reserved.</l>
+    </license>
+    <enums>
+        <enum name="eBuildType">
+            <value>BUILD_NOWHERE</value>
+            <value>BUILD_IN_WORLD</value>
+            <value>BUILD_ON_PROPERTY</value>
+        </enum>
+        <enum name="CinematicEvent">
+            <value>STARTED</value>
+            <value>WAYPOINT</value>
+            <value>ENDED</value>
+        </enum>
+        <enum name="eCyclingMode">
+            <value>ALLOW_CYCLE_TEAMMATES</value>
+            <value>DISALLOW_CYCLING</value>
+        </enum>
+        <enum name="DeleteReason">
+            <value>PICKING_MODEL_UP</value>
+            <value>RETURNING_MODEL_TO_INVENTORY</value>
+            <value>BREAKING_MODEL_APART</value>
+        </enum>
+        <enum name="EndBehavior">
+            <value>RETURN</value>
+            <value>WAIT</value>
+        </enum>
+        <enum name="FailReason">
+            <value>REASON_NOT_GIVEN</value>
+            <value>REASON_OUT_OF_IMAGINATION</value>
+            <value>REASON_CANCELED_EARLY</value>
+            <value>REASON_BUILD_ENDED</value>
+        </enum>
+        <enum name="eImmunityState">
+            <value>PUSH</value>
+            <value>POP</value>
+        </enum>
+        <enum name="eKillType">
+            <value>VIOLENT</value>
+            <value>SILENT</value>
+        </enum>
+        <enum name="eMissionLockState">
+            <value>LOCKED</value>
+            <value>NEW</value>
+            <value>UNLOCKED</value>
+        </enum>
+        <enum name="eNotifyType">
+            <value>SUCCESS</value>
+            <value>QUIT</value>
+            <value>FAILED</value>
+            <value>BEGIN</value>
+            <value>READY</value>
+            <value>NAMINGPET</value>
+        </enum>
+        <enum name="eObjectWorldState">
+            <value>WORLDSTATE_INWORLD</value>
+            <value>WORLDSTATE_ATTACHED</value>
+            <value>WORLDSTATE_INVENTORY</value>
+        </enum>
+        <enum name="eRacingClientNotificationType">
+            <value>INVALID</value>
+            <value>ACTIVITY_START</value>
+            <value>REWARD_PLAYER</value>
+            <value>EXIT</value>
+            <value>REPLAY</value>
+            <value>REMOVE_PLAYER</value>
+            <value>LEADERBOARD_UPDATED</value>
+        </enum>
+        <enum name="eResultType">
+            <value>NOTFOUND</value>
+            <value>INVITESENT</value>
+            <value>OUTOFRANGE</value>
+            <value>ALREADYTRADING</value>
+            <value>GENERALERROR</value>
+        </enum>
+        <enum name="eStunState">
+            <value>PUSH</value>
+            <value>POP</value>
+        </enum>
+        <enum name="eTerminateType">
+            <value>range</value>
+            <value>user</value>
+            <value>fromInteraction</value>
+        </enum>
+        <enum name="eTriggerOperator">
+            <value>INVALID_OPER</value>
+            <value>EQUAL</value>
+            <value>NOT_EQUAL</value>
+            <value>GREATER</value>
+            <value>GREATER_EQUAL</value>
+            <value>LESS</value>
+            <value>LESS_EQUAL</value>
+        </enum>
+        <enum name="eTriggerStat">
+            <value>INVALID_STAT</value>
+            <value>HEALTH</value>
+            <value>ARMOR</value>
+            <value>IMAGINATION</value>
+        </enum>
+    </enums>
+</data>
