@@ -66,6 +66,8 @@ add_executable(LUReborn_Server_3_0
 		src/NetworkDataTypes/ByteBool.hpp
 		src/NetworkDataTypes/LUPacket.hpp
 		src/PacketFactory/Auth/AuthPackets.hpp
+		src/PacketFactory/General/GeneralPackets.hpp
+		src/PacketFactory/World/WorldPackets.hpp
 		src/Replica/ReplicaTypes.hpp
 		src/Server/Bridges/BridgeMasterServer.cpp
 		src/Server/Bridges/BridgeMasterServer.hpp
@@ -97,6 +99,7 @@ add_executable(LUReborn_Server_3_0
 set_property(TARGET json PROPERTY CXX_STANDARD 98)
 set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
+
 target_link_libraries(LUReborn_Server_3_0
 		json
 		Mongoose

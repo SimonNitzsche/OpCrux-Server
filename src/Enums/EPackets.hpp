@@ -147,6 +147,7 @@ namespace Enums {
 	*/
 	enum class EClientPacketID : uint32_t {
 		MSG_CLIENT_LOAD_STATIC_ZONE = 2,
+		CHARACTER_LIST = 6,
 		CHARACTER_CREATION_RESPONSE = 7,
 		SERVER_GAME_MSG = 12,
 		SERVER_REDIRECT = 14,

@@ -1,6 +1,8 @@
 #define HOST_ENDIAN_IS_BIG
 #define BIG_ENDIAN
 
+#include "Common/HardConfig.hpp"
+
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
@@ -32,8 +34,6 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 #include "Entity/GameObject.hpp"
 #include "GameCache/WorldConfig.hpp"
 using namespace Entity;
-
-#define SERVER_TICK_RATE 16
 
 GameCache::Interface::FDB::Connection Cache;
 
@@ -108,8 +108,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-		//std::thread wT([]() { new WorldServer(); });
-		//wT.detach();
+		WorldServer * wS;
+		std::thread wT([](WorldServer * ws) { new WorldServer(); }, wS);
+		wT.detach();
 	}
 
 	while (ServerInfo::bRunning) RakSleep(30);

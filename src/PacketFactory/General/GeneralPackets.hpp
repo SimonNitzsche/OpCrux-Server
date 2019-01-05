@@ -8,6 +8,7 @@
 #include <RakNet/MessageIdentifiers.h>
 #include <RakNet/RakPeerInterface.h>
 
+#include "Common/HardConfig.hpp"
 
 #include "Enums/EPackets.hpp"
 #include "Structs/Networking/General/StructPacketHeader.hpp"
@@ -30,7 +31,7 @@ namespace PacketFactory {
 			returnBSHead.packetID = static_cast<uint32_t>(EServerPacketID::VERSION_CONFIRM);
 			returnBS.Write(returnBSHead);
 			//Data
-			returnBS.Write(171022UL); // version
+			returnBS.Write(SERVER_VERSION); // version
 			returnBS.Write(0x93UL); // ???
 			returnBS.Write(static_cast<uint32_t>(isAuth?1:4)); // connType
 			returnBS.Write(ServerInfo::processID);

@@ -13,6 +13,7 @@
 #include "Structs/Networking/General/StructPacketHeader.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Utils/ServerInfo.hpp"
+#include "Utils/IPUtils.hpp"
 
 #include "Enums/EAuthPackets.hpp"
 #include "NetworkDataTypes/ByteBool.hpp"
@@ -38,15 +39,21 @@ namespace PacketFactory {
 			uint16_t majorVersion; uint16_t currentVersion; uint16_t minorVersion; ServerInfo::numericGameVersion(&majorVersion, &currentVersion, &minorVersion);
 			returnBS.Write(majorVersion); returnBS.Write(currentVersion); returnBS.Write(minorVersion);
 
+			std::string cip = client.ToString(false);
+			std::string ip = (IPUtils::isIPPublic(client.binaryAddress) ? rakServer->GetExternalID(UNASSIGNED_SYSTEM_ADDRESS).ToString(false) :
+							 (IPUtils::isIPIntern(client.binaryAddress) ? rakServer->GetInternalID().ToString(false) : "127.0.0.1"));
+			
+			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip);
+
 			StringUtils::writeWstringToBitStream(&returnBS, L"fad1892aa57db9e0cf74d45445f71599", 33);
-			StringUtils::writeStringToBitStream(&returnBS, "127.0.0.1");
-			StringUtils::writeStringToBitStream(&returnBS, "127.0.0.1");
+			StringUtils::writeStringToBitStream(&returnBS, ip);
+			StringUtils::writeStringToBitStream(&returnBS, ip);
 			returnBS.Write<uint16_t>(2001);
 			returnBS.Write<uint16_t>(0);
 			StringUtils::FillZero(&returnBS, 33);
 			StringUtils::writeStringToBitStream(&returnBS, "00000000-0000-0000-0000-000000000000", 37);
 			returnBS.Write<uint32_t>(0);
-			StringUtils::writeStringToBitStream(&returnBS, "US", 3);
+			StringUtils::writeStringToBitStream(&returnBS, SERVER_LANGUAGE, 3);
 			returnBS.Write<ByteBool>(true); // first Subscription Logon
 			returnBS.Write<ByteBool>(false); // is FTP
 			returnBS.Write<uint64_t>(0);

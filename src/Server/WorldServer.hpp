@@ -4,5 +4,6 @@
 class WorldServer : ILUServer {
 public:
 	WorldServer();
+	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 	~WorldServer();
 };
