@@ -13,4 +13,4 @@ private:
 };
 #pragma pack(pop)
 
-#endif
+#endif // !__STRUCTS__NETWORKING__GENERAL__STRUCTPACKETHEADER_HPP__

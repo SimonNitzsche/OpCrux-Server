@@ -1,6 +1,6 @@
-#pragma once
 #ifndef __ENUMS__EREMOTECONNECTION_HPP__
 #define __ENUMS__EREMOTECONNECTION_HPP__
+
 #include <memory>
 
 namespace Enums {
@@ -18,4 +18,4 @@ namespace Enums {
 	};
 }
 
-#endif
+#endif // !__ENUMS__EREMOTECONNECTION_HPP__

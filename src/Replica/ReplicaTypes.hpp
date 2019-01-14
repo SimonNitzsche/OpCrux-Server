@@ -11,4 +11,4 @@ namespace ReplicaTypes {
 	};
 }
 
-#endif
+#endif // !__REPLICA__REPLICATYPES_HPP__

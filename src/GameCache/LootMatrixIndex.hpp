@@ -25,4 +25,5 @@ namespace CacheLootMatrixIndex {
 		return *reinterpret_cast<int32_t*>(getRow(lootMatrixIndex)/**/[1]/**/.getMemoryLocation()) == 1;
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__LOOTMATRIXINDEX_HPP__

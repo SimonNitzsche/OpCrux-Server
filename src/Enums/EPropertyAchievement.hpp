@@ -23,4 +23,4 @@ namespace Enum {
 	};
 }
 
-#endif
+#endif // !__ENUMS__EPROPERTYACHIEVEMENT_HPP__

@@ -1,5 +1,6 @@
 #ifndef __ENUMS__EPATHBEHAVIOR_HPP__
 #define __ENUMS__EPATHBEHAVIOR_HPP__
+
 #include <memory>
 
 namespace Enums {
@@ -14,4 +15,4 @@ namespace Enums {
 	};
 }
 
-#endif
+#endif // !__ENUMS__EPATHBEHAVIOR_HPP__

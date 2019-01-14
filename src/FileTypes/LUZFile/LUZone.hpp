@@ -1,5 +1,5 @@
-#ifndef _LUZONE_HPP__
-#define _LUZONE_HPP__
+#ifndef __FILETYPES__LUZFILE__LUZONE_HPP__
+#define __FILETYPES__LUZFILE__LUZONE_HPP__
 
 #include <string>
 #include <vector>
@@ -129,4 +129,4 @@ namespace FileTypes::LUZone {
 	};
 }
 
-#endif // !_LUZONE_HPP__
+#endif // !__FILETYPES__LUZFILE__LUZONE_HPP__

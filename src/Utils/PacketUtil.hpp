@@ -1,5 +1,5 @@
-#ifndef _PACKETUTIL_HPP__
-#define _PACKETUTIL_HPP__
+#ifndef __UTILS__PACKETUTIL_HPP__
+#define __UTILS__PACKETUTIL_HPP__
 
 #include "Common/CrossPlatform.hpp"
 #include <memory>
@@ -21,4 +21,4 @@ namespace PacketUtils {
 
 };
 
-#endif
+#endif // !__UTILS__PACKETUTIL_HPP__

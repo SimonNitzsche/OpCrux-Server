@@ -37,4 +37,5 @@ namespace CachePropertyEntranceComponent {
 		return FDB::PointerString(&GameCache, getRow(id)/**/[1]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__PROPERTYENTRANCECOMPONENT_HPP__

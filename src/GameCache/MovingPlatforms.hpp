@@ -49,4 +49,5 @@ namespace CacheMovingPlatforms {
 		return FDB::PointerString(&GameCache, getRow(id)/**/[7]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__MOVINGPLATFORMS_HPP__

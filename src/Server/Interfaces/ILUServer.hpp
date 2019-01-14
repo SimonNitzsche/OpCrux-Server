@@ -1,6 +1,5 @@
-#pragma once
-#ifndef _ILUSERVER_HPP
-#define _ILUSERVER_HPP
+#ifndef __SERVER__INTERFACES__ILUSERVER_HPP__
+#define __SERVER__INTERFACES__ILUSERVER_HPP__
 
 #include <stdlib.h>
 #include <string>
@@ -21,4 +20,4 @@ public:
 	~ILUServer() {};
 };
 
-#endif
+#endif // !__SERVER__INTERFACES__ILUSERVER_HPP__

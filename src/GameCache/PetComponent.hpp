@@ -1,5 +1,6 @@
 #ifndef __GAMECACHE__PETCOMPONENT_HPP__
 #define __GAMECACHE__PETCOMPONENT_HPP__
+
 #include "GameCache/Interface/FastDatabase.hpp"
 using namespace GameCache::Interface;
 extern FDB::Connection GameCache;
@@ -68,5 +69,6 @@ namespace CachePetComponent {
 	inline FDB::PointerString GetBuffIDs(int32_t componentID) {
 		return FDB::PointerString(&GameCache, GameCache.getRows("PetComponent")[GetComponentIndex(componentID)]/**/[14]/**/.getMemoryLocation());
 	}
-}
-#endif
+};
+
+#endif // !__GAMECACHE__PETCOMPONENT_HPP__

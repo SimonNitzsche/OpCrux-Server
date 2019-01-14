@@ -1,5 +1,5 @@
-#ifndef __COMPONENTS__INTERFACE__IENTITYCOMPONENT_HPP__
-#define __COMPONENTS__INTERFACE__IENTITYCOMPONENT_HPP__
+#ifndef __ENTITY__COMPONENTS__INTERFACE__IENTITYCOMPONENT_HPP__
+#define __ENTITY__COMPONENTS__INTERFACE__IENTITYCOMPONENT_HPP__
 
 #include "Replica/ReplicaTypes.hpp"
 #include "RakNet/BitStream.h"
@@ -23,4 +23,4 @@ namespace Entity::Components::Interface{
 	};
 }
 
-#endif
+#endif // !__ENTITY__COMPONENTS__INTERFACE__IENTITYCOMPONENT_HPP__

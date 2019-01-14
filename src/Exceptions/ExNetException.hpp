@@ -11,4 +11,4 @@ namespace Exceptions::NetException {
 
 }
 
-#endif
+#endif // !__EXCEPTIONS__EXNETEXCEPTION_HPP__

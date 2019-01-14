@@ -11,4 +11,4 @@ class SessionManager {
 	std::vector<std::shared_ptr<ClientSession>> clients;
 };
 
-#endif
+#endif // !__SESSIONS__SESSIONMANAGER_HPP__

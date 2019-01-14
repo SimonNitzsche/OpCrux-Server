@@ -1,5 +1,5 @@
-#ifndef __FASTDATABASE_HPP_
-#define __FASTDATABASE_HPP_
+#ifndef __GAMECACHE__INTERFACE__FASTDATABASE_HPP__
+#define __GAMECACHE__INTERFACE__FASTDATABASE_HPP__
 
 #include <string>
 #include <vector>
@@ -232,4 +232,4 @@ namespace GameCache::Interface::FDB {
 	};
 }
 
-#endif // !__FASTDATABASE_HPP_
+#endif // !__GAMECACHE__INTERFACE__FASTDATABASE_HPP__

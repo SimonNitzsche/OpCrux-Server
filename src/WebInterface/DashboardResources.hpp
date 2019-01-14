@@ -1,8 +1,8 @@
-#pragma once
-#ifndef _DASHBOARDRESOURCES_HPP__
-#define _DASHBOARDRESOURCES_HPP__
+#ifndef __WEBINTERFACE__DASHBOARDRESOURCES_HPP__
+#define __WEBINTERFACE__DASHBOARDRESOURCES_HPP__
 
 #include <Mongoose/mongoose.h>
+
 class DashboardResources {
 public:
 	static int handleResources(struct mg_connection *nc, int ev, struct http_message *hm) {
@@ -10,4 +10,4 @@ public:
 	}
 };
 
-#endif // !_DASHBOARDRESOURCES_HPP__
+#endif // !__WEBINTERFACE__DASHBOARDRESOURCES_HPP__

@@ -90,4 +90,4 @@ namespace PacketFactory {
 
 };
 
-#endif // __PACKETFACTORY__AUTH__AUTHPACKETS_HPP__
+#endif // !__PACKETFACTORY__AUTH__AUTHPACKETS_HPP__

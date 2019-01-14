@@ -33,4 +33,5 @@ namespace CachePetAbilities {
 		return *reinterpret_cast<int32_t*>(getRow(id)/**/[3]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__PETABILITIES_HPP__
