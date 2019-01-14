@@ -12,11 +12,13 @@ if(MSVC)
 	add_definitions(-D_USE_MATH_DEFINES)
 endif()
 
+add_subdirectory(libs)
 include_directories(include)
 include_directories(libs)
 include_directories(src)
 include_directories(tests)
-add_subdirectory(libs)
+include_directories(${MYSQL_INCLUDE_DIR})
+include_directories(${MYSQLCONNECTORCPP_INCLUDE_DIRS})
 
 add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
@@ -105,6 +107,8 @@ target_link_libraries(LUReborn_Server_3_0
 		Mongoose
 		RakNet
 )
+link_directories(${MYSQL_LIBRARIES})
+link_directories(${MYSQLCONNECTORCPP_LIBRARIES})
 
 if(WIN32)
 	target_link_libraries(LUReborn_Server_3_0 wsock32 ws2_32)
