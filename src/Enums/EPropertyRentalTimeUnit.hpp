@@ -20,4 +20,4 @@ namespace Enums {
 	};
 }
 
-#endif
+#endif // !__ENUMS__EPROPERTYRENTALTIMEUNIT_HPP__

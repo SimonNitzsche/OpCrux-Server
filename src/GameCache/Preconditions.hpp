@@ -57,4 +57,5 @@ namespace CachePreconditions {
 		return FDB::PointerString(&GameCache, getRow(id)/**/[9]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__PRECONDITIONS_HPP__

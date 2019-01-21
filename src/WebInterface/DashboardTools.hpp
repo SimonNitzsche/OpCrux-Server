@@ -1,6 +1,5 @@
-#pragma once
-#ifndef _DASHBOARDTOOLS_HPP__
-#define _DASHBOARDTOOLS_HPP__
+#ifndef __WEBINTERFACE__DASHBOARDTOOLS_HPP__
+#define __WEBINTERFACE__DASHBOARDTOOLS_HPP__
 
 #include <Mongoose/mongoose.h>
 #include <string>
@@ -112,4 +111,4 @@ public:
 	}
 };
 
-#endif // !_DASHBOARDTOOLS_HPP__
+#endif // !__WEBINTERFACE__DASHBOARDTOOLS_HPP__

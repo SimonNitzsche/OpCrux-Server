@@ -1,5 +1,5 @@
-#ifndef __UTILS_FILEUTILS_HPP_
-#define __UTILS_FILEUTILS_HPP_
+#ifndef __UTILS__FILEUTILS_HPP__
+#define __UTILS__FILEUTILS_HPP__
 
 #include "Utils/Logger.hpp"
 
@@ -31,4 +31,4 @@ namespace FileUtils {
 	}
 };
 
-#endif // !__UTILS_FILEUTILS_HPP_
+#endif // !__UTILS__FILEUTILS_HPP__

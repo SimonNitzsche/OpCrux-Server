@@ -1,4 +1,5 @@
 #include "FastDatabase.hpp"
+
 #include "Utils/FileUtils.hpp"
 #include "Utils/Logger.hpp"
 

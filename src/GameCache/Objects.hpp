@@ -79,4 +79,5 @@ namespace CacheObjects {
 		return *reinterpret_cast<int32_t*>(getRow(id)/**/[13]/**/.getMemoryLocation()) == 1;
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__OBJECTS_HPP__

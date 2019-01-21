@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __ENUMS__ECOMPONENTS_HPP__
+#define __ENUMS__ECOMPONENTS_HPP__
 
 namespace Enums {
 
@@ -123,3 +124,5 @@ namespace Enums {
 		UNKOWN_116_COMPONENT = 116 //only one in table, LOT 16512, a culling plane, culls objects behind them
 	};
 }
+
+#endif // !__ENUMS__ECOMPONENTS_HPP__

@@ -53,4 +53,5 @@ namespace CacheEmotes {
 		return FDB::PointerString(&GameCache, getRow(id)/**/[8]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__EMOTES_HPP__

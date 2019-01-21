@@ -1,5 +1,5 @@
-#ifndef _WEBINTERFACE_HPP__
-#define _WEBINTERFACE_HPP__
+#ifndef __WEBINTERFACE__WEBINTERFACE_HPP__
+#define __WEBINTERFACE__WEBINTERFACE_HPP__
 
 #include <time.h>
 
@@ -77,4 +77,4 @@ namespace WebInterface {
 	}
 }
 
-#endif // !_WEBINTERFACE_HPP__
+#endif // !__WEBINTERFACE__WEBINTERFACE_HPP__

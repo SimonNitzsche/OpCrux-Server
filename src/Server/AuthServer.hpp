@@ -1,7 +1,6 @@
 #ifndef __SERVER__AUTHSERVER_HPP__
 #define __SERVER__AUTHSERVER_HPP__
 
-#pragma once
 #include "Interfaces/ILUServer.hpp"
 
 class AuthServer : public ILUServer {

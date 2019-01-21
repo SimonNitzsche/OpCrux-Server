@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __ENUMS__EGAMEMESSAGES_HPP__
+#define __ENUMS__EGAMEMESSAGES_HPP__
 
 namespace Enums {
 
@@ -398,3 +399,5 @@ namespace Enums {
 		//    1)  Check to make sure they're all correct
 	};
 }
+
+#endif // !__ENUMS__EGAMEMESSAGES_HPP__

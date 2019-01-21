@@ -1,4 +1,5 @@
 #include "LUZone.hpp"
+
 #include "Utils/FileUtils.hpp"
 using namespace FileTypes::LUZone;
 
@@ -63,7 +64,7 @@ void LUZone::Read() {
 				++currentOffset = transitionFactory.transitionName.Read(reinterpret_cast<uint8_t*>(currentOffset + 1));
 			}
 			
-			// Transition Lööps time
+			// Transition Loops time
 			uint8_t loopTimes = (*version <= 0x21 || *version >= 0x27) ? 2 : 5;
 
 			// Transition Points

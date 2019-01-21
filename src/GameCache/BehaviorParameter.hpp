@@ -73,5 +73,6 @@ namespace GameCache::BehaviorParameter {
 		return GetParameterValue(GetBehaviorRow(behaviorID), parameterID);
 	}
 
-}
-#endif
+};
+
+#endif // !__GAMECACHE__BEHAVIORPARAMETER_HPP__

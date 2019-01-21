@@ -1,7 +1,5 @@
-#pragma once
-
-#ifndef UTILS_LOGGER_HPP
-#define UTILS_LOGGER_HPP
+#ifndef __UTILS__LOGGER_HPP__
+#define __UTILS__LOGGER_HPP__
 
 #include <string>
 
@@ -39,4 +37,4 @@ namespace Logger
 // Displays a variable's name and value
 #define varinfo(x) std::cout << #x": " << x << "\n";
 
-#endif
+#endif // !__UTILS__LOGGER_HPP__

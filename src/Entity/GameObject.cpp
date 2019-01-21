@@ -1,5 +1,7 @@
 #include "GameObject.hpp"
+
 #include "Utils/ServerInfo.hpp"
+
 using namespace Entity;
 
 ReplicaReturnResult GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
@@ -57,6 +59,4 @@ void GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketType
 		factory->Write(false);
 		factory->Write(false);
 	}
-
-
 }

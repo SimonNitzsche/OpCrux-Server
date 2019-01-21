@@ -1,5 +1,6 @@
 #ifndef __GAMECACHE__WORLDCONFIG_HPP__
 #define __GAMECACHE__WORLDCONFIG_HPP__
+
 #include "GameCache/Interface/FastDatabase.hpp"
 extern GameCache::Interface::FDB::Connection Cache;
 
@@ -227,6 +228,6 @@ namespace CacheWorldConfig {
 	inline int32_t GetLevelCapCurrencyConversion() {
 		return *reinterpret_cast<int32_t*>(Cache.getRows("WorldConfig")[0]/**/[56]/**/.getMemoryLocation());
 	}
-}
+};
 
-#endif
+#endif // !__GAMECACHE__WORLDCONFIG_HPP__

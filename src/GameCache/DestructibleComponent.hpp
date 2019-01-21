@@ -79,4 +79,5 @@ namespace CacheDestructibleComponent {
 		return *reinterpret_cast<int32_t*>(getRow(id)/**/[1]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__DESTRUCTIBLECOMPONENT_HPP__

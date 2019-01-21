@@ -1,12 +1,12 @@
-#pragma once
-#ifndef UTILS_SERVERINFO_HPP
-#define UTILS_SERVERINFO_HPP
+#ifndef __UTILS__SERVERINFO_HPP__
+#define __UTILS__SERVERINFO_HPP__
 
 #include <stdio.h>
 #include <string>
 #include <time.h>
 #include <stdint.h>
 #include "Common/CrossPlatform.hpp"
+
 class MasterServer;
 
 class ServerInfo {
@@ -29,4 +29,4 @@ public:
 	static std::string gameVersion;
 	static void numericGameVersion(uint16_t * major, uint16_t * current, uint16_t * minor);
 };
-#endif
+#endif // !__UTILS__SERVERINFO_HPP__

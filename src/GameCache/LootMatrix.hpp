@@ -53,4 +53,5 @@ namespace CacheLootMatrix {
 		return FDB::PointerString(&GameCache, row/**/[8]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__LOOTMATRIX_HPP__

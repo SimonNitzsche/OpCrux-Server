@@ -81,4 +81,5 @@ namespace CachePhysicsComponent {
 		return FDB::PointerString(&GameCache, getRow(id)/**/[15]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__PHYSICSCOMPONENT_HPP__

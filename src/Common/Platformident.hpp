@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __COMMON__PLATFORMIDENT_HPP__
+#define __COMMON__PLATFORMIDENT_HPP__
 
 //
 // uniform platform identification macros
@@ -36,3 +37,5 @@
 #else
 	#define LUR_UNICODE_UTF8
 #endif
+
+#endif // !__COMMON__PLATFORMIDENT_HPP__

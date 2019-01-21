@@ -8,8 +8,6 @@
 #include <mutex>
 
 #include "Common/CrossPlatform.hpp"
-
-
 #include "ServerInfo.hpp"
 
 static std::mutex LoggerMutex;
