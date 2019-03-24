@@ -1,5 +1,5 @@
-#ifndef _STRINGUTILS_HPP__
-#define _STRINGUTILS_HPP__
+#ifndef __UTILS__STRINGUTILS_HPP__
+#define __UTILS__STRINGUTILS_HPP__
 
 #include <string>
 #include <sstream>
@@ -62,4 +62,4 @@ namespace StringUtils {
 	}
 }
 
-#endif // !_STRINGUTILS_HPP__
+#endif // !__UTILS__STRINGUTILS_HPP__

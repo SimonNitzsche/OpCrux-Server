@@ -31,4 +31,4 @@ public:
 	}
 };
 
-#endif
+#endif // !__NETWORKDATATYPES__LUPACKET_HPP__

@@ -89,4 +89,5 @@ namespace CacheSkillBehavior {
 		return *reinterpret_cast<int32_t*>(getRow(skillID)/**/[17]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__SKILLBEHAVIOR_HPP__

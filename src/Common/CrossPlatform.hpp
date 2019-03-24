@@ -1,15 +1,16 @@
-#pragma once
-#ifndef __CROSSPLATFORM_HPP
-#define __CROSSPLATFORM_HPP
+#ifndef __COMMON__CROSSPLATFORM_HPP__
+#define __COMMON__CROSSPLATFORM_HPP__
 
-#ifdef __unix__
+#include "Platformident.hpp"
+
+#ifdef LUR_PLATFORM_UNIX
 #include <sys/socket.h>
 #endif
-#ifdef WIN32
+#ifdef LUR_PLATFORM_WIN32
 #include <WinSock2.h>
 #endif
 
-#if defined(__unix__) || defined(MAC)
+#if defined(LUR_PLATFORM_UNIX) || defined(LUR_PLATFORM_MACOS)
 #include <unistd.h>
 //Wintypes
 #include <cstdint>
@@ -19,9 +20,9 @@ typedef std::uint16_t WORD;
 typedef std::uint32_t DWORD;
 typedef std::uint64_t QWORD;
 #endif
-#ifdef WIN32
+#ifdef LUR_PLATFORM_WIN32
 #include <ws2tcpip.h>
 #include <windows.h>
 #endif
 
-#endif
+#endif // !__COMMON__CROSSPLATFORM_HPP__

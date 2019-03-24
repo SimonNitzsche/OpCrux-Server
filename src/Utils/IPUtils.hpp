@@ -1,5 +1,5 @@
-#ifndef _IPUTILS__
-#define _IPUTILS__
+#ifndef __UTILS__IPUTILS_HPP__
+#define __UTILS__IPUTILS_HPP__
 
 namespace IPUtils {
 	bool isIPLocalHost(unsigned int ip) {
@@ -19,4 +19,4 @@ namespace IPUtils {
 
 }
 
-#endif
+#endif // !__UTILS__IPUTILS_HPP__

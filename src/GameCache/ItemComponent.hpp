@@ -185,4 +185,5 @@ namespace CacheItemComponent {
 		return *reinterpret_cast<float*>(getRow(id)/**/[41]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__ITEMCOMPONENT_HPP__

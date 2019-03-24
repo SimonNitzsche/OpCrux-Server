@@ -1,6 +1,5 @@
-#pragma once
-#ifndef _BRIDGEMASTERSERVER_HPP
-#define _BRIDGEMASTERSERVER_HPP
+#ifndef __SERVER__BRIDGES__BRIDGEMASTERSERVER_HPP__
+#define __SERVER__BRIDGES__BRIDGEMASTERSERVER_HPP__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +11,6 @@
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/RakNetworkFactory.h>
 #include <RakNet/RakSleep.h>
-
 
 class BridgeMasterServer {
 private:
@@ -33,4 +31,4 @@ public:
 	void ChooseWorldServer();
 };
 
-#endif
+#endif // !__SERVER__BRIDGES__BRIDGEMASTERSERVER_HPP__

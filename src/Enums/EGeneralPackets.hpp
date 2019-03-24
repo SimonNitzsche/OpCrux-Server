@@ -23,4 +23,4 @@ namespace Enums {
 	};
 }
 
-#endif
+#endif // !__ENUMS__EGENERALPACKETS_HPP__

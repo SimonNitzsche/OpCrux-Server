@@ -29,4 +29,5 @@ namespace CacheScriptComponent {
 		return FDB::PointerString(&GameCache, getRow(id)/**/[2]/**/.getMemoryLocation());
 	}
 };
-#endif
+
+#endif // !__GAMECACHE__SCRIPTCOMPONENT_HPP__

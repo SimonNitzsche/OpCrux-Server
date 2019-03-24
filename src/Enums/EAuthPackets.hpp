@@ -262,4 +262,4 @@ enum class ELoginReturnCode : uint8_t {
 	GENERAL_FAIL_FF = 0xff
 };
 
-#endif
+#endif // !__ENUMS__EAUTHPACKETS_HPP__

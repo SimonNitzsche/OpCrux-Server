@@ -38,4 +38,4 @@ namespace CacheVendorComponent {
 	}
 };
 
-#endif
+#endif // !__GAMECACHE__VENDORCOMPONENT_HPP__

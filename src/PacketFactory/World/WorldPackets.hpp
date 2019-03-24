@@ -40,4 +40,4 @@ namespace PacketFactory {
 
 };
 
-#endif // __PACKETFACTORY__AUTH__WORLDPACKETS_HPP__
+#endif // !__PACKETFACTORY__AUTH__WORLDPACKETS_HPP__

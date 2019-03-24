@@ -1,6 +1,5 @@
-#pragma once
-#ifndef _MASTERSERVER_HPP
-#define _MASTERSERVER_HPP
+#ifndef __SERVER__MASTERSERVER_HPP__
+#define __SERVER__MASTERSERVER_HPP__
 
 #include <thread>
 #include <vector>
@@ -54,4 +53,4 @@ public:
 			UpdateInstances
 1*/
 
-#endif
+#endif // !__SERVER__MASTERSERVER_HPP__

@@ -1,6 +1,6 @@
-#pragma once
 #ifndef __ENUMS__EPACKETS_HPP__
 #define __ENUMS__EPACKETS_HPP__
+
 #include <memory>
 
 namespace Enums {
@@ -373,4 +373,4 @@ namespace Enums {
 	};
 }
 
-#endif
+#endif // !__ENUMS__EPACKETS_HPP__
