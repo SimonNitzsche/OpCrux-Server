@@ -26,7 +26,7 @@
 #include "PacketFactory/World/WorldPackets.hpp"
 using namespace Exceptions;
 
-WorldServer::WorldServer() : ILUServer() {
+WorldServer::WorldServer(int instanceID, int port) {
 	// Initializes the RakPeerInterface used for the world server
 	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
 
@@ -57,7 +57,6 @@ WorldServer::WorldServer() : ILUServer() {
 			}
 			catch (NetException::CorruptPacket e) {
 				Logger::log("WRLD", "Received corrupt packet.", LogType::ERR);
-				// TODO: Kick player.
 				PacketFactory::General::doDisconnect(rakServer, packet->systemAddress, EDisconnectReason::UNKNOWN_SERVER_ERROR);
 			}
 		}

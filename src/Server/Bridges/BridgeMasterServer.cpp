@@ -135,6 +135,26 @@ void BridgeMasterServer::SayHello() {
 	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
+void BridgeMasterServer::ChooseWorldServer() {
+	if (!_connected) {
+		throw std::runtime_error("Not connected to Master Server.");
+	}
+	if (!_listening) {
+		throw std::runtime_error("Not listening.");
+	}
+
+	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_MASTER_AUTHENTIFICATE_PROCESS));
+
+	packet->Write(RakNet::RakString(ServerInfo::getComputerName().c_str()));
+	packet->Write(RakNet::RakString(ServerInfo::getOsName().c_str()));
+	packet->Write(ServerInfo::processID);
+	packet->Write(static_cast<uint8_t>(MODE_SERVER));
+
+	RakNet::BitStream * packetPTR = packet.get();
+	Logger::log("Bridge", "Send SayHello()");
+	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
 BridgeMasterServer::~BridgeMasterServer() {
 	bridgeThread.~thread();
 }

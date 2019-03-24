@@ -118,6 +118,10 @@ void MasterServer::Listen() {
 							connected_machines.push_back(machine);
 
 					} break;
+
+					case EMasterPacketID::MSG_MASTER_RESERVE_INSTANCE_ID: {
+
+					} break;
 					}
 				} break;
 
@@ -156,6 +160,9 @@ void MasterServer::Listen() {
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
 }
 
+const int MasterServer::reserveInstanceID() {
+	return nextInstanceID++;
+}
 
 MasterServer::~MasterServer() {
 	listenThread.~thread();

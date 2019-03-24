@@ -51,6 +51,14 @@ int main(int argc, char* argv[]) {
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	
+
+	AuthServer * aS;
+	std::thread aT([](AuthServer * as) { as = new AuthServer(); }, aS);
+	aT.detach();
+
+	
+	while (ServerInfo::bRunning) RakSleep(30);
+
 #ifdef WIN32
 	std::system("title LUReborn Server 3.0 (Standalone)");
 #endif
@@ -108,9 +116,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-		WorldServer * wS;
-		std::thread wT([](WorldServer * ws) { new WorldServer(); }, wS);
-		wT.detach();
+		/*WorldServer * charSelectWs;
+		std::thread wT([](WorldServer * ws) { ws = new WorldServer(); }, charSelectWs);
+		wT.detach();*/
 	}
 
 	while (ServerInfo::bRunning) RakSleep(30);

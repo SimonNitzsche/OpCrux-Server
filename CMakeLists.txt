@@ -72,6 +72,7 @@ add_executable(LUReborn_Server_3_0
 		src/Server/Bridges/BridgeMasterServer.cpp
 		src/Server/Bridges/BridgeMasterServer.hpp
 		src/Server/Interfaces/ILUServer.hpp
+		src/Server/Manager/WorldInstanceManager.hpp
 		src/Server/AuthServer.cpp
 		src/Server/AuthServer.hpp
 		src/Server/MasterServer.cpp

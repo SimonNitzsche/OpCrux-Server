@@ -5,6 +5,7 @@
 #include <thread>
 #include <vector>
 #include <string>
+#include <atomic>
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/Types.h>
 
@@ -30,6 +31,8 @@ class MasterServer {
 private:
 	RakPeerInterface * rakServer = nullptr;
 	std::thread listenThread;
+	std::atomic_int32_t nextInstanceID = 0;
+	const int reserveInstanceID();
 public:
 	std::vector<Machine> connected_machines;
 public:

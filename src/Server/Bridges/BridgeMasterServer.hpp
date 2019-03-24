@@ -30,6 +30,7 @@ public:
 	void Connect();
 	void Listen();
 	void SayHello();
+	void ChooseWorldServer();
 };
 
 #endif

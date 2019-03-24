@@ -3,7 +3,7 @@
 
 class WorldServer : ILUServer {
 public:
-	WorldServer();
+	WorldServer(int instanceID, int port);
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 	~WorldServer();
 };
