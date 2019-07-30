@@ -138,8 +138,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					Logger::log("CHAR-CREATION", "unknownB: " + std::to_string(unknownB));
 				}
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
+				Database::CreateNewChar(customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+				
 				PacketFactory::World::sendCharList(rakServer, packet->getSystemAddress());
-				Logger::log("CHAR-CREATION", "Created character with object id " + std::to_string(Database::reserveStaticObjectID()));
+				
 				break;
 			}
 			default:

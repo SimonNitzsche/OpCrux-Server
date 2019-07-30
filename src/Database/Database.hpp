@@ -291,23 +291,39 @@ public:
 	}
 
 	static void SetupStatementHandle() {
-		if (sqlStmtHandle != NULL) SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		
+		if (sqlStmtHandle != NULL) {
+			SQLCloseCursor(sqlStmtHandle);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		}
 		sqlStmtHandle = NULL;
 		//if there is a problem connecting then exit application
 		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_STMT, sqlConnHandle, &sqlStmtHandle))
 			Disconnect();
 	}
 
-	static unsigned long long reserveStaticObjectID(bool bPlayer=false) {
-		//output
-		std::cout << "\n";
-		std::cout << "Reserving object ID for object group "<<(bPlayer?"PLAYER":"STATIC")<<"...";
-		std::cout << "\n";
+	enum class DBCOUNTERID {
+		STATIC,
+		PLAYER,
+		P_STYLE
+	};
 
-		SQLCHAR * query
-			= bPlayer
-			? (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.ObjectIDCounter WHERE type='PLAYER';UPDATE OPCRUX_CD.dbo.ObjectIDCounter SET counter=(counter+1) WHERE type='PLAYER';"
-			: (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.ObjectIDCounter WHERE type='STATIC';UPDATE OPCRUX_CD.dbo.ObjectIDCounter SET counter=(counter+1) WHERE type='STATIC';";
+	static unsigned long long reserveCountedID(DBCOUNTERID dbCounterID) {
+		
+		SQLCHAR * query;
+		switch (dbCounterID) {
+		case DBCOUNTERID::STATIC:
+			query = (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='STATIC';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='STATIC';";
+			break;
+		case DBCOUNTERID::PLAYER: 
+			query = (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='PLAYER';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='PLAYER';";
+			break;
+		case DBCOUNTERID::P_STYLE:
+			query = (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='P_STYLE';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='P_STYLE';";
+			break;
+		default:
+			return -1;
+		}
 
 		SetupStatementHandle();
 
@@ -352,11 +368,132 @@ public:
 		return -1;
 	}
 
-	static void DebugTest() {
+	static int GetCharCount(unsigned long accountID) {
+		SetupStatementHandle();
 
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT password FROM OPCRUX_AD.dbo.Accounts WHERE username=?", SQL_NTS);
+		//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_AD.dbo.Accounts SET username = ? WHERE id = 0", SQL_NTS);
+		//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"PRINT '?'", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &accountID, 0, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+		{
+			if (SQLFetch(sqlStmtHandle) != SQL_SUCCESS) {
+				std::cout << "Database Exception on Fetch!\n";
+				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				return false;
+			}
+			{
+				SQLCHAR sqlAnswer[SQL_RESULT_LEN];
+				SQLLEN ptrSqlAnswer;
+				SQLGetData(sqlStmtHandle, 1, SQL_CHAR, sqlAnswer, SQL_RESULT_LEN, &ptrSqlAnswer);
+
+				std::string db_hash = std::string((char*)&sqlAnswer, ptrSqlAnswer);
+
+				
+
+			}
+		}
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		return false;
 	}
 
-	static void CreateNewChar() {
+	static unsigned long CreateCharStyle(
+		int headColor, int head, int chestColor, int chest, int legs,
+		int hairStyle, int hairColor, int leftHand, int rightHand,
+		int eyebrowStyle, int eyebrow, int eyesStyle, int mouthStyle
+	){
+		long id = reserveCountedID(DBCOUNTERID::P_STYLE);
+
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStyles ON;INSERT INTO OPCRUX_GD.dbo.CharacterStyles(id,headColor,head,chestColor,chest,legs,hairStyle,hairColor,leftHand,rightHand,eyebrowStyle,eyesStyle,mouthStyle) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", SQL_NTS);
+		//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_AD.dbo.Accounts SET username = ? WHERE id = 0", SQL_NTS);
+		//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"PRINT '?'", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0);
+		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SLONG, SQL_INTEGER, 0, 0, &headColor, 0);
+		ret = SQLBindParam(sqlStmtHandle, 3, SQL_C_SLONG, SQL_INTEGER, 0, 0, &head, 0);
+		ret = SQLBindParam(sqlStmtHandle, 4, SQL_C_SLONG, SQL_INTEGER, 0, 0, &chestColor, 0);
+		ret = SQLBindParam(sqlStmtHandle, 5, SQL_C_SLONG, SQL_INTEGER, 0, 0, &chest, 0);
+		ret = SQLBindParam(sqlStmtHandle, 6, SQL_C_SLONG, SQL_INTEGER, 0, 0, &legs, 0);
+		ret = SQLBindParam(sqlStmtHandle, 7, SQL_C_SLONG, SQL_INTEGER, 0, 0, &hairStyle, 0);
+		ret = SQLBindParam(sqlStmtHandle, 8, SQL_C_SLONG, SQL_INTEGER, 0, 0, &hairColor, 0);
+		ret = SQLBindParam(sqlStmtHandle, 9, SQL_C_SLONG, SQL_INTEGER, 0, 0, &leftHand, 0);
+		ret = SQLBindParam(sqlStmtHandle, 10, SQL_C_SLONG, SQL_INTEGER, 0, 0, &rightHand, 0);
+		ret = SQLBindParam(sqlStmtHandle, 11, SQL_C_SLONG, SQL_INTEGER, 0, 0, &eyebrowStyle, 0);
+		ret = SQLBindParam(sqlStmtHandle, 12, SQL_C_SLONG, SQL_INTEGER, 0, 0, &eyesStyle, 0);
+		ret = SQLBindParam(sqlStmtHandle, 13, SQL_C_SLONG, SQL_INTEGER, 0, 0, &mouthStyle, 0);
+
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+		
+		return id;
+	}
+
+	static unsigned long long CreateNewChar (
+		std::wstring customName, std::string genname, int headColor, int head, int chestColor, int chest, int legs,
+		int hairStyle, int hairColor, int leftHand, int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
+	) {
+		// Get Char Count
+		// TODO
+		int charCount = 0;
+
+		// Check if char is creatable on char count
+		if (charCount < 4) {
+			// Create style
+			unsigned long styleID = CreateCharStyle(headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+
+			// Reserve objectID
+			unsigned long long objectID = reserveCountedID(DBCOUNTERID::PLAYER);
+
+			// Create player
+
+
+			return objectID;
+		}
+
+		return -1;
+	}
+
+	static void DebugTest() {
 
 	}
 
