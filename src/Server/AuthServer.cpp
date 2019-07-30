@@ -26,6 +26,8 @@
 #include "PacketFactory/Auth/AuthPackets.hpp"
 using namespace Exceptions;
 
+#include "Database/Database.hpp"
+
 AuthServer::AuthServer() : ILUServer() {
 	// Initializes the RakPeerInterface used for the auth server
 	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
@@ -58,6 +60,7 @@ AuthServer::AuthServer() : ILUServer() {
 			catch (NetException::CorruptPacket e) {
 				Logger::log("AUTH", "Received corrupt packet.", LogType::ERR);
 				// TODO: Kick player.
+				PacketFactory::General::doDisconnect(rakServer, packet->systemAddress, EDisconnectReason::KICK);
 			}
 		}
 	}
@@ -104,7 +107,14 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("AUTH", "Requesting Login: " + std::string(name.begin(), name.end()) + " <-> " + std::string(pswd.length(), "*"[0]));
 
-				PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+				bool authSuccess = Database::IsLoginCorrect((wchar_t*)name.c_str(), (wchar_t*)pswd.c_str());
+
+				Database::DebugTest();
+
+				if (authSuccess)
+					PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+				else
+					PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
 			}
 		} break;
 		default: {

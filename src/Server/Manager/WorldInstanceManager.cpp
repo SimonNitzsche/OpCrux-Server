@@ -4,7 +4,7 @@
 std::vector<std::shared_ptr<WorldServer>> WorldInstanceManager::instances;
 
 WorldServer * CreateInstance(std::uint16_t zoneID) {
-	masterServerBridge.
+	//masterServerBridge.
 
 	std::shared_ptr<WorldServer> server = std::make_shared<WorldServer>();
 	

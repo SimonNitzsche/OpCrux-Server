@@ -24,9 +24,23 @@
 
 #include "PacketFactory/General/GeneralPackets.hpp"
 #include "PacketFactory/World/WorldPackets.hpp"
+#include <fstream>
+#include "Database/Database.hpp"
 using namespace Exceptions;
 
 WorldServer::WorldServer(int instanceID, int port) {
+	// Preload
+	std::string buf;
+	std::ifstream file1("res/names/minifigname_first.txt");
+	while (std::getline(file1, buf)) mf_FirstNames.push_back(buf);
+	file1.close();
+	std::ifstream file2("res/names/minifigname_middle.txt");
+	while (std::getline(file2, buf)) mf_MiddleNames.push_back(buf);
+	file2.close();
+	std::ifstream file3("res/names/minifigname_last.txt");
+	while (std::getline(file3, buf)) mf_LastNames.push_back(buf);
+	file3.close();
+
 	// Initializes the RakPeerInterface used for the world server
 	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
 
@@ -93,11 +107,43 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				break;
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
-				PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
+
+				std::wstring customName = StringUtils::readWStringFromBitStream(data);
+
+				unsigned long predef_0; data->Read(predef_0);
+				unsigned long predef_1; data->Read(predef_1);
+				unsigned long predef_2; data->Read(predef_2);
+
+				std::stringstream namegen;
+				namegen << mf_FirstNames[predef_0] << mf_MiddleNames[predef_1] << mf_LastNames[predef_2];
+				std::string genname = namegen.str();
+
+				unsigned char unknownA; data->Read(unknownA);
+				unsigned long headColor; data->Read(headColor);
+				unsigned long head;	data->Read(head);
+				unsigned long chestColor; data->Read(chestColor);
+				unsigned long chest; data->Read(chest);
+				unsigned long legs; data->Read(legs);
+				unsigned long hairStyle; data->Read(hairStyle);
+				unsigned long hairColor; data->Read(hairColor);
+				unsigned long leftHand; data->Read(leftHand);
+				unsigned long rightHand; data->Read(rightHand);
+				unsigned long eyebrowStyle; data->Read(eyebrowStyle);
+				unsigned long eyesStyle; data->Read(eyesStyle);
+				unsigned long mouthStyle; data->Read(mouthStyle);
+				unsigned char unknownB; data->Read(unknownB);
+
+				if (unknownA != 0 || unknownB != 0) {
+					Logger::log("CHAR-CREATION", "unknownA: " + std::to_string(unknownA));
+					Logger::log("CHAR-CREATION", "unknownB: " + std::to_string(unknownB));
+				}
+				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
+				PacketFactory::World::sendCharList(rakServer, packet->getSystemAddress());
+				Logger::log("CHAR-CREATION", "Created character with object id " + std::to_string(Database::reserveStaticObjectID()));
 				break;
 			}
 			default:
-				Logger::log("WRLD", "Received unknown packetID");
+				Logger::log("WRLD", "Received unknown packetID "+std::to_string(packetHeader.packetID));
 			}
 		} break;
 		default: {

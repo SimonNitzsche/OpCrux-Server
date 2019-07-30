@@ -22,6 +22,7 @@ include_directories(${MYSQLCONNECTORCPP_INCLUDE_DIRS})
 
 add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
+		src/Database/Database.hpp
         src/DataTypes/AMF3.hpp
 		src/DataTypes/LEGO_GUID.hpp
         src/DataTypes/LWOOBJID.hpp
@@ -29,6 +30,8 @@ add_executable(LUReborn_Server_3_0
 		src/DataTypes/Quaternion.hpp
 		src/DataTypes/Vector3.hpp
 		src/DataTypes/ZoneInfo.hpp
+		src/Encryption/sha512.cpp
+		src/Encryption/sha512.hpp
 		src/Entity/Components/Interface/IEntityComponent.hpp
 		src/Entity/GameObject.cpp
 		src/Entity/GameObject.hpp
@@ -112,7 +115,7 @@ link_directories(${MYSQL_LIBRARIES})
 link_directories(${MYSQLCONNECTORCPP_LIBRARIES})
 
 if(WIN32)
-	target_link_libraries(LUReborn_Server_3_0 wsock32 ws2_32)
+	target_link_libraries(LUReborn_Server_3_0 wsock32 ws2_32 odbc32)
 endif()
 if(UNIX)
 	target_link_libraries(LUReborn_Server_3_0 pthread)

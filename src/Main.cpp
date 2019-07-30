@@ -23,6 +23,9 @@
 #include "Utils/ServerInfo.hpp"
 #include "Utils/StringUtils.hpp"
 #include <chrono>
+
+#include "Database/Database.hpp"
+
 using namespace std::chrono;
 
 std::vector<ILUServer *> virtualServerInstances;
@@ -33,7 +36,9 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 #include "FileTypes/LUZFile/LUZone.hpp"
 #include "Entity/GameObject.hpp"
 #include "GameCache/WorldConfig.hpp"
-using namespace Entity;
+
+//#include <mysql.h>
+
 
 GameCache::Interface::FDB::Connection Cache;
 
@@ -42,12 +47,24 @@ int main(int argc, char* argv[]) {
 
 	Cache.Connect("./res/cdclient.fdb");
 	
+	using namespace Entity;
+
 	GameObject * test = new GameObject();
 	test->Test();
 	RakNet::BitStream * testBs = new RakNet::BitStream();
 	test->Serialize(testBs, ReplicaTypes::PacketTypes::CONSTRUCTION);
 
 	//LUZone luz("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
+
+	Database::Connect();
+	//Database::DoATestQuery();
+
+/*	MYSQL * conn;
+	MYSQL_ROW row;
+	MYSQL_RES *res;
+	conn = mysql_init(0);
+
+	conn = mysql_real_connect(conn, "localhost", "root", "test", "OPCRUX_DEV", 3306, NULL, 0);*/
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	
@@ -108,9 +125,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-		/*WorldServer * charSelectWs;
-		std::thread wT([](WorldServer * ws) { ws = new WorldServer(); }, charSelectWs);
-		wT.detach();*/
+		WorldServer * charSelectWs;
+		std::thread wT([](WorldServer * ws) { ws = new WorldServer(0,2001); }, charSelectWs);
+		wT.detach();
 	}
 
 	while (ServerInfo::bRunning) RakSleep(30);
