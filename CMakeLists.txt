@@ -53,6 +53,7 @@ add_executable(LUReborn_Server_3_0
 		src/GameCache/Interface/FastDatabase.hpp
 		src/GameCache/BehaviorParameter.hpp
 		src/GameCache/DestructibleComponent.hpp
+		src/GameCache/ComponentsRegistry.hpp
 		src/GameCache/Emotes.hpp
 		src/GameCache/ItemComponent.hpp
 		src/GameCache/LootMatrix.hpp

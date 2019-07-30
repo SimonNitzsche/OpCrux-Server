@@ -109,6 +109,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
 
 				std::wstring customName = StringUtils::readWStringFromBitStream(data);
+				std::string s_customName(customName.begin(), customName.end());
 
 				unsigned long predef_0; data->Read(predef_0);
 				unsigned long predef_1; data->Read(predef_1);
@@ -138,7 +139,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					Logger::log("CHAR-CREATION", "unknownB: " + std::to_string(unknownB));
 				}
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
-				Database::CreateNewChar(customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+				Database::CreateNewChar(0, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 				
 				PacketFactory::World::sendCharList(rakServer, packet->getSystemAddress());
 				

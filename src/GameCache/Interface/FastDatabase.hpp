@@ -186,6 +186,10 @@ namespace GameCache::Interface::FDB {
 		RowInfo operator [] (uint32_t indexOfRow) {
 			return getRowHeader().getRowInfo(indexOfRow);
 		}
+
+		bool isValid(uint32_t indexOfRow) {
+			return getRowHeader().isRowInfoValid(indexOfRow);
+		}
 	};
 
 	class TableHeader {

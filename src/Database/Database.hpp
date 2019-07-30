@@ -8,12 +8,18 @@
 #include <sqltypes.h>
 #include <sql.h>
 #include <sqlext.h>
+#include <algorithm>
 
 #include "Encryption/sha512.hpp"
+#include "GameCache/Interface/FastDatabase.hpp"
+#include "GameCache/ComponentsRegistry.hpp"
+#include "DataTypes/Vector3.hpp"
 
 #define SQL_RESULT_LEN 240
 #define SQL_RETURN_CODE_LEN 1000
 
+using namespace GameCache::Interface;
+extern FDB::Connection Cache;
 class Database {
 public:
 
@@ -305,7 +311,8 @@ public:
 	enum class DBCOUNTERID {
 		STATIC,
 		PLAYER,
-		P_STYLE
+		P_STYLE,
+		P_STATS
 	};
 
 	static unsigned long long reserveCountedID(DBCOUNTERID dbCounterID) {
@@ -320,6 +327,9 @@ public:
 			break;
 		case DBCOUNTERID::P_STYLE:
 			query = (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='P_STYLE';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='P_STYLE';";
+			break;
+		case DBCOUNTERID::P_STATS:
+			query = (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='P_STATS';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='P_STATS';";
 			break;
 		default:
 			return -1;
@@ -419,9 +429,9 @@ public:
 	}
 
 	static unsigned long CreateCharStyle(
-		int headColor, int head, int chestColor, int chest, int legs,
-		int hairStyle, int hairColor, int leftHand, int rightHand,
-		int eyebrowStyle, int eyebrow, int eyesStyle, int mouthStyle
+		int headColor, int head, int chestColor, int chest,
+		int legs, int hairStyle, int hairColor, int leftHand,
+		int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
 	){
 		long id = reserveCountedID(DBCOUNTERID::P_STYLE);
 
@@ -469,8 +479,8 @@ public:
 	}
 
 	static unsigned long long CreateNewChar (
-		std::wstring customName, std::string genname, int headColor, int head, int chestColor, int chest, int legs,
-		int hairStyle, int hairColor, int leftHand, int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
+		unsigned long accountID, std::string customName, std::string genname, int headColor, int head, int chestColor, int chest,
+		int legs, int hairStyle, int hairColor, int leftHand, int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
 	) {
 		// Get Char Count
 		// TODO
@@ -478,14 +488,142 @@ public:
 
 		// Check if char is creatable on char count
 		if (charCount < 4) {
+
+			// Default Valuse
+			int lastWorld = 0;
+			int lastInstance = 0;
+			int lastClone = 0;
+			unsigned long long lastLog = 0;
+			DataTypes::Vector3 position = DataTypes::Vector3::zero();
+			
+			int shirtObjectID = 0;
+			{
+				FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
+				if (!rth.isRowHeaderValid()) throw new std::exception("Invalid Row Header");
+				for (int i = 0; i < rth.getRowCount(); ++i) {
+					if (!rth.isValid(i)) continue;
+					try {
+						if (
+							*reinterpret_cast<uint32_t*>(rth[i]["itemType"].getMemoryLocation()) == 15 &&
+							*reinterpret_cast<uint32_t*>(rth[i]["color1"].getMemoryLocation()) == chestColor &&
+							*reinterpret_cast<uint32_t*>(rth[i]["decal"].getMemoryLocation()) == chest &&
+							*reinterpret_cast<uint32_t*>(rth[i]["isBOE"].getMemoryLocation()) == 1
+							) {
+							
+							int componentID = *reinterpret_cast<uint32_t*>(rth[i][0].getMemoryLocation());
+							shirtObjectID = CacheComponentsRegistry::FindID(componentID, 11);
+							break;
+						}
+					}
+					catch (std::runtime_error e) {
+						Logger::log("Cache:ItemComponent", e.what(), ERR);
+					}
+				}
+				if(shirtObjectID == 0) {
+					Logger::log("DB-CreateNewChar", "Unable to find componentID for shirt.");
+					return -1; // Fail
+				}
+			}
+			
+			
+			int pantsObjectID = 0; {
+				FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
+				for (int i = 0; i < rth.getRowCount(); ++i) {
+					if (!rth.isValid(i)) continue;
+					try {
+						if (
+							*reinterpret_cast<uint32_t*>(rth[i]["itemType"].getMemoryLocation()) == 7 &&
+							*reinterpret_cast<uint32_t*>(rth[i]["color1"].getMemoryLocation()) == pantsObjectID &&
+							*reinterpret_cast<uint32_t*>(rth[i]["isBOE"].getMemoryLocation()) == 1
+							) {
+							int componentID = *reinterpret_cast<uint32_t*>(rth[i][0].getMemoryLocation());
+							pantsObjectID = CacheComponentsRegistry::FindID(componentID, 11);
+							break;
+						}
+					}
+					catch (std::runtime_error e) {
+						Logger::log("Cache:ItemComponent", e.what(), ERR);
+					}
+				}
+				if (pantsObjectID == 0) {
+					Logger::log("DB-CreateNewChar", "Unable to find componentID for pants.");
+					return -1; // Fail
+				}
+			}
+			int uScore = 0;
+			int uLevel = 0;
+			int currency = 0;
+			int reputation = 0;
+			int health = 4;
+			int imagination = 0;
+			int armor = 0;
+
 			// Create style
 			unsigned long styleID = CreateCharStyle(headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+
+			// Create statistics
+			// TODO
+			unsigned long statsID = 0;
 
 			// Reserve objectID
 			unsigned long long objectID = reserveCountedID(DBCOUNTERID::PLAYER);
 
 			// Create player
 
+			SetupStatementHandle();
+
+			SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SET IDENTITY_INSERT OPCRUX_GD.dbo.Characters ON;INSERT INTO OPCRUX_GD.dbo.Characters(objectID,accountID,charIndex,name,pendingName,styleID,statsID,lastWorld,lastInstance,lastClone,lastLog,positionX,positionY,positionZ,shirtObjectID,pantsObjectID,uScore,uLevel,currency,reputation,health,imagination,armor) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", SQL_NTS);
+			//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_AD.dbo.Accounts SET username = ? WHERE id = 0", SQL_NTS);
+			//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"PRINT '?'", SQL_NTS);
+			if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+				extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				return false;
+			}
+
+			SQLLEN lenZero = 0;
+			SQLLEN NTS = SQL_NTS;
+			SQLLEN lenGenName = genname.size();
+			SQLLEN lenCustomName = customName.size();
+
+			ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &objectID, 0, &lenZero);	extract_error("SQLBindParameter0", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &accountID, 0, &lenZero); extract_error("SQLBindParameter1", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 3, SQL_PARAM_INPUT, SQL_C_LONG, SQL_TINYINT, 0, 0, &charCount, 0, &lenZero); extract_error("SQLBindParameter2", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, genname.size(), 0, (SQLPOINTER)genname.c_str(), 0, &lenGenName); extract_error("SQLBindParameter3", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(customName.size(),1), 0, (SQLPOINTER)customName.c_str(), 0, &lenCustomName); extract_error("SQLBindParameter4", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &styleID, 0, &lenZero); extract_error("SQLBindParameter5", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 7, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &statsID, 0, &lenZero); extract_error("SQLBindParameter6", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 8, SQL_PARAM_INPUT, SQL_C_LONG, SQL_SMALLINT, 0, 0, &lastWorld, 0, &lenZero); extract_error("SQLBindParameter7", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 9, SQL_PARAM_INPUT, SQL_C_LONG, SQL_SMALLINT, 0, 0, &lastInstance, 0, &lenZero); extract_error("SQLBindParameter8", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 10, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &lastClone, 0, &lenZero); extract_error("SQLBindParameter9", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 11, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &lastLog, 0, &lenZero); extract_error("SQLBindParameterA", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 12, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.x), 0, &lenZero); extract_error("SQLBindParameterB", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 13, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.y), 0, &lenZero); extract_error("SQLBindParameterC", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 14, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.z), 0, &lenZero); extract_error("SQLBindParameterD", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 15, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &shirtObjectID, 0, &lenZero); extract_error("SQLBindParameterE", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 16, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &pantsObjectID, 0, &lenZero); extract_error("SQLBindParameterF", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 17, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &uScore, 0, &lenZero); extract_error("SQLBindParameterG", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 18, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &uLevel, 0, &lenZero); extract_error("SQLBindParameterH", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 19, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &currency, 0, &lenZero); extract_error("SQLBindParameterI", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 20, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &reputation, 0, &lenZero); extract_error("SQLBindParameterJ", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 21, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &health, 0, &lenZero); extract_error("SQLBindParameterK", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 22, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &imagination, 0, &lenZero); extract_error("SQLBindParameterL", sqlStmtHandle, SQL_HANDLE_STMT);
+			ret = SQLBindParameter(sqlStmtHandle, 23, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &armor, 0, &lenZero);
+
+
+			if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+				extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				return false;
+			}
+
+			ret = SQLExecute(sqlStmtHandle);
+			if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+				std::cout << "Database Exception on Execute!\n";
+				extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				return false;
+			}
 
 			return objectID;
 		}
