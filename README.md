@@ -1,4 +1,4 @@
-LUReborn Server 3.0
+OpCrux Server
 ===================
 
 Build from source
