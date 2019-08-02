@@ -80,7 +80,7 @@ public:
 	}
 
 	static bool isLoggedIn(mg_connection * nc, http_message * hm) {
-		for (std::ptrdiff_t i = 0; i < sizeof(hm->header_names); ++i) {
+		for (std::ptrdiff_t i = 0; i < hm->header_names->len; ++i) {
 			std::string headerName = std::string(hm->header_names[i].p, hm->header_names[i].len);
 			if (headerName == "Cookie") {
 				std::vector<std::string> cookies = StringUtils::splitString(std::string(hm->header_values[i].p, hm->header_values[i].len), (char)59);
@@ -89,7 +89,7 @@ public:
 					if (cookie[0][0] == (char)20) cookie[0] = cookie[0].substr(1);
 					bool ag = (cookie[0] == "auth" || cookie[0] == " auth") && cookie[1] == "EYLUAR";
 					return true;
-					throw std::runtime_error("TODO: Implement Database.");
+					//throw std::runtime_error("TODO: Implement Database.");
 					/*
 					if ((cookie[0] == "auth"||cookie[0]==" auth")&&Database::accessGrantedWI(cookie[1])) {
 						return true;

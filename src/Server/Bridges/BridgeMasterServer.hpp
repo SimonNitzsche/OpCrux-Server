@@ -28,6 +28,8 @@ public:
 	void Connect();
 	void Listen();
 	void SayHello();
+	void ClientWorldAuth(SystemAddress systemAddress, int accountID);
+	void ClientDisconnect(SystemAddress systemAddress);
 	void ChooseWorldServer();
 };
 

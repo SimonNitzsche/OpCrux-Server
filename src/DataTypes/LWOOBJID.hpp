@@ -134,7 +134,14 @@ namespace DataTypes {
 				// Something went wrong, we could not find the category, log it and throw exeption.
 				Logger::log("LWOOBJID", "Impossible flag category", LogType::UNEXPECTED);
 				throw std::runtime_error("Impossible Flag Category.");
-		}
+			}
+
+			/*
+				Makes Player OBJID
+			*/
+			static LWOOBJID makePlayerObjectID(unsigned long long base) {
+				return 0x1000000000000000 + (base & 0xffffffff);
+			}
 	};
 }
 

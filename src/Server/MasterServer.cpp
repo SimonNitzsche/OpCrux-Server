@@ -114,8 +114,48 @@ void MasterServer::Listen() {
 										if (alreadyExists = true)
 											{ m.processes.push_back(proc); break; }
 
-						if (!alreadyExists)
+						if (!alreadyExists) {
 							connected_machines.push_back(machine);
+						}
+
+					} break;
+
+					case EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGIN_REQUEST: {
+						MachineProcess * mp = GetMachineProcess(packet);
+						
+
+						ClientSessionMR sessionMR;
+						RakNet::RakString sysAddress;
+						data->Read(sysAddress);
+						sessionMR.systemAddress.SetBinaryAddress(sysAddress);
+						data->Read(sessionMR.accountID);
+						sessionMR.process = mp;
+
+						if (mp->machine == nullptr) return;
+
+						Logger::log("MASTER", "Received player login request: ");
+						Logger::log("MASTER", "\tIP: " + std::string(sessionMR.systemAddress.ToString(true)));
+						Logger::log("MASTER", "\tAccountID: " + std::to_string(sessionMR.accountID));
+						Logger::log("MASTER", "on " + mp->machine->machineName + " #" + std::to_string(mp->processID));
+
+						// Add Client
+						connected_clients.push_back(sessionMR);
+
+					} break;
+
+					case EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGOUT_NOTIFY: {
+						RakNet::RakString sysAddress;
+						data->Read(sysAddress);
+
+						SystemAddress sysAddrBin;
+
+						// Remove client
+						for (int i = 0; i < connected_clients.size(); ++i) {
+							if (connected_clients[i].systemAddress.ToString() == sysAddress) {
+								connected_clients.erase(connected_clients.begin()+i);
+								break;
+							}
+						}
 
 					} break;
 

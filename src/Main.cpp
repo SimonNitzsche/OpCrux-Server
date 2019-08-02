@@ -41,6 +41,7 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 
 
 GameCache::Interface::FDB::Connection Cache;
+BridgeMasterServer* masterServerBridge;
 
 int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
@@ -59,36 +60,30 @@ int main(int argc, char* argv[]) {
 	Database::Connect();
 	//Database::DoATestQuery();
 
-/*	MYSQL * conn;
-	MYSQL_ROW row;
-	MYSQL_RES *res;
-	conn = mysql_init(0);
-
-	conn = mysql_real_connect(conn, "localhost", "root", "test", "OPCRUX_DEV", 3306, NULL, 0);*/
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 	
 #ifdef LUR_PLATFORM_WIN32
-	std::system("title LUReborn Server 3.0 (Standalone)");
+	std::system("title OpCrux Server 3.0 (Standalone)");
 #endif
 	for (std::ptrdiff_t i = 0; i < argc; i++) {
 		std::string arg = std::string(argv[i]);
 		if (arg == "--master") {
 			MODE_SERVER = SERVERMODE::MASTER;
 #ifdef LUR_PLATFORM_WIN32
-			std::system("title LUReborn Server 3.0 (Master only)");
+			std::system("title OpCrux Server 3.0 (Master only)");
 #endif
 		}
 		if (arg == "--world") {
 			MODE_SERVER = SERVERMODE::WORLD;
 #ifdef LUR_PLATFORM_WIN32
-			std::system("title LUReborn Server 3.0 (World only)");
+			std::system("title OpCrux Server 3.0 (World only)");
 #endif
 		}
 		if (arg == "--auth") {
 			MODE_SERVER = SERVERMODE::AUTH;
 #ifdef WIN32
-			std::system("title LUReborn Server 3.0 (Auth only)");
+			std::system("title OpCrux Server 3.0 (Auth only)");
 #endif
 		}
 		else {
@@ -113,7 +108,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
-		BridgeMasterServer* masterServerBridge = new BridgeMasterServer(ipMaster);
+		masterServerBridge = new BridgeMasterServer(ipMaster);
 		masterServerBridge->Connect();
 		masterServerBridge->Listen();
 	}

@@ -28,6 +28,8 @@
 #include "Database/Database.hpp"
 using namespace Exceptions;
 
+extern BridgeMasterServer* masterServerBridge;
+
 WorldServer::WorldServer(int instanceID, int port) {
 	// Preload
 	std::string buf;
@@ -97,10 +99,13 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Handshaking with client...");
 
 				PacketFactory::General::doHandshake(rakServer, packet->getSystemAddress(), false);
+				masterServerBridge->ClientWorldAuth(packet->getSystemAddress(), 12345);
 			}
 			break;
 		}
 		case ERemoteConnection::SERVER: {
+			// TODO: Check if client is authenticated session.
+
 			switch (static_cast<EWorldPacketID>(packetHeader.packetID)) {
 			case EWorldPacketID::CLIENT_CHARACTER_LIST_REQUEST: {
 				PacketFactory::World::sendCharList(rakServer, packet->getSystemAddress());
@@ -162,6 +167,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	case ID_DISCONNECTION_NOTIFICATION: {
 		Logger::log("WRLD", "User Disconnected from WORLD...");
 		// TODO: Disconnect as Session
+		
+		// TODO: Check if user is authenticated
+		// if yes:
+		// masterServerBridge->ClientDisconnect(packet->getSystemAddress());
 	} break;
 	default: {
 		Logger::log("WRLD", "Recieved unknown packet #" + (byte)packetHeader.packetID);
