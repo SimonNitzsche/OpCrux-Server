@@ -150,6 +150,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				
 				break;
 			}
+			case EWorldPacketID::CLIENT_LOGIN_REQUEST: {
+				PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
+				break;
+			}
 			default:
 				Logger::log("WRLD", "Received unknown packetID "+std::to_string(packetHeader.packetID));
 			}
