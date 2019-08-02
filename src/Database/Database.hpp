@@ -510,7 +510,7 @@ public:
 			SQLGetData(sqlStmtHandle, 9, SQL_C_SLONG, &rightHand, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 10, SQL_C_SLONG, &eyebrowStyle, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 11, SQL_C_SLONG, &eyesStyle, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &mouthStyle, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 12, SQL_C_SLONG, &mouthStyle, 0, &ptrSqlAnswer);
 
 
 			Str_DB_CharStyle charStyle;
