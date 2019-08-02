@@ -47,6 +47,22 @@ namespace StringUtils {
 		return returnVal;
 	};
 
+	inline std::string readStringFromBitStream(RakNet::BitStream * bitstream, int len = 33) {
+		std::unique_ptr<char[]> buff = std::make_unique<char[]>(len);
+		bitstream->Read(buff.get(), len);
+
+		char * data = reinterpret_cast<char*>(buff.get());
+
+		int i;
+		for (i = 0; i < len; ++i) {
+			if (*(data + i) == 0x00) break;
+		}
+
+		std::string returnVal = std::string(reinterpret_cast<char*>(buff.get()), i);
+
+		return returnVal;
+	};
+
 	inline void FillZero(RakNet::BitStream * bitstream, int count) {
 		bitstream->Write(std::string(count, 0x00).c_str(), count);
 	}

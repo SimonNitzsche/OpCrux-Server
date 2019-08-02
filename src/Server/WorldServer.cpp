@@ -43,6 +43,8 @@ WorldServer::WorldServer(int instanceID, int port) {
 	while (std::getline(file3, buf)) mf_LastNames.push_back(buf);
 	file3.close();
 
+	sessionManager = SessionManager();
+
 	// Initializes the RakPeerInterface used for the world server
 	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
 
@@ -99,16 +101,38 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Handshaking with client...");
 
 				PacketFactory::General::doHandshake(rakServer, packet->getSystemAddress(), false);
-				masterServerBridge->ClientWorldAuth(packet->getSystemAddress(), 12345);
 			}
 			break;
 		}
 		case ERemoteConnection::SERVER: {
 			// TODO: Check if client is authenticated session.
+			ClientSession * clientSession = nullptr;
+			if (static_cast<EWorldPacketID>(packetHeader.packetID) != EWorldPacketID::CLIENT_VALIDATION) { // Whitelist CLIENT_VALIDATION
+				clientSession = sessionManager.GetSession(packet->getSystemAddress());
+				// Something went wrong
+				if (clientSession == nullptr) {
+					PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::CHARACTER_NOT_FOUND);
+					return;
+				}
+			}
 
 			switch (static_cast<EWorldPacketID>(packetHeader.packetID)) {
+			case EWorldPacketID::CLIENT_VALIDATION: {
+				std::wstring wClientName = StringUtils::readWStringFromBitStream(data);
+				std::wstring wClientKey = StringUtils::readWStringFromBitStream(data);
+				std::string sClientFDBChecksum = StringUtils::readStringFromBitStream(data);
+				ClientSession csFactory;
+				csFactory.accountID = Database::GetAccountIDByClientName(std::string(wClientName.begin(), wClientName.end()));
+				csFactory.sessionToken = wClientKey;
+				csFactory.systemAddress = packet->getSystemAddress();
+
+				sessionManager.AddSession(csFactory);
+
+				masterServerBridge->ClientWorldAuth(packet->getSystemAddress(), csFactory.accountID);
+				break;
+			}
 			case EWorldPacketID::CLIENT_CHARACTER_LIST_REQUEST: {
-				PacketFactory::World::sendCharList(rakServer, packet->getSystemAddress());
+				PacketFactory::World::sendCharList(rakServer, clientSession);
 				break;
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
@@ -146,11 +170,15 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
 				Database::CreateNewChar(0, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 				
-				PacketFactory::World::sendCharList(rakServer, packet->getSystemAddress());
+				PacketFactory::World::sendCharList(rakServer, clientSession);
 				
 				break;
 			}
 			case EWorldPacketID::CLIENT_LOGIN_REQUEST: {
+
+				DataTypes::LWOOBJID objectID;
+				data->Read(objectID);
+
 				PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				break;
 			}
@@ -166,15 +194,15 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	} break;
 	case ID_NEW_INCOMING_CONNECTION: {
 		Logger::log("WRLD", "Recieving new Connection...");
-		// TODO: Connect as Session
+		
 	} break;
 	case ID_DISCONNECTION_NOTIFICATION: {
 		Logger::log("WRLD", "User Disconnected from WORLD...");
-		// TODO: Disconnect as Session
-		
-		// TODO: Check if user is authenticated
-		// if yes:
-		// masterServerBridge->ClientDisconnect(packet->getSystemAddress());
+		ClientSession * session = sessionManager.GetSession(packet->getSystemAddress());
+		if (session != nullptr) {
+			sessionManager.RemoveSession(session);
+			masterServerBridge->ClientDisconnect(packet->getSystemAddress());
+		}
 	} break;
 	default: {
 		Logger::log("WRLD", "Recieved unknown packet #" + (byte)packetHeader.packetID);

@@ -887,6 +887,50 @@ public:
 		return -1;
 	}
 
+	static unsigned long GetAccountIDByClientName(std::string clientName) {
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT id FROM OPCRUX_AD.dbo.Accounts WHERE username=?", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return -1;
+		}
+
+		SQLLEN lenClientName = clientName.size();
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, clientName.size(), 0, (SQLPOINTER)clientName.c_str(), 0, &lenClientName);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return -1;
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return -1;
+		}
+		{
+			if (SQLFetch(sqlStmtHandle) != SQL_SUCCESS) {
+				std::cout << "Database Exception on Fetch!\n";
+				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				return -1;
+			}
+			{
+				SQLINTEGER accountID;
+				SQLLEN ptrSqlAnswer;
+				SQLGetData(sqlStmtHandle, 1, SQL_INTEGER, &accountID, 0, &ptrSqlAnswer);
+				
+				return accountID;
+
+			}
+		}
+	}
+
 	static void DebugTest() {
 
 	}

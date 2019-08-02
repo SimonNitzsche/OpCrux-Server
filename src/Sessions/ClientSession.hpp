@@ -19,9 +19,9 @@
 struct ClientSession {
 	SystemAddress systemAddress;
 	std::wstring sessionToken;
-	DataTypes::LEGO_GUID legoGUID;
 	DataTypes::ZoneInfo currentZone;
 	DataTypes::LWOOBJID actorID;
+	unsigned long accountID;
 };
 
 #endif // !__SESSIONS__CLIENTSESSION_HPP__

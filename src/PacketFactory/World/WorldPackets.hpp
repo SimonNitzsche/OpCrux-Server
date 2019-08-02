@@ -23,7 +23,7 @@ namespace PacketFactory {
 
 	namespace World {
 
-		inline void sendCharList(RakPeerInterface * rakServer, SystemAddress client) {
+		inline void sendCharList(RakPeerInterface * rakServer, ClientSession * client) {
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead;
@@ -33,10 +33,7 @@ namespace PacketFactory {
 			returnBS.Write(returnBSHead);
 			//Data
 
-			// TODO: Link to Session List
-			unsigned long accountID = 0;
-
-			std::vector<Database::Str_DB_CharInfo> charsInfo = Database::GetChars(accountID);
+			std::vector<Database::Str_DB_CharInfo> charsInfo = Database::GetChars(client->accountID);
 			size_t count = charsInfo.size();
 			returnBS.Write(static_cast<std::uint8_t>(count & 0xFF));
 			returnBS.Write(static_cast<std::uint8_t>(0)); // front char index
@@ -74,7 +71,7 @@ namespace PacketFactory {
 				Logger::log("WRLD", "Sent character " + charInfo.name);
 			}
 
-			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client, false);
+			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client->systemAddress, false);
 		}
 
 	};
