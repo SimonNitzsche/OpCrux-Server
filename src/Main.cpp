@@ -38,7 +38,7 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 #include "GameCache/WorldConfig.hpp"
 
 //#include <mysql.h>
-
+#include "DataTypes/LDF.hpp"
 
 GameCache::Interface::FDB::Connection Cache;
 BridgeMasterServer* masterServerBridge;

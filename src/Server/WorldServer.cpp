@@ -178,8 +178,26 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				DataTypes::LWOOBJID objectID;
 				data->Read(objectID);
+				clientSession->actorID = objectID;
 
-				PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
+				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
+				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, 1000, 0, 0, 0x20b8087c, DataTypes::Vector3::zero(), 0);
+				break;
+			}
+			case EWorldPacketID::CLIENT_LEVEL_LOAD_COMPLETE: {
+
+				std::uint16_t zoneID;
+				std::uint16_t mapInstance;
+				std::uint32_t mapClone;
+
+				data->Read(zoneID);
+				data->Read(mapInstance);
+				data->Read(mapClone);
+
+				Logger::log("WRLD", "Client load complete ZoneID: " + std::to_string(zoneID) + " MapInstance: " + std::to_string(mapInstance) + " MapClone: " + std::to_string(mapClone));
+				PacketFactory::World::CreateCharacter(rakServer, clientSession);
+
 				break;
 			}
 			default:

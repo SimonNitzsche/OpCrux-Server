@@ -24,6 +24,7 @@ add_executable(LUReborn_Server_3_0
         src/Common/CrossPlatform.hpp
 		src/Database/Database.hpp
         src/DataTypes/AMF3.hpp
+		src/DataTypes/LDF.hpp
 		src/DataTypes/LEGO_GUID.hpp
         src/DataTypes/LWOOBJID.hpp
 		src/DataTypes/Position.hpp
