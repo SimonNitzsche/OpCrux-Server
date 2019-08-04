@@ -3,14 +3,14 @@
 
 #include "Platformident.hpp"
 
-#ifdef LUR_PLATFORM_UNIX
+#ifdef OPCRUX_PLATFORM_UNIX
 #include <sys/socket.h>
 #endif
-#ifdef LUR_PLATFORM_WIN32
+#ifdef OPCRUX_PLATFORM_WIN32
 #include <WinSock2.h>
 #endif
 
-#if defined(LUR_PLATFORM_UNIX) || defined(LUR_PLATFORM_MACOS)
+#if defined(OPCRUX_PLATFORM_UNIX) || defined(OPCRUX_PLATFORM_MACOS)
 #include <unistd.h>
 //Wintypes
 #include <cstdint>
@@ -20,7 +20,7 @@ typedef std::uint16_t WORD;
 typedef std::uint32_t DWORD;
 typedef std::uint64_t QWORD;
 #endif
-#ifdef LUR_PLATFORM_WIN32
+#ifdef OPCRUX_PLATFORM_WIN32
 #include <ws2tcpip.h>
 #include <windows.h>
 #endif

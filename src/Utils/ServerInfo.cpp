@@ -6,7 +6,7 @@
 clock_t ServerInfo::appstart;
 bool ServerInfo::initDone = false;
 bool ServerInfo::bRunning = true;
-const char* ServerInfo::baseTitle = "LUR Server 3.0";
+const char* ServerInfo::baseTitle = "OpCrux Server";
 time_t ServerInfo::StartupTime;
 
 int ServerInfo::processID;

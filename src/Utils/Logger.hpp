@@ -11,7 +11,7 @@
 
 enum LogType
 {
-#ifdef LUR_PLATFORM_WIN32
+#ifdef OPCRUX_PLATFORM_WIN32
 	NORMAL = 15,
 	INFO = 11,
 	WARN = 14,

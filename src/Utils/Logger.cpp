@@ -38,7 +38,7 @@ void Logger::log(const std::string &from, const std::string &message, LogType ty
 	
 	std::lock_guard<std::mutex> lock(LoggerMutex);
 
-#ifdef LUR_PLATFORM_WIN32
+#ifdef OPCRUX_PLATFORM_WIN32
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, static_cast<int>(type));
 
