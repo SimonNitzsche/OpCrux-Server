@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
 
 	Cache.Connect("./res/cdclient.fdb");
-	
+
 	using namespace Entity;
 
 	GameObject * test = new GameObject();
@@ -62,28 +62,28 @@ int main(int argc, char* argv[]) {
 
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
-	
-#ifdef LUR_PLATFORM_WIN32
-	std::system("title OpCrux Server 3.0 (Standalone)");
+
+#ifdef OPCRUX_PLATFORM_WIN32
+	std::system("title OpCrux Server (Standalone)");
 #endif
 	for (std::ptrdiff_t i = 0; i < argc; i++) {
 		std::string arg = std::string(argv[i]);
 		if (arg == "--master") {
 			MODE_SERVER = SERVERMODE::MASTER;
-#ifdef LUR_PLATFORM_WIN32
-			std::system("title OpCrux Server 3.0 (Master only)");
+#ifdef OPCRUX_PLATFORM_WIN32
+			std::system("title OpCrux Server (Master only)");
 #endif
 		}
 		if (arg == "--world") {
 			MODE_SERVER = SERVERMODE::WORLD;
-#ifdef LUR_PLATFORM_WIN32
-			std::system("title OpCrux Server 3.0 (World only)");
+#ifdef OPCRUX_PLATFORM_WIN32
+			std::system("title OpCrux Server (World only)");
 #endif
 		}
 		if (arg == "--auth") {
 			MODE_SERVER = SERVERMODE::AUTH;
-#ifdef WIN32
-			std::system("title OpCrux Server 3.0 (Auth only)");
+#ifdef OPCRUX_PLATFORM_WIN32
+			std::system("title OpCrux Server (Auth only)");
 #endif
 		}
 		else {

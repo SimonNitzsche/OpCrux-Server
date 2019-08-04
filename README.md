@@ -20,4 +20,4 @@ Dependencies:
 
 Build:
 > $ cmake . <br>
-> $ make LUReborn_Server_3_0
+> $ make OpCrux_Server

@@ -68,9 +68,9 @@ if(WIN32)
     )
     find_library(MYSQLCONNECTORCPP_LIBRARIES mysqlcppconn
         PATHS
-		$ENV{ProgramFiles}/MySQL/*/lib/vs14
-        $ENV{SystemDrive}/MySQL/*/lib/vs14
-        $ENV{ProgramW6432}/MySQL/*/lib/vs14
+		$ENV{ProgramFiles}/MySQL/*/*/vs14
+        $ENV{SystemDrive}/MySQL/*/*/vs14
+        $ENV{ProgramW6432}/MySQL/*/*/vs14
     )
 else(WIN32)
     find_path(MYSQLCONNECTORCPP_INCLUDE_DIR mysql_connection.h
