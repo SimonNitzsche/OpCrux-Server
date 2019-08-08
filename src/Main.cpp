@@ -46,20 +46,20 @@ BridgeMasterServer* masterServerBridge;
 int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
 
+	Database::Connect();
+	//Database::DoATestQuery();
+
 	Cache.Connect("./res/cdclient.fdb");
 
 	using namespace Entity;
 
-	GameObject * test = new GameObject();
+	/*Logger::log("WRLD", "Adding object...");
+	Entity::GameObject * test = new Entity::GameObject(1);
 	test->Test();
 	RakNet::BitStream * testBs = new RakNet::BitStream();
-	test->Serialize(testBs, ReplicaTypes::PacketTypes::CONSTRUCTION);
-
+	test->Serialize(testBs, ReplicaTypes::PacketTypes::CONSTRUCTION);*/
+	
 	//LUZone luz("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
-
-	Database::Connect();
-	//Database::DoATestQuery();
-
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 

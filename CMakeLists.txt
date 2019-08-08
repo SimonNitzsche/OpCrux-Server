@@ -34,6 +34,14 @@ add_executable(OpCrux_Server
     src/Encryption/sha512.cpp
     src/Encryption/sha512.hpp
     src/Entity/Components/Interface/IEntityComponent.hpp
+	src/Entity/Components/CharacterComponent.hpp
+	src/Entity/Components/Component107.hpp
+	src/Entity/Components/ControllablePhysicsComponent.hpp
+	src/Entity/Components/DestructibleComponent.hpp
+	src/Entity/Components/InventoryComponent.hpp
+	src/Entity/Components/RenderComponent.hpp
+	src/Entity/Components/SkillComponent.hpp
+	src/Entity/Components/StatsComponent.hpp
     src/Entity/GameObject.cpp
     src/Entity/GameObject.hpp
     src/Enums/EComponents.hpp

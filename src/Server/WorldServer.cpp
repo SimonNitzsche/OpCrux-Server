@@ -8,7 +8,8 @@
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/RakNetworkFactory.h>
 #include <RakNet/RakSleep.h>
-
+#include <RakNet/ReplicaManager.h>
+#include <RakNet/NetworkIDManager.h>
 
 #include "Enums/EPackets.hpp"
 #include "Enums/ERemoteConnection.hpp"
@@ -26,6 +27,12 @@
 #include "PacketFactory/World/WorldPackets.hpp"
 #include <fstream>
 #include "Database/Database.hpp"
+
+#include "Entity/GameObject.hpp"
+#include "DataTypes/LWOOBJID.hpp"
+
+#include "Entity/Components/CharacterComponent.hpp"
+
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
@@ -57,6 +64,16 @@ WorldServer::WorldServer(int instanceID, int port) {
 	Logger::log("WRLD", "Starting World...");
 
 	rakServer->SetMaximumIncomingConnections((unsigned short)2);
+
+	replicaManager = new ReplicaManager();
+	rakServer->AttachPlugin(replicaManager);
+	replicaManager->SetDefaultScope(true);
+	networkIdManager = new NetworkIDManager();
+	rakServer->SetNetworkIDManager(networkIdManager);
+
+	replicaManager->SetAutoParticipateNewConnections(true);
+	replicaManager->SetAutoSerializeInScope(true);
+	networkIdManager->SetIsNetworkIDAuthority(true);
 
 	// Check startup
 	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
@@ -185,6 +202,16 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				PacketFactory::World::LoadStaticZone(rakServer, clientSession, 1000, 0, 0, 0x20b8087c, DataTypes::Vector3::zero(), 0);
 				break;
 			}
+			case EWorldPacketID::CLIENT_GAME_MSG: {
+				DataTypes::LWOOBJID objectID;
+				data->Read(objectID);
+				std::uint16_t messageID;
+				data->Read(messageID);
+
+				Logger::log("WRLD", "Received Game Message ID #" + std::to_string(messageID));
+
+				break;
+			}
 			case EWorldPacketID::CLIENT_LEVEL_LOAD_COMPLETE: {
 
 				std::uint16_t zoneID;
@@ -196,7 +223,22 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				data->Read(mapClone);
 
 				Logger::log("WRLD", "Client load complete ZoneID: " + std::to_string(zoneID) + " MapInstance: " + std::to_string(mapInstance) + " MapClone: " + std::to_string(mapClone));
+
+				Logger::log("WRLD", "Create character packet");
 				PacketFactory::World::CreateCharacter(rakServer, clientSession);
+
+				Logger::log("WRLD", "Construct player");
+				Entity::GameObject * playerObject = new Entity::GameObject(1);
+				playerObject->SetObjectID(clientSession->actorID);
+				CharacterComponent * charComp = (CharacterComponent*)playerObject->GetComponentByID(4);
+				Database::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
+				charComp->InitCharInfo(info);
+				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
+				
+				replicaManager->Construct((Replica*)playerObject, false, clientSession->systemAddress, false);
+
+				Logger::log("WRLD", "Server done loading");
+				PacketFactory::World::TestLoad(rakServer, clientSession);
 
 				break;
 			}
@@ -233,5 +275,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 }
 
 WorldServer::~WorldServer() {
-
+	if (replicaManager) delete[] replicaManager;
+	if (networkIdManager) delete[] networkIdManager;
 }

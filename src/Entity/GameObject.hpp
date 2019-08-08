@@ -9,12 +9,14 @@
 #include <vector>
 #include <unordered_map>
 
+#include "Entity/Components/Interface/IEntityComponent.hpp"
+
 namespace Entity {
+
 
 	/*
 		Classes to be later defined.
 	*/
-	class EntityComponent;
 	class LWOTimer {};
 
 	/*
@@ -30,7 +32,7 @@ namespace Entity {
 			int32_t LOT;
 
 			// The Name of this Object.
-			std::wstring name;
+			std::wstring name = L"Simon";
 
 			// The Timestamp this object was created on the server.
 			int64_t creationTimestamp;
@@ -48,7 +50,7 @@ namespace Entity {
 			std::vector<GameObject *> children;
 
 			// The Components assigned to this object.
-			std::vector<EntityComponent*> components;
+			std::unordered_map<std::uint32_t, IEntityComponent*> components;
 
 			// The timers assigned to this object.
 			std::unordered_map<char*, LWOTimer> timers;
@@ -69,6 +71,21 @@ namespace Entity {
 			
 		public:
 			/*
+				Constructor
+			*/
+			GameObject(std::uint32_t LOT);
+
+			/*
+				Destructor
+			*/
+			~GameObject();
+
+			/*
+				Sets the object ID
+			*/
+			void SetObjectID(DataTypes::LWOOBJID ID);
+
+			/*
 				Called to update the object.
 			*/
 			void Update();
@@ -79,9 +96,29 @@ namespace Entity {
 			void Tick();
 
 			/*
+				Returns an component by ID
+			*/
+			IEntityComponent * GetComponentByID(int id);
+
+			/*
+				Adds an component by ID
+			*/
+			void AddComponentByID(int id);
+
+			/*
 				Serializes the Object.
 			*/
 			void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType);
+
+			/*
+				Serializes the components of the object.
+			*/
+			void SerializeComponents(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType);
+
+			/*
+				Serializes the base data of the object.
+			*/
+			void SerializeBaseData(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType);
 
 			/*
 				Quick function to create the test object.

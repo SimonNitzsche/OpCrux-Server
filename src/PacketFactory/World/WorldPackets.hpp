@@ -76,18 +76,34 @@ namespace PacketFactory {
 		}
 
 		inline void TestLoad(RakPeerInterface * rakServer, ClientSession * clientSession) {
-			RakNet::BitStream returnBS;
-			// Head
-			LUPacketHeader returnBSHead;
-			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
-			returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
-			returnBSHead.packetID = static_cast<uint32_t>(Enums::EClientPacketID::SERVER_GAME_MSG);
-			returnBS.Write(returnBSHead);
-			returnBS.Write<std::uint64_t>(clientSession->actorID);
-			returnBS.Write<std::uint16_t>(0x66a); // Server Done Loading All Objects
+			{
+				RakNet::BitStream returnBS;
+				// Head
+				LUPacketHeader returnBSHead;
+				returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
+				returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
+				returnBSHead.packetID = static_cast<uint32_t>(Enums::EClientPacketID::SERVER_GAME_MSG);
+				returnBS.Write(returnBSHead);
+				returnBS.Write<std::uint64_t>(clientSession->actorID);
+				returnBS.Write<std::uint16_t>(0x66a); // Server Done Loading All Objects
 
-			// Send
-			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
+				// Send
+				rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
+			}
+			{
+				RakNet::BitStream returnBS;
+				// Head
+				LUPacketHeader returnBSHead;
+				returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
+				returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
+				returnBSHead.packetID = static_cast<uint32_t>(Enums::EClientPacketID::SERVER_GAME_MSG);
+				returnBS.Write(returnBSHead);
+				returnBS.Write<std::uint64_t>(clientSession->actorID);
+				returnBS.Write<std::uint16_t>(0x1fd); // Server Done Loading All Objects
+
+				// Send
+				rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
+			}
 		}
 
 		inline void CreateCharacter(RakPeerInterface * rakServer, ClientSession * clientSession) {
@@ -102,8 +118,7 @@ namespace PacketFactory {
 			RakNet::BitStream outerWrapperBS;
 
 			RakNet::BitStream contentWrapperBS;
-			// TODO Write Content
-
+			
 			std::vector<LDFEntry> ldfEntries;
 			ldfEntries.push_back(LDFEntry(L"template", std::int32_t(1)));
 			ldfEntries.push_back(LDFEntry(L"objid", clientSession->actorID));
@@ -111,25 +126,35 @@ namespace PacketFactory {
 			contentWrapperBS.Write(std::uint32_t(ldfEntries.size()));
 			for (int i = 0; i < ldfEntries.size(); ++i) {
 				LDFEntry entry = ldfEntries[i];
-				contentWrapperBS.Write(static_cast<uint8_t>(entry.key.size() & 0xFF) * 2);
-				contentWrapperBS.Write(entry.key);
-				contentWrapperBS.Write(entry.type);
+				contentWrapperBS.Write<std::uint8_t>((entry.key.size() & 0xFF) * 2);
+				StringUtils::writeWstringToBitStream(&contentWrapperBS, entry.key, entry.key.size());
+				contentWrapperBS.Write<std::uint8_t>(entry.type);
 				entry.WriteToBitstream(&contentWrapperBS);
 			}
 
 			bool isContentCompressed = false;
-			outerWrapperBS.Write(static_cast<uint8_t>(isContentCompressed));
+			outerWrapperBS.Write<std::uint8_t>(isContentCompressed);
 			if (isContentCompressed) {
 				// TODO
 				// [u32] size of uncompressed data
 				// [u32] size of compressed data
 			}
 
-			outerWrapperBS.Write(contentWrapperBS);
+			//char * cwbsd; int cwbsl;
+			//contentWrapperBS.Read(cwbsd, cwbsl);
+			//outerWrapperBS.Write(cwbsd, cwbsl);
+			std::string contentWrapperData((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
+			outerWrapperBS.Write((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
 
 			// Write
-			returnBS.Write(static_cast<uint32_t>(outerWrapperBS.GetNumberOfBytesUsed()));
-			returnBS.Write(outerWrapperBS);
+			returnBS.Write<std::uint32_t>(outerWrapperBS.GetNumberOfBytesUsed());
+			//char * owbsd; int owbsl;
+			//outerWrapperBS.Read(owbsd, owbsl);
+			//returnBS.Write(owbsd, owbsl);
+			std::string outerWrapperData((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
+			returnBS.Write((char*)outerWrapperBS.GetData(), outerWrapperBS.GetNumberOfBytesUsed());
+
+			char * finalPtr = (char*)returnBS.GetData();
 
 			// Send
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
@@ -138,10 +163,6 @@ namespace PacketFactory {
 			for (int i = 0; i < ldfEntries.size(); ++i) {
 				ldfEntries[i].Delete();
 			}
-
-
-			// Test
-			TestLoad(rakServer, clientSession);
 		}
 
 		inline void LoadStaticZone(RakPeerInterface * rakServer, ClientSession * clientSession, std::uint16_t zoneID, std::uint16_t mapInstance, std::uint32_t mapClone, std::uint32_t mapChecksum, DataTypes::Vector3 playerPosition, std::uint32_t activityMap) {

@@ -11,6 +11,9 @@ private:
 	std::vector<std::string> mf_LastNames = {};
 public:
 	SessionManager sessionManager;
+	ReplicaManager * replicaManager = nullptr;
+	NetworkIDManager * networkIdManager = nullptr;
+	//ObjectsManager * objectsManager = nullptr;
 public:
 	WorldServer(int instanceID, int port);
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);

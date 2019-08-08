@@ -162,12 +162,12 @@ public:
 			break;
 
 		case SQL_INVALID_HANDLE:
-			std::cout << "Could not connect to SQL Server";
+			std::cout << "Could not connect to SQL Server (SQL_INVALID_HANDLE)";
 			std::cout << "\n";
 			Disconnect();
 
 		case SQL_ERROR:
-			std::cout << "Could not connect to SQL Server";
+			std::cout << "Could not connect to SQL Server (SQL_ERROR)";
 			std::cout << "\n";
 			Disconnect();
 
@@ -307,8 +307,11 @@ public:
 		}
 		sqlStmtHandle = NULL;
 		//if there is a problem connecting then exit application
-		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_STMT, sqlConnHandle, &sqlStmtHandle))
+		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_STMT, sqlConnHandle, &sqlStmtHandle)) {
+			extract_error("SQLAllocHandle", sqlConnHandle, SQL_HANDLE_DBC);
+			extract_error("SQLAllocHandle", sqlStmtHandle, SQL_HANDLE_STMT);
 			Disconnect();
+		}
 	}
 
 	enum class DBCOUNTERID {
@@ -538,6 +541,7 @@ public:
 
 	struct Str_DB_CharInfo {
 	public:
+		unsigned long accountID;
 		unsigned long long objectID;
 		unsigned char charIndex;
 		std::string name;
@@ -646,6 +650,7 @@ public:
 			SQLGetData(sqlStmtHandle, 22, SQL_C_SLONG, &armor, 0, &ptrSqlAnswer);
 
 			Str_DB_CharInfo charInfo;
+			charInfo.accountID = accountID;
 			charInfo.objectID = objectID;
 			charInfo.charIndex = charIndex;
 			charInfo.name = name;
@@ -681,6 +686,126 @@ public:
 			return charsInfo;
 		}
 		
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		return {};
+	}
+
+	static Str_DB_CharInfo GetChar(unsigned long long objectID) {
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE accountID=? ORDER BY charIndex", SQL_NTS);
+		//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_AD.dbo.Accounts SET username = ? WHERE id = 0", SQL_NTS);
+		//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"PRINT '?'", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return {};
+		}
+
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &objectID, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return {};
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return {};
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		if (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLINTEGER accountID;
+			int charIndex;
+			SQLCHAR sqlName[SQL_RESULT_LEN];
+			SQLCHAR sqlPendingName[SQL_RESULT_LEN];
+			SQLINTEGER styleID;
+			SQLINTEGER statsID;
+			SQLINTEGER lastWorld;
+			SQLINTEGER lastInstance;
+			SQLINTEGER lastClone;
+			SQLUBIGINT lastLog;
+			float posX;
+			float posY;
+			float posZ;
+			SQLINTEGER shirtObjectID;
+			SQLINTEGER pantsObjectID;
+			SQLINTEGER uScore;
+			SQLINTEGER uLevel;
+			SQLINTEGER currency;
+			SQLINTEGER reputation;
+			SQLINTEGER health;
+			SQLINTEGER imagination;
+			SQLINTEGER armor;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SLONG, &accountID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &charIndex, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_TCHAR, &sqlName, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string name((char*)&sqlName, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_TCHAR, &sqlPendingName, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string pendingName((char*)&sqlPendingName, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &styleID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SLONG, &statsID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &lastWorld, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 8, SQL_C_SLONG, &lastInstance, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 9, SQL_C_SLONG, &lastClone, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 10, SQL_C_UBIGINT, &lastLog, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 11, SQL_C_FLOAT, &posX, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 12, SQL_C_FLOAT, &posY, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 13, SQL_C_FLOAT, &posZ, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 14, SQL_C_SLONG, &shirtObjectID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 15, SQL_C_SLONG, &pantsObjectID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 16, SQL_C_SLONG, &uScore, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 17, SQL_C_SLONG, &uLevel, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 18, SQL_C_SLONG, &currency, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 19, SQL_C_SLONG, &reputation, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 20, SQL_C_SLONG, &health, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 21, SQL_C_SLONG, &imagination, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 22, SQL_C_SLONG, &armor, 0, &ptrSqlAnswer);
+
+			Str_DB_CharInfo charInfo;
+			charInfo.accountID = accountID;
+			charInfo.objectID = objectID;
+			charInfo.charIndex = charIndex;
+			charInfo.name = name;
+			charInfo.pendingName = pendingName;
+			charInfo.styleID = styleID;
+			charInfo.statsID = statsID;
+			charInfo.lastWorld = lastWorld & 0xFFFF;
+			charInfo.lastInstance = lastInstance & 0xFFFF;
+			charInfo.lastClone = lastClone;
+			charInfo.lastLog = lastLog;
+			charInfo.position = DataTypes::Vector3(posX, posY, posZ);
+			charInfo.shirtObjectID = shirtObjectID;
+			charInfo.pantsObjectID = pantsObjectID;
+			charInfo.uScore = uScore;
+			charInfo.uLevel = uLevel;
+			charInfo.currency = currency;
+			charInfo.reputation = reputation;
+			charInfo.health = health;
+			charInfo.imagination = imagination;
+			charInfo.armor = armor;
+			return charInfo;
+		}
+
+		
+			std::cout << "Database Exception on Fetch!\n";
+			extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return {};
+
+		
+
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		return {};
 	}

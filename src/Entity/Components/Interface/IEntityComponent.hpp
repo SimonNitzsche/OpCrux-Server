@@ -3,8 +3,13 @@
 
 #include "Replica/ReplicaTypes.hpp"
 #include "RakNet/BitStream.h"
+#include "DataTypes/LWOOBJID.hpp"
 
-namespace Entity::Components::Interface{
+namespace Entity {
+	class GameObject;
+}
+
+//namespace Entity::Components::Interface {
 
 	/*
 		Components require to extend this class.
@@ -13,14 +18,28 @@ namespace Entity::Components::Interface{
 		public:
 
 			// The Owner Game Object.
-			class GameObject * owner;
+			Entity::GameObject * owner;
 
 			// Called when Component Requires Serialization.
 			virtual void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) = 0;
 
+			// Called after constructor
+			virtual void OnEnable() {}
+
 			// Called when the components needs update.
-			virtual void Update() = 0;
+			virtual void Update() {}
+
+			virtual ~IEntityComponent() = default;
+
+			IEntityComponent() = default;
+
+			void SetOwner(Entity::GameObject * obj) {
+				owner = obj;
+			}
+
 	};
-}
+//}
+
+//using namespace Entity::Components::Interface;
 
 #endif // !__ENTITY__COMPONENTS__INTERFACE__IENTITYCOMPONENT_HPP__
