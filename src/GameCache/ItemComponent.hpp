@@ -4,11 +4,11 @@
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CacheItemComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
-		FDB::RowTopHeader rth = GameCache.getRows("ItemComponent");
+		FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
@@ -22,7 +22,7 @@ namespace CacheItemComponent {
 	}
 
 	inline FDB::PointerString GetEquipLocation(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[1]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[1]/**/.getMemoryLocation());
 	}
 	
 	inline int32_t GetBaseValue(int32_t id) {
@@ -42,7 +42,7 @@ namespace CacheItemComponent {
 	}
 
 	inline int64_t GetItemInfo(int32_t id) {
-		return *reinterpret_cast<int64_t*>(GameCache.getFileData()+*reinterpret_cast<int32_t*>(getRow(id)/**/[6]/**/.getMemoryLocation()));
+		return *reinterpret_cast<int64_t*>(Cache.getFileData()+*reinterpret_cast<int32_t*>(getRow(id)/**/[6]/**/.getMemoryLocation()));
 	}
 
 	inline bool GetInLootTable(int32_t id) {
@@ -102,7 +102,7 @@ namespace CacheItemComponent {
 	}
 
 	inline FDB::PointerString GetReqPrecondition(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[21]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[21]/**/.getMemoryLocation());
 	}
 
 	inline int32_t GetAnimationFlag(int32_t id) {
@@ -142,11 +142,11 @@ namespace CacheItemComponent {
 	}
 
 	inline FDB::PointerString GetSubItems(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[31]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[31]/**/.getMemoryLocation());
 	}
 
 	inline FDB::PointerString GetAudioEventUse(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[32]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[32]/**/.getMemoryLocation());
 	}
 
 	inline bool GetNoEquipAnimation(int32_t id) {
@@ -162,15 +162,15 @@ namespace CacheItemComponent {
 	}
 
 	inline FDB::PointerString GetAudioEquipMetaEventSet(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[36]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[36]/**/.getMemoryLocation());
 	}
 
 	inline FDB::PointerString GetCurrencyCosts(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[37]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[37]/**/.getMemoryLocation());
 	}
 
 	inline FDB::PointerString GetIngredientInfo(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[38]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[38]/**/.getMemoryLocation());
 	}
 
 	inline int32_t GetLocaleStatus(int32_t id) {

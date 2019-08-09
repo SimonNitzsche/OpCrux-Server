@@ -18,10 +18,10 @@ namespace Entity {
 		public:
 
 			// The Owner Game Object.
-			Entity::GameObject * owner;
+			Entity::GameObject * owner = nullptr;
 
 			// Called when Component Requires Serialization.
-			virtual void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) = 0;
+			virtual void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {};
 
 			// Called after constructor
 			virtual void OnEnable() {}

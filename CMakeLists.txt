@@ -34,12 +34,15 @@ add_executable(OpCrux_Server
     src/Encryption/sha512.cpp
     src/Encryption/sha512.hpp
     src/Entity/Components/Interface/IEntityComponent.hpp
+	src/Entity/Components/BaseCombatAIComponent.hpp
 	src/Entity/Components/CharacterComponent.hpp
 	src/Entity/Components/Component107.hpp
 	src/Entity/Components/ControllablePhysicsComponent.hpp
 	src/Entity/Components/DestructibleComponent.hpp
 	src/Entity/Components/InventoryComponent.hpp
+	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
+	src/Entity/Components/ScriptComponent.hpp
 	src/Entity/Components/SkillComponent.hpp
 	src/Entity/Components/StatsComponent.hpp
     src/Entity/GameObject.cpp
@@ -69,6 +72,7 @@ add_executable(OpCrux_Server
     src/GameCache/ItemComponent.hpp
     src/GameCache/LootMatrix.hpp
     src/GameCache/LootMatrixIndex.hpp
+	src/GameCache/MovementAIComponent.hpp
     src/GameCache/MovingPlatforms.hpp
     src/GameCache/Objects.hpp
     src/GameCache/PetAbilities.hpp

@@ -3,11 +3,11 @@
 
 #include "Interface/FastDatabase.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CacheObjects {
 	inline FDB::RowInfo getRow(int32_t id) {
-		FDB::RowTopHeader rth = GameCache.getRows("Objects");
+		FDB::RowTopHeader rth = Cache.getRows("Objects");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				FDB::RowInfo rowInfo = rth[i];
@@ -28,7 +28,7 @@ namespace CacheObjects {
 	}
 
 	inline FDB::PointerString GetName(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[1]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[1]/**/.getMemoryLocation());
 	}
 
 	inline bool GetPlacable(int32_t id) {
@@ -36,11 +36,11 @@ namespace CacheObjects {
 	}
 
 	inline FDB::PointerString GetType(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[3]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[3]/**/.getMemoryLocation());
 	}
 
 	inline FDB::PointerString GetDescription(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[4]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[4]/**/.getMemoryLocation());
 	}
 
 	inline bool GetLocalize(int32_t id) {
@@ -52,7 +52,7 @@ namespace CacheObjects {
 	}
 
 	inline FDB::PointerString GetDisplayName(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[7]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[7]/**/.getMemoryLocation());
 	}
 
 	inline float GetInteractionDistance(int32_t id) {
@@ -64,7 +64,7 @@ namespace CacheObjects {
 	}
 
 	inline FDB::PointerString Get_InternalNotes(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[10]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[10]/**/.getMemoryLocation());
 	}
 
 	inline int32_t GetLocaleStatus(int32_t id) {
@@ -72,7 +72,7 @@ namespace CacheObjects {
 	}
 
 	inline FDB::PointerString GetGateVersion(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[12]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[12]/**/.getMemoryLocation());
 	}
 
 	inline bool GetHQ_Valid(int32_t id) {

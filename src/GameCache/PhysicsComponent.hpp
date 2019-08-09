@@ -4,11 +4,11 @@
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CachePhysicsComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
-		FDB::RowTopHeader rth = GameCache.getRows("PhysicsComponent");
+		FDB::RowTopHeader rth = Cache.getRows("PhysicsComponent");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
@@ -26,7 +26,7 @@ namespace CachePhysicsComponent {
 	}
 
 	inline FDB::PointerString GetPhysicsAsset(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[2]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[2]/**/.getMemoryLocation());
 	}
 
 	inline float GetJump(int32_t id) {
@@ -66,7 +66,7 @@ namespace CachePhysicsComponent {
 	}
 
 	inline FDB::PointerString GetBoundaryAsset(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[12]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[12]/**/.getMemoryLocation());
 	}
 
 	inline float GetJumpAirSpeed(int32_t id) {
@@ -78,7 +78,7 @@ namespace CachePhysicsComponent {
 	}
 
 	inline FDB::PointerString GetGravityVolumeAsset(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[15]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[15]/**/.getMemoryLocation());
 	}
 };
 

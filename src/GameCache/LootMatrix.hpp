@@ -4,11 +4,11 @@
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CacheLootMatrix {
 	inline FDB::RowInfo getRow(int32_t lootMatrixIndex) {
-		FDB::RowTopHeader rth = GameCache.getRows("LootMatrix");
+		FDB::RowTopHeader rth = Cache.getRows("LootMatrix");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == lootMatrixIndex)
@@ -50,7 +50,7 @@ namespace CacheLootMatrix {
 	}
 
 	inline FDB::PointerString GetGateVersion(FDB::RowInfo row) {
-		return FDB::PointerString(&GameCache, row/**/[8]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, row/**/[8]/**/.getMemoryLocation());
 	}
 };
 

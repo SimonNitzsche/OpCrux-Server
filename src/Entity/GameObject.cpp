@@ -1,10 +1,23 @@
 #include "GameObject.hpp"
 
 #include "Utils/ServerInfo.hpp"
+#include "Server/WorldServer.hpp"
 
 //using namespace Entity::Components::Interface;
-#define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T, COMP_ID) {COMP_T * comp = static_cast<COMP_T*>(this->GetComponentByID(COMP_ID)); if(comp != nullptr) { Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"..."); comp->Serialize(factory, packetType);}}
-#define COMPONENT_ONADD_SWITCH_CASE(COMP_T, COMP_ID) {case COMP_ID: {COMP_T * comp = new COMP_T(); comp->SetOwner(this); components.insert(std::make_pair(COMP_ID, comp)); comp->OnEnable(); Logger::log("WRLD", "Added Component "+std::string(#COMP_T)+"!"); if(comp == nullptr) throw new std::runtime_error(std::string(#COMP_T)+" resultet into a nullptr.");  break;}}
+#define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T, COMP_ID) {COMP_T * comp = static_cast<COMP_T*>(this->GetComponentByID(COMP_ID)); if(comp != nullptr) { /*Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"...");*/ comp->Serialize(factory, packetType);}}
+#define COMPONENT_ONADD_SWITCH_CASE(COMP_T, COMP_ID) {\
+	case COMP_ID: {\
+		COMP_T * comp = new COMP_T();\
+		components.insert(std::make_pair(COMP_ID, comp));\
+		comp->SetOwner(this); \
+		comp->OnEnable();\
+		Logger::log("WRLD", "Added Component "+std::string(#COMP_T)+"!");\
+		if(comp == nullptr) {\
+			throw new std::runtime_error(std::string(#COMP_T)+" resultet into a nullptr.");\
+		}\
+		break;\
+	}\
+}
 
 void lala(IEntityComponent * c, int id) {
 	if (id == 1000) {
@@ -17,17 +30,21 @@ void lala(IEntityComponent * c, int id) {
 #include "Utils/StringUtils.hpp"
 
 // Components
+#include "Entity/Components/BaseCombatAIComponent.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
 #include "Entity/Components/Component107.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/DestructibleComponent.hpp"
 #include "Entity/Components/InventoryComponent.hpp"
+#include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
+#include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
 #include "Entity/Components/StatsComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::CONSTRUCTION);
+	Instance->replicaManager->SetScope(this, true, UNASSIGNED_SYSTEM_ADDRESS, true);
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::SendDestruction(RakNet::BitStream *outBitStream, SystemAddress systemAddress, bool *includeTimestamp) {
@@ -38,20 +55,23 @@ ReplicaReturnResult Entity::GameObject::ReceiveDestruction(RakNet::BitStream *in
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::SendScopeChange(bool inScope, RakNet::BitStream *outBitStream, RakNetTime currentTime, SystemAddress systemAddress, bool *includeTimestamp) {
+	outBitStream->Write(inScope);
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::ReceiveScopeChange(RakNet::BitStream *inBitStream, SystemAddress systemAddress, RakNetTime timestamp) {
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::Serialize(bool *sendTimestamp, RakNet::BitStream *outBitStream, RakNetTime lastSendTime, PacketPriority *priority, PacketReliability *reliability, RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags) {
-	return REPLICA_PROCESSING_DONE;
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::SERIALIZATION);
+	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::Deserialize(RakNet::BitStream *inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress) {
 	return REPLICA_PROCESSING_DONE;
 }
 
-Entity::GameObject::GameObject(std::uint32_t LOT) {
+Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
+	this->Instance = instance;
+	this->LOT = LOT;
 	auto d = CacheComponentsRegistry::GetObjectComponentTypes(LOT);
 	for (std::uint32_t component_type : d) {
 		this->AddComponentByID(component_type);
@@ -75,7 +95,8 @@ DataTypes::LWOOBJID Entity::GameObject::GetObjectID() {
 }
 
 void Entity::GameObject::Update() {
-
+	for (auto oPair : components)
+		oPair.second->Update();
 }
 
 void Entity::GameObject::Tick() {
@@ -83,11 +104,15 @@ void Entity::GameObject::Tick() {
 }
 
 IEntityComponent* Entity::GameObject::GetComponentByID(int id) {
-	return components[id];
+	auto it = components.find(id);
+	if(it != components.end())
+		return it->second;
+	return nullptr;
 }
 
 void Entity::GameObject::AddComponentByID(int id) {
 	switch (id) {
+		COMPONENT_ONADD_SWITCH_CASE(StatsComponent, 200);
 		//COMPONENT_ONADD_SWITCH_CASE(Component108, 108);
 		//COMPONENT_ONADD_SWITCH_CASE(ModuleAssemblyComponent, 61);
 		  COMPONENT_ONADD_SWITCH_CASE(ControllablePhysicsComponent, 1);
@@ -101,9 +126,9 @@ void Entity::GameObject::AddComponentByID(int id) {
 		  COMPONENT_ONADD_SWITCH_CASE(CharacterComponent, 4);
 		//COMPONENT_ONADD_SWITCH_CASE(ShootingGalleryComponent, 19);
 		  COMPONENT_ONADD_SWITCH_CASE(InventoryComponent, 17);
-		//COMPONENT_ONADD_SWITCH_CASE(ScriptComponent, 5);
+		  COMPONENT_ONADD_SWITCH_CASE(ScriptComponent, 5);
 		  COMPONENT_ONADD_SWITCH_CASE(SkillComponent, 9);
-		//COMPONENT_ONADD_SWITCH_CASE(BaseCombatAIComponent, 60);
+		  COMPONENT_ONADD_SWITCH_CASE(BaseCombatAIComponent, 60);
 		//COMPONENT_ONADD_SWITCH_CASE(QuickbuildComponent, 48);
 		//COMPONENT_ONADD_SWITCH_CASE(MovingPlatformComponent, 25);
 		//COMPONENT_ONADD_SWITCH_CASE(SwitchComponent, 49);
@@ -117,19 +142,22 @@ void Entity::GameObject::AddComponentByID(int id) {
 		//COMPONENT_ONADD_SWITCH_CASE(MinigameComponent, 50);
 		  COMPONENT_ONADD_SWITCH_CASE(Component107, 107);
 		//COMPONENT_ONADD_SWITCH_CASE(TriggerComponent, 69);
-
-	// SPECIAL ONES
-		  COMPONENT_ONADD_SWITCH_CASE(StatsComponent, 1000);
+		  COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent, 31);
 
 	default: {
 		Logger::log("WRLD", "Couldn't add component #" + std::to_string(id) + " to GameObject!", LogType::UNEXPECTED);
+		return;
 	}
+	}
+	if (GetComponentByID(id) == nullptr) {
+		Logger::log("WRLD", "Failed to add component #" + std::to_string(id) + " to GameObject!", LogType::UNEXPECTED);
 	}
 }
 
 void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 	SerializeBaseData(factory, packetType);
 	SerializeComponents(factory, packetType);
+	objectDirty = false;
 }
 
 void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
@@ -146,9 +174,9 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(CharacterComponent, 4);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ShootingGalleryComponent, 19);
 	SERIALIZE_COMPONENT_IF_ATTACHED(InventoryComponent, 17);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(ScriptComponent, 5);
+	SERIALIZE_COMPONENT_IF_ATTACHED(ScriptComponent, 5);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SkillComponent, 9);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(BaseCombatAIComponent, 60);
+	SERIALIZE_COMPONENT_IF_ATTACHED(BaseCombatAIComponent, 60);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(QuickbuildComponent, 48);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent, 25);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent, 49);

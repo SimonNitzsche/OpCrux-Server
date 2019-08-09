@@ -4,11 +4,11 @@
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CacheSkillBehavior {
 	inline FDB::RowInfo getRow(int skillID) {
-		FDB::RowTopHeader rth = GameCache.getRows("SkillBehavior");
+		FDB::RowTopHeader rth = Cache.getRows("SkillBehavior");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == skillID)
@@ -46,7 +46,7 @@ namespace CacheSkillBehavior {
 	}
 
 	inline FDB::PointerString GetOomSkillID(int32_t skillID) {
-		return FDB::PointerString(&GameCache, getRow(skillID)/**/[7]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(skillID)/**/[7]/**/.getMemoryLocation());
 	}
 
 	inline int32_t GetOomBehaviorEffectID(int32_t skillID) {
@@ -82,7 +82,7 @@ namespace CacheSkillBehavior {
 	}
 
 	inline FDB::PointerString GetGateVersion(int32_t skillID) {
-		return FDB::PointerString(&GameCache, getRow(skillID)/**/[16]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(skillID)/**/[16]/**/.getMemoryLocation());
 	}
 
 	inline int32_t GetCancelType(int32_t skillID) {

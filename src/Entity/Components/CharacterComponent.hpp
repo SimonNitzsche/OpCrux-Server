@@ -6,8 +6,8 @@
 
 class CharacterComponent : public IEntityComponent {
 private:
-	Database::Str_DB_CharInfo charInfo;
-	Database::Str_DB_CharStyle charStyle;
+	Database::Str_DB_CharInfo charInfo = Database::Str_DB_CharInfo();
+	Database::Str_DB_CharStyle charStyle = Database::Str_DB_CharStyle();
 
 	// Dirty flags
 	bool _dirtyPart2 = true;

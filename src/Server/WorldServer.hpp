@@ -20,6 +20,7 @@ public:
 	FileTypes::LUZ::LUZone * luZone;
 public:
 	WorldServer(int zone, int instanceID, int port);
+	void GameLoopThread();
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 	~WorldServer();
 };

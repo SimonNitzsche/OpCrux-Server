@@ -3,11 +3,11 @@
 
 #include "Interface/FastDatabase.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CacheDestructibleComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
-		FDB::RowTopHeader rth = GameCache.getRows("DestructibleComponent");
+		FDB::RowTopHeader rth = Cache.getRows("DestructibleComponent");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				FDB::RowInfo rowInfo = rth[i];
@@ -32,7 +32,7 @@ namespace CacheDestructibleComponent {
 	}
 
 	inline FDB::PointerString GetFactionList(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[2]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[2]/**/.getMemoryLocation());
 	}
 
 	inline int32_t GetLife(int32_t id) {

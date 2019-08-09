@@ -22,9 +22,9 @@ public:
 	}
 
 	void OnEnable() {
-		if (owner->GetComponentByID(1000) == nullptr) {
-			owner->AddComponentByID(1000);
-			statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(1000));
+		if (owner->GetComponentByID(200) == nullptr) {
+			owner->AddComponentByID(200);
+			statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(200));
 
 			if (statsComponent == nullptr) {
 				Logger::log("WRLD", "Something went wrong DestuctibleComponent::OnEnable()");

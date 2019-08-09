@@ -10,6 +10,8 @@
 #include <unordered_map>
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
+//#include "Server/WorldServer.hpp"
+class WorldServer;
 
 namespace Entity {
 
@@ -55,6 +57,11 @@ namespace Entity {
 			// The timers assigned to this object.
 			std::unordered_map<char*, LWOTimer> timers;
 			
+			// Needs serialization
+			bool objectDirty = false;
+
+			WorldServer * Instance;
+
 		public:
 
 			/*
@@ -73,12 +80,19 @@ namespace Entity {
 			/*
 				Constructor
 			*/
-			GameObject(std::uint32_t LOT);
+			GameObject(WorldServer * instance, std::uint32_t LOT);
 
 			/*
 				Destructor
 			*/
 			~GameObject();
+
+			/*
+				Sets name
+			*/
+			void SetName(std::wstring n) {
+				name = n;
+			}
 
 			/*
 				Sets the object ID
@@ -89,6 +103,13 @@ namespace Entity {
 				Gets the object ID
 			*/
 			DataTypes::LWOOBJID GetObjectID();
+
+			/*
+				Gets the object LOT
+			*/
+			std::uint32_t GetLOT() {
+				return LOT;
+			}
 
 			/*
 				Called to update the object.
@@ -129,6 +150,20 @@ namespace Entity {
 				Only use this on a player.
 			*/
 			std::string GenerateXML();
+
+			/*
+				Sets the object dirty.
+			*/
+			void SetDirty() {
+				objectDirty = true;
+			}
+
+			/*
+				Checks if object dirty
+			*/
+			bool IsObjectDirty() {
+				return objectDirty;
+			}
 
 			/*
 				Quick function to create the test object.

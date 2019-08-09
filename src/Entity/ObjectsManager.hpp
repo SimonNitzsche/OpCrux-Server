@@ -28,6 +28,7 @@ public:
 	void Serialize(Entity::GameObject * object);
 	void Destruct(DataTypes::LWOOBJID objID);
 	void Destruct(Entity::GameObject * object);
+	void OnUpdate();
 	~ObjectsManager() {}
 };
 

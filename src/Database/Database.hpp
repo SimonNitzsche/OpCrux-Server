@@ -544,8 +544,8 @@ public:
 		unsigned long accountID;
 		unsigned long long objectID;
 		unsigned char charIndex;
-		std::string name;
-		std::string pendingName;
+		std::string name="";
+		std::string pendingName="";
 		unsigned int styleID;
 		unsigned int statsID;
 		unsigned short lastWorld;
@@ -562,6 +562,10 @@ public:
 		unsigned int health;
 		unsigned int imagination;
 		unsigned int armor;
+		Str_DB_CharInfo() {
+			name = "";
+			pendingName = "";
+		}
 	};
 
 	static std::vector<Str_DB_CharInfo> GetChars(unsigned long accountID) {

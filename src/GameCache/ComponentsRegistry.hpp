@@ -10,11 +10,16 @@ namespace CacheComponentsRegistry {
 		FDB::RowTopHeader rth = Cache.getRows("ComponentsRegistry");
 		for (int i = 0; i < rth.getRowCount(); ++i) {
 			try {
+				if (!rth.isValid(i)) continue;
 				FDB::RowInfo rowInfo = rth[i];
 				if (*reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation()) == id) {
 					while (rowInfo.isValid()) {
+
+						int a = *reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation());
+						int b = *reinterpret_cast<int32_t*>(rowInfo[1].getMemoryLocation());
+
 						if (*reinterpret_cast<int32_t*>(rowInfo[1].getMemoryLocation()) == component_type)
-							return rth[i];
+							return rowInfo;
 						if (rowInfo.isLinkedRowInfoValid()) {
 							rowInfo = rowInfo.getLinkedRowInfo();
 						}
@@ -33,7 +38,9 @@ namespace CacheComponentsRegistry {
 		FDB::RowTopHeader rth = Cache.getRows("ComponentsRegistry");
 		for (int i = 0; i < rth.getRowCount(); ++i) {
 			try {
+				if (!rth.isValid(i)) continue;
 				FDB::RowInfo rowInfo = rth[i];
+				if (!rowInfo.isValid()) continue;
 				if (*reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation()) == id) {
 					while (rowInfo.isValid()) {
 						if (*reinterpret_cast<int32_t*>(rowInfo[2].getMemoryLocation()) == component_id)
@@ -108,7 +115,7 @@ namespace CacheComponentsRegistry {
 	}
 
 	inline int32_t GetComponentID(int32_t id, int32_t compType) {
-		return *reinterpret_cast<int32_t*>(getRowByComponent(id, compType)/**/[2]/**/.getMemoryLocation());
+		return *reinterpret_cast<int32_t*>(getRowByType(id, compType)/**/[2]/**/.getMemoryLocation());
 	}
 
 	inline int32_t GetComponentID(FDB::RowInfo row) {

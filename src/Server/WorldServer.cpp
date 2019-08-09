@@ -76,7 +76,10 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	replicaManager->SetAutoParticipateNewConnections(true);
 	replicaManager->SetAutoSerializeInScope(true);
+
 	networkIdManager->SetIsNetworkIDAuthority(true);
+
+	this->objectsManager = new ObjectsManager(this);
 
 	// Check startup
 	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
@@ -94,6 +97,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	Packet* packet;
 	initDone = true;
+
+	std::thread glT([=]() { GameLoopThread(); });
+	glT.detach();
 
 	while (ServerInfo::bRunning) {
 		RakSleep(1);
@@ -113,6 +119,13 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	rakServer->Shutdown(0);
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
+}
+
+void WorldServer::GameLoopThread() {
+	while (ServerInfo::bRunning) {
+		objectsManager->OnUpdate();
+		RakSleep(30);
+	}
 }
 
 void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
@@ -236,10 +249,14 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Client load complete ZoneID: " + std::to_string(zoneID) + " MapInstance: " + std::to_string(mapInstance) + " MapClone: " + std::to_string(mapClone));
 
 				
-				
+				Entity::GameObject * testStromling = new Entity::GameObject(this, 4712);
+				testStromling->SetObjectID(288334496658198693ULL); // Random ID
+				ControllablePhysicsComponent * scpComp = (ControllablePhysicsComponent*)testStromling->GetComponentByID(1);
+				scpComp->SetPosition(luZone->spawnPos->pos);
+				scpComp->SetRotation(Quaternion(0,0,0,0));
 
 				Logger::log("WRLD", "Construct player");
-				Entity::GameObject * playerObject = new Entity::GameObject(1);
+				Entity::GameObject * playerObject = new Entity::GameObject(this, 1);
 				playerObject->SetObjectID(clientSession->actorID);
 				CharacterComponent * charComp = (CharacterComponent*)playerObject->GetComponentByID(4);
 				ControllablePhysicsComponent * cpComp = (ControllablePhysicsComponent*)playerObject->GetComponentByID(1);
@@ -249,12 +266,17 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
+
+				playerObject->SetName(std::wstring(info.name.begin(), info.name.end()));
 				
 				Logger::log("WRLD", "Create character packet");
 				PacketFactory::World::CreateCharacter(rakServer, clientSession, playerObject);
 
 				Logger::log("WRLD", "Sending serialization");
-				replicaManager->Construct((Replica*)playerObject, false, clientSession->systemAddress, false);
+				replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);
+				replicaManager->Construct((Replica*)playerObject, false, UNASSIGNED_SYSTEM_ADDRESS, true);
+				objectsManager->RegisterObject(testStromling);
+				objectsManager->RegisterObject(playerObject);
 
 				Logger::log("WRLD", "Server done loading");
 				PacketFactory::World::TestLoad(rakServer, clientSession);

@@ -31,4 +31,4 @@ namespace CacheZoneTable {
 	// TODO: Implement others
 };
 
-#endif // !__GAMECACHE__VENDORCOMPONENT_HPP__
+#endif

@@ -4,11 +4,11 @@
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CacheEmotes {
 	inline FDB::RowInfo getRow(int32_t id) {
-		FDB::RowTopHeader rth = GameCache.getRows("Emotes");
+		FDB::RowTopHeader rth = Cache.getRows("Emotes");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
@@ -22,19 +22,19 @@ namespace CacheEmotes {
 	}
 
 	inline FDB::PointerString GetAnimationName(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[1]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[1]/**/.getMemoryLocation());
 	}
 
 	inline FDB::PointerString GetIconFilename(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[2]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[2]/**/.getMemoryLocation());
 	}
 
 	inline FDB::PointerString GetChannel(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[3]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[3]/**/.getMemoryLocation());
 	}
 
 	inline FDB::PointerString GetCommand(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[4]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[4]/**/.getMemoryLocation());
 	}
 
 	inline bool GetLocked(int32_t id) {
@@ -50,7 +50,7 @@ namespace CacheEmotes {
 	}
 
 	inline FDB::PointerString GetGateVersion(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[8]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[8]/**/.getMemoryLocation());
 	}
 };
 

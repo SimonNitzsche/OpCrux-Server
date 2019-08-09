@@ -4,11 +4,11 @@
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CacheScriptComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
-		FDB::RowTopHeader rth = GameCache.getRows("ScriptComponent");
+		FDB::RowTopHeader rth = Cache.getRows("ScriptComponent");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
@@ -22,11 +22,11 @@ namespace CacheScriptComponent {
 	}
 
 	inline FDB::PointerString GetScriptName(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[1]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[1]/**/.getMemoryLocation());
 	}
 
 	inline FDB::PointerString GetClientScriptName(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[2]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[2]/**/.getMemoryLocation());
 	}
 };
 

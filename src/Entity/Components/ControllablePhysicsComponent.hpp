@@ -21,8 +21,16 @@ public:
 		position = pos;
 	}
 
+	Vector3 GetPosition() {
+		return position;
+	}
+
 	void SetRotation(Quaternion rot) {
 		rotation = rot;
+	}
+
+	Quaternion GetQuaternion() {
+		return rotation;
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {

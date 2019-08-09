@@ -4,11 +4,11 @@
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
 using namespace GameCache::Interface;
-extern FDB::Connection GameCache;
+extern FDB::Connection Cache;
 
 namespace CachePropertyEntranceComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
-		FDB::RowTopHeader rth = GameCache.getRows("PropertyEntranceComponent");
+		FDB::RowTopHeader rth = Cache.getRows("PropertyEntranceComponent");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
@@ -26,7 +26,7 @@ namespace CachePropertyEntranceComponent {
 	}
 
 	inline FDB::PointerString GetPropertyName(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[2]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[2]/**/.getMemoryLocation());
 	}
 
 	inline bool GetIsOnProperty(int32_t id) {
@@ -34,7 +34,7 @@ namespace CachePropertyEntranceComponent {
 	}
 
 	inline FDB::PointerString GetGroupType(int32_t id) {
-		return FDB::PointerString(&GameCache, getRow(id)/**/[1]/**/.getMemoryLocation());
+		return FDB::PointerString(&Cache, getRow(id)/**/[1]/**/.getMemoryLocation());
 	}
 };
 

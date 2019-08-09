@@ -54,8 +54,9 @@ void ObjectsManager::Construct(Entity::GameObject * object) {
 }
 
 void ObjectsManager::Serialize() {
-	for (auto oPair : object_list)
+	for (auto oPair : object_list) {
 		Serialize(oPair.second);
+	}
 }
 
 void ObjectsManager::Serialize(DataTypes::LWOOBJID objID) {
@@ -76,4 +77,15 @@ void ObjectsManager::Destruct(DataTypes::LWOOBJID objID) {
 
 void ObjectsManager::Destruct(Entity::GameObject * object) {
 	RM->Destruct(object, UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
+void ObjectsManager::OnUpdate() {
+	// Call update
+	for (auto oPair : object_list)
+		oPair.second->Update();
+
+	// Check dirty
+	for (auto oPair : object_list)
+		if (oPair.second->IsObjectDirty())
+			Serialize(oPair.second);
 }
