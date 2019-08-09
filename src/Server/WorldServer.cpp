@@ -32,12 +32,15 @@
 #include "DataTypes/LWOOBJID.hpp"
 
 #include "Entity/Components/CharacterComponent.hpp"
+#include "Entity/Components/ControllablePhysicsComponent.hpp"
+
+#include "GameCache/ZoneTable.hpp"
 
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
 
-WorldServer::WorldServer(int instanceID, int port) {
+WorldServer::WorldServer(int zone, int instanceID, int port) {
 	// Preload
 	std::string buf;
 	std::ifstream file1("res/names/minifigname_first.txt");
@@ -80,6 +83,14 @@ WorldServer::WorldServer(int instanceID, int port) {
 		std::cin.get();
 		return;
 	}
+
+	// Get zone file
+	std::string zoneName = CacheZoneTable::GetZoneName(zone);
+
+	// Load Zone
+	Logger::log("WRLD", "Loading Zone: " + zoneName);
+	luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
+	Logger::log("WRLD", "Sucessfully loaded zone.");
 
 	Packet* packet;
 	initDone = true;
@@ -199,7 +210,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, 1000, 0, 0, 0x20b8087c, DataTypes::Vector3::zero(), 0);
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0x49525511, luZone->spawnPos->pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
@@ -231,7 +242,11 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Entity::GameObject * playerObject = new Entity::GameObject(1);
 				playerObject->SetObjectID(clientSession->actorID);
 				CharacterComponent * charComp = (CharacterComponent*)playerObject->GetComponentByID(4);
+				ControllablePhysicsComponent * cpComp = (ControllablePhysicsComponent*)playerObject->GetComponentByID(1);
 				Database::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
+				cpComp->SetPosition(luZone->spawnPos->pos);
+				cpComp->SetRotation(luZone->spawnPos->rot);
+
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
 				
@@ -281,4 +296,5 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 WorldServer::~WorldServer() {
 	if (replicaManager) delete[] replicaManager;
 	if (networkIdManager) delete[] networkIdManager;
+	if (luZone) delete[] luZone;
 }

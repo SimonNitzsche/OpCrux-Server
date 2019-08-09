@@ -3,6 +3,7 @@
 
 #include "Interfaces/ILUServer.hpp"
 #include "Sessions/SessionManager.hpp"
+#include "FileTypes/LUZFile/LUZone.hpp"
 
 class WorldServer : ILUServer {
 private:
@@ -14,8 +15,9 @@ public:
 	ReplicaManager * replicaManager = nullptr;
 	NetworkIDManager * networkIdManager = nullptr;
 	//ObjectsManager * objectsManager = nullptr;
+	FileTypes::LUZ::LUZone * luZone;
 public:
-	WorldServer(int instanceID, int port);
+	WorldServer(int zone, int instanceID, int port);
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 	~WorldServer();
 };

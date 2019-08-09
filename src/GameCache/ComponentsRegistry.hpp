@@ -79,6 +79,7 @@ namespace CacheComponentsRegistry {
 		FDB::RowTopHeader rth = Cache.getRows("ComponentsRegistry");
 		for (int i = 0; i < rth.getRowCount(); ++i) {
 			try {
+				if (!rth.isValid(i)) continue;
 				FDB::RowInfo rowInfo = rth[i];
 				if (*reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation()) == lot) {
 					while (rowInfo.isValid()) {

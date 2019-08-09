@@ -8,7 +8,7 @@
 #include "DataTypes/Position.hpp"
 using namespace DataTypes;
 
-namespace FileTypes::LUZone {
+namespace FileTypes::LUZ {
 
 	/*
 		Define the a string in a zone with easy reading from the file.
@@ -112,7 +112,7 @@ namespace FileTypes::LUZone {
 		private:
 			std::unique_ptr<unsigned char[]> filePtr;
 			unsigned char* data;
-		private:
+		public:
 			uint32_t * version;
 			uint32_t * unknown1;
 			uint32_t * zoneID;
@@ -123,6 +123,7 @@ namespace FileTypes::LUZone {
 		public:
 			// Constructs a new LUZone, with the path to the filename.
 			LUZone(const std::string& filename);
+			LUZone();
 			~LUZone();
 		private:
 			void Read();

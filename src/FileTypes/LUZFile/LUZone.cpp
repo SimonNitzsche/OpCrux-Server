@@ -1,13 +1,15 @@
 #include "LUZone.hpp"
 
 #include "Utils/FileUtils.hpp"
-using namespace FileTypes::LUZone;
+using namespace FileTypes::LUZ;
 
 LUZone::LUZone(const std::string& filename) {
 	filePtr = FileUtils::ReadFileCompletely(filename);
 	data = filePtr.get();
 	Read();
 }
+
+LUZone::LUZone() {}
 LUZone::~LUZone() {}
 
 void LUZone::Read() {
@@ -46,12 +48,10 @@ void LUZone::Read() {
 	}
 
 	// Terrain
-	++currentOffset =
-		terrainInfo.description.Read(
-			terrainInfo.name.Read(
-				terrainInfo.fileName.Read(currentOffset)
-			)
-		);
+	++currentOffset;
+	currentOffset = terrainInfo.fileName.Read(currentOffset);
+	currentOffset = terrainInfo.name.Read(currentOffset);
+	currentOffset = terrainInfo.description.Read(currentOffset);
 
 	// Transisions
 	if (*version >= 0x1f) {

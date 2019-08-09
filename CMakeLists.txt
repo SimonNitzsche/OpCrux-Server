@@ -78,6 +78,7 @@ add_executable(OpCrux_Server
     src/GameCache/SkillBehavior.hpp
     src/GameCache/VendorComponent.hpp
     src/GameCache/WorldConfig.hpp
+	src/GameCache/ZoneTable.hpp
     src/NetworkDataTypes/ByteBool.hpp
     src/NetworkDataTypes/LUPacket.hpp
     src/PacketFactory/Auth/AuthPackets.hpp
