@@ -43,6 +43,8 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 GameCache::Interface::FDB::Connection Cache;
 BridgeMasterServer* masterServerBridge;
 
+#include "Entity/Components/StatsComponent.hpp"
+
 int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
 
@@ -52,14 +54,6 @@ int main(int argc, char* argv[]) {
 	Cache.Connect("./res/cdclient.fdb");
 
 	using namespace Entity;
-
-	/*Logger::log("WRLD", "Adding object...");
-	Entity::GameObject * test = new Entity::GameObject(1);
-	test->Test();
-	RakNet::BitStream * testBs = new RakNet::BitStream();
-	test->Serialize(testBs, ReplicaTypes::PacketTypes::CONSTRUCTION);*/
-	
-	//LUZone luz("./res/maps/01_live_maps/avant_gardens/nd_avant_gardens.luz");
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 

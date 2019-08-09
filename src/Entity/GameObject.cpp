@@ -4,7 +4,13 @@
 
 //using namespace Entity::Components::Interface;
 #define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T, COMP_ID) {COMP_T * comp = static_cast<COMP_T*>(this->GetComponentByID(COMP_ID)); if(comp != nullptr) { Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"..."); comp->Serialize(factory, packetType);}}
-#define COMPONENT_ONADD_SWITCH_CASE(COMP_T, COMP_ID) {case COMP_ID: {COMP_T * comp = new COMP_T(); comp->SetOwner(this); comp->OnEnable(); components.insert(std::make_pair(COMP_ID, static_cast<IEntityComponent*>(comp))); break;}}
+#define COMPONENT_ONADD_SWITCH_CASE(COMP_T, COMP_ID) {case COMP_ID: {COMP_T * comp = new COMP_T(); comp->SetOwner(this); components.insert(std::make_pair(COMP_ID, comp)); comp->OnEnable(); Logger::log("WRLD", "Added Component "+std::string(#COMP_T)+"!"); if(comp == nullptr) throw new std::runtime_error(std::string(#COMP_T)+" resultet into a nullptr.");  break;}}
+
+void lala(IEntityComponent * c, int id) {
+	if (id == 1000) {
+		int c = 3323;
+	}
+}
 
 #include "GameCache/ComponentsRegistry.hpp"
 
@@ -18,6 +24,7 @@
 #include "Entity/Components/InventoryComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
+#include "Entity/Components/StatsComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::CONSTRUCTION);
@@ -155,9 +162,9 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 
 void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 	if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-		factory->Write(objectID);
-		factory->Write(LOT);
-		factory->Write<uint8_t>(name.length());
+		factory->Write<std::uint64_t>(objectID);
+		factory->Write<std::int32_t>(LOT);
+		factory->Write<uint8_t>(name.size());
 		StringUtils::writeWstringToBitStream(factory, name, name.size());
 
 		factory->Write<uint32_t>(ServerInfo::uptime() - creationTimestamp);
@@ -178,10 +185,90 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 		// Object Scale
 		factory->Write(false);
 		
-		// gmlevel
+		// object world state
 		factory->Write(false);
 
-		// parent and child objects
+		// gmlevel
 		factory->Write(false);
 	}
+
+	// TODO: parent and child objects
+	factory->Write(false);
+}
+
+
+std::string Entity::GameObject::GenerateXML() {
+	std::stringstream ss;
+
+	CharacterComponent * charComponent = static_cast<CharacterComponent*>(GetComponentByID(4));
+	Database::Str_DB_CharInfo charInfo = charComponent->GetCharInfo();
+	Database::Str_DB_CharStyle charStyle = charComponent->GetCharStyle();
+
+	ss << "<?xml version=\"1.0\"?>";
+
+	ss << "<obj v=\"" << std::to_string(LOT) << ">";
+	{
+		ss << "<buff/>";
+		ss << "<skil/>";
+		ss << "<inv csl=\"" << std::to_string(0) << "\">";
+		{
+			ss << "<bag>";
+			{
+				// TODO
+			}
+			ss << "</bag>";
+			ss << "<grps/>";
+			ss << "<items nn=\"1\">";
+			{
+				// TODO
+			}
+			ss << "</items>";
+		}
+		ss << "</inv>";
+		{	
+			ss << "<mf ";
+				ss << "hc=\"" << std::to_string(charStyle.hairColor) << "\" ";
+				ss << "hs=\"" << std::to_string(charStyle.hairStyle) << "\" ";
+				ss << "hd=\"" << std::to_string(charStyle.head) << "\" ";
+				ss << "t=\"" << std::to_string(charStyle.chestColor) << "\" ";
+				ss << "l=\"" << std::to_string(charStyle.legs) << "\" ";
+				ss << "hdc=\"" << std::to_string(charStyle.headColor) << "\" ";
+				ss << "cd=\"" << std::to_string(charStyle.chest) << "\" ";
+				ss << "lh=\"" << std::to_string(charStyle.leftHand) << "\" ";
+				ss << "rh=\"" << std::to_string(charStyle.rightHand) << "\" ";
+				ss << "es=\"" << std::to_string(charStyle.eyebrowStyle) << "\" ";
+				ss << "ess=\"" << std::to_string(charStyle.eyesStyle) << "\" ";
+				ss << "ms=\"" << std::to_string(charStyle.mouthStyle) << "\"";
+			ss << "/>";
+		}
+		{
+			ss << "<lvl l=\"" << std::to_string(charInfo.uLevel) << "\" cv=\"1\" sb=\"525\"/>";
+		}
+		{
+			ss << "<flag>";
+			{
+				// TODO
+			}
+			ss << "</flag>";
+		}
+		{
+			ss << "<mis>";
+			{
+				// TODO
+			}
+			ss << "</mis>";
+		}
+		{
+			ss << "<mnt a=\"0\"/>";
+		}
+		{
+			ss << "<dest ";
+			
+				// TODO
+			ss << "/>";
+		}
+	}
+	ss << "</obj>";
+
+	return ss.str();
 }

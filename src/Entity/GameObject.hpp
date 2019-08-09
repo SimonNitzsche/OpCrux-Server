@@ -121,6 +121,11 @@ namespace Entity {
 			void SerializeBaseData(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType);
 
 			/*
+				Only use this on a player.
+			*/
+			std::string GenerateXML();
+
+			/*
 				Quick function to create the test object.
 			*/
 			void Test() { objectID = 9ULL; LOT = 1234; name = L"TestName"; }

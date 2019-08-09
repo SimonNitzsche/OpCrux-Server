@@ -20,6 +20,8 @@
 #include "DataTypes/LWOOBJID.hpp"
 #include "DataTypes/LDF.hpp"
 
+#include "Entity/GameObject.hpp"
+
 namespace PacketFactory {
 
 	namespace World {
@@ -106,7 +108,7 @@ namespace PacketFactory {
 			}
 		}
 
-		inline void CreateCharacter(RakPeerInterface * rakServer, ClientSession * clientSession) {
+		inline void CreateCharacter(RakPeerInterface * rakServer, ClientSession * clientSession, Entity::GameObject * go) {
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead;
@@ -122,6 +124,7 @@ namespace PacketFactory {
 			std::vector<LDFEntry> ldfEntries;
 			ldfEntries.push_back(LDFEntry(L"template", std::int32_t(1)));
 			ldfEntries.push_back(LDFEntry(L"objid", clientSession->actorID));
+			ldfEntries.push_back(LDFEntry(L"xmlData", go->GenerateXML()));
 
 			contentWrapperBS.Write(std::uint32_t(ldfEntries.size()));
 			for (int i = 0; i < ldfEntries.size(); ++i) {

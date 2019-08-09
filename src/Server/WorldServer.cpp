@@ -224,8 +224,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Client load complete ZoneID: " + std::to_string(zoneID) + " MapInstance: " + std::to_string(mapInstance) + " MapClone: " + std::to_string(mapClone));
 
-				Logger::log("WRLD", "Create character packet");
-				PacketFactory::World::CreateCharacter(rakServer, clientSession);
+				
+				
 
 				Logger::log("WRLD", "Construct player");
 				Entity::GameObject * playerObject = new Entity::GameObject(1);
@@ -235,6 +235,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
 				
+				Logger::log("WRLD", "Create character packet");
+				PacketFactory::World::CreateCharacter(rakServer, clientSession, playerObject);
+
+				Logger::log("WRLD", "Sending serialization");
 				replicaManager->Construct((Replica*)playerObject, false, clientSession->systemAddress, false);
 
 				Logger::log("WRLD", "Server done loading");

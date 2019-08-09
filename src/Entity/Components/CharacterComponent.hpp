@@ -27,6 +27,14 @@ public:
 		charStyle = style;
 	}
 
+	Database::Str_DB_CharInfo GetCharInfo() {
+		return charInfo;
+	}
+
+	Database::Str_DB_CharStyle GetCharStyle() {
+		return charStyle;
+	}
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Part 1 Serialization */
 		factory->Write(false);
@@ -58,6 +66,7 @@ public:
 			factory->Write<std::uint32_t>(0); // TODO: ???, could be "hdc" or "hd" from xml data
 			factory->Write<std::uint32_t>(charStyle.eyebrowStyle);
 			factory->Write<std::uint32_t>(charStyle.eyesStyle);
+			factory->Write(std::uint32_t(charStyle.mouthStyle));
 
 			// Char Info
 			factory->Write<std::uint64_t>(charInfo.accountID);

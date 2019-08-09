@@ -24,7 +24,12 @@ public:
 	void OnEnable() {
 		if (owner->GetComponentByID(1000) == nullptr) {
 			owner->AddComponentByID(1000);
-			(statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(1000)));
+			statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(1000));
+
+			if (statsComponent == nullptr) {
+				Logger::log("WRLD", "Something went wrong DestuctibleComponent::OnEnable()");
+				statsComponent = new StatsComponent();
+			}
 		}
 	}
 
@@ -36,8 +41,10 @@ public:
 		}
 
 		// Note: This is the first component that is able to serialize the StatsComponent, so no check is necessary.
-		if(statsComponent != nullptr)
+		if (statsComponent != nullptr)
 			statsComponent->Serialize(factory, packetType);
+		else
+			Logger::log("WRLD", "Couldn't serialize StatsComponent after DestructibleComponent!", LogType::UNEXPECTED);
 	}
 
 };
