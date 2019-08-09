@@ -22,8 +22,8 @@ namespace Entity {
 	/*
 		Defines a Game Object in-game.
 	*/
-	class GameObject : Replica {
-		protected:
+	class GameObject : public Replica {
+		private:
 
 			// This Object's Object ID.
 			DataTypes::LWOOBJID objectID;
@@ -32,7 +32,7 @@ namespace Entity {
 			int32_t LOT;
 
 			// The Name of this Object.
-			std::wstring name = L"Simon";
+			std::wstring name = L"";
 
 			// The Timestamp this object was created on the server.
 			int64_t creationTimestamp;
@@ -84,6 +84,11 @@ namespace Entity {
 				Sets the object ID
 			*/
 			void SetObjectID(DataTypes::LWOOBJID ID);
+
+			/*
+				Gets the object ID
+			*/
+			DataTypes::LWOOBJID GetObjectID();
 
 			/*
 				Called to update the object.

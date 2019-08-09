@@ -44,6 +44,8 @@ add_executable(OpCrux_Server
 	src/Entity/Components/StatsComponent.hpp
     src/Entity/GameObject.cpp
     src/Entity/GameObject.hpp
+	src/Entity/ObjectsManager.cpp
+	src/Entity/ObjectsManager.hpp
     src/Enums/EComponents.hpp
     src/Enums/EGameMessages.hpp
     src/Enums/EGeneralPackets.hpp

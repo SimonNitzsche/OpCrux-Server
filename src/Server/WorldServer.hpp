@@ -4,6 +4,8 @@
 #include "Interfaces/ILUServer.hpp"
 #include "Sessions/SessionManager.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
+class ObjectsManager;
+#include "Entity/ObjectsManager.hpp"
 
 class WorldServer : ILUServer {
 private:
@@ -14,7 +16,7 @@ public:
 	SessionManager sessionManager;
 	ReplicaManager * replicaManager = nullptr;
 	NetworkIDManager * networkIdManager = nullptr;
-	//ObjectsManager * objectsManager = nullptr;
+	ObjectsManager * objectsManager = nullptr;
 	FileTypes::LUZ::LUZone * luZone;
 public:
 	WorldServer(int zone, int instanceID, int port);

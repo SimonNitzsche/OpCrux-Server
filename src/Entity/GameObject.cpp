@@ -70,6 +70,10 @@ void Entity::GameObject::SetObjectID(LWOOBJID ID) {
 	this->objectID = ID;
 }
 
+DataTypes::LWOOBJID Entity::GameObject::GetObjectID() {
+	return this->objectID;
+}
+
 void Entity::GameObject::Update() {
 
 }
