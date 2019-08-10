@@ -42,7 +42,6 @@ public:
 
 	void Update() {
 		Vector3 newPos = Vector3(basePosition.x, basePosition.y, basePosition.z);
-		//controllablePhysicsComponent->SetPosition(((ControllablePhysicsComponent*)pl->GetComponentByID(1))->GetPosition());
 
 		newPos.x += 4 * std::cos(ServerInfo::uptime());
 		newPos.z += 4 * std::sin(ServerInfo::uptime());

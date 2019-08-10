@@ -69,7 +69,7 @@ public:
 			wchar_t * wcp = reinterpret_cast<wchar_t*>(data + 4);
 			std::wstring buffer(wcp, size);
 			bs->Write(size);
-			bs->Write(buffer);
+			StringUtils::writeWstringToBitStream(bs, buffer, buffer.size());
 			break;
 		}
 		}
@@ -78,7 +78,7 @@ public:
 	LDFEntry(std::wstring inputKey, std::wstring input) {
 		key = inputKey;
 		type = Enums::LDFType::WSTRING;
-		data = (char*)malloc(input.size());
+		data = (char*)malloc(input.size()*2+4);
 		std::uint32_t size = input.size();
 		memcpy(data, &size, 4);
 		memcpy(data+4, input.c_str(), input.size() * 2);

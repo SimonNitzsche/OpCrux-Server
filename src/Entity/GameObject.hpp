@@ -95,6 +95,13 @@ namespace Entity {
 			}
 
 			/*
+				Gets name
+			*/
+			std::wstring GetName() {
+				return name;
+			}
+
+			/*
 				Sets the object ID
 			*/
 			void SetObjectID(DataTypes::LWOOBJID ID);

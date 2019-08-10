@@ -124,6 +124,7 @@ namespace PacketFactory {
 			std::vector<LDFEntry> ldfEntries;
 			ldfEntries.push_back(LDFEntry(L"template", std::int32_t(1)));
 			ldfEntries.push_back(LDFEntry(L"objid", clientSession->actorID));
+			ldfEntries.push_back(LDFEntry(L"name", go->GetName()));
 			ldfEntries.push_back(LDFEntry(L"xmlData", go->GenerateXML()));
 
 			contentWrapperBS.Write(std::uint32_t(ldfEntries.size()));
