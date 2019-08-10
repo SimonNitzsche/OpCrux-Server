@@ -7,16 +7,12 @@ Build from source
 ###### Windows:
 
 Dependencies:
-* MySQL: C & C++ Connector
-    > Download: https://dev.mysql.com/downloads/installer/
+* ODBC Drivers
 
 ###### Linux:
 
 Dependencies:
-* mysqlclient
-* mysqlclient-dev
-* libmysqlcppconn
-* libmysqlcppconn-dev
+* ODBC Drivers
 
 Build:
 > $ cmake . <br>

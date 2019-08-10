@@ -3,13 +3,12 @@
 
 // TODO: Figure out Linux solution
 #include <iostream>
-#include <windows.h>
-#include <sqlext.h>
-#include <sqltypes.h>
 #include <sql.h>
 #include <sqlext.h>
+#include <sqltypes.h>
 #include <algorithm>
 
+#include "Common/CrossPlatform.hpp"
 #include "Encryption/sha512.hpp"
 #include "GameCache/Interface/FastDatabase.hpp"
 #include "GameCache/ComponentsRegistry.hpp"
@@ -39,8 +38,6 @@ public:
 			"The driver reported the following diagnostics whilst running "
 			"%s\n\n",
 			fn);
-
-		
 
 		do
 		{
@@ -74,8 +71,6 @@ public:
 				printf("%s:%ld:%ld:%s\n", state, i, native, text);
 		} while (ret == SQL_SUCCESS||ret==SQL_ERROR);
 	}
-
-	
 
 	static void Test() {
 		ListDrivers();
@@ -127,12 +122,11 @@ public:
 		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_DBC, sqlEnvHandle, &sqlConnHandle))
 			Disconnect();
 
-
 		//output
 		std::cout << "Attempting connection to SQL Server...";
 		std::cout << "\n";
 
-		//connect to SQL Server	
+		//connect to SQL Server
 		//I am using a trusted connection and port 14808
 		//it does not matter if you are using default or named instance
 		//just make sure you define the server name and the port
@@ -245,7 +239,7 @@ public:
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
 		}
-		
+
 		SQLLEN __L__ = 32;
 		int __1__ = SQL_C_TCHAR;
 		SQLSMALLINT * pfSqlType;
@@ -256,7 +250,7 @@ public:
 		SQLDescribeParam(sqlStmtHandle, 1, (SQLSMALLINT*)&__1__, (SQLULEN*)&__L__, 0, 0);
 		int wat = SQL_NTS;
 		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, s_username.size(), 0, (SQLPOINTER)s_username.c_str(), s_username.size(), (SQLLEN*)&len);
-		
+
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -300,7 +294,7 @@ public:
 
 	}
 	static void SetupStatementHandle() {
-		
+
 		if (sqlStmtHandle != NULL) {
 			SQLCloseCursor(sqlStmtHandle);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -322,13 +316,13 @@ public:
 	};
 
 	static unsigned long long reserveCountedID(DBCOUNTERID dbCounterID) {
-		
+
 		SQLCHAR * query;
 		switch (dbCounterID) {
 		case DBCOUNTERID::STATIC:
 			query = (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='STATIC';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='STATIC';";
 			break;
-		case DBCOUNTERID::PLAYER: 
+		case DBCOUNTERID::PLAYER:
 			query = (SQLCHAR*)"SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='PLAYER';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='PLAYER';";
 			break;
 		case DBCOUNTERID::P_STYLE:
@@ -371,7 +365,7 @@ public:
 
 				return id;
 			}
-			
+
 			{
 				std::cout << "Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
@@ -396,7 +390,6 @@ public:
 			return false;
 		}
 
-		
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_ULONG, SQL_INTEGER, 0, 0, &accountID, 0);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
@@ -465,7 +458,6 @@ public:
 			return {};
 		}
 
-
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_ULONG, SQL_INTEGER, 0, 0, &styleID, 0);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
@@ -501,7 +493,6 @@ public:
 			SQLINTEGER eyesStyle;
 			SQLINTEGER mouthStyle;
 
-			
 			SQLGetData(sqlStmtHandle, 1, SQL_C_SLONG, &headColor, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &head, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &chestColor, 0, &ptrSqlAnswer);
@@ -514,7 +505,6 @@ public:
 			SQLGetData(sqlStmtHandle, 10, SQL_C_SLONG, &eyebrowStyle, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 11, SQL_C_SLONG, &eyesStyle, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 12, SQL_C_SLONG, &mouthStyle, 0, &ptrSqlAnswer);
-
 
 			Str_DB_CharStyle charStyle;
 			charStyle.headColor = headColor;
@@ -532,7 +522,7 @@ public:
 
 			return charStyle;
 		}
-		
+
 		std::cout << "Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -580,7 +570,6 @@ public:
 			return {};
 		}
 
-
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_ULONG, SQL_INTEGER, 0, 0, &accountID, 0);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
@@ -600,7 +589,6 @@ public:
 		SQLLEN rowCount = 0;
 		SQLRowCount(sqlStmtHandle, &rowCount);
 
-		
 		std::vector<Str_DB_CharInfo> charsInfo;
 		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
 			SQLLEN ptrSqlAnswer;
@@ -677,7 +665,7 @@ public:
 			charInfo.armor = armor;
 
 			charsInfo.push_back(charInfo);
-		}	
+		}
 
 		if(charsInfo.size() != GetCharCount(accountID)){
 			std::cout << "Database Exception on Fetch!\n";
@@ -689,7 +677,7 @@ public:
 		else {
 			return charsInfo;
 		}
-		
+
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		return {};
 	}
@@ -705,7 +693,6 @@ public:
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
 		}
-
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &objectID, 0);
 
@@ -802,13 +789,10 @@ public:
 			return charInfo;
 		}
 
-		
 			std::cout << "Database Exception on Fetch!\n";
 			extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
-
-		
 
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		return {};
@@ -846,7 +830,6 @@ public:
 		ret = SQLBindParam(sqlStmtHandle, 12, SQL_C_SLONG, SQL_INTEGER, 0, 0, &eyesStyle, 0);
 		ret = SQLBindParam(sqlStmtHandle, 13, SQL_C_SLONG, SQL_INTEGER, 0, 0, &mouthStyle, 0);
 
-
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -860,7 +843,7 @@ public:
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
 		}
-		
+
 		return id;
 	}
 
@@ -880,11 +863,11 @@ public:
 			int lastClone = 0;
 			unsigned long long lastLog = 0;
 			DataTypes::Vector3 position = DataTypes::Vector3::zero();
-			
+
 			int shirtObjectID = 0;
 			{
 				FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
-				if (!rth.isRowHeaderValid()) throw new std::exception("Invalid Row Header");
+				if (!rth.isRowHeaderValid()) throw new std::runtime_error("Invalid Row Header");
 				for (int i = 0; i < rth.getRowCount(); ++i) {
 					if (!rth.isValid(i)) continue;
 					try {
@@ -894,7 +877,7 @@ public:
 							*reinterpret_cast<uint32_t*>(rth[i]["decal"].getMemoryLocation()) == chest &&
 							*reinterpret_cast<uint32_t*>(rth[i]["isBOE"].getMemoryLocation()) == 1
 							) {
-							
+
 							int componentID = *reinterpret_cast<uint32_t*>(rth[i][0].getMemoryLocation());
 							shirtObjectID = CacheComponentsRegistry::FindID(componentID, 11);
 							break;
@@ -909,8 +892,7 @@ public:
 					return -1; // Fail
 				}
 			}
-			
-			
+
 			int pantsObjectID = 0; {
 				FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
 				for (int i = 0; i < rth.getRowCount(); ++i) {
@@ -995,7 +977,6 @@ public:
 			ret = SQLBindParameter(sqlStmtHandle, 22, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &imagination, 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 23, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &armor, 0, &lenZero);
 
-
 			if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 				extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -1053,7 +1034,7 @@ public:
 				SQLINTEGER accountID;
 				SQLLEN ptrSqlAnswer;
 				SQLGetData(sqlStmtHandle, 1, SQL_INTEGER, &accountID, 0, &ptrSqlAnswer);
-				
+
 				return accountID;
 
 			}
