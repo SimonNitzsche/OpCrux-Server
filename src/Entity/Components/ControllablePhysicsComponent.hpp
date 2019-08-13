@@ -10,7 +10,7 @@ class ControllablePhysicsComponent : public IEntityComponent {
 private:
 	Vector3 position = Vector3::zero();
 	Quaternion rotation;
-	bool isPlayerOnGround=false;
+	bool isPlayerOnGround=true;
 	Vector3 velocity = Vector3::zero();
 	Vector3 angularVelocity = Vector3::zero();
 public:
@@ -29,8 +29,16 @@ public:
 		rotation = rot;
 	}
 
-	Quaternion GetQuaternion() {
+	Quaternion GetRotation() {
 		return rotation;
+	}
+
+	void SetVelocity(Vector3 vel) {
+		velocity = vel;
+	}
+
+	Vector3 GetVelocity() {
+		return velocity;
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
@@ -48,9 +56,10 @@ public:
 			factory->Write(position);
 			factory->Write(rotation);
 			factory->Write(isPlayerOnGround);
-			factory->Write(false);
-			factory->Write(false);
-			factory->Write(false);
+			factory->Write(false); // this sems to be ctive when the angular velocity y is negative.
+			factory->Write(true); // Velocity 
+				factory->Write(velocity);
+			factory->Write(false); // Angular Velocity
 			factory->Write(false);
 		}
 		

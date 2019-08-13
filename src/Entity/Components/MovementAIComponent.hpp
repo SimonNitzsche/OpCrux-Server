@@ -41,12 +41,13 @@ public:
 
 
 	void Update() {
-		Vector3 newPos = Vector3(basePosition.x, basePosition.y, basePosition.z);
+		Vector3 newPos = Vector3::zero(); // Vector3(basePosition.x, basePosition.y, basePosition.z);
 
 		newPos.x += 4 * std::cos(ServerInfo::uptime());
 		newPos.z += 4 * std::sin(ServerInfo::uptime());
 
-		controllablePhysicsComponent->SetPosition(newPos);
+		controllablePhysicsComponent->SetVelocity(newPos);
+		controllablePhysicsComponent->SetPosition(newPos + basePosition);
 		owner->SetDirty();
 	}
 	

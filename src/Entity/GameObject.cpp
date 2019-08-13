@@ -40,6 +40,7 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
+#include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/StatsComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
@@ -72,9 +73,21 @@ ReplicaReturnResult Entity::GameObject::Deserialize(RakNet::BitStream *inBitStre
 Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
 	this->Instance = instance;
 	this->LOT = LOT;
-	auto d = CacheComponentsRegistry::GetObjectComponentTypes(LOT);
-	for (std::uint32_t component_type : d) {
+	auto component_types_to_be_added = CacheComponentsRegistry::GetObjectComponentTypes(LOT);
+
+	// Add components
+	for (std::uint32_t component_type : component_types_to_be_added) {
 		this->AddComponentByID(component_type);
+	}
+
+	// Call Awake
+	for (auto component : components) {
+		component.second->Awake();
+	}
+
+	// Call Startup
+	for (auto component : components) {
+		component.second->Start();
 	}
 }
 
@@ -112,6 +125,7 @@ IEntityComponent* Entity::GameObject::GetComponentByID(int id) {
 
 void Entity::GameObject::AddComponentByID(int id) {
 	switch (id) {
+		/* ========== SERIALIZED ========== */
 		COMPONENT_ONADD_SWITCH_CASE(StatsComponent, 200);
 		//COMPONENT_ONADD_SWITCH_CASE(Component108, 108);
 		//COMPONENT_ONADD_SWITCH_CASE(ModuleAssemblyComponent, 61);
@@ -142,7 +156,9 @@ void Entity::GameObject::AddComponentByID(int id) {
 		//COMPONENT_ONADD_SWITCH_CASE(MinigameComponent, 50);
 		  COMPONENT_ONADD_SWITCH_CASE(Component107, 107);
 		//COMPONENT_ONADD_SWITCH_CASE(TriggerComponent, 69);
+		  /* ========== NON-SERIALIZED ========== */
 		  COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent, 31);
+		  COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent, 10);
 
 	default: {
 		Logger::log("WRLD", "Couldn't add component #" + std::to_string(id) + " to GameObject!", LogType::UNEXPECTED);
@@ -224,10 +240,45 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 		factory->Write(false);
 	}
 
-	// TODO: parent and child objects
-	factory->Write(false);
+	factory->Write(baseDataDirty);
+	if (baseDataDirty) {
+		factory->Write(parent != nullptr);
+		if (parent != nullptr) {
+			factory->Write<std::uint64_t>(parent->objectID);
+			factory->Write(false);
+		}
+		factory->Write(children.size() != 0);
+		if (children.size() != 0) {
+			factory->Write<std::uint16_t>(children.size());
+			for (int i = 0; i < children.size(); ++i) {
+				factory->Write<std::uint64_t>(children.at(i)->objectID);
+			}
+		}
+	}
+	baseDataDirty = false;
 }
 
+void Entity::GameObject::AddChild(GameObject * child) {
+	children.push_back(child);
+	child->SetParent(child);
+	baseDataDirty = true;
+	objectDirty = true;
+}
+
+void Entity::GameObject::SetParent(GameObject * parent) {
+	this->parent = parent;
+	baseDataDirty = true;
+	objectDirty = true;
+}
+
+void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
+	
+	// TODO: Populate base data
+
+	for (auto component : this->components) {
+		component.second->PopulateFromLDF(collection);
+	}
+}
 
 std::string Entity::GameObject::GenerateXML() {
 	std::stringstream ss;

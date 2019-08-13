@@ -57,8 +57,11 @@ namespace Entity {
 			// The timers assigned to this object.
 			std::unordered_map<char*, LWOTimer> timers;
 			
-			// Needs serialization
+			// Needs serialization in general.
 			bool objectDirty = false;
+
+			// Needs serialization
+			bool baseDataDirty = false;
 
 			WorldServer * Instance;
 
@@ -154,6 +157,16 @@ namespace Entity {
 			void SerializeBaseData(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType);
 
 			/*
+				Adds a child to the gameobject and tell the child it's added.
+			*/
+			void AddChild(GameObject * child);
+
+			/*
+				Sets the parent object
+			*/
+			void SetParent(GameObject * parent);
+
+			/*
 				Only use this on a player.
 			*/
 			std::string GenerateXML();
@@ -170,6 +183,18 @@ namespace Entity {
 			*/
 			bool IsObjectDirty() {
 				return objectDirty;
+			}
+
+			/*
+				Populates object variables from LDF
+			*/
+			void PopulateFromLDF(LDFCollection * collection);
+
+			/*
+				Returns the instance
+			*/
+			WorldServer * GetZoneInstance() {
+				return Instance;
 			}
 
 			/*

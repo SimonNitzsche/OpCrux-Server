@@ -2,6 +2,16 @@
 #define __DATATYPES__LDF_HPP__
 
 #include <string>
+#include <map>
+
+#include "Utils/StringUtils.hpp"
+
+// Pre-Declare
+class LDFEntry;
+
+// Used to store a set of LDFEntries, so we can change it
+// if needed without digging up delcarations in all classes.
+typedef std::unordered_map<std::string*, LDFEntry> LDFCollection;
 
 namespace Enums {
 	enum LDFType : std::uint8_t {

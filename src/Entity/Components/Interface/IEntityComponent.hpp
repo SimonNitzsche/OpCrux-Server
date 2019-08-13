@@ -4,6 +4,7 @@
 #include "Replica/ReplicaTypes.hpp"
 #include "RakNet/BitStream.h"
 #include "DataTypes/LWOOBJID.hpp"
+#include "DataTypes/LDF.hpp"
 
 namespace Entity {
 	class GameObject;
@@ -26,8 +27,18 @@ namespace Entity {
 			// Called after constructor
 			virtual void OnEnable() {}
 
+			// Called after components are added.
+			virtual void Awake() {}
+
+			// Called after components are awake
+			virtual void Start() {}
+
 			// Called when the components needs update.
 			virtual void Update() {}
+
+			// Optional void.
+			// Used to set components variables on load from LDF like from LUZ.
+			void PopulateFromLDF(LDFCollection * collection) {};
 
 			virtual ~IEntityComponent() = default;
 
@@ -36,7 +47,7 @@ namespace Entity {
 			void SetOwner(Entity::GameObject * obj) {
 				owner = obj;
 			}
-
+			
 	};
 //}
 
