@@ -36,6 +36,8 @@
 
 #include "GameCache/ZoneTable.hpp"
 
+#include "Utils/LDFUtils.hpp"
+
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;

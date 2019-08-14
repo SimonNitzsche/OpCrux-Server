@@ -1,9 +1,11 @@
 #include "LUZone.hpp"
 
 #include "Utils/FileUtils.hpp"
+#include "Utils/StringUtils.hpp"
 using namespace FileTypes::LUZ;
 
 LUZone::LUZone(const std::string& filename) {
+	strFile = filename;
 	filePtr = FileUtils::ReadFileCompletely(filename);
 	data = filePtr.get();
 	Read();
@@ -42,6 +44,7 @@ void LUZone::Read() {
 			sd.sceneID = reinterpret_cast<uint32_t*>(currentOffset);
 			sd.isAudioScene = reinterpret_cast<uint32_t*>(sd.sceneID + 1);
 			currentOffset = sd.sceneName.Read(reinterpret_cast<uint8_t*>(sd.isAudioScene + 1)) + 3;
+			sd.scene = LUScene(this, StringUtils::ToLower(FileUtils::GetFileDir(this->strFile)+"/"+sd.fileName.ToString()));
 
 			scenes.push_back(sd);
 		}

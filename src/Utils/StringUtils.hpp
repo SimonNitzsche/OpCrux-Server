@@ -7,6 +7,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <memory>
+#include <algorithm>
+#include <cctype>
 
 #include <RakNet/BitStream.h>
 
@@ -17,6 +19,17 @@ namespace StringUtils {
 		ss.str(s);
 		std::string item;
 		std::vector<std::string> elems;
+		while (std::getline(ss, item, delim)) {
+			elems.push_back(item);
+		}
+		return elems;
+	}
+
+	inline std::vector<std::wstring> splitWString(const std::wstring &s, wchar_t delim) {
+		std::wstringstream ss;
+		ss.str(s);
+		std::wstring item;
+		std::vector<std::wstring> elems;
 		while (std::getline(ss, item, delim)) {
 			elems.push_back(item);
 		}
@@ -77,6 +90,18 @@ namespace StringUtils {
 		if (text.length() > len) text = text.substr(0, len);
 		bitstream->Write(reinterpret_cast<const char*>(text.c_str()), text.length() * 2);
 		FillZero(bitstream, (len - text.length()) * 2);
+	}
+
+	inline void ToLowerSelf(std::string &data) {
+		std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) -> unsigned char {	
+			return std::tolower(c);
+		});
+	}
+
+	inline std::string ToLower(std::string data) {
+		std::string out(data);
+		ToLowerSelf(out);
+		return out;
 	}
 }
 

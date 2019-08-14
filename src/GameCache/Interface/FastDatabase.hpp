@@ -211,7 +211,7 @@ namespace GameCache::Interface::FDB {
 
 	class Connection {
 	private:
-		std::unique_ptr<unsigned char[]> filePtr;
+		std::shared_ptr<unsigned char[]> filePtr;
 		unsigned char * fileData = nullptr;
 	public:
 		Connection(std::string database);

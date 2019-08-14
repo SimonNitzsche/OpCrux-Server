@@ -8,7 +8,7 @@
 #include <memory>
 
 namespace FileUtils {
-	inline std::unique_ptr<unsigned char[]> ReadFileCompletely(std::string filename, uint32_t fsize = 0) {
+	inline std::unique_ptr<unsigned char[]> ReadFileCompletely(std::string filename, uint32_t * fsize = 0) {
 		FILE * file = fopen(filename.c_str(), "r+");
 		if (file == nullptr) { 
 			Logger::log("FileUtils::ReadFileCompletely", "Couldn't load file \"" + filename + "\"");
@@ -26,8 +26,13 @@ namespace FileUtils {
 		fclose(file);
 		
 		// return
-		fsize = bytes_read;
+		if(fsize != nullptr)
+			*fsize = bytes_read;
 		return data;
+	}
+
+	inline std::string GetFileDir(std::string file) {
+		return file.substr(0, file.find_last_of("\\/"));
 	}
 };
 

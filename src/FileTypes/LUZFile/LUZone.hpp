@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <memory>
 #include "DataTypes/Position.hpp"
+
+#include "FileTypes/LVLFile/LUScene.hpp"
 using namespace DataTypes;
 
 namespace FileTypes::LUZ {
@@ -78,6 +80,7 @@ namespace FileTypes::LUZ {
 		uint32_t * sceneID;
 		uint32_t * isAudioScene;
 		ZoneString sceneName;
+		LUScene scene = LUScene();
 	};
 
 	/*
@@ -110,8 +113,9 @@ namespace FileTypes::LUZ {
 	*/
 	class LUZone {
 		private:
-			std::unique_ptr<unsigned char[]> filePtr;
+			std::shared_ptr<unsigned char[]> filePtr;
 			unsigned char* data;
+			std::string strFile;
 		public:
 			uint32_t * version;
 			uint32_t * unknown1;

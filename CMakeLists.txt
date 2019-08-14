@@ -62,6 +62,11 @@ add_executable(OpCrux_Server
 	src/Exceptions/ExNetException.hpp
 	src/FileTypes/LUZFile/LUZone.cpp
 	src/FileTypes/LUZFile/LUZone.hpp
+	src/FileTypes/LVLFile/LUScene.cpp
+	src/FileTypes/LVLFile/LUScene.hpp
+	src/FileTypes/LVLFile/LVLChunkHeader.hpp
+	src/FileTypes/LVLFile/LVLInfoChunk.hpp
+	src/FileTypes/LVLFile/LVLObjectsChunk.hpp
 	src/GameCache/Interface/FastDatabase.cpp
 	src/GameCache/Interface/FastDatabase.hpp
 	src/GameCache/BehaviorParameter.hpp
@@ -104,6 +109,8 @@ add_executable(OpCrux_Server
 	src/Sessions/SessionManager.hpp
 	src/Structs/Networking/General/StructPacketHeader.hpp
 	src/Utils/FileUtils.hpp
+	src/Utils/IPUtils.hpp
+	src/Utils/LDFUtils.hpp
 	src/Utils/Logger.cpp
 	src/Utils/Logger.hpp
 	src/Utils/PacketUtil.hpp

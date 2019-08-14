@@ -11,7 +11,7 @@ class LDFEntry;
 
 // Used to store a set of LDFEntries, so we can change it
 // if needed without digging up delcarations in all classes.
-typedef std::unordered_map<std::string*, LDFEntry> LDFCollection;
+typedef std::unordered_map<std::wstring*, LDFEntry> LDFCollection;
 
 namespace Enums {
 	enum LDFType : std::uint8_t {
