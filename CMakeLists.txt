@@ -44,6 +44,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/SkillComponent.hpp
 	src/Entity/Components/SpawnerComponent.hpp
 	src/Entity/Components/StatsComponent.hpp
+	src/Entity/Components/VendorComponent.hpp
 	src/Entity/GameObject.cpp
 	src/Entity/GameObject.hpp
 	src/Entity/ObjectsManager.cpp

@@ -42,6 +42,7 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/SkillComponent.hpp"
 #include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/StatsComponent.hpp"
+#include "Entity/Components/VendorComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::CONSTRUCTION);
@@ -146,7 +147,7 @@ void Entity::GameObject::AddComponentByID(int id) {
 		//COMPONENT_ONADD_SWITCH_CASE(QuickbuildComponent, 48);
 		//COMPONENT_ONADD_SWITCH_CASE(MovingPlatformComponent, 25);
 		//COMPONENT_ONADD_SWITCH_CASE(SwitchComponent, 49);
-		//COMPONENT_ONADD_SWITCH_CASE(VendorComponent, 16);
+		COMPONENT_ONADD_SWITCH_CASE(VendorComponent, 16);
 		//COMPONENT_ONADD_SWITCH_CASE(BouncerComponent, 6);
 		//COMPONENT_ONADD_SWITCH_CASE(ScriptedActivityComponent, 39);
 		//COMPONENT_ONADD_SWITCH_CASE(RacingControlComponent, 71);
@@ -197,7 +198,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	//SERIALIZE_COMPONENT_IF_ATTACHED(QuickbuildComponent, 48);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent, 25);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent, 49);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent, 16);
+	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent, 16);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(BouncerComponent, 6);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ScriptedActivityComponent, 39);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RacingControlComponent, 71);
