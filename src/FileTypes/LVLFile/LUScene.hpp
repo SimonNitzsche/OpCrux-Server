@@ -13,7 +13,7 @@ namespace FileTypes::LUZ {
 
 class LUScene {
 	std::shared_ptr<unsigned char[]> filePtr; // We need to store it here, so we don't loose it.
-
+public:
 	LVLInfoChunk infoChunk;
 	void * skyChunk;
 	LVLObjectsChunk objectsChunk;

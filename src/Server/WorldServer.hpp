@@ -18,6 +18,7 @@ public:
 	NetworkIDManager * networkIdManager = nullptr;
 	ObjectsManager * objectsManager = nullptr;
 	FileTypes::LUZ::LUZone * luZone;
+	unsigned long long spawnedObjectIDCounter=0;
 public:
 	WorldServer(int zone, int instanceID, int port);
 	void GameLoopThread();

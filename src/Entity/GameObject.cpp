@@ -162,6 +162,7 @@ void Entity::GameObject::AddComponentByID(int id) {
 
 	default: {
 		Logger::log("WRLD", "Couldn't add component #" + std::to_string(id) + " to GameObject!", LogType::UNEXPECTED);
+		isSerializable = false;
 		return;
 	}
 	}
@@ -274,9 +275,12 @@ void Entity::GameObject::SetParent(GameObject * parent) {
 void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	
 	// TODO: Populate base data
-
+	
 	for (auto component : this->components) {
-		component.second->PopulateFromLDF(collection);
+		if (component.second != nullptr) {
+			component.second->PopulateFromLDF(collection);
+		}
+		//if (this->components.size() == 1) return;
 	}
 }
 

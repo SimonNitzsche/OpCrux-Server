@@ -97,6 +97,17 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
 	Logger::log("WRLD", "Sucessfully loaded zone.");
 
+	// TODO: Move this to somewhere else
+	for (auto scene : luZone->scenes) {
+		for (auto objT : scene.scene.objectsChunk.objects) {
+			Entity::GameObject * go = new Entity::GameObject(this, *objT.LOT);
+			go->SetObjectID(DataTypes::LWOOBJID((1ULL << 45) | *objT.objectID));
+			LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
+			go->PopulateFromLDF(&ldfCollection);
+			objectsManager->RegisterObject(go);
+		}
+	}
+
 	Packet* packet;
 	initDone = true;
 
@@ -275,6 +286,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				PacketFactory::World::CreateCharacter(rakServer, clientSession, playerObject);
 
 				Logger::log("WRLD", "Sending serialization");
+				for (auto object_to_construct : objectsManager->GetObjects()) {
+					objectsManager->Construct(object_to_construct);
+				}
+
 				replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);
 				replicaManager->Construct((Replica*)playerObject, false, UNASSIGNED_SYSTEM_ADDRESS, true);
 				objectsManager->RegisterObject(testStromling);

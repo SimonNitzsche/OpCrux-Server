@@ -38,7 +38,7 @@ namespace Entity {
 
 			// Optional void.
 			// Used to set components variables on load from LDF like from LUZ.
-			void PopulateFromLDF(LDFCollection * collection) {};
+			virtual void PopulateFromLDF(LDFCollection * collection) {};
 
 			virtual ~IEntityComponent() = default;
 

@@ -45,7 +45,7 @@ public:
 		data = reinterpret_cast<wchar_t*>(offset + 4);
 
 		// Return the length.
-		return reinterpret_cast<char*>(data + *length);
+		return reinterpret_cast<char*>(data + *length *2);
 	};
 
 	/*

@@ -78,6 +78,9 @@ namespace Entity {
 			ReplicaReturnResult Serialize(bool *sendTimestamp, RakNet::BitStream *outBitStream, RakNetTime lastSendTime, PacketPriority *priority, PacketReliability *reliability, RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags);
 			ReplicaReturnResult Deserialize(RakNet::BitStream *inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress);
 			int GetSortPriority(void) const { return 0; }
+
+			// Is component serializable
+			bool isSerializable = true;
 			
 		public:
 			/*
