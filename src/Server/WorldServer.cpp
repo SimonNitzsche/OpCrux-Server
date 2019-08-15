@@ -32,6 +32,7 @@
 #include "DataTypes/LWOOBJID.hpp"
 
 #include "Entity/Components/CharacterComponent.hpp"
+#include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 
 #include "GameCache/ZoneTable.hpp"
@@ -103,7 +104,16 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 			Entity::GameObject * go = new Entity::GameObject(this, *objT.LOT);
 			go->SetObjectID(DataTypes::LWOOBJID((1ULL << 45) | *objT.objectID));
 			LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
+			
+			// If Spawner
+			if (go->GetComponentByID(10) != nullptr) {
+				SpawnerComponent * spawnerComp = static_cast<SpawnerComponent*>(go->GetComponentByID(10));
+				spawnerComp->originPos = objT.spawnPos->pos;
+				spawnerComp->originRot = objT.spawnPos->rot;
+			}
+
 			go->PopulateFromLDF(&ldfCollection);
+
 			objectsManager->RegisterObject(go);
 		}
 	}
@@ -287,7 +297,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {
-					objectsManager->Construct(object_to_construct);
+					if (object_to_construct->isSerializable) {
+						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()));
+						objectsManager->Construct(object_to_construct);
+					}
 				}
 
 				replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);

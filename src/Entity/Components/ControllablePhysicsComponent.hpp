@@ -56,7 +56,7 @@ public:
 			factory->Write(position);
 			factory->Write(rotation);
 			factory->Write(isPlayerOnGround);
-			factory->Write(false); // this sems to be ctive when the angular velocity y is negative.
+			factory->Write(false); // this sems to be active when the angular velocity y is negative.
 			factory->Write(true); // Velocity 
 				factory->Write(velocity);
 			factory->Write(false); // Angular Velocity

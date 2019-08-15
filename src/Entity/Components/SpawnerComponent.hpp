@@ -14,6 +14,9 @@
 
 #include "Utils/LDFUtils.hpp"
 
+#include "Entity/Components/SimplePhysicsComponent.hpp"
+#include "Entity/Components/ControllablePhysicsComponent.hpp"
+
 using namespace DataTypes;
 
 class SpawnerComponent : public IEntityComponent {
@@ -45,7 +48,9 @@ private:
 	DataTypes::Quaternion respawnRotation;
 	bool spawnerActiveOnLoad=false;
 	std::int32_t spawnTemplate;
-
+public:
+	DataTypes::Vector3 originPos;
+	DataTypes::Quaternion originRot;
 public:
 
 	SpawnerComponent() : IEntityComponent() {}
@@ -114,7 +119,7 @@ public:
 		Entity::GameObject * spawnedObject = new Entity::GameObject(Instance, spawnTemplate);
 		
 		// Set ObjectID
-		spawnedObject->SetObjectID(LWOOBJID((1ULL<<58)|Instance->spawnedObjectIDCounter++)); // TODO: Generate local objectID
+		spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL<<58)|Instance->spawnedObjectIDCounter++)); // TODO: Generate local objectID
 		
 		// Populate LDF
 		spawnedObject->PopulateFromLDF(&ldfCache);
@@ -125,8 +130,13 @@ public:
 		// Set Position/Rotation
 		ControllablePhysicsComponent * controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(spawnedObject->GetComponentByID(1));
 		if (controllablePhysicsComponent != nullptr) {
-			controllablePhysicsComponent->SetPosition(respawnPosition);
-			controllablePhysicsComponent->SetRotation(respawnRotation);
+			controllablePhysicsComponent->SetPosition(originPos);
+			controllablePhysicsComponent->SetRotation(originRot);
+		}
+		SimplePhysicsComponent * simplePhysicsComponent = static_cast<SimplePhysicsComponent*>(spawnedObject->GetComponentByID(3));
+		if (simplePhysicsComponent != nullptr) {
+			simplePhysicsComponent->SetPosition(originPos);
+			simplePhysicsComponent->SetRotation(originRot);
 		}
 
 
@@ -134,7 +144,7 @@ public:
 		Instance->objectsManager->RegisterObject(spawnedObject);
 
 		// Construct
-		if (construct)
+		if (construct && spawnedObject->isSerializable)
 			Instance->objectsManager->Construct(spawnedObject);
 
 		return true;

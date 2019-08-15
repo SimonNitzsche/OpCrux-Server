@@ -39,6 +39,7 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
+#include "Entity/Components/SimplePhysicsComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
 #include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/StatsComponent.hpp"
@@ -131,7 +132,7 @@ void Entity::GameObject::AddComponentByID(int id) {
 		//COMPONENT_ONADD_SWITCH_CASE(Component108, 108);
 		//COMPONENT_ONADD_SWITCH_CASE(ModuleAssemblyComponent, 61);
 		  COMPONENT_ONADD_SWITCH_CASE(ControllablePhysicsComponent, 1);
-		//COMPONENT_ONADD_SWITCH_CASE(SimplePhysicsComponent, 3);
+		COMPONENT_ONADD_SWITCH_CASE(SimplePhysicsComponent, 3);
 		//COMPONENT_ONADD_SWITCH_CASE(RigidBodyPhantomPhysicsComponent, 20);
 		//COMPONENT_ONADD_SWITCH_CASE(VehiclePhysics, 30);
 		//COMPONENT_ONADD_SWITCH_CASE(PhantomPhysics, 40);
@@ -182,7 +183,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	//SERIALIZE_COMPONENT_IF_ATTACHED(Component108, 108);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ModuleAssemblyComponent, 61);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ControllablePhysicsComponent, 1);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(SimplePhysicsComponent, 3);
+	SERIALIZE_COMPONENT_IF_ATTACHED(SimplePhysicsComponent, 3);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RigidBodyPhantomPhysicsComponent, 20);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(VehiclePhysics, 30);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(PhantomPhysics, 40);

@@ -1,5 +1,5 @@
-#ifndef __GAMECACHE__ZONETABLE_HPP__
-#define __GAMECACHE__ZONETABLE_HPP__
+#ifndef __GAMECACHE__MOVEMENTAICOMPONENT_HPP__
+#define __GAMECACHE__MOVEMENTAICOMPONENT_HPP__
 
 #include "Interface/FastDatabase.hpp"
 #include "Utils/Logger.hpp"
