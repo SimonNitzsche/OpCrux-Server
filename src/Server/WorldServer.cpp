@@ -36,6 +36,7 @@
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 
 #include "GameCache/ZoneTable.hpp"
+#include "GameCache/Objects.hpp"
 
 #include "Utils/LDFUtils.hpp"
 
@@ -111,6 +112,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 				spawnerComp->originPos = objT.spawnPos->pos;
 				spawnerComp->originRot = objT.spawnPos->rot;
 			}
+			go->isSerializable = false;
 
 			go->PopulateFromLDF(&ldfCollection);
 
@@ -246,7 +248,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0x49525511, luZone->spawnPos->pos, 0);
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0xda1e6b30, luZone->spawnPos->pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
@@ -298,7 +300,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {
 					if (object_to_construct->isSerializable) {
-						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()));
+						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
 						objectsManager->Construct(object_to_construct);
 					}
 				}

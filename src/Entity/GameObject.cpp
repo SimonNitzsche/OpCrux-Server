@@ -77,6 +77,8 @@ Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
 	this->LOT = LOT;
 	auto component_types_to_be_added = CacheComponentsRegistry::GetObjectComponentTypes(LOT);
 
+	this->creationTimestamp = ServerInfo::uptime();
+
 	// Add components
 	for (std::uint32_t component_type : component_types_to_be_added) {
 		this->AddComponentByID(component_type);

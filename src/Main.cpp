@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
 		WorldServer * charSelectWs;
-		std::thread wT([](WorldServer * ws) { ws = new WorldServer(1100, 0,2001); }, charSelectWs);
+		std::thread wT([](WorldServer * ws) { ws = new WorldServer(1200, 0,2001); }, charSelectWs);
 		wT.detach();
 	}
 

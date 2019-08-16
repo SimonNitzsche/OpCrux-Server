@@ -119,13 +119,14 @@ public:
 		Entity::GameObject * spawnedObject = new Entity::GameObject(Instance, spawnTemplate);
 		
 		// Set ObjectID
-		spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL<<58)|Instance->spawnedObjectIDCounter++)); // TODO: Generate local objectID
-		
+		spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL<<58)+ 104120439353844ULL+Instance->spawnedObjectIDCounter++));
+		//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
+
 		// Populate LDF
 		spawnedObject->PopulateFromLDF(&ldfCache);
 
 		// Set Parent
-		spawnedObject->SetParent(this->owner);
+		//spawnedObject->SetParent(this->owner);
 
 		// Set Position/Rotation
 		ControllablePhysicsComponent * controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(spawnedObject->GetComponentByID(1));

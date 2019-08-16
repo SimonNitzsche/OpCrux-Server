@@ -9,6 +9,7 @@ namespace CacheObjects {
 	inline FDB::RowInfo getRow(int32_t id) {
 		FDB::RowTopHeader rth = Cache.getRows("Objects");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
+			if (!rth.isValid(i)) continue;
 			try {
 				FDB::RowInfo rowInfo = rth[i];
 				while (rowInfo.isValid()) {

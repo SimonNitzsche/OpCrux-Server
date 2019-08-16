@@ -38,6 +38,12 @@ public:
 				off += 4;
 			}
 			obj.spawnPos = reinterpret_cast<DataTypes::Position*>(data + off + 0);
+			obj.spawnPos->rot = DataTypes::Quaternion(
+				*reinterpret_cast<float*>(data + off + 16),	// x
+				*reinterpret_cast<float*>(data + off + 20), // y
+				*reinterpret_cast<float*>(data + off + 24), // z
+				*reinterpret_cast<float*>(data + off + 12)  // w
+			);
 			obj.scale = reinterpret_cast<std::float_t*>(data + off + 28);
 			obj.config.Read(reinterpret_cast<std::uint8_t*>(data + off + 32));
 			off += 2 * (*obj.config.length) + 36;

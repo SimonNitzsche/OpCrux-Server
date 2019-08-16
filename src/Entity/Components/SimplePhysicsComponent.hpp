@@ -10,7 +10,7 @@ using namespace DataTypes;
 
 class SimplePhysicsComponent : public IEntityComponent {
 private:
-	bool allowGlitchUp = true;
+	bool allowGlitchUp = false;
 	std::uint32_t unknownCreation32=0;
 	
 	bool _velocityDirty = false;
@@ -31,7 +31,7 @@ public:
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write(true);
+			factory->Write(allowGlitchUp);
 			factory->Write<std::uint32_t>(0);
 		}
 		factory->Write(_velocityDirty);

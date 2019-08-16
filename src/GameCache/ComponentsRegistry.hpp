@@ -1,5 +1,5 @@
-#ifndef __GAMECACHE__OBJECTS_HPP__
-#define __GAMECACHE__OBJECTS_HPP__
+#ifndef __GAMECACHE__COMPONENTSREGISTRY_HPP__
+#define __GAMECACHE__COMPONENTSREGISTRY_HPP__
 
 #include "Interface/FastDatabase.hpp"
 using namespace GameCache::Interface;

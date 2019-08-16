@@ -8,7 +8,7 @@ using namespace DataTypes;
 
 class ControllablePhysicsComponent : public IEntityComponent {
 private:
-	Vector3 position = Vector3::zero();
+	Vector3 position { -406.6414489746094, 350.69287109375, -157.47933959960938 };
 	Quaternion rotation;
 	bool isPlayerOnGround=true;
 	Vector3 velocity = Vector3::zero();
