@@ -29,4 +29,9 @@ typedef std::uint64_t QWORD;
 #include <ws2tcpip.h>
 #include <windows.h>
 #endif
+/* Unix Only Stuff */
+#ifdef OPCRUX_PLATFORM_UNIX
+#define fopen_s(pFile,filename,mode) ((*(pFile))=fopen((filename),(mode)))==NULL
+#endif
+
 #endif // !__COMMON__CROSSPLATFORM_HPP__

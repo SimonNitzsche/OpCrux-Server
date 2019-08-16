@@ -2,7 +2,9 @@
 #define __UTILS__FILEUTILS_HPP__
 
 #include "Utils/Logger.hpp"
+#include "Common/CrossPlatform.hpp"
 
+#include <algorithm>
 #include <cstdio>
 #include <string>
 #include <memory>
@@ -11,6 +13,7 @@ namespace FileUtils {
 	inline std::unique_ptr<unsigned char[]> ReadFileCompletely(std::string filename, uint32_t * fsize = 0) {
 		// Open
 		FILE * file;
+		std::transform(filename.begin(), filename.end(), filename.begin(),[](unsigned char c){ return std::tolower(c); });
 		fopen_s(&file, filename.c_str(), "rb");
 		
 		// Check

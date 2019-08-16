@@ -1,7 +1,7 @@
 #ifndef __UTILS__LDFUTILS_HPP__
 #define __UTILS__LDFUTILS_HPP__
 
-#define LDF_GET_VAL_FROM_COLLECTION(cVar, collection, keyStr, cDefault) {if (collection->find(keyStr) != collection->end()) {cVar = collection->at(keyStr);} else {cVar = cDefault;}}
+#define LDF_GET_VAL_FROM_COLLECTION(cVar, collection, keyStr, cDefault) {if (collection->find(keyStr) != collection->end()) {cVar = collection->at(keyStr)[keyStr];} else {cVar = cDefault;}}
 
 #include <string>
 #include <memory>
