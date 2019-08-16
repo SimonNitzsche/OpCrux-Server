@@ -11,8 +11,20 @@ private:
 	Vector3 position { -406.6414489746094, 350.69287109375, -157.47933959960938 };
 	Quaternion rotation;
 	bool isPlayerOnGround=true;
+	bool unknownBoolThatMakesObjectFloat = false;
 	Vector3 velocity = Vector3::zero();
 	Vector3 angularVelocity = Vector3::zero();
+
+	bool __unk__0;
+		float __unk__1;
+		float __unk__2;
+	bool __unk__3;
+		float __unk__4;
+		bool __unk__5;
+	bool __unk__6;
+		bool __unk__7;
+			float __unk__8;
+			bool __unk__9;
 public:
 
 	ControllablePhysicsComponent() : IEntityComponent() {}
@@ -56,10 +68,11 @@ public:
 			factory->Write(position);
 			factory->Write(rotation);
 			factory->Write(isPlayerOnGround);
-			factory->Write(false); // this sems to be active when the angular velocity y is negative.
+			factory->Write(unknownBoolThatMakesObjectFloat); // this sems to be active when the angular velocity y is negative.
 			factory->Write(true); // Velocity 
 				factory->Write(velocity);
-			factory->Write(false); // Angular Velocity
+			factory->Write(true); // Angular Velocity
+				factory->Write(angularVelocity);
 			factory->Write(false);
 		}
 		
@@ -68,6 +81,36 @@ public:
 		}
 	}
 
+	/*
+		Deserialize the packet (POSITION_UPDATE), so only serialization!
+	*/
+	void Deserialize(RakNet::BitStream * packet) {
+		packet->Read(position);
+		packet->Read(rotation);
+		packet->Read(isPlayerOnGround);
+		packet->Read(unknownBoolThatMakesObjectFloat);
+		bool velocityFlag; packet->Read(velocityFlag);
+		if (velocityFlag) {
+			packet->Read(velocity);
+		}
+		else {
+			velocity = DataTypes::Vector3();
+		}
+		bool angularVelocityFlag; packet->Read(angularVelocityFlag);
+		if (angularVelocityFlag) {
+			packet->Read(angularVelocity);
+		}
+		else {
+			angularVelocity = DataTypes::Vector3();
+		}
+
+		owner->SetDirty();
+	}
+
+
+	void Update() {
+		
+	}
 };
 
 #endif

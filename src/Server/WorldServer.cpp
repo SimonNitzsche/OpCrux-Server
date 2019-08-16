@@ -274,11 +274,11 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Client load complete ZoneID: " + std::to_string(zoneID) + " MapInstance: " + std::to_string(mapInstance) + " MapClone: " + std::to_string(mapClone));
 
 				
-				Entity::GameObject * testStromling = new Entity::GameObject(this, 4712);
+				/*Entity::GameObject * testStromling = new Entity::GameObject(this, 4712);
 				testStromling->SetObjectID(288334496658198693ULL); // Random ID
 				ControllablePhysicsComponent * scpComp = (ControllablePhysicsComponent*)testStromling->GetComponentByID(1);
 				scpComp->SetPosition(luZone->spawnPos->pos);
-				scpComp->SetRotation(Quaternion(0,0,0,0));
+				scpComp->SetRotation(Quaternion(0,0,0,0));*/
 
 				Logger::log("WRLD", "Construct player");
 				Entity::GameObject * playerObject = new Entity::GameObject(this, 1);
@@ -294,25 +294,46 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				playerObject->SetName(std::wstring(info.name.begin(), info.name.end()));
 				
+				// Bypass disabling of player construction
+				// by missing components
+				playerObject->isSerializable = true;
+
 				Logger::log("WRLD", "Create character packet");
 				PacketFactory::World::CreateCharacter(rakServer, clientSession, playerObject);
+
+				
 
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {
 					if (object_to_construct->isSerializable) {
 						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
-						objectsManager->Construct(object_to_construct);
+						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}
 
-				replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);
-				replicaManager->Construct((Replica*)playerObject, false, UNASSIGNED_SYSTEM_ADDRESS, true);
-				objectsManager->RegisterObject(testStromling);
 				objectsManager->RegisterObject(playerObject);
+				objectsManager->Construct(playerObject);
+
+				//replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);
+				//replicaManager->Construct((Replica*)playerObject, false, UNASSIGNED_SYSTEM_ADDRESS, true);
+				//objectsManager->RegisterObject(testStromling);
+				
 
 				Logger::log("WRLD", "Server done loading");
 				PacketFactory::World::TestLoad(rakServer, clientSession);
 
+				break;
+			}
+			case Enums::EWorldPacketID::CLIENT_POSITION_UPDATE: {
+				DataTypes::LWOOBJID objectID = clientSession->actorID;
+				Entity::GameObject * playerObject = objectsManager->GetObjectByID(objectID);
+				if (playerObject != nullptr) {
+					ControllablePhysicsComponent * controllablePhysicsComponent = static_cast<ControllablePhysicsComponent *>(playerObject->GetComponentByID(1));
+					controllablePhysicsComponent->Deserialize(data);
+				}
+				else {
+					throw new std::runtime_error("Invalid objectID; TODO: Kick Player -> Cheating");
+				}
 				break;
 			}
 			default:
@@ -333,6 +354,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 		Logger::log("WRLD", "User Disconnected from WORLD...");
 		ClientSession * session = sessionManager.GetSession(packet->getSystemAddress());
 		if (session != nullptr) {
+			objectsManager->Destruct(session->actorID);
 			sessionManager.RemoveSession(session);
 			masterServerBridge->ClientDisconnect(packet->getSystemAddress());
 		}

@@ -43,14 +43,14 @@ std::vector<Entity::GameObject*> ObjectsManager::GetObjects() {
 	return out;
 }
 
-void ObjectsManager::Construct(DataTypes::LWOOBJID objID) {
+void ObjectsManager::Construct(DataTypes::LWOOBJID objID, SystemAddress addr) {
 	Entity::GameObject * gameObject = GetObjectByID(objID);
 	if (gameObject != nullptr)
 		Construct(gameObject);
 }
 
-void ObjectsManager::Construct(Entity::GameObject * object) {
-	RM->Construct(object, false, UNASSIGNED_SYSTEM_ADDRESS, true);
+void ObjectsManager::Construct(Entity::GameObject * object, SystemAddress addr) {
+	RM->Construct(object, false, addr, addr == UNASSIGNED_SYSTEM_ADDRESS);
 }
 
 void ObjectsManager::Serialize() {
@@ -77,6 +77,7 @@ void ObjectsManager::Destruct(DataTypes::LWOOBJID objID) {
 
 void ObjectsManager::Destruct(Entity::GameObject * object) {
 	RM->Destruct(object, UNASSIGNED_SYSTEM_ADDRESS, true);
+	object_list.erase(object->GetObjectID());
 }
 
 void ObjectsManager::OnUpdate() {

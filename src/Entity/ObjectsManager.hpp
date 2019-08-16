@@ -21,8 +21,8 @@ public:
 	void UnRegisterObject(Entity::GameObject * object);
 	Entity::GameObject * GetObjectByID(DataTypes::LWOOBJID objID);
 	std::vector<Entity::GameObject*> GetObjects();
-	void Construct(DataTypes::LWOOBJID objID);
-	void Construct(Entity::GameObject * object);
+	void Construct(DataTypes::LWOOBJID objID, SystemAddress addr = UNASSIGNED_SYSTEM_ADDRESS);
+	void Construct(Entity::GameObject * object, SystemAddress addr = UNASSIGNED_SYSTEM_ADDRESS);
 	void Serialize();
 	void Serialize(DataTypes::LWOOBJID objID);
 	void Serialize(Entity::GameObject * object);
