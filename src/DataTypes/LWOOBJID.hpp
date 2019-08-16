@@ -104,7 +104,7 @@ namespace DataTypes {
 			*/
 			unsigned long long getPureID() {
 				// Return the pure ID.
-				return (this->data & 0x00FFFFFFFFFFFFFF);
+				return (this->data & 0x00FFFFFFFFFFFFFFULL);
 			}
 
 			/*
@@ -140,7 +140,7 @@ namespace DataTypes {
 				Makes Player OBJID
 			*/
 			static LWOOBJID makePlayerObjectID(unsigned long long base) {
-				return 0x1000000000000000 + (base & 0xffffffff);
+				return 0x1000000000000000 | (base & 0xffffffff);
 			}
 	};
 }
