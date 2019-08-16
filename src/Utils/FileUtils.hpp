@@ -9,11 +9,13 @@
 #include <string>
 #include <memory>
 
+#include "Utils/StringUtils.hpp"
+
 namespace FileUtils {
 	inline std::unique_ptr<unsigned char[]> ReadFileCompletely(std::string filename, uint32_t * fsize = 0) {
 		// Open
 		FILE * file;
-		std::transform(filename.begin(), filename.end(), filename.begin(),[](unsigned char c){ return std::tolower(c); });
+		StringUtils::ToLowerSelf(filename);
 		fopen_s(&file, filename.c_str(), "rb");
 		
 		// Check

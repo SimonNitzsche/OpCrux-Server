@@ -1,7 +1,10 @@
 #ifndef __UTILS__LDFUTILS_HPP__
 #define __UTILS__LDFUTILS_HPP__
-
-#define LDF_GET_VAL_FROM_COLLECTION(cVar, collection, keyStr, cDefault) {if (collection->find(keyStr) != collection->end()) {cVar = collection->at(keyStr)[keyStr];} else {cVar = cDefault;}}
+#ifdef OPCRUX_PLATFORM_WIN32
+	#define LDF_GET_VAL_FROM_COLLECTION(cVar, collection, keyStr, cDefault) {if (collection->find(keyStr) != collection->end()) {cVar = collection->at(keyStr);} else {cVar = cDefault;}}
+#else
+	#define LDF_GET_VAL_FROM_COLLECTION(cVar, collection, keyStr, cDefault) {if (collection->find(keyStr) != collection->end()) {cVar = collection->at(keyStr)[keyStr];} else {cVar = cDefault;}}
+#endif
 
 #include <string>
 #include <memory>
