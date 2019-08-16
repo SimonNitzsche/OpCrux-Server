@@ -36,6 +36,9 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/DestructibleComponent.hpp"
 #include "Entity/Components/InventoryComponent.hpp"
+#include "Entity/Components/ItemComponent.hpp"
+#include "Entity/Components/MinifigComponent.hpp"
+#include "Entity/Components/MissionOfferComponent.hpp"
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
@@ -163,6 +166,8 @@ void Entity::GameObject::AddComponentByID(int id) {
 		  /* ========== NON-SERIALIZED ========== */
 		  COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent, 31);
 		  COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent, 10);
+		  COMPONENT_ONADD_SWITCH_CASE(MinifigComponent, 35);
+		  COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent, 73);
 
 	default: {
 		Logger::log("WRLD", "Couldn't add component #" + std::to_string(id) + " to GameObject!", LogType::UNEXPECTED);

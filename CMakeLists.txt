@@ -38,6 +38,9 @@ add_executable(OpCrux_Server
 	src/Entity/Components/ControllablePhysicsComponent.hpp
 	src/Entity/Components/DestructibleComponent.hpp
 	src/Entity/Components/InventoryComponent.hpp
+	src/Entity/Components/ItemComponent.hpp
+	src/Entity/Components/MinifigComponent.hpp
+	src/Entity/Components/MissionOfferComponent.hpp
 	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
