@@ -38,6 +38,7 @@ public:
 	};
 private:
 	bool _isDirtyFlagAttributes=false;
+public:
 	Attributes attributes;
 
 public:
