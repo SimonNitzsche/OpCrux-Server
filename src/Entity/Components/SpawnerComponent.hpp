@@ -118,9 +118,18 @@ public:
 		// Create
 		Entity::GameObject * spawnedObject = new Entity::GameObject(Instance, spawnTemplate);
 		
+		
+		if (!spawnedObject->isSerializable) {
+			// Spawn Error Object
+			delete[] spawnedObject;
+			spawnedObject = new Entity::GameObject(Instance, 1845);
+
+		}
+
 		// Set ObjectID
-		spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL<<58)+ 104120439353844ULL+Instance->spawnedObjectIDCounter++));
+		spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
 		//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
+
 
 		// Populate LDF
 		spawnedObject->PopulateFromLDF(&ldfCache);
@@ -147,6 +156,9 @@ public:
 		// Construct
 		if (construct && spawnedObject->isSerializable)
 			Instance->objectsManager->Construct(spawnedObject);
+
+
+		
 
 		return true;
 	}
