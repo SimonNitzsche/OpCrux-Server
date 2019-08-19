@@ -86,7 +86,9 @@ Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
 	for (std::uint32_t component_type : component_types_to_be_added) {
 		this->AddComponentByID(component_type);
 	}
+}
 
+void Entity::GameObject::Finish() {
 	// Call Awake
 	for (auto component : components) {
 		component.second->Awake();
@@ -279,6 +281,11 @@ void Entity::GameObject::SetParent(GameObject * parent) {
 	this->parent = parent;
 	baseDataDirty = true;
 	objectDirty = true;
+}
+
+void Entity::GameObject::SetSpawner(GameObject * spawner, std::uint32_t spawnerNodeID) {
+	this->spawner = spawner;
+	this->spawner_node = spawnerNodeID;
 }
 
 void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {

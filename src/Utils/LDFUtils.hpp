@@ -13,6 +13,51 @@
 
 class LDFUtils {
 public:
+	static LDFEntry MakeLDFEntryFromWStringData(std::wstring key, Enums::LDFType type, std::wstring val) {
+		switch (type) {
+		case Enums::LDFType::WSTRING: {
+			return LDFEntry(key, val);
+			break;
+		}
+		case Enums::LDFType::S32: {
+			return LDFEntry(key, (std::int32_t)std::stoi(val));
+			break;
+		}
+		case Enums::LDFType::FLOAT: {
+			return LDFEntry(key, std::stof(val));
+			break;
+		}
+		case Enums::LDFType::DOUBLE: {
+			return LDFEntry(key, std::stod(val));
+			break;
+		}
+		case Enums::LDFType::U32: {
+			return LDFEntry(key, (std::uint32_t)std::stoi(val));
+			break;
+		}
+		case Enums::LDFType::BOOLEAN: {
+			return LDFEntry(key, val == L"1");
+			break;
+		}
+		case Enums::LDFType::S64: {
+			return LDFEntry(key, (std::int64_t)std::stoll(val));
+			break;
+		}
+		case Enums::LDFType::LWOOBJID: {
+			return LDFEntry(key, (DataTypes::LWOOBJID)std::stoll(val));
+			break;
+		}
+		case Enums::LDFType::STRING: {
+			std::wstring dummyW = val;
+			std::string dummyS = std::string(dummyW.begin(), dummyW.end());
+			return LDFEntry(key, dummyS);
+			break;
+		}
+		default: {
+			throw new std::runtime_error("Unable to recognize LDFType");
+		}
+		}
+	}
 	static LDFCollection ParseCollectionFromWString(std::wstring input) {
 		LDFCollection output;
 		std::vector<std::wstring> entries = StringUtils::splitWString(input,0x000a);
@@ -28,52 +73,17 @@ public:
 			
 			if (type_val.size() == 1) type_val.push_back(L"");
 
-			switch (type) {
-			case Enums::LDFType::WSTRING: {
-				e = LDFEntry(key_typeVal.at(0), type_val.at(1));
-				break;
-			}
-			case Enums::LDFType::S32: {
-				e = LDFEntry(key_typeVal.at(0), (std::int32_t)std::stoi(type_val.at(1)));
-				break;
-			}
-			case Enums::LDFType::FLOAT: {
-				e = LDFEntry(key_typeVal.at(0), std::stof(type_val.at(1)));
-				break;
-			}
-			case Enums::LDFType::DOUBLE: {
-				e = LDFEntry(key_typeVal.at(0), std::stod(type_val.at(1)));
-				break;
-			}
-			case Enums::LDFType::U32: {
-				e = LDFEntry(key_typeVal.at(0), (std::uint32_t)std::stoi(type_val.at(1)));
-				break;
-			}
-			case Enums::LDFType::BOOLEAN: {
-				e = LDFEntry(key_typeVal.at(0), type_val.at(1)==L"1");
-				break;
-			}
-			case Enums::LDFType::S64: {
-				e = LDFEntry(key_typeVal.at(0), (std::int64_t)std::stoll(type_val.at(1)));
-				break;
-			}
-			case Enums::LDFType::LWOOBJID: {
-				e = LDFEntry(key_typeVal.at(0), (DataTypes::LWOOBJID)std::stoll(type_val.at(1)));
-				break;
-			}
-			case Enums::LDFType::STRING: {
-				std::wstring dummyW = type_val.at(1);
-				std::string dummyS = std::string(dummyW.begin(), dummyW.end());
-				e = LDFEntry(key_typeVal.at(0), dummyS);
-				break;
-			}
-			default: {
-				throw new std::runtime_error("Unable to recognize LDFType");
-			}
-			}
+			e = MakeLDFEntryFromWStringData(key_typeVal.at(0), type, type_val.at(1));
+			
 			output.insert({e.key, e });
 		}
 		return output;
+	}
+	static LDFEntry ReadEntryFromLUZWString(std::wstring key, std::wstring val) {
+		std::vector<std::wstring> type_val = StringUtils::splitWString(val, 0x003a);
+		Enums::LDFType type = (Enums::LDFType)std::stoi(type_val.at(0));
+		if (type_val.size() == 1) type_val.push_back(L"");
+		return MakeLDFEntryFromWStringData(key, type, type_val.at(1));
 	}
 };
 

@@ -39,6 +39,7 @@
 #include "GameCache/Objects.hpp"
 
 #include "Utils/LDFUtils.hpp"
+#include "FileTypes/LUZFile/LUZone.hpp"
 
 using namespace Exceptions;
 
@@ -116,7 +117,53 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 			go->PopulateFromLDF(&ldfCollection);
 
+			go->Finish();
+
 			objectsManager->RegisterObject(go);
+		}
+	}
+
+	// Path's Network Spawner
+	for (auto pathBase : luZone->paths) {
+		if (pathBase.second->pathType == FileTypes::LUZ::LUZonePathType::Spawner) {
+			auto spawnerPath = reinterpret_cast<FileTypes::LUZ::LUZonePathSpawner*>(pathBase.second);
+			WorldServer * Instance = this;
+
+			// Create
+			Entity::GameObject * spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
+
+
+			if (!spawnedObject->isSerializable) {
+				// Spawn Error Object
+				delete[] spawnedObject;
+				spawnedObject = new Entity::GameObject(Instance, 1845);
+
+			}
+
+			// Set ObjectID
+			spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
+			//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
+
+
+			// Populate LDF
+			spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(0)->config);
+
+			// Set Position/Rotation
+			ControllablePhysicsComponent * controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(spawnedObject->GetComponentByID(1));
+			if (controllablePhysicsComponent != nullptr) {
+				controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(0)->position);
+				controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(0)->rotation);
+			}
+			SimplePhysicsComponent * simplePhysicsComponent = static_cast<SimplePhysicsComponent*>(spawnedObject->GetComponentByID(3));
+			if (simplePhysicsComponent != nullptr) {
+				simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(0)->position);
+				simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(0)->rotation);
+			}
+
+			spawnedObject->Finish();
+
+			// Register
+			Instance->objectsManager->RegisterObject(spawnedObject);
 		}
 	}
 
@@ -248,7 +295,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0xda1e6b30, luZone->spawnPos->pos, 0);
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0x49525511, luZone->spawnPos->pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
@@ -258,6 +305,38 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				data->Read(messageID);
 
 				Logger::log("WRLD", "Received Game Message ID #" + std::to_string(messageID));
+				
+				// StartSkill, we use it currently for debugging purpose.
+				// Following code logs the nearest object around the player when punching.
+				if (messageID == 0x77) {
+					Entity::GameObject * player = objectsManager->GetObjectByID(objectID);
+					DataTypes::Vector3 playerPos = static_cast<ControllablePhysicsComponent*>(player->GetComponentByID(1))->GetPosition();
+					float nearestDistance = INFINITY;
+					Entity::GameObject * nearestObject = nullptr;
+					for (auto obj : objectsManager->GetObjects()) {
+						if (obj != player) {
+							DataTypes::Vector3 objPos;
+							ControllablePhysicsComponent * cpComp = static_cast<ControllablePhysicsComponent*>(obj->GetComponentByID(1));
+							if (cpComp != nullptr) {
+								objPos = cpComp->GetPosition();
+							}
+							else {
+								SimplePhysicsComponent * spComp = static_cast<SimplePhysicsComponent*>(obj->GetComponentByID(3));
+								if (spComp != nullptr) {
+									objPos = spComp->GetPosition();
+								}
+							}
+
+							float distance = Vector3::Distance(playerPos, objPos);
+							if (distance < nearestDistance) {
+								nearestDistance = distance;
+								nearestObject = obj;
+							}
+						}
+					}
+
+					Logger::log("WRLD", "Nearest Object is " + (std::string)CacheObjects::GetName(nearestObject->GetLOT()) + " with LOT " + std::to_string(nearestObject->GetLOT()) + " as " + std::to_string((std::uint64_t)nearestObject->GetObjectID()));
+				}
 
 				break;
 			}

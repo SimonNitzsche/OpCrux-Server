@@ -55,6 +55,10 @@ public:
 		_posRotDirty = true;
 	}
 
+	DataTypes::Vector3 GetPosition() {
+		return position;
+	}
+
 	void SetRotation(DataTypes::Quaternion rot) {
 		rotation = rot;
 		_posRotDirty = true;

@@ -89,6 +89,11 @@ namespace Entity {
 			GameObject(WorldServer * instance, std::uint32_t LOT);
 
 			/*
+				Use this to finish up object creation.
+			*/
+			void Finish();
+
+			/*
 				Destructor
 			*/
 			~GameObject();
@@ -168,6 +173,11 @@ namespace Entity {
 				Sets the parent object
 			*/
 			void SetParent(GameObject * parent);
+
+			/*
+				Sets the spawner object
+			*/
+			void SetSpawner(GameObject * spawner,std::uint32_t spawnerNodeID);
 
 			/*
 				Only use this on a player.

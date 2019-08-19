@@ -23,6 +23,7 @@ private:
 	Vector3 basePosition;
 
 	Entity::GameObject * pl;
+	bool allowUpdate = false;
 
 public:
 
@@ -35,12 +36,18 @@ public:
 		wanderDelayMin = CacheMovementAIComponent::GetWanderDelayMin(componentID);
 		wanderSpeed = CacheMovementAIComponent::GetWanderSpeed(componentID);
 
-		this->controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(owner->GetComponentByID(1));
-		basePosition = Vector3(-406.6414489746094 ,350.69287109375, -157.47933959960938);
+		
+		//basePosition = Vector3(-406.6414489746094 ,350.69287109375, -157.47933959960938);
 	}
 
+	void Awake() {
+		this->controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(owner->GetComponentByID(1));
+		basePosition = controllablePhysicsComponent->GetPosition();
+		allowUpdate = true;
+	}
 
 	void Update() {
+		if (!allowUpdate) return;
 		Vector3 newPos = Vector3::zero(); // Vector3(basePosition.x, basePosition.y, basePosition.z);
 
 		newPos.x += 4 * std::cos(ServerInfo::uptime());

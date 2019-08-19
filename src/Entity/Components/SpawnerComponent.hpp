@@ -22,7 +22,7 @@ using namespace DataTypes;
 class SpawnerComponent : public IEntityComponent {
 private:
 	LDFCollection ldfCache;
-
+	std::uint32_t spawnCount=0;
 private:
 	/*
 		Used LDF Values:
@@ -48,6 +48,7 @@ private:
 	DataTypes::Quaternion respawnRotation;
 	bool spawnerActiveOnLoad=false;
 	std::int32_t spawnTemplate;
+	bool networkSpawner=false;
 public:
 	DataTypes::Vector3 originPos;
 	DataTypes::Quaternion originRot;
@@ -85,6 +86,11 @@ public:
 		rspRot:0 -> respawnRotation
 		spawner_active_on_load:7 -> spawnerActiveOnLoad
 		spawntemplate:1 -> spawnTemplate
+		----------------------------------
+		is_network_spawner:7
+		spawner_max_per_node:1
+		spawner_node_id:1
+		weight:1
 	*/
 
 		LDF_GET_VAL_FROM_COLLECTION(maxToSpawn, collection, L"max_to_spawn", -1);
@@ -107,8 +113,10 @@ public:
 
 		LDF_GET_VAL_FROM_COLLECTION(spawnerActiveOnLoad, collection, L"spawner_active_on_load", true);
 		LDF_GET_VAL_FROM_COLLECTION(spawnTemplate, collection, L"spawntemplate", -1);
+	}
 
-		Spawn(false);
+	void SetLUZPath() {
+
 	}
 
 	// Returns true on success and false on fail
@@ -135,7 +143,10 @@ public:
 		spawnedObject->PopulateFromLDF(&ldfCache);
 
 		// Set Parent
-		//spawnedObject->SetParent(this->owner);
+		spawnedObject->SetParent(this->owner);
+
+		// Set Spawner
+		spawnedObject->SetSpawner(this->owner, spawnCount++);
 
 		// Set Position/Rotation
 		ControllablePhysicsComponent * controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(spawnedObject->GetComponentByID(1));
@@ -149,6 +160,7 @@ public:
 			simplePhysicsComponent->SetRotation(originRot);
 		}
 
+		spawnedObject->Finish();
 
 		// Register
 		Instance->objectsManager->RegisterObject(spawnedObject);

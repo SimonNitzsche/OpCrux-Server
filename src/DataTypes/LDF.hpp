@@ -2,7 +2,9 @@
 #define __DATATYPES__LDF_HPP__
 
 #include <string>
-#include <map>
+#include <unordered_map>
+
+#include "DataTypes/LWOOBJID.hpp"
 
 #include "Utils/StringUtils.hpp"
 
