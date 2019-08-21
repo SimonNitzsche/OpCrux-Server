@@ -10,6 +10,7 @@ namespace CacheScriptComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
 		FDB::RowTopHeader rth = Cache.getRows("ScriptComponent");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
+			if (!rth.isValid(i)) continue;
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
 					return rth[i];

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <settings>
+        <useLicense>true</useLicense>
+        <useDisclaimer>true</useDisclaimer>
+        <splitIntoOwnFiles>false</splitIntoOwnFiles>
+        <filePath>Enums</filePath>
+        <fileName>NativeScriptLinks.hpp</fileName>
+        <definitionName>__NATIVE_SCRIPT_LINKS_HPP__</definitionName>
+        <namespace>ScriptLink</namespace>
+    </settings>
+    <include>
+        <i name='!map'></i>
+        <i name='!vector'></i>
+        <i name='!set'></i>
+        <i name='!string'></i>
+        <i name='"Utils/Logger.hpp"'></i>
+        <i name='!stdlib.h'></i>
+        <i name='!memory'></i>
+    </include>
+    <disclaimer>
+        <l>This file is auto-generated and should not be edited because changes</l>
+        <l>will be lost. Generated with pyScriptLink, written by Simon Nitzsche 2019.</l>
+    </disclaimer>
+    <license>
+        <l>Copyright (c) 2019 Simon Nitzsche All Rights Reserved.</l>
+    </license>
+    <enums>
+       
+    </enums>
+</data>

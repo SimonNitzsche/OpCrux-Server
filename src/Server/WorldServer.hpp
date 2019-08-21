@@ -17,6 +17,7 @@ public:
 	ReplicaManager * replicaManager = nullptr;
 	NetworkIDManager * networkIdManager = nullptr;
 	ObjectsManager * objectsManager = nullptr;
+	RakPeerInterface* rakServer;
 	FileTypes::LUZ::LUZone * luZone;
 	unsigned long long spawnedObjectIDCounter=0;
 public:

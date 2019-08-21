@@ -10,6 +10,11 @@
 class SessionManager {
 	std::vector<ClientSession> clients;
 public:
+
+	std::vector<ClientSession> GetClients() {
+		return clients;
+	}
+
 	ClientSession * GetSession(SystemAddress systemAddress) {
 		for (int i = 0; i < clients.size(); ++i) {
 			ClientSession * session = &clients[i];

@@ -49,6 +49,14 @@ add_executable(OpCrux_Server
 	src/Entity/Components/SpawnerComponent.hpp
 	src/Entity/Components/StatsComponent.hpp
 	src/Entity/Components/VendorComponent.hpp
+	src/Entity/GameMessages/Die.hpp
+	src/Entity/GameMessages/RequestResurrect.hpp
+	src/Entity/GameMessages/RequestSmashPlayer.hpp
+	src/Entity/GameMessages/RequestUse.hpp
+	src/Entity/GameMessages/Resurrect.hpp
+	src/Entity/GameMessages/SetGravityScale.hpp
+	src/Entity/GameMessages.cpp
+	src/Entity/GameMessages.hpp
 	src/Entity/GameObject.cpp
 	src/Entity/GameObject.hpp
 	src/Entity/ObjectsManager.cpp

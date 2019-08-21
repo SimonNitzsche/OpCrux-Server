@@ -41,6 +41,7 @@
 #include "Utils/LDFUtils.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
 
+#include "Entity/GameMessages.hpp"
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
@@ -61,7 +62,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	sessionManager = SessionManager();
 
 	// Initializes the RakPeerInterface used for the world server
-	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
+	rakServer = RakNetworkFactory::GetRakPeerInterface();
 
 	// Initializes Securiry
 	// TODO: Init Security
@@ -174,7 +175,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	glT.detach();
 
 	while (ServerInfo::bRunning) {
-		RakSleep(1);
+		RakSleep(30);
 		while (packet = rakServer->Receive()) {
 			try {
 				handlePacket(rakServer, reinterpret_cast<LUPacket*>(packet));
@@ -295,10 +296,15 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0x49525511, luZone->spawnPos->pos, 0);
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0xda1e6b30, luZone->spawnPos->pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
+				BitSize_t readOffset = data->GetReadOffset();
+
+				GameMessages::Deserialize(this, clientSession, data);
+
+				data->SetReadOffset(readOffset);
 				DataTypes::LWOOBJID objectID;
 				data->Read(objectID);
 				std::uint16_t messageID;
@@ -415,6 +421,14 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				}
 				break;
 			}
+
+			case (Enums::EWorldPacketID)91: {
+				/* This is an unknown packet.*/
+				unsigned char * pack = data->GetData();
+				Logger::log("WRLD", "Received unknown packet containing: " + std::to_string(*reinterpret_cast<std::int32_t*>(pack)));
+				break;
+			}
+
 			default:
 				Logger::log("WRLD", "Received unknown packetID "+std::to_string(packetHeader.packetID));
 			}

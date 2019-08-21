@@ -11,7 +11,7 @@ private:
 	Vector3 position { -406.6414489746094, 350.69287109375, -157.47933959960938 };
 	Quaternion rotation;
 	bool isPlayerOnGround=true;
-	bool unknownBoolThatMakesObjectFloat = false;
+	bool onRail = false;
 	Vector3 velocity = Vector3::zero();
 	Vector3 angularVelocity = Vector3::zero();
 
@@ -68,7 +68,7 @@ public:
 			factory->Write(position);
 			factory->Write(rotation);
 			factory->Write(isPlayerOnGround);
-			factory->Write(unknownBoolThatMakesObjectFloat); // this sems to be active when the angular velocity y is negative.
+			factory->Write(onRail);
 			factory->Write(true); // Velocity 
 				factory->Write(velocity);
 			factory->Write(true); // Angular Velocity
@@ -88,7 +88,7 @@ public:
 		packet->Read(position);
 		packet->Read(rotation);
 		packet->Read(isPlayerOnGround);
-		packet->Read(unknownBoolThatMakesObjectFloat);
+		packet->Read(onRail);
 		bool velocityFlag; packet->Read(velocityFlag);
 		if (velocityFlag) {
 			packet->Read(velocity);
