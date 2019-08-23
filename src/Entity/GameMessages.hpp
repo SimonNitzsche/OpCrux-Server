@@ -90,7 +90,10 @@ public:
 // The Game Messages:
 
 // Define by include
+#include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
 #include "Entity/GameMessages/Die.hpp"
+#include "Entity/GameMessages/PlayNDAudioEmitter.hpp"
+#include "Entity/GameMessages/ProximityUpdate.hpp"
 #include "Entity/GameMessages/RequestResurrect.hpp"
 #include "Entity/GameMessages/RequestSmashPlayer.hpp"
 #include "Entity/GameMessages/RequestUse.hpp"

@@ -12,18 +12,20 @@ namespace CacheScriptComponent {
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
 			if (!rth.isValid(i)) continue;
 			try {
-				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
+				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id) {
 					return rth[i];
+				}
 			}
 			catch (std::runtime_error e) {
-				Logger::log("Cache:ScriptComponent", e.what(), ERR);
+				Logger::log("Cache:ScriptComponent", e.what(), LogType::ERR);
 			}
 		}
 		return FDB::RowInfo();
 	}
 
 	inline FDB::PointerString GetScriptName(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[1]/**/.getMemoryLocation());
+		auto memlocation = getRow(id)/**/[1]/**/.getMemoryLocation();
+		return FDB::PointerString(&Cache, memlocation);
 	}
 
 	inline FDB::PointerString GetClientScriptName(int32_t id) {

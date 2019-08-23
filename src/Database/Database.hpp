@@ -884,7 +884,7 @@ public:
 						}
 					}
 					catch (std::runtime_error e) {
-						Logger::log("Cache:ItemComponent", e.what(), ERR);
+						Logger::log("Cache:ItemComponent", e.what(), LogType::ERR);
 					}
 				}
 				if(shirtObjectID == 0) {
@@ -909,7 +909,7 @@ public:
 						}
 					}
 					catch (std::runtime_error e) {
-						Logger::log("Cache:ItemComponent", e.what(), ERR);
+						Logger::log("Cache:ItemComponent", e.what(), LogType::ERR);
 					}
 				}
 				if (pantsObjectID == 0) {

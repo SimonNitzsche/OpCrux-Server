@@ -18,7 +18,7 @@ namespace CacheZoneTable {
 						return rth[i];
 			}
 			catch (std::runtime_error e) {
-				Logger::log("Cache:ZoneTable", e.what(), ERR);
+				Logger::log("Cache:ZoneTable", e.what(), LogType::ERR);
 			}
 		}
 		return FDB::RowInfo();

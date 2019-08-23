@@ -118,7 +118,7 @@ namespace DataTypes {
 			/*
 				Returns the distance between two vectors.
 			*/
-			static float Distance(Vector3 a, Vector3 b) { return (a - b).magnitude(); }
+			static float Distance(Vector3 a, Vector3 b) { return  sqrtf(Vector3::Dot((a - b),(a-b))); }
 
 			/*
 				Lerps a vector to another by a rate. (clamped)

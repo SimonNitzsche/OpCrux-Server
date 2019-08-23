@@ -138,6 +138,8 @@ public:
 		spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
 		//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
 
+		// Set Scale
+		spawnedObject->SetScale(this->owner->GetScale());
 
 		// Populate LDF
 		spawnedObject->PopulateFromLDF(&ldfCache);

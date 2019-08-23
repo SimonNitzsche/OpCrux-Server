@@ -48,6 +48,9 @@ namespace Entity {
 			// The Parent Object of this Object.
 			GameObject * parent = nullptr;
 
+			// The scale of the object
+			float scale = 1.0f;
+
 			// The Children of this object.
 			std::vector<GameObject *> children;
 
@@ -64,6 +67,8 @@ namespace Entity {
 			bool baseDataDirty = false;
 
 			WorldServer * Instance;
+
+			LDFCollection configData;
 
 		public:
 
@@ -123,6 +128,20 @@ namespace Entity {
 			DataTypes::LWOOBJID GetObjectID();
 
 			/*
+				Sets the scale
+			*/
+			void SetScale(float scale) {
+				this->scale = scale;
+			}
+
+			/*
+				Gets the scale
+			*/
+			float GetScale() {
+				return this->scale;
+			}
+
+			/*
 				Gets the object LOT
 			*/
 			std::uint32_t GetLOT() {
@@ -133,6 +152,11 @@ namespace Entity {
 				Called to update the object.
 			*/
 			void Update();
+
+			/*
+				Called to update physic
+			*/
+			void PhysicUpdate();
 
 			/*
 				Ticks the object.
@@ -214,6 +238,26 @@ namespace Entity {
 				Quick function to create the test object.
 			*/
 			void Test() { objectID = 9ULL; LOT = 1234; name = L"TestName"; }
+		public:
+			// Script Stuff
+			LDFEntry GetVar(std::wstring key) {
+				return configData.at(key);
+			}
+
+			template<typename T>
+			void SetVar(std::wstring key, T data) {
+				auto it = configData.find(key);
+				if (it != configData.end()) {
+					it->second.Delete();
+					it->second = LDFEntry(key, data);
+				}
+				else {
+					configData.insert({ key, LDFEntry(key, data) });
+				}
+			}
+
+			void SetProximityRadius(std::string name, float radius);
+			void PlayNDAudioEmitter(std::string guid);
 	};
 }
 

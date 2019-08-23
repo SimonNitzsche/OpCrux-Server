@@ -9,7 +9,7 @@
 // global logging
 //
 
-enum LogType
+enum class LogType
 {
 #ifdef OPCRUX_PLATFORM_WIN32
 	NORMAL = 15,
@@ -31,7 +31,7 @@ enum LogType
 
 namespace Logger
 {
-	void log(const std::string &from, const std::string &message, LogType type = NORMAL);
+	void log(const std::string &from, const std::string &message, LogType type = LogType::NORMAL);
 }
 
 // Displays a variable's name and value

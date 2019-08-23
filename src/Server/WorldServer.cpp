@@ -116,6 +116,8 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 			}
 			go->isSerializable = false;
 
+			go->SetScale(*objT.scale);
+
 			go->PopulateFromLDF(&ldfCollection);
 
 			go->Finish();
@@ -174,6 +176,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	std::thread glT([=]() { GameLoopThread(); });
 	glT.detach();
 
+	std::thread gpT([=]() { GamePhysicsThread(); });
+	gpT.detach();
+
 	while (ServerInfo::bRunning) {
 		RakSleep(30);
 		while (packet = rakServer->Receive()) {
@@ -197,7 +202,14 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 void WorldServer::GameLoopThread() {
 	while (ServerInfo::bRunning) {
 		objectsManager->OnUpdate();
-		RakSleep(30);
+		RakSleep(300);
+	}
+}
+
+void WorldServer::GamePhysicsThread() {
+	while (ServerInfo::bRunning) {
+		objectsManager->OnPhysicsUpdate();
+		RakSleep(300);
 	}
 }
 
@@ -296,7 +308,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0xda1e6b30, luZone->spawnPos->pos, 0);
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0x49525511, luZone->spawnPos->pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {

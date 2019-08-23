@@ -88,5 +88,12 @@ void ObjectsManager::OnUpdate() {
 	// Check dirty
 	for (auto oPair : object_list)
 		if (oPair.second->IsObjectDirty())
-			Serialize(oPair.second);
+			if(oPair.second)
+				Serialize(oPair.second);
+}
+
+void ObjectsManager::OnPhysicsUpdate() {
+	// Call update
+	for (auto oPair : object_list)
+		oPair.second->PhysicUpdate();
 }

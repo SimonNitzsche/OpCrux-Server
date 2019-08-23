@@ -18,7 +18,7 @@ namespace CacheMovementAIComponent {
 						return rth[i];
 			}
 			catch (std::runtime_error e) {
-				Logger::log("Cache:MovementAIComponent", e.what(), ERR);
+				Logger::log("Cache:MovementAIComponent", e.what(), LogType::ERR);
 			}
 		}
 		return FDB::RowInfo();

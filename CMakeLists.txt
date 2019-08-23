@@ -42,6 +42,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/MinifigComponent.hpp
 	src/Entity/Components/MissionOfferComponent.hpp
 	src/Entity/Components/MovementAIComponent.hpp
+	src/Entity/Components/MovingPlatformComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
 	src/Entity/Components/SimplePhysicsComponent.hpp
@@ -49,7 +50,10 @@ add_executable(OpCrux_Server
 	src/Entity/Components/SpawnerComponent.hpp
 	src/Entity/Components/StatsComponent.hpp
 	src/Entity/Components/VendorComponent.hpp
+	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
+	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
+	src/Entity/GameMessages/ProximityUpdate.hpp
 	src/Entity/GameMessages/RequestResurrect.hpp
 	src/Entity/GameMessages/RequestSmashPlayer.hpp
 	src/Entity/GameMessages/RequestUse.hpp
@@ -59,6 +63,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages.hpp
 	src/Entity/GameObject.cpp
 	src/Entity/GameObject.hpp
+	src/Entity/NativeScript.hpp
 	src/Entity/ObjectsManager.cpp
 	src/Entity/ObjectsManager.hpp
 	src/Enums/EComponents.hpp

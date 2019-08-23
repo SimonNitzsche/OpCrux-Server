@@ -29,6 +29,7 @@ public:
 	void Destruct(DataTypes::LWOOBJID objID);
 	void Destruct(Entity::GameObject * object);
 	void OnUpdate();
+	void OnPhysicsUpdate();
 	~ObjectsManager() {}
 };
 

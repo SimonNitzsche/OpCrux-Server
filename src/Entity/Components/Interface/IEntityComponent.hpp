@@ -6,6 +6,8 @@
 #include "DataTypes/LWOOBJID.hpp"
 #include "DataTypes/LDF.hpp"
 
+#include "GameCache/ComponentsRegistry.hpp"
+
 namespace Entity {
 	class GameObject;
 }
@@ -35,6 +37,9 @@ namespace Entity {
 
 			// Called when the components needs update.
 			virtual void Update() {}
+
+			// Called when physic update
+			virtual void PhysicUpdate() {}
 
 			// Optional void.
 			// Used to set components variables on load from LDF like from LUZ.

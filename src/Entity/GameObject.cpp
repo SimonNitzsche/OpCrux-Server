@@ -40,6 +40,7 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/MinifigComponent.hpp"
 #include "Entity/Components/MissionOfferComponent.hpp"
 #include "Entity/Components/MovementAIComponent.hpp"
+#include "Entity/Components/MovingPlatformComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
@@ -121,6 +122,11 @@ void Entity::GameObject::Update() {
 		oPair.second->Update();
 }
 
+void Entity::GameObject::PhysicUpdate() {
+	for (auto oPair : components)
+		oPair.second->PhysicUpdate();
+}
+
 void Entity::GameObject::Tick() {
 	Update();
 }
@@ -153,7 +159,7 @@ void Entity::GameObject::AddComponentByID(int id) {
 		  COMPONENT_ONADD_SWITCH_CASE(SkillComponent, 9);
 		  COMPONENT_ONADD_SWITCH_CASE(BaseCombatAIComponent, 60);
 		//COMPONENT_ONADD_SWITCH_CASE(QuickbuildComponent, 48);
-		//COMPONENT_ONADD_SWITCH_CASE(MovingPlatformComponent, 25);
+		COMPONENT_ONADD_SWITCH_CASE(MovingPlatformComponent, 25);
 		//COMPONENT_ONADD_SWITCH_CASE(SwitchComponent, 49);
 		COMPONENT_ONADD_SWITCH_CASE(VendorComponent, 16);
 		//COMPONENT_ONADD_SWITCH_CASE(BouncerComponent, 6);
@@ -206,7 +212,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(SkillComponent, 9);
 	SERIALIZE_COMPONENT_IF_ATTACHED(BaseCombatAIComponent, 60);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(QuickbuildComponent, 48);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent, 25);
+	SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent, 25);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent, 49);
 	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent, 16);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(BouncerComponent, 6);
@@ -243,7 +249,9 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 		if (spawner_node != 0xFFFFFFFF) { factory->Write(spawner_node); }
 
 		// Object Scale
-		factory->Write(false);
+		factory->Write(this->scale != 1.0);
+		if (this->scale != 1.0)
+			factory->Write(this->scale);
 		
 		// object world state
 		factory->Write(false);
@@ -290,7 +298,20 @@ void Entity::GameObject::SetSpawner(GameObject * spawner, std::uint32_t spawnerN
 
 void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	
+	configData = *collection;
+
 	// TODO: Populate base data
+	
+
+	// Add Componets custom
+	/* Script Component */ {
+		std::wstring customScript = L"";
+		LDF_GET_VAL_FROM_COLLECTION(customScript, collection, L"custom_script_server", L"");
+		if (customScript != L"") {
+			this->AddComponentByID(5);
+		}
+	}
+
 	
 	for (auto component : this->components) {
 		if (component.second != nullptr) {
@@ -298,6 +319,28 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 		}
 		//if (this->components.size() == 1) return;
 	}
+}
+
+void Entity::GameObject::SetProximityRadius(std::string name, float radius) {
+	ScriptComponent * scriptComp = reinterpret_cast<ScriptComponent*>(GetComponentByID(5));
+	if (scriptComp) {
+		if (scriptComp->proximityRadii.find(name) == scriptComp->proximityRadii.end()) {
+			scriptComp->proximityRadii.insert({ name, { radius, {}} });
+		}
+		else {
+			throw new std::runtime_error("Radius already exists.");
+		}
+	}
+	else {
+		throw new std::runtime_error("Script component not attached.");
+	}
+}
+
+void Entity::GameObject::PlayNDAudioEmitter(std::string guid) {
+	GM::PlayNDAudioEmitter msg;
+	msg.m_NDAudioEventGUID = guid;
+
+	GameMessages::Send(this->Instance, UNASSIGNED_SYSTEM_ADDRESS, this->objectID, msg);
 }
 
 std::string Entity::GameObject::GenerateXML() {

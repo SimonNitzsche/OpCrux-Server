@@ -115,7 +115,9 @@ namespace CacheComponentsRegistry {
 	}
 
 	inline int32_t GetComponentID(int32_t id, int32_t compType) {
-		return *reinterpret_cast<int32_t*>(getRowByType(id, compType)/**/[2]/**/.getMemoryLocation());
+		auto memlocation = (getRowByType(id, compType)/**/[2]/**/.getMemoryLocation());
+		if (memlocation == nullptr) return 0;
+		return *reinterpret_cast<int32_t*>(memlocation);
 	}
 
 	inline int32_t GetComponentID(FDB::RowInfo row) {

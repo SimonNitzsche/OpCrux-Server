@@ -57,6 +57,14 @@ namespace GameCache::Interface::FDB {
 	*/
 
 	PointerString::PointerString(Connection * connection, unsigned char * where) : conn(connection), memlocation(where) {
+		if (memlocation == nullptr) {
+			length = 0;
+			return;
+		}
+		if (*reinterpret_cast<uint32_t*>(memlocation) == 0) {
+			length = 0;
+			return;
+		}
 		memlocation = conn->getFileData() + *reinterpret_cast<uint32_t*>(memlocation);
 		length = std::strlen(reinterpret_cast<const char*>(memlocation));
 	}
@@ -98,6 +106,8 @@ namespace GameCache::Interface::FDB {
 	}
 
 	FieldValue RowData::getColumnData(uint32_t indexOfColumn) {
+		if (memlocation == nullptr)
+			return FieldValue(conn, FDB::DATA_TYPE::NOTHING, nullptr);
 		return FieldValue(conn, getColumnDataType(indexOfColumn), reinterpret_cast<int32_t*>(memlocation + (8 * indexOfColumn) + 4));
 	}
 
@@ -114,6 +124,8 @@ namespace GameCache::Interface::FDB {
 	}
 
 	RowData RowDataHeader::getRowData() {
+		if (memlocation == nullptr)
+			return RowData(conn, nullptr);
 		int32_t offset = *reinterpret_cast<int32_t*>(memlocation + 4);
 		if (offset == EOF)
 			throw std::runtime_error("RowData is invalid.");
@@ -143,6 +155,9 @@ namespace GameCache::Interface::FDB {
 	}
 
 	RowDataHeader RowInfo::getRowDataHeader() {
+		if (memlocation == nullptr) {
+			return RowDataHeader(conn, nullptr);
+		}
 		int32_t offset = *reinterpret_cast<int32_t*>(memlocation);
 		if (offset == EOF)
 			throw std::runtime_error("RowDataHeader is invalid.");
@@ -260,11 +275,11 @@ namespace GameCache::Interface::FDB {
 				}
 			}
 			else {
-				Logger::log("FDB", "Couldn't find table on the FDB.", ERR);
+				Logger::log("FDB", "Couldn't find table on the FDB.", LogType::ERR);
 			}
 		}
 		catch (std::exception e) {
-			Logger::log("FDB", "Error on FDB Query (" + std::string(e.what()) + ")", ERR);
+			Logger::log("FDB", "Error on FDB Query (" + std::string(e.what()) + ")", LogType::ERR);
 		}
 		return result;
 	}

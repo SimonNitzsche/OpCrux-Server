@@ -23,6 +23,7 @@ public:
 public:
 	WorldServer(int zone, int instanceID, int port);
 	void GameLoopThread();
+	void GamePhysicsThread();
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 	~WorldServer();
 };
