@@ -20,6 +20,7 @@
 #include "GameCache/Interface/FastDatabase.hpp"
 #include "DataTypes/AMF3.hpp"
 
+#include "Utils/FileUtils.hpp"
 #include "Utils/ServerInfo.hpp"
 #include "Utils/StringUtils.hpp"
 #include <chrono>
@@ -37,7 +38,6 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 #include "Entity/GameObject.hpp"
 #include "GameCache/WorldConfig.hpp"
 
-//#include <mysql.h>
 #include "DataTypes/LDF.hpp"
 
 GameCache::Interface::FDB::Connection Cache;
@@ -46,6 +46,7 @@ BridgeMasterServer* masterServerBridge;
 #include "Entity/Components/StatsComponent.hpp"
 
 int main(int argc, char* argv[]) {
+	FileUtils::ChangeDirectory();
 	std::string ipMaster = "127.0.0.1";
 
 	Database::Connect();

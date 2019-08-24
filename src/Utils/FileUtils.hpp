@@ -45,6 +45,22 @@ namespace FileUtils {
 	inline std::string GetFileDir(std::string file) {
 		return file.substr(0, file.find_last_of("\\/"));
 	}
+	
+	inline void ChangeDirectory() {
+		// Change directory to directory of the executable, since we're using relative paths
+#ifdef OPCRUX_PLATFORM_WIN32
+		// TODO: Windows Solution
+		//_chdir(path)
+#endif
+#ifdef OPCRUX_PLATFORM_UNIX
+		char * result;
+		ssize_t count = readlink("/proc/self/exe", result, 1024);
+		if (count != -1) {
+			chdir(dirname(result));
+		}
+#endif
+	}
+	
 };
 
 #endif // !__UTILS__FILEUTILS_HPP__
