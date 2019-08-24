@@ -14,6 +14,8 @@
 #include "GameCache/ComponentsRegistry.hpp"
 #include "DataTypes/Vector3.hpp"
 
+#include "DB_Server.hpp"
+
 #define SQL_RESULT_LEN 240
 #define SQL_RETURN_CODE_LEN 1000
 
@@ -134,9 +136,7 @@ public:
 		//but is more secure to use a trusted connection
 		switch (SQLDriverConnect(sqlConnHandle,
 			NULL,
-			//(SQLWCHAR*)L"DRIVER={SQL Server};SERVER=localhost, 1433;DATABASE=master;UID=username;PWD=password;",
-			//(SQLCHAR*)"DRIVER={SQL Server};SERVER=DESKTOP-U26DIDP, 1433;DATABASE=OPCRUX_GD;UID=dev_opcrux;PWD=dev_opcrux", ODBC Driver 13 for SQL Server
-			(SQLCHAR*)"DRIVER={SQL Server};SERVER=DESKTOP-U26DIDP;UID=dev_opcrux;PWD=dev_opcrux;",
+			(SQLCHAR*)DB_CREDENTIALS,
 			SQL_NTS,
 			retconstring,
 			1024,

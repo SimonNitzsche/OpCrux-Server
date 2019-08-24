@@ -340,3 +340,6 @@ CMakeCache.txt
 **/Makefile
 **/cmake_install.cmake
 **/*.a
+
+# MSSQL creds
+src/Database/DB_Server.hpp

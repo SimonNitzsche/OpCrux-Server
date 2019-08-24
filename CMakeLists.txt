@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(OpCrux_Server)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} #[[additional compiler flags:]])
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -w #[[additional compiler flags:]])
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
