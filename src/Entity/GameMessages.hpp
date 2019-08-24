@@ -54,7 +54,7 @@ namespace GM {
 	};
 }
 
-static class GameMessages {
+class GameMessages {
 public:
 	static void Deserialize(WorldServer * Instance, ClientSession * session, RakNet::BitStream *bs);
 
