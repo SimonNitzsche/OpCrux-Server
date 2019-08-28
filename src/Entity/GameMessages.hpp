@@ -14,6 +14,8 @@
 
 #include <string>
 
+#include "Entity/GameObject.hpp"
+
 #define GM_DESERIALIZE_SWITCH_CASE(name)\
 	case name::GetID(): {name msg = name(); msg.Deserialize(bs); msg.TriggerEvent(senderObject, targetObject); break;}
 

@@ -37,16 +37,19 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/DestructibleComponent.hpp"
 #include "Entity/Components/InventoryComponent.hpp"
 #include "Entity/Components/ItemComponent.hpp"
+#include "Entity/Components/LUPExhibitComponent.hpp"
 #include "Entity/Components/MinifigComponent.hpp"
 #include "Entity/Components/MissionOfferComponent.hpp"
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/MovingPlatformComponent.hpp"
+#include "Entity/Components/PhantomPhysicsComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
 #include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/StatsComponent.hpp"
+#include "Entity/Components/SwitchComponent.hpp"
 #include "Entity/Components/VendorComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
@@ -144,38 +147,38 @@ void Entity::GameObject::AddComponentByID(int id) {
 		COMPONENT_ONADD_SWITCH_CASE(StatsComponent, 200);
 		//COMPONENT_ONADD_SWITCH_CASE(Component108, 108);
 		//COMPONENT_ONADD_SWITCH_CASE(ModuleAssemblyComponent, 61);
-		  COMPONENT_ONADD_SWITCH_CASE(ControllablePhysicsComponent, 1);
+		COMPONENT_ONADD_SWITCH_CASE(ControllablePhysicsComponent, 1);
 		COMPONENT_ONADD_SWITCH_CASE(SimplePhysicsComponent, 3);
 		//COMPONENT_ONADD_SWITCH_CASE(RigidBodyPhantomPhysicsComponent, 20);
-		//COMPONENT_ONADD_SWITCH_CASE(VehiclePhysics, 30);
-		//COMPONENT_ONADD_SWITCH_CASE(PhantomPhysics, 40);
-		  COMPONENT_ONADD_SWITCH_CASE(DestructibleComponent, 7);
+		//COMPONENT_ONADD_SWITCH_CASE(VehiclePhysicsComponent, 30);
+		COMPONENT_ONADD_SWITCH_CASE(PhantomPhysicsComponent, 40);
+		COMPONENT_ONADD_SWITCH_CASE(DestructibleComponent, 7);
 		//COMPONENT_ONADD_SWITCH_CASE(CollectibleComponent, 23);
 		//COMPONENT_ONADD_SWITCH_CASE(PetComponent, 26);
-		  COMPONENT_ONADD_SWITCH_CASE(CharacterComponent, 4);
+		COMPONENT_ONADD_SWITCH_CASE(CharacterComponent, 4);
 		//COMPONENT_ONADD_SWITCH_CASE(ShootingGalleryComponent, 19);
-		  COMPONENT_ONADD_SWITCH_CASE(InventoryComponent, 17);
-		  COMPONENT_ONADD_SWITCH_CASE(ScriptComponent, 5);
-		  COMPONENT_ONADD_SWITCH_CASE(SkillComponent, 9);
-		  COMPONENT_ONADD_SWITCH_CASE(BaseCombatAIComponent, 60);
+		COMPONENT_ONADD_SWITCH_CASE(InventoryComponent, 17);
+		COMPONENT_ONADD_SWITCH_CASE(ScriptComponent, 5);
+		COMPONENT_ONADD_SWITCH_CASE(SkillComponent, 9);
+		COMPONENT_ONADD_SWITCH_CASE(BaseCombatAIComponent, 60);
 		//COMPONENT_ONADD_SWITCH_CASE(QuickbuildComponent, 48);
 		COMPONENT_ONADD_SWITCH_CASE(MovingPlatformComponent, 25);
-		//COMPONENT_ONADD_SWITCH_CASE(SwitchComponent, 49);
+		COMPONENT_ONADD_SWITCH_CASE(SwitchComponent, 49);
 		COMPONENT_ONADD_SWITCH_CASE(VendorComponent, 16);
 		//COMPONENT_ONADD_SWITCH_CASE(BouncerComponent, 6);
 		//COMPONENT_ONADD_SWITCH_CASE(ScriptedActivityComponent, 39);
 		//COMPONENT_ONADD_SWITCH_CASE(RacingControlComponent, 71);
-		//COMPONENT_ONADD_SWITCH_CASE(LUPExhibitComponent, 75);
+		COMPONENT_ONADD_SWITCH_CASE(LUPExhibitComponent, 75);
 		//COMPONENT_ONADD_SWITCH_CASE(ModelComponent, 42);
-		  COMPONENT_ONADD_SWITCH_CASE(RenderComponent, 2);
+		COMPONENT_ONADD_SWITCH_CASE(RenderComponent, 2);
 		//COMPONENT_ONADD_SWITCH_CASE(MinigameComponent, 50);
 		  COMPONENT_ONADD_SWITCH_CASE(Component107, 107);
 		//COMPONENT_ONADD_SWITCH_CASE(TriggerComponent, 69);
-		  /* ========== NON-SERIALIZED ========== */
-		  COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent, 31);
-		  COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent, 10);
-		  COMPONENT_ONADD_SWITCH_CASE(MinifigComponent, 35);
-		  COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent, 73);
+		/* ========== NON-SERIALIZED ========== */
+		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent, 31);
+		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent, 10);
+		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent, 35);
+		COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent, 73);
 
 	default: {
 		Logger::log("WRLD", "Couldn't add component #" + std::to_string(id) + " to GameObject!", LogType::UNEXPECTED);
@@ -200,8 +203,8 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(ControllablePhysicsComponent, 1);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SimplePhysicsComponent, 3);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RigidBodyPhantomPhysicsComponent, 20);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(VehiclePhysics, 30);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(PhantomPhysics, 40);
+	//SERIALIZE_COMPONENT_IF_ATTACHED(VehiclePhysicsComponent, 30);
+	SERIALIZE_COMPONENT_IF_ATTACHED(PhantomPhysicsComponent, 40);
 	SERIALIZE_COMPONENT_IF_ATTACHED(DestructibleComponent, 7);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(CollectibleComponent, 23);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(PetComponent, 26);
@@ -213,12 +216,12 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(BaseCombatAIComponent, 60);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(QuickbuildComponent, 48);
 	SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent, 25);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent, 49);
+	SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent, 49);
 	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent, 16);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(BouncerComponent, 6);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ScriptedActivityComponent, 39);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RacingControlComponent, 71);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(LUPExhibitComponent, 75);
+	SERIALIZE_COMPONENT_IF_ATTACHED(LUPExhibitComponent, 75);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ModelComponent, 42);
 	SERIALIZE_COMPONENT_IF_ATTACHED(RenderComponent, 2);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(MinigameComponent, 50);

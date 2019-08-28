@@ -25,6 +25,11 @@ namespace GM {
 
 		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
 			Logger::log("WRLD", "Triggered RequestUse.");
+			Entity::GameObject * targetObject = sender->GetZoneInstance()->objectsManager->GetObjectByID(objectID);
+			if (targetObject)
+				targetObject->OnRequestUse(sender, this);
+			else
+				Logger::log("WRLD", "RequestUse: Unable to find object " + std::to_string(objectID), LogType::ERR);
 		}
 	};
 }

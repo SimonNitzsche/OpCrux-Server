@@ -21,6 +21,7 @@ include_directories(tests)
 add_executable(OpCrux_Server
 	src/Common/CrossPlatform.hpp
 	src/Database/Database.hpp
+	src/Database/DB_Server.hpp
 	src/DataTypes/AMF3.hpp
 	src/DataTypes/LDF.hpp
 	src/DataTypes/LEGO_GUID.hpp
@@ -39,16 +40,19 @@ add_executable(OpCrux_Server
 	src/Entity/Components/DestructibleComponent.hpp
 	src/Entity/Components/InventoryComponent.hpp
 	src/Entity/Components/ItemComponent.hpp
+	src/Entity/Components/LUPExhibitComponent.hpp
 	src/Entity/Components/MinifigComponent.hpp
 	src/Entity/Components/MissionOfferComponent.hpp
 	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/MovingPlatformComponent.hpp
+	src/Entity/Components/PhantomPhysicsComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
 	src/Entity/Components/SimplePhysicsComponent.hpp
 	src/Entity/Components/SkillComponent.hpp
 	src/Entity/Components/SpawnerComponent.hpp
 	src/Entity/Components/StatsComponent.hpp
+	src/Entity/Components/SwitchComponent.hpp
 	src/Entity/Components/VendorComponent.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp

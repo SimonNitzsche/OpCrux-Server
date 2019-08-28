@@ -12,6 +12,10 @@ namespace Entity {
 	class GameObject;
 }
 
+namespace GM {
+	class RequestUse;
+};
+
 //namespace Entity::Components::Interface {
 
 	/*
@@ -40,6 +44,9 @@ namespace Entity {
 
 			// Called when physic update
 			virtual void PhysicUpdate() {}
+
+			/* Game Messages */
+			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {};
 
 			// Optional void.
 			// Used to set components variables on load from LDF like from LUZ.

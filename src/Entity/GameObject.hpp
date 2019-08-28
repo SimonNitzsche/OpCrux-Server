@@ -238,6 +238,12 @@ namespace Entity {
 				Quick function to create the test object.
 			*/
 			void Test() { objectID = 9ULL; LOT = 1234; name = L"TestName"; }
+
+
+		public:
+			/* Game Messages */
+			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) { for (auto i : components) i.second->OnRequestUse(sender, msg); };
+
 		public:
 			// Script Stuff
 			LDFEntry GetVar(std::wstring key) {
