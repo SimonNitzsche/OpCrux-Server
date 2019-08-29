@@ -33,6 +33,7 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/BaseCombatAIComponent.hpp"
 #include "Entity/Components/BouncerComponent.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
+#include "Entity/Components/CollectibleComponent.hpp"
 #include "Entity/Components/Component107.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/DestructibleComponent.hpp"
@@ -154,7 +155,7 @@ void Entity::GameObject::AddComponentByID(int id) {
 		//COMPONENT_ONADD_SWITCH_CASE(VehiclePhysicsComponent, 30);
 		COMPONENT_ONADD_SWITCH_CASE(PhantomPhysicsComponent, 40);
 		COMPONENT_ONADD_SWITCH_CASE(DestructibleComponent, 7);
-		//COMPONENT_ONADD_SWITCH_CASE(CollectibleComponent, 23);
+		COMPONENT_ONADD_SWITCH_CASE(CollectibleComponent, 23);
 		//COMPONENT_ONADD_SWITCH_CASE(PetComponent, 26);
 		COMPONENT_ONADD_SWITCH_CASE(CharacterComponent, 4);
 		//COMPONENT_ONADD_SWITCH_CASE(ShootingGalleryComponent, 19);
@@ -207,7 +208,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	//SERIALIZE_COMPONENT_IF_ATTACHED(VehiclePhysicsComponent, 30);
 	SERIALIZE_COMPONENT_IF_ATTACHED(PhantomPhysicsComponent, 40);
 	SERIALIZE_COMPONENT_IF_ATTACHED(DestructibleComponent, 7);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(CollectibleComponent, 23);
+	SERIALIZE_COMPONENT_IF_ATTACHED(CollectibleComponent, 23);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(PetComponent, 26);
 	SERIALIZE_COMPONENT_IF_ATTACHED(CharacterComponent, 4);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ShootingGalleryComponent, 19);

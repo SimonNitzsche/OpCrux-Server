@@ -36,6 +36,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/BaseCombatAIComponent.hpp
 	src/Entity/Components/BouncerComponent.hpp
 	src/Entity/Components/CharacterComponent.hpp
+	src/Entity/Components/CollectibleComponent.hpp
 	src/Entity/Components/Component107.hpp
 	src/Entity/Components/ControllablePhysicsComponent.hpp
 	src/Entity/Components/DestructibleComponent.hpp
