@@ -11,7 +11,7 @@
 		components.insert(std::make_pair(COMP_ID, comp));\
 		comp->SetOwner(this); \
 		comp->OnEnable();\
-		Logger::log("WRLD", "Added Component "+std::string(#COMP_T)+"!");\
+		/*Logger::log("WRLD", "Added Component "+std::string(#COMP_T)+"!");*/\
 		if(comp == nullptr) {\
 			throw new std::runtime_error(std::string(#COMP_T)+" resultet into a nullptr.");\
 		}\

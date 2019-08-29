@@ -8,6 +8,7 @@
 #include "DataTypes/LWOOBJID.hpp"
 #include <vector>
 #include <unordered_map>
+#include <optional>
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 //#include "Server/WorldServer.hpp"
@@ -242,12 +243,17 @@ namespace Entity {
 
 		public:
 			/* Game Messages */
+			//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }
+
 			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) { for (auto i : components) i.second->OnRequestUse(sender, msg); };
 
 		public:
 			// Script Stuff
-			LDFEntry GetVar(std::wstring key) {
-				return configData.at(key);
+			std::optional<LDFEntry> GetVar(std::wstring key) {
+				if (configData.find(key) != configData.end())
+					return configData.at(key);
+				else
+					return {};
 			}
 
 			template<typename T>

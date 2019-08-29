@@ -12,6 +12,8 @@
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
 
+#include "Utils/LDFUtils.hpp"
+
 #include <string>
 #include <array>
 
@@ -43,14 +45,16 @@ private:
 	std::shared_ptr<NativeScript> instance;
 
 	// Include native scripts
-	#include "Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp"
-	const std::unordered_map<std::string, script_factory> factories {
+#include "Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp"
+#include "Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp"
+	const std::unordered_map<std::string, script_factory> factories{
 		{"TestScript", []() -> script_ptr {return std::make_shared<TestScript>(); }},
-		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }}
+		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }},
+		{"scripts\\ai\\AG\\L_AG_SHIP_PLAYER_SHOCK_SERVER.lua", []()->script_ptr {return std::make_shared< NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER>(); }}
 	};
 
 private:
-	bool _isDirtyFlag = false;	
+	bool _isDirtyFlag = false;
 
 public:
 
@@ -58,7 +62,7 @@ public:
 
 	void OnEnable() {
 		std::uint32_t compID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 5);
-		scriptName = CacheScriptComponent::GetScriptName(compID);	
+		scriptName = CacheScriptComponent::GetScriptName(compID);
 
 		if (scriptName == ("ScriptComponent_" + std::to_string(compID) + "_script_name__removed")) {
 			scriptName = "";
@@ -76,7 +80,7 @@ public:
 
 	void Start() {
 		LoadScript();
-		if(scriptName!="")
+		if (scriptName != "")
 			if (instance)
 				instance->onStartup(owner);
 	}
@@ -92,6 +96,16 @@ public:
 				owner->isSerializable = false;
 			}
 		}
+	}
+
+	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
+		if (instance)
+			instance->onUse(owner, *msg);
+	}
+
+	void OnTimerDone(std::pair<std::wstring, long long> timer) {
+		if (instance)
+			instance->onTimerDone(owner, nullptr);
 	}
 
 	std::vector<Entity::GameObject *> objectsInProximity = {};

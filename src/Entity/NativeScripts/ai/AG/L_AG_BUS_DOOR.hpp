@@ -56,8 +56,8 @@ class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR : public NativeScript {
 
 		if (msg.objId->GetLOT() != 1) return;
 
-		int counter = self->GetVar(L"counter");
-		int outerCounter = self->GetVar(L"outerCounter");
+		int counter = *self->GetVar(L"counter");
+		int outerCounter = *self->GetVar(L"outerCounter");
 
 		if (msg.status == "ENTER") {
 			if (msg.name == "busDoor") {

@@ -14,6 +14,8 @@ public:
 	virtual void onStartup(Entity::GameObject * self) {}
 	virtual void onProximityUpdate(Entity::GameObject * self, GM::ProximityUpdate msg) {}
 	virtual void onArrivedAtDesiredWaypoint(Entity::GameObject * self, GM::ArrivedAtDesiredWaypoint msg) {}
+	virtual void onUse(Entity::GameObject * self, GM::RequestUse msg) {};
+	virtual void onTimerDone(Entity::GameObject * self, void* msg) {};
 
 	// Helper functions
 	void print(std::string text) {

@@ -58,6 +58,10 @@ add_executable(OpCrux_Server
 	src/Entity/Components/VendorComponent.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
+	src/Entity/GameMessages/Knockback.hpp
+	src/Entity/GameMessages/OfferMission.hpp
+	src/Entity/GameMessages/PlayAnimation.hpp
+	src/Entity/GameMessages/PlayFXEffect.hpp
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
 	src/Entity/GameMessages/RequestResurrect.hpp
@@ -65,7 +69,9 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RequestUse.hpp
 	src/Entity/GameMessages/Resurrect.hpp
 	src/Entity/GameMessages/SetGravityScale.hpp
+	src/Entity/GameMessages/StopFXEffect.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
+	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp
 	src/Entity/GameObject.cpp
@@ -114,6 +120,8 @@ add_executable(OpCrux_Server
 	src/GameCache/VendorComponent.hpp
 	src/GameCache/WorldConfig.hpp
 	src/GameCache/ZoneTable.hpp
+	src/Misc/LWOTimer.cpp
+	src/Misc/LWOTimer.hpp
 	src/Misc/WORLD_CHECKSUM.hpp
 	src/NetworkDataTypes/ByteBool.hpp
 	src/NetworkDataTypes/LUPacket.hpp

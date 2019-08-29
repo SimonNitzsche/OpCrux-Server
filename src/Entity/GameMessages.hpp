@@ -32,6 +32,7 @@
 	}\
 }
 
+#define GM_VAR_SERIALIZE_STRING(bs, parameter) {bs->Write<std::uint32_t>(parameter.size()); bs->Write(reinterpret_cast<const char*>(parameter.c_str()), parameter.size());}
 #define GM_VAR_SERIALIZE_WSTRING(bs, parameter) {bs->Write<std::uint32_t>(parameter.size()); bs->Write(reinterpret_cast<const char*>(parameter.c_str()), parameter.size() * 2);}
 #define GM_VAR_SERIALIZE(bs, parameter) {bs->Write(parameter);}
 #define GM_VAR_SERIALIZE_WITH_DEFAULT(bs, parameter, defaultVal) {\
@@ -94,7 +95,10 @@ public:
 // Define by include
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
 #include "Entity/GameMessages/Die.hpp"
+#include "Entity/GameMessages/Knockback.hpp"
 #include "Entity/GameMessages/OfferMission.hpp"
+#include "Entity/GameMessages/PlayAnimation.hpp"
+#include "Entity/GameMessages/PlayFXEffect.hpp"
 #include "Entity/GameMessages/PlayNDAudioEmitter.hpp"
 #include "Entity/GameMessages/ProximityUpdate.hpp"
 #include "Entity/GameMessages/RequestResurrect.hpp"
@@ -102,5 +106,6 @@ public:
 #include "Entity/GameMessages/RequestUse.hpp"
 #include "Entity/GameMessages/Resurrect.hpp"
 #include "Entity/GameMessages/SetGravityScale.hpp"
+#include "Entity/GameMessages/StopFXEffect.hpp"
 
 #endif

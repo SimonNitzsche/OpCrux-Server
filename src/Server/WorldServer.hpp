@@ -7,6 +7,8 @@
 class ObjectsManager;
 #include "Entity/ObjectsManager.hpp"
 
+#include "Misc/LWOTimer.hpp"
+
 class WorldServer : ILUServer {
 private:
 	std::vector<std::string> mf_FirstNames = {};
@@ -20,6 +22,7 @@ public:
 	RakPeerInterface* rakServer;
 	FileTypes::LUZ::LUZone * luZone;
 	unsigned long long spawnedObjectIDCounter=0;
+	LWOTimer timer;
 public:
 	WorldServer(int zone, int instanceID, int port);
 	void GameLoopThread();

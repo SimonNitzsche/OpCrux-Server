@@ -8,6 +8,7 @@ namespace GM {
 		std::uint32_t multiInteractID;
 		std::int32_t multiInteractType;
 		DataTypes::LWOOBJID objectID;
+		Entity::GameObject * user;
 		bool secondary = false;
 
 		inline constexpr static Enums::EGameMessageID GetID() {
@@ -25,6 +26,7 @@ namespace GM {
 
 		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
 			Logger::log("WRLD", "Triggered RequestUse.");
+			user = sender;
 			Entity::GameObject * targetObject = sender->GetZoneInstance()->objectsManager->GetObjectByID(objectID);
 			if (targetObject)
 				targetObject->OnRequestUse(sender, this);

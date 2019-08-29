@@ -43,6 +43,7 @@
 
 #include "Misc/WORLD_CHECKSUM.hpp"
 
+
 #include "Entity/GameMessages.hpp"
 using namespace Exceptions;
 
@@ -204,6 +205,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 void WorldServer::GameLoopThread() {
 	while (ServerInfo::bRunning) {
 		objectsManager->OnUpdate();
+		timer.Update();
 		RakSleep(300);
 	}
 }
