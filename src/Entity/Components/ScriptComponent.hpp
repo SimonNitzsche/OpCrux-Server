@@ -28,7 +28,7 @@ public:
 };
 
 class ScriptComponent;
-
+ // TEST COMMIT
 // Forward declare
 class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR;
 
