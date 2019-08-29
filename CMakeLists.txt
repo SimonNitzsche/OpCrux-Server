@@ -64,6 +64,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RequestUse.hpp
 	src/Entity/GameMessages/Resurrect.hpp
 	src/Entity/GameMessages/SetGravityScale.hpp
+	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp
 	src/Entity/GameObject.cpp
