@@ -41,6 +41,8 @@
 #include "Utils/LDFUtils.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
 
+#include "Misc/WORLD_CHECKSUM.hpp"
+
 #include "Entity/GameMessages.hpp"
 using namespace Exceptions;
 
@@ -105,7 +107,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	for (auto scene : luZone->scenes) {
 		for (auto objT : scene.scene.objectsChunk.objects) {
 			Entity::GameObject * go = new Entity::GameObject(this, *objT.LOT);
-			go->SetObjectID(DataTypes::LWOOBJID((1ULL << 45) | *objT.objectID));
+			go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ 70368744177664ULL | *objT.objectID));
 			LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
 			
 			// If Spawner
@@ -308,7 +310,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, 0x49525511, luZone->spawnPos->pos, 0);
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, WORLD_CHECKSUM.at(*luZone->zoneID), luZone->spawnPos->pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {

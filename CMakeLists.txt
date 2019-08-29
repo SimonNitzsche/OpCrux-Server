@@ -34,6 +34,7 @@ add_executable(OpCrux_Server
 	src/Encryption/sha512.hpp
 	src/Entity/Components/Interface/IEntityComponent.hpp
 	src/Entity/Components/BaseCombatAIComponent.hpp
+	src/Entity/Components/BouncerComponent.hpp
 	src/Entity/Components/CharacterComponent.hpp
 	src/Entity/Components/Component107.hpp
 	src/Entity/Components/ControllablePhysicsComponent.hpp
@@ -111,6 +112,7 @@ add_executable(OpCrux_Server
 	src/GameCache/VendorComponent.hpp
 	src/GameCache/WorldConfig.hpp
 	src/GameCache/ZoneTable.hpp
+	src/Misc/WORLD_CHECKSUM.hpp
 	src/NetworkDataTypes/ByteBool.hpp
 	src/NetworkDataTypes/LUPacket.hpp
 	src/PacketFactory/Auth/AuthPackets.hpp

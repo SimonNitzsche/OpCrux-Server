@@ -31,6 +31,7 @@ void lala(IEntityComponent * c, int id) {
 
 // Components
 #include "Entity/Components/BaseCombatAIComponent.hpp"
+#include "Entity/Components/BouncerComponent.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
 #include "Entity/Components/Component107.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
@@ -165,7 +166,7 @@ void Entity::GameObject::AddComponentByID(int id) {
 		COMPONENT_ONADD_SWITCH_CASE(MovingPlatformComponent, 25);
 		COMPONENT_ONADD_SWITCH_CASE(SwitchComponent, 49);
 		COMPONENT_ONADD_SWITCH_CASE(VendorComponent, 16);
-		//COMPONENT_ONADD_SWITCH_CASE(BouncerComponent, 6);
+		COMPONENT_ONADD_SWITCH_CASE(BouncerComponent, 6);
 		//COMPONENT_ONADD_SWITCH_CASE(ScriptedActivityComponent, 39);
 		//COMPONENT_ONADD_SWITCH_CASE(RacingControlComponent, 71);
 		COMPONENT_ONADD_SWITCH_CASE(LUPExhibitComponent, 75);
@@ -218,7 +219,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent, 25);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent, 49);
 	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent, 16);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(BouncerComponent, 6);
+	SERIALIZE_COMPONENT_IF_ATTACHED(BouncerComponent, 6);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ScriptedActivityComponent, 39);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RacingControlComponent, 71);
 	SERIALIZE_COMPONENT_IF_ATTACHED(LUPExhibitComponent, 75);
