@@ -12,7 +12,7 @@ class NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER : public NativeScript 
 
 
 	std::wstring ShockAnim = L"knockback-recovery";
-	float FXTime = 2.0f;
+	int FXTime = 2000;
 public:
 
 	void onStartup(Entity::GameObject * self) {
@@ -36,7 +36,7 @@ public:
 
 		self->GetZoneInstance()->timer.AddTimerWithCancel(FXTime, L"FXTime", self);
 	}
-	void onTimerDone(Entity::GameObject * self, void * msg) {
+	void onTimerDone(Entity::GameObject * self, TimerDone msg) {
 		{ GM::StopFXEffect nmsg; nmsg.name = "console_sparks"; nmsg.TriggerEvent(self, self); }
 		self->SetVar(L"bActive", false);
 	}

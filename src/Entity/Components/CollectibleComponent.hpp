@@ -34,7 +34,7 @@ public:
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		
 		// Check if Destructible component is attached, if so don't serialize
-		if(owner->GetComponentByID(7) != nullptr)
+		if(owner->GetComponentByID(7) == nullptr)
 			statsComponent->Serialize(factory, packetType);
 
 

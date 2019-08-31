@@ -32,6 +32,7 @@ namespace GM {
 
 		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
 			GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), *this);
+			Logger::log("GM", "PlayAnimation \"" + std::string(animationID.begin(), animationID.end()) + "\"");
 		}
 	};
 }

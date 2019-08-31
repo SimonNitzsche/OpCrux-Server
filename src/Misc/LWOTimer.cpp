@@ -2,7 +2,7 @@
 #include "Entity/Components/ScriptComponent.hpp"
 
 void LWOTimer::Update() {
-	long long currentTime = ServerInfo::uptime();
+	long long currentTime = ServerInfo::uptimeMs();
 	for (auto it1 : timers) {
 		auto r1 = timers.at(it1.first);
 		for (auto it2 : r1) {
@@ -18,11 +18,11 @@ void LWOTimer::Update() {
 }
 }
 
-void LWOTimer::AddTimerWithCancel(int time, std::wstring name, Entity::GameObject * object) {
+void LWOTimer::AddTimerWithCancel(int timeInMs, std::wstring name, Entity::GameObject * object) {
 	if (timers.find(object) == timers.end()) timers.insert(std::pair<Entity::GameObject*, std::unordered_map<std::wstring, long long>>(object, {}));
 	if (timers.at(object).find(name) == timers.at(object).end()) {
 		// Add
-		timers.at(object).insert(std::make_pair(name, ServerInfo::uptime() + time));
+		timers.at(object).insert(std::make_pair(name, ServerInfo::uptimeMs() + timeInMs));
 	}
 	else {
 		// Already exists, can't add again -> Error

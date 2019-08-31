@@ -20,6 +20,7 @@ public:
 	static const char* baseTitle;
 	static void init();
 	static long long uptime();
+	static long long uptimeMs();
 	static float uptime_normalized();
 	static long long time_gone(long long uptime);
 	static float CompareTimes(long long startTime, long long endTime);

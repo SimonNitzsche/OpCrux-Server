@@ -47,10 +47,12 @@ private:
 	// Include native scripts
 #include "Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp"
+#include "Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp"
 	const std::unordered_map<std::string, script_factory> factories{
 		{"TestScript", []() -> script_ptr {return std::make_shared<TestScript>(); }},
 		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }},
-		{"scripts\\ai\\AG\\L_AG_SHIP_PLAYER_SHOCK_SERVER.lua", []()->script_ptr {return std::make_shared< NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER>(); }}
+		{"scripts\\ai\\AG\\L_AG_SHIP_PLAYER_SHOCK_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER>(); }},
+		{"scripts\\ai\\AG\\L_AG_SPACE_STUFF.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SPACE_STUFF>();  }}
 	};
 
 private:
@@ -105,7 +107,7 @@ public:
 
 	void OnTimerDone(std::pair<std::wstring, long long> timer) {
 		if (instance)
-			instance->onTimerDone(owner, nullptr);
+			instance->onTimerDone(owner, TimerDone(timer.first));
 	}
 
 	std::vector<Entity::GameObject *> objectsInProximity = {};

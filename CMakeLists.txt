@@ -48,6 +48,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/MovingPlatformComponent.hpp
 	src/Entity/Components/PhantomPhysicsComponent.hpp
+	src/Entity/Components/QuickBuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
 	src/Entity/Components/SimplePhysicsComponent.hpp
@@ -72,6 +73,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/StopFXEffect.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
+	src/Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp
 	src/Entity/GameObject.cpp

@@ -45,6 +45,7 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/MovingPlatformComponent.hpp"
 #include "Entity/Components/PhantomPhysicsComponent.hpp"
+#include "Entity/Components/QuickBuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
@@ -163,7 +164,7 @@ void Entity::GameObject::AddComponentByID(int id) {
 		COMPONENT_ONADD_SWITCH_CASE(ScriptComponent, 5);
 		COMPONENT_ONADD_SWITCH_CASE(SkillComponent, 9);
 		COMPONENT_ONADD_SWITCH_CASE(BaseCombatAIComponent, 60);
-		//COMPONENT_ONADD_SWITCH_CASE(QuickbuildComponent, 48);
+		COMPONENT_ONADD_SWITCH_CASE(QuickbuildComponent, 48);
 		COMPONENT_ONADD_SWITCH_CASE(MovingPlatformComponent, 25);
 		COMPONENT_ONADD_SWITCH_CASE(SwitchComponent, 49);
 		COMPONENT_ONADD_SWITCH_CASE(VendorComponent, 16);
@@ -216,7 +217,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(ScriptComponent, 5);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SkillComponent, 9);
 	SERIALIZE_COMPONENT_IF_ATTACHED(BaseCombatAIComponent, 60);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(QuickbuildComponent, 48);
+	SERIALIZE_COMPONENT_IF_ATTACHED(QuickbuildComponent, 48);
 	SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent, 25);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent, 49);
 	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent, 16);

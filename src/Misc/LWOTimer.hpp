@@ -14,7 +14,7 @@ class LWOTimer {
 public:
 	void Update();
 
-	void AddTimerWithCancel(int time, std::wstring name, Entity::GameObject * object);
+	void AddTimerWithCancel(int timeInMs, std::wstring name, Entity::GameObject * object);
 }; 
 
 

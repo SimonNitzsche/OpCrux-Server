@@ -29,6 +29,10 @@ long long ServerInfo::uptime() {
 	return (clock() / CLOCKS_PER_SEC) - appstart;
 }
 
+long long ServerInfo::uptimeMs() {
+	return (clock() - appstart * 1000);
+}
+
 float ServerInfo::uptime_normalized() {
 	return ServerInfo::uptime() * 0.001f;
 }
