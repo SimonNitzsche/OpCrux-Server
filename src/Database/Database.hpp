@@ -1041,6 +1041,41 @@ public:
 		}
 	}
 
+	static std::uint64_t getStatByID(std::int64_t statsID, std::uint32_t statsIndex) {
+		const std::string lookup[27] = {
+			"currencyCollected",
+			"bricksCollected",
+			"objectsSmashed",
+			"quickbuildsCompleted",
+			"enemiesSmashed",
+			"rocketsUsed",
+			"missionsCompleted",
+			"petsTamed",
+			"imaginationCollected",
+			"healthCollected",
+			"armorCollected",
+			"distanceTraveled",
+			"smashed",
+			"damageTaken",
+			"damageHealed",
+			"armorRepaired",
+			"imaginationRestored",
+			"imaginationUsed",
+			"distanceDriven",
+			"airborneTime",
+			"racingImaginationCollected",
+			"racingImaginationCratesSmashed",
+			"racingBoostsActivated",
+			"racingWrecks",
+			"racingSmashablesSmashed",
+			"racesFinished",
+			"racesWon"
+		};
+		if (statsID >= 27) throw new std::runtime_error("Index out of range.");
+		std::string statsName = lookup[statsID];
+		return 0;
+	}
+
 	static void DebugTest() {
 
 	}

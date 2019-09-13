@@ -73,6 +73,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/StopFXEffect.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
+	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp

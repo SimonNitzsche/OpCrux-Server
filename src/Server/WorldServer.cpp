@@ -104,6 +104,11 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
 	Logger::log("WRLD", "Sucessfully loaded zone.");
 
+	if (*luZone->zoneID != zone) {
+		Logger::log("WRLD", "Invalid zoneID within LUZ file, correcting...", LogType::UNEXPECTED);
+		*luZone->zoneID = zone;
+	}
+
 	// TODO: Move this to somewhere else
 	for (auto scene : luZone->scenes) {
 		for (auto objT : scene.scene.objectsChunk.objects) {

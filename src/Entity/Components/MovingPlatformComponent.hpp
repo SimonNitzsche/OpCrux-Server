@@ -20,7 +20,7 @@ private:
 	std::int32_t currentWaypointIndex;
 
 
-	FileTypes::LUZ::LUZonePathMovingPlatform * attachedPath;
+	FileTypes::LUZ::LUZonePathMovingPlatform * attachedPath = nullptr;
 public:
 
 	MovingPlatformComponent() : IEntityComponent() {}
@@ -69,38 +69,39 @@ public:
 
 	void Update() {
 		if ((ServerInfo::uptime() % 10) != 0) return;
+		if (attachedPath && attachedPath != nullptr) {
+			RakSleep(1000);
 
-		RakSleep(1000);
+			RakNet::BitStream testBs = RakNet::BitStream();
+			LUPacketHeader returnBSHead;
+			returnBSHead.protocolID = static_cast<uint8_t>(0x53);
+			returnBSHead.remoteType = static_cast<uint16_t>(0x05);
+			returnBSHead.packetID = static_cast<uint32_t>(12);
+			testBs.Write(returnBSHead);
 
-		RakNet::BitStream testBs = RakNet::BitStream();
-		LUPacketHeader returnBSHead;
-		returnBSHead.protocolID = static_cast<uint8_t>(0x53);
-		returnBSHead.remoteType = static_cast<uint16_t>(0x05);
-		returnBSHead.packetID = static_cast<uint32_t>(12);
-		testBs.Write(returnBSHead);
+			// GM Header
+			testBs.Write<std::uint64_t>(owner->GetObjectID());
+			testBs.Write<std::uint16_t>(0x02f9);
 
-		// GM Header
-		testBs.Write<std::uint64_t>(owner->GetObjectID());
-		testBs.Write<std::uint16_t>(0x02f9);
+			testBs.Write(false);
+			testBs.Write(false);
+			testBs.Write(0);
+			testBs.Write(25);
+			testBs.Write(0);
+			testBs.Write(0.0f);
+			testBs.Write(0.0f);
+			testBs.Write(0.0f);
+			testBs.Write(0);
+			testBs.Write(0);
+			testBs.Write(1);
+			testBs.Write(attachedPath->waypoints.at(0)->position);
+			testBs.Write(false);
 
-		testBs.Write(false);
-		testBs.Write(false);
-		testBs.Write(0);
-		testBs.Write(25);
-		testBs.Write(0);
-		testBs.Write(0.0f);
-		testBs.Write(0.0f);
-		testBs.Write(0.0f);
-		testBs.Write(0);
-		testBs.Write(0);
-		testBs.Write(1);
-		testBs.Write(attachedPath->waypoints.at(0)->position);
-		testBs.Write(false);
-
-		auto clients = owner->GetZoneInstance()->sessionManager.GetClients();
-		for (int i = 0; i < clients.size(); ++i) {
-			ClientSession session = clients.at(i);
-			owner->GetZoneInstance()->rakServer->Send(&testBs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
+			auto clients = owner->GetZoneInstance()->sessionManager.GetClients();
+			for (int i = 0; i < clients.size(); ++i) {
+				ClientSession session = clients.at(i);
+				owner->GetZoneInstance()->rakServer->Send(&testBs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
+			}
 		}
 	}
 
@@ -112,7 +113,8 @@ public:
 	}
 
 	void Awake() {
-		attachedPath = static_cast<FileTypes::LUZ::LUZonePathMovingPlatform*>(owner->GetZoneInstance()->luZone->paths.at(pathName));
+		if(pathName != L"")
+			attachedPath = static_cast<FileTypes::LUZ::LUZonePathMovingPlatform*>(owner->GetZoneInstance()->luZone->paths.at(pathName));
 	}
 
 };

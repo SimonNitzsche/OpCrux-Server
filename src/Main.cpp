@@ -45,9 +45,12 @@ BridgeMasterServer* masterServerBridge;
 
 #include "Entity/Components/StatsComponent.hpp"
 
+int givenWorldID = 1800;
+
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();
 	std::string ipMaster = "127.0.0.1";
+	//std::string ipMaster = "foxsog.com";
 
 	Database::Connect();
 	//Database::DoATestQuery();
@@ -69,27 +72,25 @@ int main(int argc, char* argv[]) {
 			std::system("title OpCrux Server (Master only)");
 #endif
 		}
-		if (arg == "--world") {
+		else if (arg == "--world") {
 			MODE_SERVER = SERVERMODE::WORLD;
 #ifdef OPCRUX_PLATFORM_WIN32
 			std::system("title OpCrux Server (World only)");
 #endif
 		}
-		if (arg == "--auth") {
+		else if (arg == "--auth") {
 			MODE_SERVER = SERVERMODE::AUTH;
 #ifdef OPCRUX_PLATFORM_WIN32
 			std::system("title OpCrux Server (Auth only)");
 #endif
 		}
-		else {
-			continue;
+		else if (arg == "--worldID" && i < argc) {
+			givenWorldID = std::stoi(argv[i + 1]);
 		}
 
-		if (argc >= 3) {
+		if (argc >= 4) {
 			ipMaster = argv[i + 1];
 		}
-
-		break;
 	}
 
 	ServerInfo::init();
@@ -116,7 +117,7 @@ int main(int argc, char* argv[]) {
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
 		WorldServer * charSelectWs;
-		std::thread wT([](WorldServer * ws) { ws = new WorldServer(1000, 0,2001); }, charSelectWs);
+		std::thread wT([](WorldServer * ws) { ws = new WorldServer(givenWorldID, 0,2001); }, charSelectWs);
 		wT.detach();
 	}
 

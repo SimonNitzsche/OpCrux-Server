@@ -18,7 +18,7 @@ public:
 			// Type of objects called
 			int scaletype = 1 + rand() % ((5 + 1) - 1);  // Rand (1,5)
 
-			print("Scale " + std::to_string(scaletype));
+			// print("Scale " + std::to_string(scaletype));
 
 			{ GM::PlayAnimation nmsg; nmsg.animationID = L"scale_0"+std::to_wstring(scaletype); nmsg.TriggerEvent(self, self); }
 
@@ -28,7 +28,7 @@ public:
 			int pathtype = 1 + rand() % ((4 + 1) - 1); // Rand (1,4)
 			int randtime = 20 + rand() % ((25 + 1) - 20); // Rand (20,25)
 
-			print("Move " + std::to_string(pathtype));
+			// print("Move " + std::to_string(pathtype));
 
 			{ GM::PlayAnimation nmsg; nmsg.animationID = L"path_0" + std::to_wstring(pathtype); nmsg.TriggerEvent(self, self); }
 
