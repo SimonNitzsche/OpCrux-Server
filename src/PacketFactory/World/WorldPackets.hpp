@@ -162,11 +162,6 @@ namespace PacketFactory {
 
 			// Send
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
-
-			// Cleanup
-			for (int i = 0; i < ldfEntries.size(); ++i) {
-				ldfEntries[i].Delete();
-			}
 		}
 
 		inline void LoadStaticZone(RakPeerInterface * rakServer, ClientSession * clientSession, std::uint16_t zoneID, std::uint16_t mapInstance, std::uint32_t mapClone, std::uint32_t mapChecksum, DataTypes::Vector3 playerPosition, std::uint32_t activityMap) {

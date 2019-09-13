@@ -260,7 +260,6 @@ namespace Entity {
 			void SetVar(std::wstring key, T data) {
 				auto it = configData.find(key);
 				if (it != configData.end()) {
-					it->second.Delete();
 					it->second = LDFEntry(key, data);
 				}
 				else {

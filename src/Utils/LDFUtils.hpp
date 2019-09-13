@@ -14,49 +14,51 @@
 class LDFUtils {
 public:
 	static LDFEntry MakeLDFEntryFromWStringData(std::wstring key, Enums::LDFType type, std::wstring val) {
+		LDFEntry e = LDFEntry();
 		switch (type) {
 		case Enums::LDFType::WSTRING: {
-			return LDFEntry(key, val);
+			e = LDFEntry(key, val);
 			break;
 		}
 		case Enums::LDFType::S32: {
-			return LDFEntry(key, (std::int32_t)std::stoi(val));
+			e = LDFEntry(key, (std::int32_t)std::stoi(val));
 			break;
 		}
 		case Enums::LDFType::FLOAT: {
-			return LDFEntry(key, std::stof(val));
+			e = LDFEntry(key, std::stof(val));
 			break;
 		}
 		case Enums::LDFType::DOUBLE: {
-			return LDFEntry(key, std::stod(val));
+			e = LDFEntry(key, std::stod(val));
 			break;
 		}
 		case Enums::LDFType::U32: {
-			return LDFEntry(key, (std::uint32_t)std::stoi(val));
+			e = LDFEntry(key, (std::uint32_t)std::stoi(val));
 			break;
 		}
 		case Enums::LDFType::BOOLEAN: {
-			return LDFEntry(key, val == L"1");
+			e = LDFEntry(key, val == L"1");
 			break;
 		}
 		case Enums::LDFType::S64: {
-			return LDFEntry(key, (std::int64_t)std::stoll(val));
+			e = LDFEntry(key, (std::int64_t)std::stoll(val));
 			break;
 		}
 		case Enums::LDFType::LWOOBJID: {
-			return LDFEntry(key, (DataTypes::LWOOBJID)std::stoll(val));
+			e = LDFEntry(key, (DataTypes::LWOOBJID)std::stoll(val));
 			break;
 		}
 		case Enums::LDFType::STRING: {
 			std::wstring dummyW = val;
 			std::string dummyS = std::string(dummyW.begin(), dummyW.end());
-			return LDFEntry(key, dummyS);
+			e = LDFEntry(key, dummyS);
 			break;
 		}
 		default: {
 			throw new std::runtime_error("Unable to recognize LDFType");
 		}
 		}
+		return e;
 	}
 	static LDFCollection ParseCollectionFromWString(std::wstring input) {
 		LDFCollection output;
