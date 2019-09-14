@@ -46,7 +46,7 @@ static const std::unordered_map<std::uint16_t, std::uint32_t> WORLD_CHECKSUM = {
 	{1700, 0x02040138},
 	{1800, 0x4b17a399},
 	{1900, 0x9e4af43c},
-	{2000, 0x4d692c7e},
+	{2000, 0x4d692c74},
 	{2001, 0x09eb00ef}
 };
 
