@@ -170,11 +170,13 @@ add_executable(OpCrux_Server
 set_property(TARGET json PROPERTY CXX_STANDARD 98)
 set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
+set_property(TARGET rapidxml PROPERTY CXX_STANDARD 98)
 
 target_link_libraries(OpCrux_Server
 	json
 	Mongoose
 	RakNet
+	rapidxml
 )
 
 if(WIN32)
