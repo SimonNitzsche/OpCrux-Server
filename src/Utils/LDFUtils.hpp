@@ -83,14 +83,15 @@ public:
 	}
 	static LDFEntry ReadEntryFromLUZWString(std::wstring key, std::wstring val) {
 		std::vector<std::wstring> type_val = StringUtils::splitWString(val, 0x003a);
-		Enums::LDFType type = (Enums::LDFType)std::stoi(type_val.at(0));
-		if (type_val.size() == 1) {
+		bool typeDefined = val.find(0x003a) != std::wstring::npos;
+		Enums::LDFType type = typeDefined ? (Enums::LDFType)std::stoi(type_val.at(0)) : Enums::LDFType::WSTRING;
+		if (typeDefined && type_val.size() == 1) {
 			if (type == Enums::LDFType::STRING || type == Enums::LDFType::WSTRING)
 				type_val.push_back(L"");
 			else
 				type_val.push_back(L"-1");
 		}
-		return MakeLDFEntryFromWStringData(key, type, type_val.at(1));
+		return MakeLDFEntryFromWStringData(key, type, type_val.at(typeDefined ? 1 : 0));
 	}
 };
 
