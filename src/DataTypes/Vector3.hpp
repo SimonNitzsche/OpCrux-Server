@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <stdexcept>
+#include <corecrt_math_defines.h>
 #include "Common/CrossPlatform.hpp"
 #include "RakNet/BitStream.h"
 
