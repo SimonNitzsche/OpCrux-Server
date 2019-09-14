@@ -178,7 +178,10 @@ void LUZone::Read() {
 
 			if (*pathType == LUZonePathType::MovingPlatform) {
 				LUZonePathMovingPlatform * pathMovingPlatform = reinterpret_cast<LUZonePathMovingPlatform*>(pathFactory);
-				if (*pathVersion >= 13) {
+				if (*pathVersion >= 18) {
+					pathMovingPlatform->unknownByte = *reinterpret_cast<std::uint8_t*>(currentOffset++);
+				}
+				else if (*pathVersion >= 13) {
 					currentOffset = pathMovingPlatform->travelSound.Read(reinterpret_cast<std::uint8_t*>(currentOffset++));
 				}
 			}

@@ -201,6 +201,7 @@ namespace FileTypes::LUZ {
 	*/
 	class LUZonePathMovingPlatform : public LUZonePathBase {
 	public:
+		std::uint8_t unknownByte;
 		ZoneWString travelSound;
 	public:
 		std::vector<LUZonePathWaypointMovingPlatform*> waypoints;
