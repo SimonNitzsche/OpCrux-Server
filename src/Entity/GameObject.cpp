@@ -85,6 +85,12 @@ ReplicaReturnResult Entity::GameObject::Deserialize(RakNet::BitStream *inBitStre
 Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
 	this->Instance = instance;
 	this->LOT = LOT;
+
+	if (LOT == 0) {
+		Logger::log("WRLD", "Failed to spawn object: LOT 0 is blacklisted!", LogType::ERR);
+		return;
+	}
+
 	auto component_types_to_be_added = CacheComponentsRegistry::GetObjectComponentTypes(LOT);
 
 	this->creationTimestamp = ServerInfo::uptime();

@@ -140,6 +140,8 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 			auto spawnerPath = reinterpret_cast<FileTypes::LUZ::LUZonePathSpawner*>(pathBase.second);
 			WorldServer * Instance = this;
 
+			if (spawnerPath->spawnedLOT == 0) continue;
+
 			// Create
 			Entity::GameObject * spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
 
