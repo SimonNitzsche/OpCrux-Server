@@ -337,7 +337,7 @@ namespace FileTypes::LUZ {
 	class LUZonePathWaypointRail : public LUZonePathWaypointBase {
 	public:
 		DataTypes::Quaternion rotation;
-		std::float_t unknown1;
+		std::float_t speed;
 	public:
 		LUZonePathWaypointRail() {}
 	};

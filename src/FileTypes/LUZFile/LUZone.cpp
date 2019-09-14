@@ -295,9 +295,10 @@ void LUZone::Read() {
 						*reinterpret_cast<std::float_t*>(currentOffset + 12),
 						*reinterpret_cast<std::float_t*>(currentOffset + 0)
 					);
+					currentOffset = currentOffset + 16;
 					if (*pathVersion >= 17) {
-						waypointRail->unknown1 = *reinterpret_cast<std::uint8_t*>(currentOffset + 16);
-						currentOffset = currentOffset + 20;
+						waypointRail->speed = *reinterpret_cast<std::float_t*>(currentOffset);
+						currentOffset = currentOffset + 4;
 					}
 				}
 
