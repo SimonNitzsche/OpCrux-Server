@@ -305,7 +305,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					Logger::log("CHAR-CREATION", "unknownB: " + std::to_string(unknownB));
 				}
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
-				Database::CreateNewChar(0, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+				Database::CreateNewChar(clientSession->accountID, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 				
 				PacketFactory::World::sendCharList(rakServer, clientSession);
 				
