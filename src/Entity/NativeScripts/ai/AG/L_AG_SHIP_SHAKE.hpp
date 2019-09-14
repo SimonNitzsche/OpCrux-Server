@@ -27,7 +27,11 @@ public:
 		// See if object has some variables set in HF
 		if (self->GetVar(L"MaxRepTime")) randTime = *self->GetVar(L"MaxRepTime");
 		if (self->GetVar(L"Radius")) shakeRad = *self->GetVar(L"Radius");
+#ifdef OPCRUX_PLATFORM_WIN32
 		if (self->GetVar(L"EffectName")) fxName = *self->GetVar(L"EffectName");
+#else
+		if (self->GetVar(L"EffectName")) fxName = self->GetVar(L"EffectName")->key;
+#endif()
 		// debrisObj = self:GetObjectsInGroup{ group = "DebrisFX"}.objects[1]
 
 		// Do the first Shake Timer on start up
