@@ -103,7 +103,7 @@ public:
 		if (type != Enums::LDFType::WSTRING) throw new std::runtime_error("Invalid LDF type.");
 		std::uint32_t * size = reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
 		//return std::wstring(reinterpret_cast<wchar_t*>(data + 4), reinterpret_cast<wchar_t*>(data + 4 + (*size *2) -1));
-		return std::wstring(reinterpret_cast<wchar_t*>(const_cast<char*>(data.c_str() + 4), *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()))));
+		return std::wstring(reinterpret_cast<wchar_t*>(const_cast<char*>(data.c_str()) + 4), *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str())));
 	}
 
 	LDFEntry(std::wstring inputKey, std::int32_t input) {

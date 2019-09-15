@@ -61,6 +61,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/SpawnerComponent.hpp
 	src/Entity/Components/StatsComponent.hpp
 	src/Entity/Components/SwitchComponent.hpp
+	src/Entity/Components/TriggerComponent.hpp
 	src/Entity/Components/VendorComponent.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
@@ -106,6 +107,7 @@ add_executable(OpCrux_Server
 	src/FileTypes/LVLFile/LVLChunkHeader.hpp
 	src/FileTypes/LVLFile/LVLInfoChunk.hpp
 	src/FileTypes/LVLFile/LVLObjectsChunk.hpp
+	src/FileTypes/LVLFile/TriggerFile.hpp
 	src/GameCache/Interface/FastDatabase.cpp
 	src/GameCache/Interface/FastDatabase.hpp
 	src/GameCache/BehaviorParameter.hpp

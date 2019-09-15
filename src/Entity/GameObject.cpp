@@ -53,6 +53,7 @@ void lala(IEntityComponent * c, int id) {
 #include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/StatsComponent.hpp"
 #include "Entity/Components/SwitchComponent.hpp"
+#include "Entity/Components/TriggerComponent.hpp"
 #include "Entity/Components/VendorComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
@@ -182,7 +183,7 @@ void Entity::GameObject::AddComponentByID(int id) {
 		COMPONENT_ONADD_SWITCH_CASE(RenderComponent, 2);
 		//COMPONENT_ONADD_SWITCH_CASE(MinigameComponent, 50);
 		  COMPONENT_ONADD_SWITCH_CASE(Component107, 107);
-		//COMPONENT_ONADD_SWITCH_CASE(TriggerComponent, 69);
+		COMPONENT_ONADD_SWITCH_CASE(TriggerComponent, 69);
 		/* ========== NON-SERIALIZED ========== */
 		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent, 31);
 		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent, 10);
@@ -235,7 +236,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(RenderComponent, 2);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(MinigameComponent, 50);
 	SERIALIZE_COMPONENT_IF_ATTACHED(Component107, 107);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(TriggerComponent, 69);
+	SERIALIZE_COMPONENT_IF_ATTACHED(TriggerComponent, 69);
 }
 
 void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
@@ -252,7 +253,7 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 			// TODO! -> compressed LDF
 		}
 
-		factory->Write(false); // TODO! -> Trigger flag
+		factory->Write(this->GetComponentByID(69) != nullptr);
 
 		factory->Write(spawner != nullptr);
 		if (spawner != nullptr) { factory->Write(spawner->objectID); }
@@ -313,17 +314,46 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	configData = *collection;
 
 	// TODO: Populate base data
-	
 
-	// Add Componets custom
-	/* Script Component */ {
-		std::wstring customScript = L"";
-		LDF_GET_VAL_FROM_COLLECTION(customScript, collection, L"custom_script_server", L"");
-		if (customScript != L"") {
-			this->AddComponentByID(5);
+	if (this->LOT != 176) {
+		// Add Componets custom
+		/* Script Component */ {
+			std::wstring customScript = L"";
+			LDF_GET_VAL_FROM_COLLECTION(customScript, collection, L"custom_script_server", L"");
+			if (customScript != L"") {
+				this->AddComponentByID(5);
+			}
+		}
+
+		/* Trigger Component */
+		std::wstring wstrTriggerID = L"";
+		LDF_GET_VAL_FROM_COLLECTION(wstrTriggerID, collection, L"trigger_id", L"NULL");
+		if (wstrTriggerID != L"NULL") {
+
+			// Seperate data
+			std::vector<std::wstring> spltTriggerID = StringUtils::splitWString(wstrTriggerID, L':');
+			int triggerSceneID = std::stoi(spltTriggerID.at(0));
+			int triggerID = std::stoi(spltTriggerID.at(1));
+
+			// Get zone file
+			FileTypes::LUZ::LUZone * zone = Instance->luZone;
+
+			// Get trigger file
+			if (zone->triggers.find(triggerSceneID) != zone->triggers.end()) {
+				ZoneTriggerFile triggerFile = zone->triggers.at(triggerSceneID);
+
+				// Get trigger
+				for (int i = 0; i < triggerFile.triggers.size(); ++i) {
+					if (triggerFile.triggers.at(i).id == triggerID) {
+						this->AddComponentByID(69);
+						TriggerComponent * triggerComp = static_cast<TriggerComponent*>(this->GetComponentByID(69));
+						triggerComp->AssignTrigger(triggerFile.triggers.at(i));
+						break;
+					}
+				}
+			}
 		}
 	}
-
 	
 	for (auto component : this->components) {
 		if (component.second != nullptr) {

@@ -112,9 +112,16 @@ void LUZone::Read() {
 
 			currentOffset = sd.fileName.Read(currentOffset);
 			sd.sceneID = reinterpret_cast<uint32_t*>(currentOffset);
-			sd.isAudioScene = reinterpret_cast<uint32_t*>(sd.sceneID + 1);
-			currentOffset = sd.sceneName.Read(reinterpret_cast<uint8_t*>(sd.isAudioScene + 1)) + 3;
+			sd.layerID = reinterpret_cast<uint32_t*>(sd.sceneID + 1);
+			currentOffset = sd.sceneName.Read(reinterpret_cast<uint8_t*>(sd.layerID + 1)) + 3;
 			sd.scene = LUScene(this, StringUtils::ToLower(FileUtils::GetFileDir(this->strFile)+"/"+sd.fileName.ToString()));
+
+			if (*sd.layerID == 0) {
+				ZoneTriggerFile triggerFile{};
+				if (triggerFile.Load(StringUtils::ToLower(FileUtils::GetFileDir(this->strFile) + "/" + sd.fileName.ToString().substr(0, sd.fileName.ToString().find_last_of(".")) + ".lutriggers").c_str())) {
+					this->triggers.insert({ *sd.sceneID, triggerFile });
+				}
+			}
 
 			scenes.push_back(sd);
 		}

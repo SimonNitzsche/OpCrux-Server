@@ -16,6 +16,7 @@
 
 #include "Entity/Components/SimplePhysicsComponent.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
+#include "Entity/Components/PhantomPhysicsComponent.hpp"
 
 using namespace DataTypes;
 
@@ -160,6 +161,11 @@ public:
 		if (simplePhysicsComponent != nullptr) {
 			simplePhysicsComponent->SetPosition(originPos);
 			simplePhysicsComponent->SetRotation(originRot);
+		}
+		PhantomPhysicsComponent * phantomPhysicsComponent = static_cast<PhantomPhysicsComponent*>(spawnedObject->GetComponentByID(40));
+		if (phantomPhysicsComponent != nullptr) {
+			phantomPhysicsComponent->SetPosition(originPos);
+			phantomPhysicsComponent->SetRotation(originRot);
 		}
 
 		spawnedObject->Finish();

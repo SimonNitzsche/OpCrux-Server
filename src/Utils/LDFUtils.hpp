@@ -75,7 +75,13 @@ public:
 			
 			if (type_val.size() == 1) type_val.push_back(L"");
 
-			e = MakeLDFEntryFromWStringData(key_typeVal.at(0), type, type_val.at(1));
+			std::wstring valFinal = type_val.at(1);
+			// Fuse value splited by ":"
+			for (int j = 2; j < type_val.size(); ++j) {
+				valFinal += L":" + type_val.at(j);
+			}
+
+			e = MakeLDFEntryFromWStringData(key_typeVal.at(0), type, valFinal);
 			
 			output.insert({e.key, e });
 		}
@@ -91,7 +97,16 @@ public:
 			else
 				type_val.push_back(L"-1");
 		}
-		return MakeLDFEntryFromWStringData(key, type, type_val.at(typeDefined ? 1 : 0));
+
+		std::wstring valFinal = type_val.at(1);
+		if (typeDefined) {
+			// Fuse value splited by ":"
+			for (int j = 2; j < type_val.size(); ++j) {
+				valFinal += L":" + type_val.at(j);
+			}
+		}
+
+		return MakeLDFEntryFromWStringData(key, type, typeDefined ? valFinal : type_val.at(0));
 	}
 };
 

@@ -9,6 +9,8 @@
 #include "DataTypes/LDF.hpp"
 
 #include "FileTypes/LVLFile/LUScene.hpp"
+#include "FileTypes/LVLFile/TriggerFile.hpp"
+
 using namespace DataTypes;
 
 namespace FileTypes::LUZ {
@@ -81,7 +83,7 @@ namespace FileTypes::LUZ {
 	struct SceneData {
 		ZoneString fileName;
 		uint32_t * sceneID;
-		uint32_t * isAudioScene;
+		uint32_t * layerID;
 		ZoneString sceneName;
 		LUScene scene = LUScene();
 	};
@@ -366,6 +368,7 @@ namespace FileTypes::LUZ {
 			uint32_t * zoneID;
 			Position * spawnPos;
 			std::vector<SceneData> scenes;
+			std::unordered_map<std::uint32_t, ZoneTriggerFile> triggers;
 			TerrainInfo terrainInfo;
 			std::vector<SceneTransition> sceneTransitions;
 			std::unordered_map<std::wstring, LUZonePathBase*> paths;
