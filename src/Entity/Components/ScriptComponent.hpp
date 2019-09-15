@@ -112,6 +112,11 @@ public:
 			instance->onTimerDone(owner, TimerDone(timer.first));
 	}
 
+	void OnFireEventServerSide(Entity::GameObject * sender, GM::FireEventServerSide * msg) {
+		if (instance)
+			instance->onFireEventServerSide(owner, *msg);
+	}
+
 	std::vector<Entity::GameObject *> objectsInProximity = {};
 	std::unordered_map<std::string, std::pair<float, std::vector<Entity::GameObject *>>> proximityRadii;
 

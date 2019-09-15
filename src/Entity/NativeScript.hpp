@@ -22,6 +22,7 @@ public:
 	virtual void onArrivedAtDesiredWaypoint(Entity::GameObject * self, GM::ArrivedAtDesiredWaypoint msg) {}
 	virtual void onUse(Entity::GameObject * self, GM::RequestUse msg) {};
 	virtual void onTimerDone(Entity::GameObject * self, TimerDone msg) {};
+	virtual void onFireEventServerSide(Entity::GameObject * self, GM::FireEventServerSide msg) {}
 
 	// Helper functions
 	void print(std::string text) {

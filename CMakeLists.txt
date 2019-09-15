@@ -66,6 +66,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
 	src/Entity/GameMessages/EmotePlayed.hpp
+	src/Entity/GameMessages/FireEventServerSide.hpp
 	src/Entity/GameMessages/Knockback.hpp
 	src/Entity/GameMessages/OfferMission.hpp
 	src/Entity/GameMessages/PlayAnimation.hpp
