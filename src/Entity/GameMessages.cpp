@@ -10,6 +10,7 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 
 	// Please keep it sorted by ID:
 	switch (msgID) {
+		GM_DESERIALIZE_SWITCH_CASE(GM::PlayEmote);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestUse);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestSmashPlayer);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestResurrect);

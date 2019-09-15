@@ -65,9 +65,11 @@ add_executable(OpCrux_Server
 	src/Entity/Components/VendorComponent.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
+	src/Entity/GameMessages/EmotePlayed.hpp
 	src/Entity/GameMessages/Knockback.hpp
 	src/Entity/GameMessages/OfferMission.hpp
 	src/Entity/GameMessages/PlayAnimation.hpp
+	src/Entity/GameMessages/PlayEmote.hpp
 	src/Entity/GameMessages/PlayFXEffect.hpp
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
