@@ -79,10 +79,18 @@ public:
 		owner->SetDirty();
 	}
 
+	DataTypes::Vector3 GetPosition() {
+		return position;
+	}
+
 	void SetRotation(DataTypes::Quaternion rot) {
 		rotation = rot;
 		_isDirtyFlagPosRot = true;
 		owner->SetDirty();
+	}
+
+	DataTypes::Quaternion GetRotation() {
+		return rotation;
 	}
 
 };

@@ -64,6 +64,10 @@ public:
 		_posRotDirty = true;
 	}
 
+	DataTypes::Quaternion GetRotation() {
+		return rotation;
+	}
+
 };
 
 #endif

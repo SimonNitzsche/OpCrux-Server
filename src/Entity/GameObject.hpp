@@ -5,6 +5,8 @@
 #include "RakNet/MessageIdentifiers.h"
 #include "Replica/ReplicaTypes.hpp"
 #include "RakNet/BitStream.h"
+#include "DataTypes/Position.hpp"
+#include "DataTypes/Quaternion.hpp"
 #include "DataTypes/LWOOBJID.hpp"
 #include <vector>
 #include <unordered_map>
@@ -227,6 +229,27 @@ namespace Entity {
 				Populates object variables from LDF
 			*/
 			void PopulateFromLDF(LDFCollection * collection);
+
+			/*
+				Set's the position on the physic component
+			*/
+			void SetPosition(DataTypes::Vector3 position);
+
+			/*
+				Set's the rotation of the physic component
+			*/
+			void SetRotation(DataTypes::Quaternion rotation);
+
+
+			/*
+				Get's the position on the physic component
+			*/
+			DataTypes::Vector3 GetPosition();
+
+			/*
+				Get's the rotation of the physic component
+			*/
+			DataTypes::Quaternion GetRotation();
 
 			/*
 				Returns the instance

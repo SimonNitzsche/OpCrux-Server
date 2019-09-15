@@ -363,6 +363,110 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	}
 }
 
+void Entity::GameObject::SetPosition(DataTypes::Vector3 position) {
+	auto controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(this->GetComponentByID(1));
+	if (controllablePhysicsComponent != nullptr) {
+		controllablePhysicsComponent->SetPosition(position);
+		return;
+	}
+	auto simplePhysicsComponent = static_cast<SimplePhysicsComponent*>(this->GetComponentByID(3));
+	if (simplePhysicsComponent != nullptr) {
+		simplePhysicsComponent->SetPosition(position);
+		return;
+	}/*
+	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
+	if (rigidBodyPhantomPhysicsComponent != nullptr) {
+		rigidBodyPhantomPhysicsComponent->SetPosition(position);
+		return;
+	}
+	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
+	if (vehiclePhysicsComponent != nullptr) {
+		vehiclePhysicsComponent->SetPosition(position);
+		return;
+	}*/
+	auto phantomPhysicsComponent = static_cast<PhantomPhysicsComponent*>(this->GetComponentByID(40));
+	if (phantomPhysicsComponent != nullptr) {
+		phantomPhysicsComponent->SetPosition(position);
+		return;
+	}
+}
+
+void Entity::GameObject::SetRotation(DataTypes::Quaternion rotation) {
+	auto controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(this->GetComponentByID(1));
+	if (controllablePhysicsComponent != nullptr) {
+		controllablePhysicsComponent->SetRotation(rotation);
+		return;
+	}
+	auto simplePhysicsComponent = static_cast<SimplePhysicsComponent*>(this->GetComponentByID(3));
+	if (simplePhysicsComponent != nullptr) {
+		simplePhysicsComponent->SetRotation(rotation);
+		return;
+	}/*
+	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
+	if (rigidBodyPhantomPhysicsComponent != nullptr) {
+		rigidBodyPhantomPhysicsComponent->SetRotation(rotation);
+		return;
+	}
+	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
+	if (vehiclePhysicsComponent != nullptr) {
+		vehiclePhysicsComponent->SetRotation(rotation);
+		return;
+	}*/
+	auto phantomPhysicsComponent = static_cast<PhantomPhysicsComponent*>(this->GetComponentByID(40));
+	if (phantomPhysicsComponent != nullptr) {
+		phantomPhysicsComponent->SetRotation(rotation);
+		return;
+	}
+}
+
+DataTypes::Vector3 Entity::GameObject::GetPosition() {
+	auto controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(this->GetComponentByID(1));
+	if (controllablePhysicsComponent != nullptr) {
+		return controllablePhysicsComponent->GetPosition();
+	}
+	auto simplePhysicsComponent = static_cast<SimplePhysicsComponent*>(this->GetComponentByID(3));
+	if (simplePhysicsComponent != nullptr) {
+		return simplePhysicsComponent->GetPosition();
+	}/*
+	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
+	if (rigidBodyPhantomPhysicsComponent != nullptr) {
+		return rigidBodyPhantomPhysicsComponent->GetPosition();
+	}
+	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
+	if (vehiclePhysicsComponent != nullptr) {
+		return vehiclePhysicsComponent->GetPosition();
+	}*/
+	auto phantomPhysicsComponent = static_cast<PhantomPhysicsComponent*>(this->GetComponentByID(40));
+	if (phantomPhysicsComponent != nullptr) {
+		return phantomPhysicsComponent->GetPosition();
+	}
+	return DataTypes::Vector3();
+}
+
+DataTypes::Quaternion Entity::GameObject::GetRotation() {
+	auto controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(this->GetComponentByID(1));
+	if (controllablePhysicsComponent != nullptr) {
+		return controllablePhysicsComponent->GetRotation();
+	}
+	auto simplePhysicsComponent = static_cast<SimplePhysicsComponent*>(this->GetComponentByID(3));
+	if (simplePhysicsComponent != nullptr) {
+		return simplePhysicsComponent->GetRotation();
+	}/*
+	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
+	if (rigidBodyPhantomPhysicsComponent != nullptr) {
+		return rigidBodyPhantomPhysicsComponent->GetRotation();
+	}
+	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
+	if (vehiclePhysicsComponent != nullptr) {
+		return vehiclePhysicsComponent->GetRotation();
+	}*/
+	auto phantomPhysicsComponent = static_cast<PhantomPhysicsComponent*>(this->GetComponentByID(40));
+	if (phantomPhysicsComponent != nullptr) {
+		return phantomPhysicsComponent->GetRotation();
+	}
+	return DataTypes::Quaternion();
+}
+
 void Entity::GameObject::SetProximityRadius(std::string name, float radius) {
 	ScriptComponent * scriptComp = reinterpret_cast<ScriptComponent*>(GetComponentByID(5));
 	if (scriptComp) {
