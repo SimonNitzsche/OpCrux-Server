@@ -10,12 +10,13 @@ namespace CacheSkillBehavior {
 	inline FDB::RowInfo getRow(int skillID) {
 		FDB::RowTopHeader rth = Cache.getRows("SkillBehavior");
 		for(int  i = 0; i < rth.getRowCount(); ++i) {
+			if (!rth.isValid(i)) continue;
 			try {
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == skillID)
 					return rth[i];
 			}
 			catch (std::runtime_error e) {
-				Logger::log("Cache:SkillBehavior", e.what(), ERR);
+				Logger::log("Cache:SkillBehavior", e.what(), LogType::ERR);
 			}
 		}
 		return FDB::RowInfo();

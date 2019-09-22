@@ -6,17 +6,18 @@
 using namespace GameCache::Interface;
 extern FDB::Connection Cache;
 
-namespace GameCache::BehaviorParameter {
-
+class CacheBehaviorParameter {
+public:
 	/*
 		Returns the Behavior Index, given a Behavior ID.
 	*/
-	inline int32_t GetBehaviorIndex(int32_t behaviorID) {
+	inline static int32_t GetBehaviorIndex(int32_t behaviorID) {
 		// Get Rows on "BehaviorParameter" table.
 		FDB::RowTopHeader rth = Cache.getRows("BehaviorParameter");
 
 		// Loop all Rows.
 		for (int i = 0; i < rth.getRowCount(); ++i) {
+			if (!rth.isValid(i)) continue;
 			try {
 				// Attempt to cast the ID to int32_t and check if it is the behavior ID, if it is, return the index.
 				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == behaviorID)
@@ -24,7 +25,7 @@ namespace GameCache::BehaviorParameter {
 			}
 			catch (std::runtime_error e) {
 				// Something went wrong, log it.
-				Logger::log("Cache:BehaviorParameter", e.what(), ERR);
+				Logger::log("Cache:BehaviorParameter", e.what(), LogType::ERR);
 			}
 		}
 
@@ -35,7 +36,7 @@ namespace GameCache::BehaviorParameter {
 	/*
 		Returns the Behavior Row, with specified behavior id.
 	*/
-	inline FDB::RowInfo GetBehaviorRow(int32_t behaviorID) {
+	inline static FDB::RowInfo GetBehaviorRow(int32_t behaviorID) {
 		// Get the Rows, and return the correct row.
 		return Cache.getRows("BehaviorParameter")[GetBehaviorIndex(behaviorID)];
 	}
@@ -43,7 +44,7 @@ namespace GameCache::BehaviorParameter {
 	/*
 		Returns the value of Multiple Parameters. (multiple only)
 	*/
-	inline float GetParameterValue(FDB::RowInfo behaviorRow, std::string parameterID) {
+	inline static float GetParameterValue(FDB::RowInfo behaviorRow, std::string parameterID) {
 		// Until we break...
 		while(true) {
 			// Check for Parameter ID.
@@ -68,7 +69,7 @@ namespace GameCache::BehaviorParameter {
 	/*
 		Returns the value of A Single Paramter. (single only)
 	*/
-	inline float GetParameterValue(int32_t behaviorID, std::string parameterID) {
+	inline static float GetParameterValue(int32_t behaviorID, std::string parameterID) {
 		// Converts the behavior id into a row info and calls the function above.
 		return GetParameterValue(GetBehaviorRow(behaviorID), parameterID);
 	}

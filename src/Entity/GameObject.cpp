@@ -483,6 +483,20 @@ void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUs
 	for (auto i : components) i.second->OnRequestUse(sender, msg);
 }
 
+void Entity::GameObject::OnStartSkill(const GM::StartSkill msg) {
+	SkillComponent * skillComponent = this->GetComponent<SkillComponent>();
+	if (skillComponent != nullptr) {
+		skillComponent->OnStartSkill(msg);
+	}
+}
+
+void Entity::GameObject::OnSyncSkill(const GM::SyncSkill msg) {
+	SkillComponent * skillComponent = this->GetComponent<SkillComponent>();
+	if (skillComponent != nullptr) {
+		skillComponent->OnSyncSkill(msg);
+	}
+}
+
 void Entity::GameObject::SetProximityRadius(std::string name, float radius) {
 	ScriptComponent * scriptComp = this->GetComponent<ScriptComponent>();
 	if (scriptComp) {

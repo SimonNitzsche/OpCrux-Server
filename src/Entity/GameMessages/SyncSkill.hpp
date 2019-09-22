@@ -21,10 +21,12 @@ namespace GM {
 			GM_VAR_DESERIALIZE(bs, uiSkillHandle)
 		}
 
-		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
+		inline void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
 			Logger::log("WRLD", "Triggered StartSkill handle " + std::to_string(uiSkillHandle) + " with behaviorID " + std::to_string(uiBehaviorHandle));
+			sender->OnSyncSkill(*this);
 		}
 	};
 }
+
 
 #endif

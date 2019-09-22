@@ -36,8 +36,8 @@ namespace GM {
 		}
 
 		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
-			Logger::log("WRLD", "Triggered StartSkill handle "+std::to_string(uiSkillHandle)+" with skillID " + std::to_string(skillID));
-
+			Logger::log("WRLD", "Triggered StartSkill handle " + std::to_string(uiSkillHandle) + " with skillID " + std::to_string(skillID));
+			sender->OnStartSkill(*this);
 		}
 	};
 }
