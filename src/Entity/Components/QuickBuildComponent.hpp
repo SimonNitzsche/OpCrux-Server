@@ -28,11 +28,12 @@ public:
 
 	QuickbuildComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 48; }
 
 	void OnEnable() {
-		if ((statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(200))) == nullptr) {
-			owner->AddComponentByID(200);
-			statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(200));
+		if ((statsComponent = owner->GetComponent<StatsComponent>()) == nullptr) {
+			owner->AddComponent<StatsComponent>();
+			statsComponent = owner->GetComponent<StatsComponent>();
 
 			if (statsComponent == nullptr) {
 				Logger::log("WRLD", "Something went wrong QuickbuildComponent::OnEnable()");
@@ -85,14 +86,14 @@ public:
 		activator->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
 		activator->SetParent(owner);
 		activator->isSerializable = true;
-		static_cast<PhantomPhysicsComponent*>(activator->GetComponentByID(40))->SetPosition(rebuild_activators);
+		activator->GetComponent<PhantomPhysicsComponent>()->SetPosition(rebuild_activators);
 		owner->GetZoneInstance()->objectsManager->RegisterObject(activator);
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO */
 		// Check if Destructible or Collectible component is attached, if so don't serialize
-		if (owner->GetComponentByID(7) == nullptr && owner->GetComponentByID(23) == nullptr)
+		if (owner->GetComponent<DestructibleComponent>() == nullptr && owner->GetComponent<CollectibleComponent>() == nullptr)
 			statsComponent->Serialize(factory, packetType);
 
 		factory->Write(_isDirtyFlagActivity);
@@ -106,7 +107,7 @@ public:
 
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
-			factory->Write<std::uint32_t>(0);
+			factory->Write<std::uint32_t>(4);
 			factory->Write(true);
 			factory->Write(true);
 			factory->Write<std::float_t>(0);

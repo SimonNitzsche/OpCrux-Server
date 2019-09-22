@@ -29,10 +29,12 @@ public:
 
 	SimplePhysicsComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 3; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 			factory->Write(allowGlitchUp);
-			factory->Write<std::uint32_t>(0);
+			factory->Write<std::uint32_t>(unknownCreation32);
 		}
 		factory->Write(_velocityDirty);
 		if (_velocityDirty) {

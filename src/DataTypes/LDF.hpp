@@ -82,7 +82,7 @@ public:
 			wchar_t * wcp = reinterpret_cast<wchar_t*>(const_cast<char*>(data.c_str()) + 4);
 			std::wstring buffer(wcp, size);
 			bs->Write(size);
-			StringUtils::writeWstringToBitStream(bs, buffer, buffer.size());
+			StringUtils::writeBufferedWStringToBitStream(bs, buffer, buffer.size());
 			break;
 		}
 		}

@@ -22,8 +22,8 @@
 	case name::GetID(): {name msg = name(); msg.Deserialize(bs); msg.TriggerEvent(senderObject, targetObject); break;}
 
 
-#define GM_VAR_DESERIALIZE_STRING(bs, parameter)  {std::uint32_t size; bs->Read<std::uint32_t>(size); parameter = StringUtils::readStringFromBitStream(bs, size);}
-#define GM_VAR_DESERIALIZE_WSTRING(bs, parameter) {std::uint32_t size; bs->Read<std::uint32_t>(size); parameter = StringUtils::readWStringFromBitStream(bs, size);}
+#define GM_VAR_DESERIALIZE_STRING(bs, parameter)  {parameter = StringUtils::readStringFromBitStream<std::uint32_t>(bs);}
+#define GM_VAR_DESERIALIZE_WSTRING(bs, parameter) {parameter = StringUtils::readWStringFromBitStream<std::uint32_t>(bs);}
 #define GM_VAR_DESERIALIZE(bs, parameter) {bs->Read(parameter);}
 #define GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, parameter, defaultVal) {\
 	/*Check if bool, because those don't need extra bit*/\
@@ -32,7 +32,7 @@
 	}\
 	else {\
 		bool useDefault; bs->Read(useDefault);\
-		if(useDefault) parameter = defaultVal;\
+		if(!useDefault) parameter = defaultVal;\
 		else GM_VAR_DESERIALIZE(bs, parameter);\
 	}\
 }
@@ -114,6 +114,8 @@ public:
 #include "Entity/GameMessages/RequestUse.hpp"
 #include "Entity/GameMessages/Resurrect.hpp"
 #include "Entity/GameMessages/SetGravityScale.hpp"
+#include "Entity/GameMessages/StartSkill.hpp"
 #include "Entity/GameMessages/StopFXEffect.hpp"
+#include "Entity/GameMessages/SyncSkill.hpp"
 
 #endif

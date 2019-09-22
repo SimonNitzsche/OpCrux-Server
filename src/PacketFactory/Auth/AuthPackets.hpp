@@ -33,8 +33,8 @@ namespace PacketFactory {
 			//Data
 			returnBS.Write(reason);
 
-			StringUtils::writeStringToBitStream(&returnBS, "Talk_Like_A_Pirate");
-			StringUtils::writeStringToBitStream(&returnBS, "Sneak_Like_A_Ninja");
+			StringUtils::writeBufferedStringToBitStream(&returnBS, "Talk_Like_A_Pirate");
+			StringUtils::writeBufferedStringToBitStream(&returnBS, "Sneak_Like_A_Ninja");
 			StringUtils::FillZero(&returnBS, 6 * 33);
 			uint16_t majorVersion; uint16_t currentVersion; uint16_t minorVersion; ServerInfo::numericGameVersion(&majorVersion, &currentVersion, &minorVersion);
 			returnBS.Write(majorVersion); returnBS.Write(currentVersion); returnBS.Write(minorVersion);
@@ -47,21 +47,20 @@ namespace PacketFactory {
 
 			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip);
 
-			StringUtils::writeWstringToBitStream(&returnBS, L"fad1892aa57db9e0cf74d45445f71599", 33);
-			StringUtils::writeStringToBitStream(&returnBS, ip);
-			StringUtils::writeStringToBitStream(&returnBS, ip);
+			StringUtils::writeBufferedWStringToBitStream(&returnBS, L"fad1892aa57db9e0cf74d45445f71599", 33);
+			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
+			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			returnBS.Write<uint16_t>(2001);
 			returnBS.Write<uint16_t>(0);
 			StringUtils::FillZero(&returnBS, 33);
-			StringUtils::writeStringToBitStream(&returnBS, "00000000-0000-0000-0000-000000000000", 37);
+			StringUtils::writeBufferedStringToBitStream(&returnBS, "00000000-0000-0000-0000-000000000000", 37);
 			returnBS.Write<uint32_t>(0);
-			StringUtils::writeStringToBitStream(&returnBS, SERVER_LANGUAGE, 3);
+			StringUtils::writeBufferedStringToBitStream(&returnBS, SERVER_LANGUAGE, 3);
 			returnBS.Write<ByteBool>(true); // first Subscription Logon
 			returnBS.Write<ByteBool>(false); // is FTP
 			returnBS.Write<uint64_t>(0);
 
-			returnBS.Write<uint16_t>(customErrorMessage.length()&0xFFFF);
-			StringUtils::writeWstringToBitStream(&returnBS, customErrorMessage, customErrorMessage.length());
+			StringUtils::writeWStringToBitStream<std::uint16_t>(&returnBS, customErrorMessage);
 
 			// Stamp stuff
 			returnBS.Write<uint32_t>(0x0144); // Stamps

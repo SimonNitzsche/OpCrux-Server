@@ -28,12 +28,14 @@
 #include <fstream>
 #include "Database/Database.hpp"
 
-#include "Entity/GameObject.hpp"
 #include "DataTypes/LWOOBJID.hpp"
 
+#include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
 #include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
+
+#include "Entity/GameObject.hpp"
 
 #include "GameCache/ZoneTable.hpp"
 #include "GameCache/Objects.hpp"
@@ -117,8 +119,8 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 			LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
 			
 			// If Spawner
-			if (go->GetComponentByID(10) != nullptr) {
-				SpawnerComponent * spawnerComp = static_cast<SpawnerComponent*>(go->GetComponentByID(10));
+			SpawnerComponent * spawnerComp = static_cast<SpawnerComponent*>(go->GetComponentByType(10));
+			if (spawnerComp != nullptr) {
 				spawnerComp->originPos = objT.spawnPos->pos;
 				spawnerComp->originRot = objT.spawnPos->rot;
 			}
@@ -162,12 +164,12 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 			spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(0)->config);
 
 			// Set Position/Rotation
-			ControllablePhysicsComponent * controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(spawnedObject->GetComponentByID(1));
+			ControllablePhysicsComponent * controllablePhysicsComponent = spawnedObject->GetComponent<ControllablePhysicsComponent>();
 			if (controllablePhysicsComponent != nullptr) {
 				controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(0)->position);
 				controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(0)->rotation);
 			}
-			SimplePhysicsComponent * simplePhysicsComponent = static_cast<SimplePhysicsComponent*>(spawnedObject->GetComponentByID(3));
+			SimplePhysicsComponent * simplePhysicsComponent = spawnedObject->GetComponent<SimplePhysicsComponent>();
 			if (simplePhysicsComponent != nullptr) {
 				simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(0)->position);
 				simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(0)->rotation);
@@ -255,9 +257,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 			switch (static_cast<EWorldPacketID>(packetHeader.packetID)) {
 			case EWorldPacketID::CLIENT_VALIDATION: {
-				std::wstring wClientName = StringUtils::readWStringFromBitStream(data);
-				std::wstring wClientKey = StringUtils::readWStringFromBitStream(data);
-				std::string sClientFDBChecksum = StringUtils::readStringFromBitStream(data);
+				std::wstring wClientName = StringUtils::readBufferedWStringFromBitStream(data);
+				std::wstring wClientKey = StringUtils::readBufferedWStringFromBitStream(data);
+				std::string sClientFDBChecksum = StringUtils::readBufferedStringFromBitStream(data);
 				ClientSession csFactory;
 				csFactory.accountID = Database::GetAccountIDByClientName(std::string(wClientName.begin(), wClientName.end()));
 				csFactory.sessionToken = wClientKey;
@@ -274,7 +276,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
 
-				std::wstring customName = StringUtils::readWStringFromBitStream(data);
+				std::wstring customName = StringUtils::readBufferedWStringFromBitStream(data);
 				std::string s_customName(customName.begin(), customName.end());
 
 				unsigned long predef_0; data->Read(predef_0);
@@ -339,22 +341,13 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				// Following code logs the nearest object around the player when punching.
 				if (messageID == 0x77) {
 					Entity::GameObject * player = objectsManager->GetObjectByID(objectID);
-					DataTypes::Vector3 playerPos = static_cast<ControllablePhysicsComponent*>(player->GetComponentByID(1))->GetPosition();
+					DataTypes::Vector3 playerPos = player->GetPosition();
 					float nearestDistance = INFINITY;
 					Entity::GameObject * nearestObject = nullptr;
 					for (auto obj : objectsManager->GetObjects()) {
 						if (obj != player) {
 							DataTypes::Vector3 objPos;
-							ControllablePhysicsComponent * cpComp = static_cast<ControllablePhysicsComponent*>(obj->GetComponentByID(1));
-							if (cpComp != nullptr) {
-								objPos = cpComp->GetPosition();
-							}
-							else {
-								SimplePhysicsComponent * spComp = static_cast<SimplePhysicsComponent*>(obj->GetComponentByID(3));
-								if (spComp != nullptr) {
-									objPos = spComp->GetPosition();
-								}
-							}
+							objPos = obj->GetPosition();
 
 							float distance = Vector3::Distance(playerPos, objPos);
 							if (distance < nearestDistance) {
@@ -391,11 +384,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Construct player");
 				Entity::GameObject * playerObject = new Entity::GameObject(this, 1);
 				playerObject->SetObjectID(clientSession->actorID);
-				CharacterComponent * charComp = (CharacterComponent*)playerObject->GetComponentByID(4);
-				ControllablePhysicsComponent * cpComp = (ControllablePhysicsComponent*)playerObject->GetComponentByID(1);
+				CharacterComponent * charComp = playerObject->GetComponent<CharacterComponent>();
 				Database::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
-				cpComp->SetPosition(luZone->spawnPos->pos);
-				cpComp->SetRotation(luZone->spawnPos->rot);
+				playerObject->SetPosition(luZone->spawnPos->pos);
+				playerObject->SetRotation(luZone->spawnPos->rot);
 
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
@@ -436,7 +428,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				DataTypes::LWOOBJID objectID = clientSession->actorID;
 				Entity::GameObject * playerObject = objectsManager->GetObjectByID(objectID);
 				if (playerObject != nullptr) {
-					ControllablePhysicsComponent * controllablePhysicsComponent = static_cast<ControllablePhysicsComponent *>(playerObject->GetComponentByID(1));
+					ControllablePhysicsComponent * controllablePhysicsComponent = playerObject->GetComponent<ControllablePhysicsComponent>();
 					controllablePhysicsComponent->Deserialize(data);
 				}
 				else {

@@ -8,7 +8,7 @@ using namespace DataTypes;
 
 class ControllablePhysicsComponent : public IEntityComponent {
 private:
-	Vector3 position { -406.6414489746094, 350.69287109375, -157.47933959960938 };
+	Vector3 position { 0, 0, 0 };
 	Quaternion rotation;
 	bool isPlayerOnGround=true;
 	bool onRail = false;
@@ -28,6 +28,8 @@ private:
 public:
 
 	ControllablePhysicsComponent() : IEntityComponent() {}
+
+	static constexpr int GetTypeID() { return 1; }
 
 	void SetPosition(Vector3 pos) {
 		position = pos;

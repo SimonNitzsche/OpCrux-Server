@@ -14,6 +14,8 @@ public:
 
 	InventoryComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 17; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Inventory Component Serialization */
 		factory->Write(_isDirtyFlag);

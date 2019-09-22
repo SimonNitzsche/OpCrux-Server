@@ -25,6 +25,8 @@ public:
 
 	MovingPlatformComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 25; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Moving Platform Component Serialization */
 		

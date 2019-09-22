@@ -44,7 +44,28 @@ namespace StringUtils {
 		return true;
 	};
 
-	inline std::wstring readWStringFromBitStream(RakNet::BitStream * bitstream, int len = 33) {
+	template<class T>
+	inline std::wstring readWStringFromBitStream(RakNet::BitStream * bitstream) {
+		std::uint32_t size; bitstream->Read<T>(size);
+		std::unique_ptr<char[]> buff = std::make_unique<char[]>(size * 2);
+		bitstream->Read(buff.get(), size * 2);
+		wchar_t * data = reinterpret_cast<wchar_t*>(buff.get());
+
+		return std::wstring(data, size);
+	}
+
+	template<class T>
+	inline std::string readStringFromBitStream(RakNet::BitStream * bitstream) {
+		std::uint32_t size; bitstream->Read<T>(size);
+		if (size == 0xcccccccc) throw std::runtime_error("Unable to read string!");
+		std::unique_ptr<char[]> buff = std::make_unique<char[]>(size);
+		bitstream->Read(buff.get(), size);
+		char * data = static_cast<char*>(buff.get());
+
+		return std::string(data, size);
+	}
+
+	inline std::wstring readBufferedWStringFromBitStream(RakNet::BitStream * bitstream, int len = 33) {
 		std::unique_ptr<char[]> buff = std::make_unique<char[]>(len * 2);
 		bitstream->Read(buff.get(), len * 2);
 
@@ -60,7 +81,7 @@ namespace StringUtils {
 		return returnVal;
 	};
 
-	inline std::string readStringFromBitStream(RakNet::BitStream * bitstream, int len = 33) {
+	inline std::string readBufferedStringFromBitStream(RakNet::BitStream * bitstream, int len = 33) {
 		std::unique_ptr<char[]> buff = std::make_unique<char[]>(len);
 		bitstream->Read(buff.get(), len);
 
@@ -80,13 +101,29 @@ namespace StringUtils {
 		bitstream->Write(std::string(count, 0x00).c_str(), count);
 	}
 
-	inline void writeStringToBitStream(RakNet::BitStream * bitstream, std::string text, unsigned int len = 33) {
+	template<class T>
+	inline void writeStringToBitStream(RakNet::BitStream * bitstream, std::string text) {
+		std::uint32_t size = text.size();
+		bitstream->Write<T>(size);
+
+		bitstream->Write(text.c_str(), text.size());
+	}
+
+	template<class T>
+	inline void writeWStringToBitStream(RakNet::BitStream * bitstream, std::wstring text) {
+		T size = text.size();
+		bitstream->Write<T>(size);
+
+		bitstream->Write(reinterpret_cast<const char*>(text.c_str()), text.size() * 2);
+	}
+
+	inline void writeBufferedStringToBitStream(RakNet::BitStream * bitstream, std::string text, unsigned int len = 33) {
 		if (text.length() > len) text = text.substr(0, len);
 		bitstream->Write(text.c_str(), static_cast<const unsigned int>(text.length()));
 		FillZero(bitstream, len - static_cast<unsigned int>(text.length()));
 	}
 
-	inline void writeWstringToBitStream(RakNet::BitStream * bitstream, std::wstring text, unsigned int len = 33) {
+	inline void writeBufferedWStringToBitStream(RakNet::BitStream * bitstream, std::wstring text, unsigned int len = 33) {
 		if (text.length() > len) text = text.substr(0, len);
 		bitstream->Write(reinterpret_cast<const char*>(text.c_str()), text.length() * 2);
 		FillZero(bitstream, (len - text.length()) * 2);

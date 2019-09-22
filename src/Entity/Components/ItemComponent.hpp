@@ -19,6 +19,9 @@ public:
 
 	ItemComponent() : IEntityComponent() {}
 
+
+	static constexpr int GetTypeID() { return 11; }
+
 };
 
 #endif

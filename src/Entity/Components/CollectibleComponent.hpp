@@ -4,6 +4,7 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
 #include "Entity/Components/StatsComponent.hpp"
+#include "Entity/Components/DestructibleComponent.hpp"
 
 #include "Entity/GameObject.hpp"
 
@@ -19,10 +20,12 @@ public:
 
 	CollectibleComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 23; }
+
 	void OnEnable() {
-		if ((statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(200))) == nullptr) {
-			owner->AddComponentByID(200);
-			statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(200));
+		if ((statsComponent = owner->GetComponent<StatsComponent>()) == nullptr) {
+			owner->AddComponent<StatsComponent>();
+			statsComponent = owner->GetComponent<StatsComponent>();
 
 			if (statsComponent == nullptr) {
 				Logger::log("WRLD", "Something went wrong CollectibleComponent::OnEnable()");
@@ -34,7 +37,7 @@ public:
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		
 		// Check if Destructible component is attached, if so don't serialize
-		if(owner->GetComponentByID(7) == nullptr)
+		if(owner->GetComponent<DestructibleComponent>() == nullptr)
 			statsComponent->Serialize(factory, packetType);
 
 

@@ -29,6 +29,8 @@ public:
 
 	PhantomPhysicsComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 40; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		// Position, Rotation
 		factory->Write(_isDirtyFlagPosRot);

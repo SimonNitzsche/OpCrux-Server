@@ -79,7 +79,9 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RequestUse.hpp
 	src/Entity/GameMessages/Resurrect.hpp
 	src/Entity/GameMessages/SetGravityScale.hpp
+	src/Entity/GameMessages/StartSkill.hpp
 	src/Entity/GameMessages/StopFXEffect.hpp
+	src/Entity/GameMessages/SyncSkill.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp

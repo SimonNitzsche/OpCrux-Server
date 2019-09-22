@@ -45,6 +45,8 @@ public:
 
 	StatsComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 200; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		
 		// Parameters

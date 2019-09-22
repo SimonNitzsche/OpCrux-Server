@@ -179,8 +179,8 @@ void MasterServer::Listen() {
 				rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			} break;
 			case ID_DISCONNECTION_NOTIFICATION: {
-				Logger::log("MASTER", "User Disconnected from Master...");
-				// TODO: Disconnect as Session
+				Logger::log("MASTER", "Server Disconnected from Master...");
+				// TODO: Drop from server pool
 			} break;
 			default: {
 				Logger::log("MASTER", "Recieved unknown packet #" + (byte)packetID);

@@ -19,6 +19,8 @@ public:
 
 	MinifigComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 35; }
+
 };
 
 #endif

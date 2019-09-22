@@ -167,14 +167,26 @@ namespace Entity {
 			void Tick();
 
 			/*
-				Returns an component by ID
+				Returns an component by class
 			*/
-			IEntityComponent * GetComponentByID(int id);
+			IEntityComponent * GetComponentByType(int id);
+
+			/*
+				Returns an component by Type
+			*/
+			template<class T = IEntityComponent>
+			inline T * GetComponent();
 
 			/*
 				Adds an component by ID
 			*/
-			void AddComponentByID(int id);
+			IEntityComponent * AddComponentByID(int id);
+
+			/*
+				Adds an component by class
+			*/
+			template<class T = IEntityComponent>
+			inline T* AddComponent();
 
 			/*
 				Serializes the Object.
@@ -268,7 +280,7 @@ namespace Entity {
 			/* Game Messages */
 			//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }
 
-			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) { for (auto i : components) i.second->OnRequestUse(sender, msg); };
+			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg);
 
 		public:
 			// Script Stuff

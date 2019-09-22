@@ -98,12 +98,12 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("AUTH", "Login requested");
 				// TODO: Handle Login
-				std::wstring name = StringUtils::readWStringFromBitStream(data);
-				std::wstring pswd = StringUtils::readWStringFromBitStream(data, 41);
+				std::wstring name = StringUtils::readBufferedWStringFromBitStream(data);
+				std::wstring pswd = StringUtils::readBufferedWStringFromBitStream(data, 41);
 				uint16_t COMLANG; data->Read(COMLANG);
 				ESystem platform; data->Read(platform);
-				std::wstring procMemInfo = StringUtils::readWStringFromBitStream(data, 256);
-				std::wstring clientGPU = StringUtils::readWStringFromBitStream(data, 128);
+				std::wstring procMemInfo = StringUtils::readBufferedWStringFromBitStream(data, 256);
+				std::wstring clientGPU = StringUtils::readBufferedWStringFromBitStream(data, 128);
 
 				Logger::log("AUTH", "Requesting Login: " + std::string(name.begin(), name.end()) + " <-> " + std::string(pswd.length(), "*"[0]));
 

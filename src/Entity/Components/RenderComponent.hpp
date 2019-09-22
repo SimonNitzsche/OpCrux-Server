@@ -13,6 +13,8 @@ public:
 
 	RenderComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 2; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Render Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {

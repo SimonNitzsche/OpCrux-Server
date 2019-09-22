@@ -47,8 +47,8 @@ namespace PacketFactory {
 				DataTypes::LWOOBJID objectID = DataTypes::LWOOBJID::makePlayerObjectID(charInfo.objectID);
 				returnBS.Write(objectID);
 				returnBS.Write(static_cast<std::uint32_t>(charInfo.charIndex));
-				StringUtils::writeWstringToBitStream(&returnBS, std::wstring(charInfo.name.begin(), charInfo.name.end()));
-				StringUtils::writeWstringToBitStream(&returnBS, std::wstring(charInfo.pendingName.begin(), charInfo.pendingName.end()));
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, std::wstring(charInfo.name.begin(), charInfo.name.end()));
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, std::wstring(charInfo.pendingName.begin(), charInfo.pendingName.end()));
 				returnBS.Write(static_cast<std::uint16_t>(0));
 				returnBS.Write(charStyle.headColor);
 				returnBS.Write(static_cast<std::uint16_t>(0));
@@ -131,7 +131,7 @@ namespace PacketFactory {
 			for (int i = 0; i < ldfEntries.size(); ++i) {
 				LDFEntry entry = ldfEntries[i];
 				contentWrapperBS.Write<std::uint8_t>((entry.key.size() & 0xFF) * 2);
-				StringUtils::writeWstringToBitStream(&contentWrapperBS, entry.key, entry.key.size());
+				StringUtils::writeBufferedWStringToBitStream(&contentWrapperBS, entry.key, entry.key.size());
 				contentWrapperBS.Write<std::uint8_t>(entry.type);
 				entry.WriteToBitstream(&contentWrapperBS);
 			}

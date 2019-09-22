@@ -27,6 +27,9 @@ namespace GM {
 			// The Owner Game Object.
 			Entity::GameObject * owner = nullptr;
 
+			// Return the component type
+			static constexpr int GetTypeID() { return -1; };
+
 			// Called when Component Requires Serialization.
 			virtual void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {};
 

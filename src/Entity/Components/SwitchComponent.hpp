@@ -21,6 +21,8 @@ public:
 
 	SwitchComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 49; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		factory->Write(bToggled);
 	}

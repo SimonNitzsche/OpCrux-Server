@@ -13,6 +13,8 @@ public:
 
 	TriggerComponent() : IEntityComponent(), trigger(-1, false) {}
 	
+	static constexpr int GetTypeID() { return 69; }
+
 	void AssignTrigger(ZoneTrigger _trigger) {
 		trigger = _trigger;
 		HandleEvent("OnCreate", this->owner);
@@ -137,7 +139,7 @@ private:
 					["Push", "Attract", "Repulse", "Gravity", "Friction"],[amount],(direction x, y, z),("True" or "False")(min distance)(max distance)
 			*/
 
-			PhantomPhysicsComponent * phantomPhysicsComponent = static_cast<PhantomPhysicsComponent*>(this->owner->GetComponentByID(40));
+			PhantomPhysicsComponent * phantomPhysicsComponent = owner->GetComponent<PhantomPhysicsComponent>();
 
 			if (phantomPhysicsComponent) {
 				phantomPhysicsComponent->SetEffectDirty();

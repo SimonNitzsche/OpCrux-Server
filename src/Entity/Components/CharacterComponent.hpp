@@ -19,6 +19,8 @@ public:
 
 	CharacterComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 4; }
+
 	void InitCharInfo(Database::Str_DB_CharInfo info) {
 		charInfo = info;
 	}

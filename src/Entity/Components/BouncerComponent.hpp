@@ -15,6 +15,8 @@ public:
 
 	BouncerComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 6; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {

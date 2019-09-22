@@ -15,6 +15,8 @@ public:
 
 	BaseCombatAIComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 60; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: BaseCombatAIComponent Serialization */
 		factory->Write(_isDirtyFlag);

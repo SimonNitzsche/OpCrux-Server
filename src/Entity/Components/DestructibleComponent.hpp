@@ -24,10 +24,12 @@ public:
 
 	DestructibleComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 7; }
+
 	void OnEnable() {
-		if (owner->GetComponentByID(200) == nullptr) {
-			owner->AddComponentByID(200);
-			statsComponent = static_cast<StatsComponent*>(owner->GetComponentByID(200));
+		if (owner->GetComponent<StatsComponent>() == nullptr) {
+			owner->AddComponent<StatsComponent>();
+			statsComponent = owner->GetComponent<StatsComponent>();
 
 			if (statsComponent == nullptr) {
 				Logger::log("WRLD", "Something went wrong DestuctibleComponent::OnEnable()");

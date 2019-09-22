@@ -21,6 +21,8 @@ public:
 
 	MissionOfferComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 73; }
+
 	void OnEnable() {
 
 	}

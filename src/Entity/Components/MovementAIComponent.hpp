@@ -29,6 +29,8 @@ public:
 
 	MovementAIComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 31; }
+
 	void OnEnable() {
 		std::int32_t componentID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 31);
 		wanderChance = CacheMovementAIComponent::GetWanderChance(componentID);
@@ -41,7 +43,7 @@ public:
 	}
 
 	void Awake() {
-		this->controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(owner->GetComponentByID(1));
+		this->controllablePhysicsComponent = owner->GetComponent<ControllablePhysicsComponent>();
 		basePosition = controllablePhysicsComponent->GetPosition();
 		allowUpdate = true;
 	}

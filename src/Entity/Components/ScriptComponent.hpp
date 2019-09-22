@@ -64,6 +64,8 @@ public:
 
 	ScriptComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 5; }
+
 	void OnEnable() {
 		std::uint32_t compID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 5);
 		scriptName = CacheScriptComponent::GetScriptName(compID);
@@ -125,12 +127,12 @@ public:
 
 		// Get own position
 		Vector3 pos = Vector3::zero();
-		ControllablePhysicsComponent * contPhysComp = reinterpret_cast<ControllablePhysicsComponent*>(owner->GetComponentByID(1));
+		ControllablePhysicsComponent * contPhysComp = owner->GetComponent<ControllablePhysicsComponent>();
 		if (contPhysComp) {
 			pos = contPhysComp->GetPosition();
 		}
 		else {
-			SimplePhysicsComponent * simpPhysComp = reinterpret_cast<SimplePhysicsComponent*>(owner->GetComponentByID(3));
+			SimplePhysicsComponent * simpPhysComp = owner->GetComponent<SimplePhysicsComponent>();
 			if (simpPhysComp)
 				pos = simpPhysComp->GetPosition();
 			else
@@ -148,8 +150,8 @@ public:
 
 		for (auto o : this->owner->GetZoneInstance()->objectsManager->GetObjects()) {
 			// we can assume, the object has a controllable physics object, otherwise it can't move.
-			ControllablePhysicsComponent * objectPhysicsComponent = reinterpret_cast<ControllablePhysicsComponent*>(o->GetComponentByID(1));
-			if (!objectPhysicsComponent) continue;
+			ControllablePhysicsComponent * objectPhysicsComponent = o->GetComponent<ControllablePhysicsComponent>();
+			if (!objectPhysicsComponent || objectPhysicsComponent == nullptr) continue;
 			Vector3 position = Vector3::zero();
 			position = objectPhysicsComponent->GetPosition();
 

@@ -15,6 +15,8 @@ public:
 
 	VendorComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 16; }
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Vendor Component Serialization */
 		factory->Write(_isDirtyFlag);

@@ -57,6 +57,8 @@ public:
 
 	SpawnerComponent() : IEntityComponent() {}
 
+	static constexpr int GetTypeID() { return 10; }
+
 	void OnEnable() {
 		owner->isSerializable = false;
 	}
@@ -152,21 +154,8 @@ public:
 		spawnedObject->SetSpawner(this->owner, spawnCount++);
 
 		// Set Position/Rotation
-		ControllablePhysicsComponent * controllablePhysicsComponent = static_cast<ControllablePhysicsComponent*>(spawnedObject->GetComponentByID(1));
-		if (controllablePhysicsComponent != nullptr) {
-			controllablePhysicsComponent->SetPosition(originPos);
-			controllablePhysicsComponent->SetRotation(originRot);
-		}
-		SimplePhysicsComponent * simplePhysicsComponent = static_cast<SimplePhysicsComponent*>(spawnedObject->GetComponentByID(3));
-		if (simplePhysicsComponent != nullptr) {
-			simplePhysicsComponent->SetPosition(originPos);
-			simplePhysicsComponent->SetRotation(originRot);
-		}
-		PhantomPhysicsComponent * phantomPhysicsComponent = static_cast<PhantomPhysicsComponent*>(spawnedObject->GetComponentByID(40));
-		if (phantomPhysicsComponent != nullptr) {
-			phantomPhysicsComponent->SetPosition(originPos);
-			phantomPhysicsComponent->SetRotation(originRot);
-		}
+		spawnedObject->SetPosition(originPos);
+		spawnedObject->SetRotation(originRot);
 
 		spawnedObject->Finish();
 

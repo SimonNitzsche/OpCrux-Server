@@ -16,9 +16,12 @@ private:
 	long long lastupdate = 0;
 
 	static const int showTimeInSeconds = 20;
+	long long lastSet = 0;
 public:
 
 	LUPExhibitComponent() : IEntityComponent() {}
+
+	static constexpr int GetTypeID() { return 75; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		factory->Write(_isDirty && exhibitedLOT!=0);
@@ -28,9 +31,25 @@ public:
 		}
 	}
 
+	void SetExhibitLOT(std::int32_t _exhibitedLOT) {
+		Logger::log("WRLD", "Setting exhibit LOT to " + std::to_string(_exhibitedLOT), LogType::INFO);
+		exhibitedLOT = _exhibitedLOT;
+		lastSet = ServerInfo::uptime();
+		_isDirty = true;
+		owner->SetDirty();
+	}
+
+	void CycleExhibitLOT() {
+		// TODO!
+		std::uint32_t nextLOT = 0;
+		SetExhibitLOT(nextLOT);
+	}
+
 	void Update() {
 		long long uptime = ServerInfo::uptime();
-		// TODO.
+		if (uptime > lastSet + showTimeInSeconds) {
+			CycleExhibitLOT();
+		}
 	}
 
 };
