@@ -8,6 +8,9 @@ using namespace DataTypes;
 
 class ControllablePhysicsComponent : public IEntityComponent {
 private:
+	bool _isDirtyPositionAndStuff = true;
+
+
 	Vector3 position { 0, 0, 0 };
 	Quaternion rotation;
 	bool isPlayerOnGround=true;
@@ -33,6 +36,8 @@ public:
 
 	void SetPosition(Vector3 pos) {
 		position = pos;
+		_isDirtyPositionAndStuff = true;
+		owner->SetDirty();
 	}
 
 	Vector3 GetPosition() {
@@ -41,6 +46,8 @@ public:
 
 	void SetRotation(Quaternion rot) {
 		rotation = rot;
+		_isDirtyPositionAndStuff = true;
+		owner->SetDirty();
 	}
 
 	Quaternion GetRotation() {
@@ -49,6 +56,8 @@ public:
 
 	void SetVelocity(Vector3 vel) {
 		velocity = vel;
+		_isDirtyPositionAndStuff = true;
+		owner->SetDirty();
 	}
 
 	Vector3 GetVelocity() {
@@ -65,8 +74,9 @@ public:
 		factory->Write(false);
 		factory->Write(false);
 		
-		factory->Write(true);
-		{
+		factory->Write(_isDirtyPositionAndStuff);
+		if(_isDirtyPositionAndStuff) {
+			_isDirtyPositionAndStuff = false;
 			factory->Write(position);
 			factory->Write(rotation);
 			factory->Write(isPlayerOnGround);
@@ -105,8 +115,6 @@ public:
 		else {
 			angularVelocity = DataTypes::Vector3();
 		}
-
-		owner->SetDirty();
 	}
 
 

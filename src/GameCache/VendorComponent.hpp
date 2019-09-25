@@ -15,7 +15,7 @@ namespace CacheVendorComponent {
 					return rth[i];
 			}
 			catch (std::runtime_error e) {
-				Logger::log("Cache:VendorComponent", e.what(), ERR);
+				Logger::log("Cache:VendorComponent", e.what(), LogType::ERR);
 			}
 		}
 		return FDB::RowInfo();

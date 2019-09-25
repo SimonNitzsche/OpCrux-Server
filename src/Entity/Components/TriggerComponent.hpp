@@ -162,7 +162,7 @@ private:
 				}
 
 				if (zCommand->args.size() >= 6) {
-					bool enabled = std::stoi(zCommand->args.at(5));
+					bool enabled = zCommand->args.at(5) == "True" || zCommand->args.at(5) == "true" || zCommand->args.at(5) == "1";
 					phantomPhysicsComponent->physEffectActive = enabled;
 				}
 				else {
@@ -170,7 +170,7 @@ private:
 				}
 
 				phantomPhysicsComponent->physEffectUseDistance = false;
-				if (zCommand->args.size() >= 7) {
+				/*if (zCommand->args.size() >= 7) {
 					phantomPhysicsComponent->physEffectUseDistance = true;
 					std::float_t effectMin = std::stof(zCommand->args.at(6));
 					phantomPhysicsComponent->physEffectMinDistance = effectMin;
@@ -179,7 +179,7 @@ private:
 				if (zCommand->args.size() >= 8) {
 					std::float_t effectMax = std::stof(zCommand->args.at(7));
 					phantomPhysicsComponent->physEffectMinDistance = effectMax;
-				}
+				}*/
 			}
 		}
 

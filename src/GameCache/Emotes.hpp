@@ -15,7 +15,7 @@ namespace CacheEmotes {
 					return rth[i];
 			}
 			catch (std::runtime_error e) {
-				Logger::log("Cache:Emotes", e.what(), ERR);
+				Logger::log("Cache:Emotes", e.what(), LogType::ERR);
 			}
 		}
 		return FDB::RowInfo();

@@ -32,6 +32,13 @@ public:
 	static constexpr int GetTypeID() { return 40; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+		// Enable dirty flags on creation
+		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
+			_isDirtyFlagPosRot = true;
+			_isDirtyFlagPhysEffectDirection = true;
+			_isDirtyFlagPhysEffectDirection = true;
+		}
+
 		// Position, Rotation
 		factory->Write(_isDirtyFlagPosRot);
 		if (_isDirtyFlagPosRot) {
@@ -49,15 +56,18 @@ public:
 		if (_isDirtyFlagEffects) {
 			factory->Write(physEffectActive);
 			if (physEffectActive) {
-				factory->Write(physEffectType);
+				factory->Write<std::uint32_t>(physEffectType);
 				factory->Write(physEffectAmount);
 				factory->Write(physEffectUseDistance);
 				if (physEffectUseDistance) {
 					factory->Write(physEffectMinDistance);
 					factory->Write(physEffectMaxDistance);
 				}
+				factory->Write(_isDirtyFlagPhysEffectDirection);
 				if (_isDirtyFlagPhysEffectDirection) {
-					factory->Write(physEffectDirection);
+					factory->Write(physEffectDirection.x * physEffectAmount);
+					factory->Write(physEffectDirection.y * physEffectAmount);
+					factory->Write(physEffectDirection.z * physEffectAmount);
 				}
 			}
 		}

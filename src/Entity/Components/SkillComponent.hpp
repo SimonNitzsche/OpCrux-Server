@@ -50,6 +50,7 @@ struct BehaviorMovementSwitch : AbstractAggregateBehavior {
 
 
 void AbstractAggregateBehavior::StartUnCast(long nextBehavior, RakNet::BitStream * bs) {
+	if (nextBehavior == -1) return;
 	long templateID = CacheBehaviorTemplate::GetTemplateID(nextBehavior);
 	switch (templateID) {
 	case 3: {

@@ -3,23 +3,101 @@
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
-using namespace DataTypes;
+#include <map>
+
+#include "GameCache/InventoryComponent.hpp"
+
+/*
+	TODO: This component is currently only implemented for static inventory, change this in future.
+*/
+
+/* Maybe replace this in future. */
+struct InventoryItemStack {
+	std::uint32_t LOT;
+	DataTypes::LWOOBJID objectID;
+	std::uint32_t quantity;
+	bool equip;
+};
 
 class InventoryComponent : public IEntityComponent {
 private:
-	bool _isDirtyFlag = false;
-	
+	bool _isDirtyFlagEquippedItems = false;
+	bool _isDirtyFlagNextStruct = false;
+
 
 public:
+	std::map<std::uint32_t, InventoryItemStack> inventory = {};
 
 	InventoryComponent() : IEntityComponent() {}
 
 	static constexpr int GetTypeID() { return 17; }
 
+	void OnEnable() {
+		// Get componentID
+		std::uint32_t componentID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), GetTypeID());
+		// Get static inventory
+		GameCache::Interface::FDB::RowInfo rowInfo = CacheInventoryComponent::getRow(componentID);
+
+		std::uint32_t slotID = 0;
+
+		while (rowInfo.isValid()) {
+			// Create static items
+			std::int32_t itemID = CacheInventoryComponent::GetItemID(rowInfo);
+			std::int32_t count = CacheInventoryComponent::GetCount(rowInfo);
+			bool equip = CacheInventoryComponent::GetEquip(rowInfo);
+			
+			Entity::GameObject * item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
+			item->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
+			owner->GetZoneInstance()->objectsManager->RegisterObject(item);
+
+
+			InventoryItemStack itemStack = InventoryItemStack();
+			itemStack.LOT = itemID;
+			itemStack.objectID = item->GetObjectID();
+			itemStack.quantity = count;
+			itemStack.equip = equip;
+
+			// Add item to list
+			inventory.insert({ slotID++, itemStack });
+		
+			// Continue
+			if (rowInfo.isLinkedRowInfoValid())
+				rowInfo = rowInfo.getLinkedRowInfo();
+			else
+				break;
+		}
+		
+		_isDirtyFlagEquippedItems = slotID != 0;
+
+	}
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Inventory Component Serialization */
-		factory->Write(_isDirtyFlag);
-		factory->Write(_isDirtyFlag);
+		factory->Write(_isDirtyFlagEquippedItems);
+		if (_isDirtyFlagEquippedItems) {
+			std::vector<InventoryItemStack> equippedItems{};
+			for (auto itemStack : inventory) {
+				if (itemStack.second.equip) {
+					InventoryItemStack iis = itemStack.second;
+					equippedItems.push_back(iis);
+				}
+			}
+
+			factory->Write<std::uint32_t>(equippedItems.size());
+			for (int i = 0; i < equippedItems.size(); ++i) {
+				factory->Write(equippedItems.at(i).objectID);
+				factory->Write(equippedItems.at(i).LOT);
+				factory->Write(false);
+				factory->Write(true);
+				/**/factory->Write<std::uint16_t>(equippedItems.at(i).quantity);
+				factory->Write(true);
+				/**/factory->Write<std::uint32_t>(i);
+				factory->Write(false);
+				factory->Write(false);
+				factory->Write(true);
+			}
+		}
+		factory->Write(_isDirtyFlagNextStruct);
 	}
 
 };

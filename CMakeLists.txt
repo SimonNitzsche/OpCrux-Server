@@ -71,6 +71,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/OfferMission.hpp
 	src/Entity/GameMessages/PlayAnimation.hpp
 	src/Entity/GameMessages/PlayEmote.hpp
+	src/Entity/GameMessages/PlayerLoaded.hpp
 	src/Entity/GameMessages/PlayFXEffect.hpp
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
@@ -120,6 +121,7 @@ add_executable(OpCrux_Server
 	src/GameCache/DestructibleComponent.hpp
 	src/GameCache/ComponentsRegistry.hpp
 	src/GameCache/Emotes.hpp
+	src/GameCache/InventoryComponent.hpp
 	src/GameCache/ItemComponent.hpp
 	src/GameCache/LootMatrix.hpp
 	src/GameCache/LootMatrixIndex.hpp
