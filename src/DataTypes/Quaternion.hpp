@@ -55,6 +55,13 @@ namespace DataTypes {
 		}
 
 		/*
+			Equal operator
+		*/
+		bool operator== (const Quaternion & b) const {
+			return (x == b.x && y == y && z == b.z && w == b.w);
+		}
+
+		/*
 			Multiplies two Quaternions.
 		*/
 		Quaternion operator * (const Quaternion & q) const {

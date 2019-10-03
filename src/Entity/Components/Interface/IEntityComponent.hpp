@@ -16,6 +16,10 @@ namespace GM {
 	class RequestUse;
 };
 
+/* set x true if x or construction */
+#define ENABLE_FLAG_ON_CONSTRUCTION(x) \
+x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
+
 //namespace Entity::Components::Interface {
 
 	/*

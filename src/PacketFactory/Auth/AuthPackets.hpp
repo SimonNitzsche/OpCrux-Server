@@ -43,7 +43,7 @@ namespace PacketFactory {
 			std::string ip = (IPUtils::isIPPublic(client.binaryAddress) ? rakServer->GetExternalID(UNASSIGNED_SYSTEM_ADDRESS).ToString(false) :
 							 (IPUtils::isIPIntern(client.binaryAddress) ? rakServer->GetInternalID().ToString(false) : "127.0.0.1"));
 			
-			// ip = "foxsog.com";
+			//ip = "foxsog.com";
 
 			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip);
 

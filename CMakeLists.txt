@@ -65,6 +65,8 @@ add_executable(OpCrux_Server
 	src/Entity/Components/VendorComponent.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
+	src/Entity/GameMessages/EchoStartSkill.hpp
+	src/Entity/GameMessages/EchoSyncSkill.hpp
 	src/Entity/GameMessages/EmotePlayed.hpp
 	src/Entity/GameMessages/FireEventServerSide.hpp
 	src/Entity/GameMessages/Knockback.hpp
@@ -83,6 +85,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/StartSkill.hpp
 	src/Entity/GameMessages/StopFXEffect.hpp
 	src/Entity/GameMessages/SyncSkill.hpp
+	src/Entity/GameMessages/VendorOpenWindow.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp

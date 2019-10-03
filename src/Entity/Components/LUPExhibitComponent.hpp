@@ -24,6 +24,7 @@ public:
 	static constexpr int GetTypeID() { return 75; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirty);
 		factory->Write(_isDirty && exhibitedLOT!=0);
 		if (_isDirty && exhibitedLOT!=0) {
 			factory->Write<std::int32_t>(exhibitedLOT);
@@ -40,7 +41,7 @@ public:
 	}
 
 	void CycleExhibitLOT() {
-		// TODO!
+		// TODO: CycleExhibitLOT()
 		std::uint32_t nextLOT = 0;
 		SetExhibitLOT(nextLOT);
 	}

@@ -12,7 +12,11 @@ private:
 	// Dirty flags
 	bool _dirtyPart2 = true;
 
+	
+
 public:
+	SystemAddress clientAddress = UNASSIGNED_SYSTEM_ADDRESS;
+
 	void SetLevel(std::uint32_t newLevel) {
 		charInfo.uLevel = newLevel;
 	}
@@ -42,6 +46,7 @@ public:
 		factory->Write(false);
 
 		/* Part 2 Serialization */
+		ENABLE_FLAG_ON_CONSTRUCTION(_dirtyPart2);
 		factory->Write(_dirtyPart2);
 		if (_dirtyPart2) {
 			factory->Write(charInfo.uLevel);

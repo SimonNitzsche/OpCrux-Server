@@ -15,7 +15,7 @@ using namespace DataTypes;
 
 class StatsComponent : public IEntityComponent {
 private:
-	bool _isDirtyFlagParameters = false;
+	bool _useCustomParameters = false;
 	std::uint32_t parameters[9];
 
 public:
@@ -51,14 +51,14 @@ public:
 		
 		// Parameters
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write(_isDirtyFlagParameters);
-			if (_isDirtyFlagParameters) {
+			factory->Write(_useCustomParameters);
+			if (_useCustomParameters) {
 				factory->Write(parameters);
-				_isDirtyFlagParameters = false;
 			}
 		}
 
 		// Attributes
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagAttributes);
 		factory->Write(_isDirtyFlagAttributes);
 		if (_isDirtyFlagAttributes) {
 			factory->Write(attributes.currentHealth);
@@ -88,6 +88,8 @@ public:
 					factory->Write(false);
 				}
 			}
+
+			_isDirtyFlagAttributes = false;
 		}
 
 		// Unknown flag and data bit

@@ -33,11 +33,9 @@ public:
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		// Enable dirty flags on creation
-		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			_isDirtyFlagPosRot = true;
-			_isDirtyFlagPhysEffectDirection = true;
-			_isDirtyFlagPhysEffectDirection = true;
-		}
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagPosRot);
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagPhysEffectDirection);
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagEffects);
 
 		// Position, Rotation
 		factory->Write(_isDirtyFlagPosRot);

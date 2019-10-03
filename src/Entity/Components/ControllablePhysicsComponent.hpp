@@ -74,6 +74,7 @@ public:
 		factory->Write(false);
 		factory->Write(false);
 		
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyPositionAndStuff);
 		factory->Write(_isDirtyPositionAndStuff);
 		if(_isDirtyPositionAndStuff) {
 			_isDirtyPositionAndStuff = false;
@@ -115,6 +116,9 @@ public:
 		else {
 			angularVelocity = DataTypes::Vector3();
 		}
+
+		_isDirtyPositionAndStuff = true;
+		owner->SetDirty();
 	}
 
 

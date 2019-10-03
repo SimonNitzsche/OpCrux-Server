@@ -67,7 +67,7 @@ public:
 	static void Deserialize(WorldServer * Instance, ClientSession * session, RakNet::BitStream *bs);
 
 	template<typename T = GM::GMBase>
-	static void Send(WorldServer * Instance, SystemAddress systemAddress, DataTypes::LWOOBJID target, T gm) {
+	static void Send(WorldServer * Instance, SystemAddress systemAddress, DataTypes::LWOOBJID target, T gm, DataTypes::LWOOBJID exclude = 0ULL) {
 		RakNet::BitStream bs = RakNet::BitStream();
 
 		LUPacketHeader returnBSHead;
@@ -86,7 +86,10 @@ public:
 			auto clients = Instance->sessionManager.GetClients();
 			for (int i = 0; i < clients.size(); ++i) {
 				ClientSession session = clients.at(i);
-				Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
+
+				if (exclude != session.actorID) {
+					Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
+				}
 			}
 		}
 		else
@@ -100,6 +103,8 @@ public:
 // Define by include
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
 #include "Entity/GameMessages/Die.hpp"
+#include "Entity/GameMessages/EchoStartSkill.hpp"
+#include "Entity/GameMessages/EchoSyncSkill.hpp"
 #include "Entity/GameMessages/EmotePlayed.hpp"
 #include "Entity/GameMessages/FireEventServerSide.hpp"
 #include "Entity/GameMessages/Knockback.hpp"
@@ -118,5 +123,6 @@ public:
 #include "Entity/GameMessages/StartSkill.hpp"
 #include "Entity/GameMessages/StopFXEffect.hpp"
 #include "Entity/GameMessages/SyncSkill.hpp"
+#include "Entity/GameMessages/VendorOpenWindow.hpp"
 
 #endif

@@ -73,6 +73,7 @@ public:
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Inventory Component Serialization */
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagEquippedItems);
 		factory->Write(_isDirtyFlagEquippedItems);
 		if (_isDirtyFlagEquippedItems) {
 			std::vector<InventoryItemStack> equippedItems{};
@@ -98,6 +99,8 @@ public:
 			}
 		}
 		factory->Write(_isDirtyFlagNextStruct);
+
+		_isDirtyFlagEquippedItems = false;
 	}
 
 };

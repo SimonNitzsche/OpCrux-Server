@@ -201,6 +201,10 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 				Logger::log("WRLD", "Received corrupt packet.", LogType::ERR);
 				PacketFactory::General::doDisconnect(rakServer, packet->systemAddress, EDisconnectReason::UNKNOWN_SERVER_ERROR);
 			}
+			catch (std::runtime_error * e) {
+				Logger::log("WRLD", "[CRASH] " + std::string(e->what()), LogType::ERR);
+				throw new std::runtime_error(*e);
+			}
 		}
 	}
 
@@ -385,6 +389,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Entity::GameObject * playerObject = new Entity::GameObject(this, 1);
 				playerObject->SetObjectID(clientSession->actorID);
 				CharacterComponent * charComp = playerObject->GetComponent<CharacterComponent>();
+				charComp->clientAddress = clientSession->systemAddress;
 				Database::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
 				playerObject->SetPosition(luZone->spawnPos->pos);
 				playerObject->SetRotation(luZone->spawnPos->rot);

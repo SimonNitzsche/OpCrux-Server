@@ -36,25 +36,32 @@ public:
 			factory->Write(allowGlitchUp);
 			factory->Write<std::uint32_t>(unknownCreation32);
 		}
+		ENABLE_FLAG_ON_CONSTRUCTION(_velocityDirty);
 		factory->Write(_velocityDirty);
 		if (_velocityDirty) {
 			factory->Write(linearVelocity);
 			factory->Write(angularVelocity);
+			_velocityDirty = false;
 		}
+		ENABLE_FLAG_ON_CONSTRUCTION(_unknownU32Dirty);
 		factory->Write(_unknownU32Dirty);
 		if (_unknownU32Dirty) {
 			factory->Write(unknownU32);
+			_unknownU32Dirty = false;
 		}
+		ENABLE_FLAG_ON_CONSTRUCTION(_posRotDirty);
 		factory->Write(_posRotDirty);
 		if (_posRotDirty) {
 			factory->Write(position);
 			factory->Write(rotation);
+			_posRotDirty = false;
 		}
 	}
 
 	void SetPosition(DataTypes::Vector3 pos) {
 		position = pos;
 		_posRotDirty = true;
+		owner->SetDirty();
 	}
 
 	DataTypes::Vector3 GetPosition() {
@@ -64,6 +71,7 @@ public:
 	void SetRotation(DataTypes::Quaternion rot) {
 		rotation = rot;
 		_posRotDirty = true;
+		owner->SetDirty();
 	}
 
 	DataTypes::Quaternion GetRotation() {

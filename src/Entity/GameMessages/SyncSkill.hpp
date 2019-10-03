@@ -23,6 +23,13 @@ namespace GM {
 
 		inline void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
 			Logger::log("WRLD", "Triggered StartSkill handle " + std::to_string(uiSkillHandle) + " with behaviorID " + std::to_string(uiBehaviorHandle));
+			GM::EchoSyncSkill echoGM; {
+				echoGM.bDone = bDone;
+				echoGM.sBitStream = sBitStream;
+				echoGM.uiBehaviorHandle = uiBehaviorHandle;
+				echoGM.uiSkillHandle = uiSkillHandle;
+			}
+			GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), echoGM, sender->GetObjectID());
 			sender->OnSyncSkill(*this);
 		}
 	};

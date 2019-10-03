@@ -105,6 +105,7 @@ public:
 			}*/
 		}
 
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlag);
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
 			factory->Write<std::uint32_t>(4);

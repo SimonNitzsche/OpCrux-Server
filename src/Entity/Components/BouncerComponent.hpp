@@ -18,6 +18,8 @@ public:
 	static constexpr int GetTypeID() { return 6; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+		_isDirtyFlag = _isDirtyFlag || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
+
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
 			factory->Write(bEnabled);
