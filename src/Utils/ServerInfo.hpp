@@ -19,7 +19,9 @@ public:
 	static bool bRunning;
 	static const char* baseTitle;
 	static void init();
+	static long long startupStamp();
 	static long long uptime();
+	static long long timestamp();
 	static long long uptimeMs();
 	static float uptime_normalized();
 	static long long time_gone(long long uptime);

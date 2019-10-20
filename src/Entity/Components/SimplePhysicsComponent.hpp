@@ -11,14 +11,14 @@ using namespace DataTypes;
 class SimplePhysicsComponent : public IEntityComponent {
 private:
 	bool allowGlitchUp = false;
-	std::uint32_t unknownCreation32=0;
+	std::int32_t unknownCreation32=0;
 	
 	bool _velocityDirty = false;
 	DataTypes::Vector3 linearVelocity = DataTypes::Vector3::zero();
 	DataTypes::Vector3 angularVelocity = DataTypes::Vector3::zero();
 
-	bool _unknownU32Dirty = false;
-	std::uint32_t unknownU32 = 0;
+	bool _airSpeedDirty = true;
+	std::uint32_t airSpeed = 0;
 
 	bool _posRotDirty = true;
 	DataTypes::Vector3 position = DataTypes::Vector3::zero();
@@ -34,27 +34,28 @@ public:
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 			factory->Write(allowGlitchUp);
-			factory->Write<std::uint32_t>(unknownCreation32);
+			factory->Write<std::int32_t>(unknownCreation32);
 		}
-		ENABLE_FLAG_ON_CONSTRUCTION(_velocityDirty);
 		factory->Write(_velocityDirty);
 		if (_velocityDirty) {
 			factory->Write(linearVelocity);
 			factory->Write(angularVelocity);
-			_velocityDirty = false;
 		}
-		ENABLE_FLAG_ON_CONSTRUCTION(_unknownU32Dirty);
-		factory->Write(_unknownU32Dirty);
-		if (_unknownU32Dirty) {
-			factory->Write(unknownU32);
-			_unknownU32Dirty = false;
+		factory->Write(_airSpeedDirty);
+		if (_airSpeedDirty) {
+			factory->Write(airSpeed);
 		}
-		ENABLE_FLAG_ON_CONSTRUCTION(_posRotDirty);
+		_posRotDirty = _posRotDirty || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 		factory->Write(_posRotDirty);
 		if (_posRotDirty) {
-			factory->Write(position);
-			factory->Write(rotation);
-			_posRotDirty = false;
+			factory->Write<std::float_t>(position.x);
+			factory->Write<std::float_t>(position.y);
+			factory->Write<std::float_t>(position.z);
+			factory->Write<std::float_t>(rotation.x);
+			factory->Write<std::float_t>(rotation.y);
+			factory->Write<std::float_t>(rotation.z);
+			factory->Write<std::float_t>(rotation.w);
+			rotation.isValid();
 		}
 	}
 
@@ -72,6 +73,7 @@ public:
 		rotation = rot;
 		_posRotDirty = true;
 		owner->SetDirty();
+		rotation.isValid();
 	}
 
 	DataTypes::Quaternion GetRotation() {

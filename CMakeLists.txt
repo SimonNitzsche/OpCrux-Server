@@ -49,6 +49,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/ItemComponent.hpp
 	src/Entity/Components/LUPExhibitComponent.hpp
 	src/Entity/Components/MinifigComponent.hpp
+	src/Entity/Components/MinigameComponent.hpp
 	src/Entity/Components/MissionOfferComponent.hpp
 	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/MovingPlatformComponent.hpp
@@ -62,6 +63,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/StatsComponent.hpp
 	src/Entity/Components/SwitchComponent.hpp
 	src/Entity/Components/TriggerComponent.hpp
+	src/Entity/Components/VehiclePhysicsComponent.hpp
 	src/Entity/Components/VendorComponent.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp

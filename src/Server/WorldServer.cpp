@@ -185,6 +185,8 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	Packet* packet;
 	initDone = true;
 
+	Logger::log("WRLD", "Finished loading and initializing of the instance.", LogType::PASSED);
+
 	std::thread glT([=]() { GameLoopThread(); });
 	glT.detach();
 
@@ -407,6 +409,13 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				PacketFactory::World::CreateCharacter(rakServer, clientSession, playerObject);
 
 				
+				if (zoneID == 1203) {
+					// Racing tests, remove in future!
+
+					playerObject->SetPosition(DataTypes::Vector3(-1457.71f, 2794.0f, -351.61f));
+
+				}
+
 
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {

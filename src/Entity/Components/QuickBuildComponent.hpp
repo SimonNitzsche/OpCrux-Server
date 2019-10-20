@@ -20,7 +20,7 @@ private:
 	//std::unordered_map<DataTypes::LWOOBJID, float[10]> parameters = {};
 
 	bool _isDirtyFlagActivity = false;
-	bool _isDirtyFlag = true;
+	bool _isDirtyFlag = false;
 
 	DataTypes::Vector3 rebuild_activators;
 
@@ -108,7 +108,7 @@ public:
 		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlag);
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
-			factory->Write<std::uint32_t>(4);
+			factory->Write<std::uint32_t>(2);
 			factory->Write(true);
 			factory->Write(true);
 			factory->Write<std::float_t>(0);
@@ -121,6 +121,8 @@ public:
 				factory->Write(false);
 			}
 		}
+
+		_isDirtyFlag = false;
 		
 	}
 

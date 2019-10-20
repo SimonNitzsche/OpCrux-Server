@@ -52,6 +52,11 @@ x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 			// Called when physic update
 			virtual void PhysicUpdate() {}
 
+			/* Non-GMs Events */
+			virtual void OnCollisionPhantom(Entity::GameObject * other) {};
+			virtual void OnOffCollisionPhantom(Entity::GameObject * other) {};
+
+
 			/* Game Messages */
 			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {};
 

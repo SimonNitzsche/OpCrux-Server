@@ -13,7 +13,7 @@
 
 /* Maybe replace this in future. */
 struct InventoryItemStack {
-	std::uint32_t LOT;
+	std::int32_t LOT;
 	DataTypes::LWOOBJID objectID;
 	std::uint32_t quantity;
 	bool equip;
@@ -46,6 +46,9 @@ public:
 			std::int32_t count = CacheInventoryComponent::GetCount(rowInfo);
 			bool equip = CacheInventoryComponent::GetEquip(rowInfo);
 			
+			if (itemID >= 17000)
+				throw new std::runtime_error("Invalid LOT: " + std::to_string(itemID));
+
 			Entity::GameObject * item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
 			item->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
 			owner->GetZoneInstance()->objectsManager->RegisterObject(item);
@@ -73,7 +76,6 @@ public:
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Inventory Component Serialization */
-		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagEquippedItems);
 		factory->Write(_isDirtyFlagEquippedItems);
 		if (_isDirtyFlagEquippedItems) {
 			std::vector<InventoryItemStack> equippedItems{};
@@ -86,21 +88,19 @@ public:
 
 			factory->Write<std::uint32_t>(equippedItems.size());
 			for (int i = 0; i < equippedItems.size(); ++i) {
-				factory->Write(equippedItems.at(i).objectID);
-				factory->Write(equippedItems.at(i).LOT);
+				factory->Write<std::int64_t>(equippedItems.at(i).objectID);
+				factory->Write<std::int32_t>(equippedItems.at(i).LOT);
 				factory->Write(false);
 				factory->Write(true);
-				/**/factory->Write<std::uint16_t>(equippedItems.at(i).quantity);
+				/**/factory->Write<std::uint32_t>(equippedItems.at(i).quantity);
 				factory->Write(true);
-				/**/factory->Write<std::uint32_t>(i);
+				/**/factory->Write<std::uint16_t>(i);
 				factory->Write(false);
 				factory->Write(false);
-				factory->Write(true);
+				factory->Write(false);
 			}
 		}
 		factory->Write(_isDirtyFlagNextStruct);
-
-		_isDirtyFlagEquippedItems = false;
 	}
 
 };

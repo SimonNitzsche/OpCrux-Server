@@ -6,6 +6,8 @@
 #include "DataTypes/Vector3.hpp"
 #include "DataTypes/Quaternion.hpp"
 
+#include "Entity/Components/SimplePhysicsComponent.hpp"
+
 using namespace DataTypes;
 
 class PhantomPhysicsComponent : public IEntityComponent {
@@ -25,6 +27,9 @@ public:
 private:
 	bool _isDirtyFlagPhysEffectDirection = false;
 	DataTypes::Vector3 physEffectDirection;
+
+	std::vector<Entity::GameObject *> enteredObjects = {};
+
 public:
 
 	PhantomPhysicsComponent() : IEntityComponent() {}
@@ -33,9 +38,9 @@ public:
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		// Enable dirty flags on creation
-		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagPosRot);
+		/*ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagPosRot);
 		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagPhysEffectDirection);
-		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagEffects);
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagEffects);*/
 
 		// Position, Rotation
 		factory->Write(_isDirtyFlagPosRot);
@@ -47,6 +52,7 @@ public:
 			factory->Write(rotation.y);
 			factory->Write(rotation.z);
 			factory->Write(rotation.w);
+			rotation.isValid();
 		}
 
 		// Physic Effects
@@ -74,6 +80,78 @@ public:
 	inline
 	void SetEffectDirty() {
 		_isDirtyFlagEffects = true;
+	}
+
+	void PhysicUpdate() {
+		/*
+			Since we don't have propper physic detection yet,
+			we will currently use a sphere with the radius of 1 times scale,
+			since the default collision object is a 2x2x2 box, if a hkx file is missing.
+		*/
+
+		// Get own position
+		Vector3 pos = Vector3::zero();
+		ControllablePhysicsComponent * contPhysComp = owner->GetComponent<ControllablePhysicsComponent>();
+		if (contPhysComp) {
+			pos = contPhysComp->GetPosition();
+		}
+		else {
+			SimplePhysicsComponent * simpPhysComp = owner->GetComponent<SimplePhysicsComponent>();
+			if (simpPhysComp)
+				pos = simpPhysComp->GetPosition();
+			else
+				return;
+		}
+
+		// Cleanup removed objects
+		for (int i = 0; i < enteredObjects.size(); ++i) {
+			if (!enteredObjects.at(i)) {
+				owner->OnOffCollisionPhantom(enteredObjects.at(i));
+				enteredObjects.erase(enteredObjects.begin() + i);
+			}
+		}
+
+		for (auto o : this->owner->GetZoneInstance()->objectsManager->GetObjects()) {
+			// we can assume, the object has a controllable physics object, otherwise it can't move.
+			ControllablePhysicsComponent * objectPhysicsComponent = o->GetComponent<ControllablePhysicsComponent>();
+			if (!objectPhysicsComponent || objectPhysicsComponent == nullptr) continue;
+			Vector3 position = Vector3::zero();
+			position = objectPhysicsComponent->GetPosition();
+
+			float difference = Vector3::Distance(pos, position);
+
+			// Check if exists in list.
+			bool isInside = std::find(enteredObjects.begin(), enteredObjects.end(), o) != enteredObjects.end();
+			if (isInside) {
+				// Object in list, check if left
+
+				// Look for matching radii
+				if (difference > owner->GetScale()*2) {
+					// Message object left.
+					owner->OnOffCollisionPhantom(o);
+					auto it2 = std::find(enteredObjects.begin(), enteredObjects.end(), o);
+					if (it2 != enteredObjects.end())
+						enteredObjects.erase(it2);
+				}
+			}
+			else {
+				// Object not in list, check if entered
+
+				// Look for matching radii
+				if (difference <= owner->GetScale()*2) {
+					// Message object joined.
+					auto it2 = std::find(enteredObjects.begin(), enteredObjects.end(), o);
+					if (it2 != enteredObjects.end()) continue;
+					enteredObjects.push_back(o);
+					// OnCollisionPhantom
+					owner->OnCollisionPhantom(o);
+				}
+			}
+		}
+	}
+
+	void OnCollisionPhantom(Entity::GameObject * object) {
+
 	}
 
 	void SetEffectDirection(DataTypes::Vector3 direction) {

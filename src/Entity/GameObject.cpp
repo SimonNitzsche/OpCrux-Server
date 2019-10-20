@@ -36,6 +36,7 @@
 #include "Entity/Components/ItemComponent.hpp"
 #include "Entity/Components/LUPExhibitComponent.hpp"
 #include "Entity/Components/MinifigComponent.hpp"
+#include "Entity/Components/MinigameComponent.hpp"
 #include "Entity/Components/MissionOfferComponent.hpp"
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/MovingPlatformComponent.hpp"
@@ -49,6 +50,7 @@
 #include "Entity/Components/StatsComponent.hpp"
 #include "Entity/Components/SwitchComponent.hpp"
 #include "Entity/Components/TriggerComponent.hpp"
+#include "Entity/Components/VehiclePhysicsComponent.hpp"
 #include "Entity/Components/VendorComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
@@ -57,8 +59,8 @@ ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime,
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::SendDestruction(RakNet::BitStream *outBitStream, SystemAddress systemAddress, bool *includeTimestamp) {
-	return REPLICA_PROCESSING_DONE;
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::DESTRUCTION);
+	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::ReceiveDestruction(RakNet::BitStream *inBitStream, SystemAddress systemAddress, RakNetTime timestamp) {
 	return REPLICA_PROCESSING_DONE;
@@ -161,7 +163,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id) {
 		COMPONENT_ONADD_SWITCH_CASE(ControllablePhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SimplePhysicsComponent);
 		//COMPONENT_ONADD_SWITCH_CASE(RigidBodyPhantomPhysicsComponent);
-		//COMPONENT_ONADD_SWITCH_CASE(VehiclePhysicsComponent);
+		COMPONENT_ONADD_SWITCH_CASE(VehiclePhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PhantomPhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(DestructibleComponent);
 		COMPONENT_ONADD_SWITCH_CASE(CollectibleComponent);
@@ -182,8 +184,8 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id) {
 		COMPONENT_ONADD_SWITCH_CASE(LUPExhibitComponent);
 		//COMPONENT_ONADD_SWITCH_CASE(ModelComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RenderComponent);
-		//COMPONENT_ONADD_SWITCH_CASE(MinigameComponent);
-		  COMPONENT_ONADD_SWITCH_CASE(Component107);
+		COMPONENT_ONADD_SWITCH_CASE(MinigameComponent);
+		COMPONENT_ONADD_SWITCH_CASE(Component107);
 		COMPONENT_ONADD_SWITCH_CASE(TriggerComponent);
 		/* ========== NON-SERIALIZED ========== */
 		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent);
@@ -211,6 +213,30 @@ void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::Pa
 	SerializeBaseData(factory, packetType);
 	SerializeComponents(factory, packetType);
 	objectDirty = false;
+
+
+	if (false) {
+		Logger::log("WRLD", "Saving serialization for LOT " + std::to_string(this->LOT), LogType::PASSED);
+		RakNet::BitStream copyBs = RakNet::BitStream();
+		copyBs.Write<std::uint8_t>(packetType == ReplicaTypes::PacketTypes::CONSTRUCTION ? 0x24 : 0x27);
+		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
+			if (this->GetNetworkID() != UNASSIGNED_NETWORK_ID)
+			{
+				copyBs.Write(true);
+				copyBs.Write(this->GetNetworkID());
+			}
+			else
+				copyBs.Write(false);
+		}
+		else {
+			copyBs.Write<std::uint16_t>(this->networkID.localSystemAddress);
+		}
+		factory->SetReadOffset(0);
+		copyBs.Write(factory, factory->GetNumberOfBitsUsed());
+		factory->SetReadOffset(0);
+		copyBs.Write(reinterpret_cast<char*>(factory->GetData()), factory->GetNumberOfBytesUsed());
+		FileUtils::SavePacket(&copyBs, 2000, 50000);
+	}
 }
 
 void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
@@ -219,7 +245,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(ControllablePhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SimplePhysicsComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RigidBodyPhantomPhysicsComponent);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(VehiclePhysicsComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(VehiclePhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(PhantomPhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(DestructibleComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(CollectibleComponent);
@@ -240,35 +266,45 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(LUPExhibitComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ModelComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(RenderComponent);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(MinigameComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(MinigameComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(Component107);
 	SERIALIZE_COMPONENT_IF_ATTACHED(TriggerComponent);
 }
 
+#define VNAME(x) #x
+
+#define ASSERT_MEMBER_VALIDATION(factory, type, valMem, check) \
+{type valMem; factory->Read<type>(valMem); if(!(check)) throw new std::runtime_error(std::string("Serialization for "+std::string(#valMem)+" is broken."));}
+constexpr auto VALIDATE_MEMBERS = (false);;
+
 void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+	auto _writeOffsetBegin = factory->GetWriteOffset();
+	auto _localTimeSinceOnServer = ServerInfo::uptime() - creationTimestamp;
 	if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 		factory->Write<std::uint64_t>(objectID);
 		factory->Write<std::int32_t>(LOT);
 		StringUtils::writeWStringToBitStream<std::uint8_t>(factory, name);
 
-		factory->Write<uint32_t>(ServerInfo::uptime() - creationTimestamp);
+		factory->Write<uint32_t>(_localTimeSinceOnServer);
 
 		{
 			factory->Write(false);
 			// TODO! -> compressed LDF
 		}
 
-		factory->Write(this->GetComponent<TriggerComponent>() != nullptr);
+		factory->Write(false);
+		//factory->Write(this->GetComponent<TriggerComponent>() != nullptr);
 
 		factory->Write(spawner != nullptr);
 		if (spawner != nullptr) { factory->Write(spawner->objectID); }
-
-		factory->Write(spawner_node != 0xFFFFFFFF);
-		if (spawner_node != 0xFFFFFFFF) { factory->Write(spawner_node); }
+		
+		factory->Write(false); // disable commented out below
+		//factory->Write(spawner_node != 0xFFFFFFFF);
+		//if (spawner_node != 0xFFFFFFFF) { factory->Write(spawner_node); }
 
 		// Object Scale
-		factory->Write(this->scale != 1.0);
-		if (this->scale != 1.0)
+		factory->Write(this->scale != 1.0f);
+		if (this->scale != 1.0f)
 			factory->Write(this->scale);
 		
 		// object world state
@@ -278,8 +314,10 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 		factory->Write(false);
 	}
 
-	factory->Write(baseDataDirty);
-	if (baseDataDirty) {
+	/*factory->Write(baseDataDirty);
+	if (baseDataDirty) {*/
+	factory->Write(false);
+	if(false) {
 		factory->Write(parent != nullptr);
 		if (parent != nullptr) {
 			factory->Write<std::uint64_t>(parent->objectID);
@@ -293,7 +331,35 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 			}
 		}
 	}
+
 	baseDataDirty = false;
+
+	/// Validate.
+	if(VALIDATE_MEMBERS) {
+		auto _readOffsetBegin = factory->GetReadOffset();
+		factory->SetReadOffset(_writeOffsetBegin);
+		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
+			ASSERT_MEMBER_VALIDATION(factory, std::uint64_t, _valMem_00, _valMem_00 == objectID);
+			ASSERT_MEMBER_VALIDATION(factory, std::int32_t, _valMem_01, _valMem_01 == LOT);
+			ASSERT_MEMBER_VALIDATION(factory, std::uint8_t, _valMem_02, _valMem_02 == name.size());
+			for (int _val_I = 0; _val_I < name.size(); ++_val_I)
+				ASSERT_MEMBER_VALIDATION(factory, wchar_t, _valMem_02_n, _valMem_02_n == name.at(_val_I));
+			ASSERT_MEMBER_VALIDATION(factory, std::uint32_t, _valMem_03, _valMem_03 == _localTimeSinceOnServer);
+			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_04, _valMem_04 == false); // compressed stuff
+			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_05, _valMem_05 == false); // trigger
+			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_06, _valMem_06 == (spawner != nullptr));
+			if (spawner != nullptr)
+				ASSERT_MEMBER_VALIDATION(factory, std::uint64_t, _valMem_06_01, _valMem_06_01 == spawner->GetObjectID());
+			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_07, _valMem_07 == false); // spawner_node_id
+			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_08, _valMem_08 == (scale != 1.f));
+			if (scale != 1.f)
+				ASSERT_MEMBER_VALIDATION(factory, std::float_t, _valMem_08_01, _valMem_08_01 == scale);
+			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_09, _valMem_09 == false); // object world state
+			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_10, _valMem_10 == false); // gmlevel?
+		}
+		factory->SetReadOffset(_readOffsetBegin);
+	}
+
 }
 
 void Entity::GameObject::AddChild(GameObject * child) {
@@ -372,17 +438,14 @@ void Entity::GameObject::SetPosition(DataTypes::Vector3 position) {
 	auto controllablePhysicsComponent = this->GetComponent<ControllablePhysicsComponent>();
 	if (controllablePhysicsComponent != nullptr) {
 		controllablePhysicsComponent->SetPosition(position);
-		return;
 	}
 	auto simplePhysicsComponent = this->GetComponent<SimplePhysicsComponent>();
 	if (simplePhysicsComponent != nullptr) {
 		simplePhysicsComponent->SetPosition(position);
-		return;
 	}/*
 	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		rigidBodyPhantomPhysicsComponent->SetPosition(position);
-		return;
 	}
 	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
 	if (vehiclePhysicsComponent != nullptr) {
@@ -392,9 +455,7 @@ void Entity::GameObject::SetPosition(DataTypes::Vector3 position) {
 	auto phantomPhysicsComponent = this->GetComponent<PhantomPhysicsComponent>();
 	if (phantomPhysicsComponent != nullptr) {
 		phantomPhysicsComponent->SetPosition(position);
-		return;
 	}
-
 	return;
 }
 
@@ -402,27 +463,22 @@ void Entity::GameObject::SetRotation(DataTypes::Quaternion rotation) {
 	auto controllablePhysicsComponent = this->GetComponent<ControllablePhysicsComponent>();
 	if (controllablePhysicsComponent != nullptr) {
 		controllablePhysicsComponent->SetRotation(rotation);
-		return;
 	}
 	auto simplePhysicsComponent = this->GetComponent<SimplePhysicsComponent>();
 	if (simplePhysicsComponent != nullptr) {
 		simplePhysicsComponent->SetRotation(rotation);
-		return;
 	}/*
 	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		rigidBodyPhantomPhysicsComponent->SetRotation(rotation);
-		return;
 	}
 	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
 	if (vehiclePhysicsComponent != nullptr) {
 		vehiclePhysicsComponent->SetRotation(rotation);
-		return;
 	}*/
 	auto phantomPhysicsComponent = this->GetComponent<PhantomPhysicsComponent>();
 	if (phantomPhysicsComponent != nullptr) {
 		phantomPhysicsComponent->SetRotation(rotation);
-		return;
 	}
 }
 
@@ -473,6 +529,25 @@ DataTypes::Quaternion Entity::GameObject::GetRotation() {
 	}
 	return DataTypes::Quaternion();
 }
+
+void Entity::GameObject::OnCollisionPhantom(Entity::GameObject * other) {
+	Logger::log("WRLD", "OnCollisionPhantom");
+	for (auto component : this->components) {
+		if (component.second != nullptr) {
+			component.second->OnCollisionPhantom(other);
+		}
+	}
+}
+
+void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
+	Logger::log("WRLD", "OnOffCollisionPhantom");
+	for (auto component : this->components) {
+		if (component.second != nullptr) {
+			component.second->OnOffCollisionPhantom(other);
+		}
+	}
+}
+
 
 void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 	/* Mailbox (Script got removed) */

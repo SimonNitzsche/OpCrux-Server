@@ -289,6 +289,9 @@ namespace Entity {
 			void Test() { objectID = 9ULL; LOT = 1234; name = L"TestName"; }
 
 
+			void OnCollisionPhantom(Entity::GameObject * other);
+			void OnOffCollisionPhantom(Entity::GameObject * other);
+
 		public:
 			/* Game Messages */
 			//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }

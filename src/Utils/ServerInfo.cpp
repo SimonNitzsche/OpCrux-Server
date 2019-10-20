@@ -25,8 +25,16 @@ appstart = clock();
 	}
 }
 
+long long ServerInfo::startupStamp() {
+	return StartupTime;
+}
+
 long long ServerInfo::uptime() {
-	return (clock() / CLOCKS_PER_SEC) - appstart;
+	return timestamp() - appstart;
+}
+
+long long ServerInfo::timestamp() {
+	return (clock() / CLOCKS_PER_SEC);
 }
 
 long long ServerInfo::uptimeMs() {
@@ -82,7 +90,7 @@ std::string ServerInfo::getOsName() {
 std::string ServerInfo::gameVersion = "1.10.64";
 
 void ServerInfo::numericGameVersion(uint16_t * major, uint16_t * current, uint16_t * minor) {
-	std::vector<std::string> str{ StringUtils::splitString(gameVersion,"."[0]) };
+	std::vector<std::string> str{ StringUtils::splitString(gameVersion,'.') };
 	*major = std::stoi(str[0]);
 	*current = std::stoi(str[1]);
 	*minor = std::stoi(str[2]);

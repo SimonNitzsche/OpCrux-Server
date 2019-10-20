@@ -42,9 +42,10 @@ struct BehaviorMovementSwitch : AbstractAggregateBehavior {
 		std::uint32_t movementType; bs->Read(movementType);
 
 		static const std::string switchTypes[] { "moving_action", "ground_action", "jump_action", "falling_action", "air_action", "double_jump_action", "jetpack_action" };
-
-		std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, switchTypes[movementType]);
-		StartUnCast(nextID, bs);
+		if (movementType <= 6) {
+			std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, switchTypes[movementType]);
+			StartUnCast(nextID, bs);
+		}
 	}
 };
 

@@ -16,7 +16,7 @@ using namespace DataTypes;
 class StatsComponent : public IEntityComponent {
 private:
 	bool _useCustomParameters = false;
-	std::uint32_t parameters[9];
+	std::uint32_t parameters[9] {0,0,0,0,0,0,0,0,0};
 
 public:
 	struct Attributes {
@@ -26,15 +26,15 @@ public:
 		std::float_t dupMaxArmor;
 		std::uint32_t currentImagination;
 		std::float_t dupMaxImagination;
-		std::uint32_t unknown1;
-		bool unknown2;
-		bool unknown3;
-		bool unknown4;
+		std::uint32_t damageAbsorptionPoints;
+		bool immunity=false;
+		bool isGMImmune=false;
+		bool isShielded=false;
 		std::float_t maxHealth;
 		std::float_t maxArmor;
 		std::float_t maxImagination;
 		std::vector<std::int32_t> factions;
-		bool isSmashable;
+		bool isSmashable=true;
 	};
 private:
 	bool _isDirtyFlagAttributes=false;
@@ -51,14 +51,25 @@ public:
 		
 		// Parameters
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
+			_useCustomParameters = true;
 			factory->Write(_useCustomParameters);
 			if (_useCustomParameters) {
-				factory->Write(parameters);
+				factory->Write(parameters[0]);
+				factory->Write(parameters[1]);
+				factory->Write(parameters[2]);
+				factory->Write(parameters[3]);
+				factory->Write(parameters[4]);
+				factory->Write(parameters[5]);
+				factory->Write(parameters[6]);
+				factory->Write(parameters[7]);
+				factory->Write(parameters[8]);
 			}
 		}
 
 		// Attributes
-		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagAttributes);
+		// ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagAttributes);
+		//if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION)
+			//_isDirtyFlagAttributes = true;
 		factory->Write(_isDirtyFlagAttributes);
 		if (_isDirtyFlagAttributes) {
 			factory->Write(attributes.currentHealth);
@@ -67,10 +78,10 @@ public:
 			factory->Write(attributes.dupMaxArmor);
 			factory->Write(attributes.currentImagination);
 			factory->Write(attributes.dupMaxImagination);
-			factory->Write(attributes.unknown1);
-			factory->Write(attributes.unknown2);
-			factory->Write(attributes.unknown3);
-			factory->Write(attributes.unknown4);
+			factory->Write(attributes.damageAbsorptionPoints);
+			factory->Write(attributes.immunity);
+			factory->Write(attributes.isGMImmune);
+			factory->Write(attributes.isShielded);
 			factory->Write(attributes.maxHealth);
 			factory->Write(attributes.maxArmor);
 			factory->Write(attributes.maxImagination);
@@ -88,13 +99,12 @@ public:
 					factory->Write(false);
 				}
 			}
-
-			_isDirtyFlagAttributes = false;
 		}
+		_isDirtyFlagAttributes = false;
 
 		// Unknown flag and data bit
-		factory->Write(false);
-		if (false) {
+		factory->Write(true);
+		if (true) {
 			factory->Write(false);
 		}
 	}

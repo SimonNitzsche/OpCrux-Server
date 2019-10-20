@@ -29,11 +29,17 @@ namespace CacheDestructibleComponent {
 	}
 
 	inline int32_t GetFaction(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[1]/**/.getMemoryLocation());
+		auto memloc = getRow(id)/**/[1]/**/.getMemoryLocation();
+		if(memloc!=nullptr)
+			return *reinterpret_cast<int32_t*>(memloc);
+		return 0;
 	}
 
 	inline int32_t GetFaction(GameCache::Interface::FDB::RowInfo rowInfo) {
-		return *reinterpret_cast<int32_t*>(rowInfo/**/[1]/**/.getMemoryLocation());
+		auto memloc = rowInfo/**/[1]/**/.getMemoryLocation();
+		if (memloc != nullptr)
+			return *reinterpret_cast<int32_t*>(memloc);
+		return 0;
 	}
 
 	inline FDB::PointerString GetFactionList(int32_t id) {

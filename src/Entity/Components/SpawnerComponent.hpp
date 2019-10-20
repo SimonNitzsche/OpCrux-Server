@@ -148,10 +148,10 @@ public:
 		spawnedObject->PopulateFromLDF(&ldfCache);
 
 		// Set Parent
-		spawnedObject->SetParent(this->owner);
+		//spawnedObject->SetParent(this->owner);
 
 		// Set Spawner
-		spawnedObject->SetSpawner(this->owner, spawnCount++);
+		spawnedObject->SetSpawner(this->owner, -1);
 
 		// Set Position/Rotation
 		spawnedObject->SetPosition(originPos);

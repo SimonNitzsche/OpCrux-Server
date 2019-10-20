@@ -55,6 +55,19 @@ namespace DataTypes {
 		}
 
 		/*
+			Check if Quaternion is valid
+		*/
+		bool isValid() {
+			bool result;
+			result = x <= 1.f && y <= 1.f && z <= 1.f && w <= 1.f;
+			result = result && !(x == y && y == z && z == w);
+			if (!result) {
+				int _breakpoint = 0;
+			}
+			return result;
+		}
+
+		/*
 			Equal operator
 		*/
 		bool operator== (const Quaternion & b) const {

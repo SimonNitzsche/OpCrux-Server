@@ -140,6 +140,26 @@ namespace StringUtils {
 		ToLowerSelf(out);
 		return out;
 	}
+
+	inline char NibleToHex(char nible) {
+		static const char* hexLookup = "0123456789ABCDEF";
+		return hexLookup[nible];
+	}
+
+	inline std::string CharToHex(char c) {
+		std::string o = "";
+		o += NibleToHex(c >> 4);
+		o += NibleToHex(c & 0x0F);
+		return o;
+	}
+
+	inline std::string StringToHex(std::string input, char divider = '\0') {
+		std::string out = "";
+		for (int i = 0; i < input.size(); ++i) {
+			if (i != 0) out += divider;
+			out += CharToHex(input.at(i));
+		}
+	}
 }
 
 #endif // !__UTILS__STRINGUTILS_HPP__

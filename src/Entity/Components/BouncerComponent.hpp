@@ -23,6 +23,7 @@ public:
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
 			factory->Write(bEnabled);
+			_isDirtyFlag = false;
 		}
 	}
 

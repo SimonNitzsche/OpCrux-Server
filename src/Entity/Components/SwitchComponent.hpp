@@ -10,6 +10,7 @@ class SwitchComponent : public IEntityComponent {
 private:
 	bool bToggled = false;
 	long long deactivateAt;
+	std::uint32_t peopleOnIt = 0;
 private:
 	bool is_hit_switch;
 	bool is_pressure_switch;
@@ -27,10 +28,30 @@ public:
 		factory->Write(bToggled);
 	}
 
-	// TODO
-	void OnPhantomPhysics(int peopleInThere) {
-		bToggled = (peopleInThere != 0);
+	void OnCollisionPhantom(Entity::GameObject * other) {
+		if (peopleOnIt == 0) {
+			// We don't want to activate if it's activated.
+			if (bToggled) return;
+			// Activate
+			bToggled = true;
+			// Tell object needs serialization
+			owner->SetDirty();
+		}
+		++peopleOnIt;
 	}
+
+	void OnOffCollisionPhantom(Entity::GameObject * other) {
+		if (peopleOnIt != 0) {
+			--peopleOnIt;
+			if (peopleOnIt == 0) {
+				// Set Deactivation Timestamp
+				// deactivateAt = ServerInfo::uptime() + switch_reset_time;
+				bToggled = false;
+				owner->SetDirty();
+			}
+		}
+	}
+
 
 	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 		Activate();

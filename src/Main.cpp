@@ -45,7 +45,7 @@ BridgeMasterServer* masterServerBridge;
 
 #include "Entity/Components/StatsComponent.hpp"
 
-int givenWorldID = 1400;
+int givenWorldID = 1100;
 
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();

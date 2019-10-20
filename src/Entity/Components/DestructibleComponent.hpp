@@ -18,8 +18,6 @@ private:
 
 	StatsComponent * statsComponent;
 
-	//Entity::GameObject * owner;
-
 public:
 
 	DestructibleComponent() : IEntityComponent() {}
@@ -55,15 +53,18 @@ public:
 
 		attributes->isSmashable = CacheDestructibleComponent::GetIsSmashable(rowInfo);
 
-		// Following is just a guess.
-		attributes->unknown1 = CacheDestructibleComponent::GetLevel(rowInfo);
+		auto faction = CacheDestructibleComponent::GetFaction(rowInfo);
+		if(faction != -1)
+			attributes->factions.push_back(faction);
+
+		attributes->damageAbsorptionPoints = 0;
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Destructible Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write(_isDirtyFlag);
-			factory->Write(_isDirtyFlag);
+			factory->Write(false);
+			factory->Write(false);
 		}
 
 		// Note: This is the first component that is able to serialize the StatsComponent, so no check is necessary.

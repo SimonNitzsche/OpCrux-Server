@@ -1,98 +1,83 @@
-#ifndef __REPLICA__COMPONENTS__CONTROLLABLE_PHYSICS_COMPONENT_HPP__
-#define __REPLICA__COMPONENTS__CONTROLLABLE_PHYSICS_COMPONENT_HPP__
+#ifndef __REPLICA__COMPONENTS__VEHICLE_PHYSICS_COMPONENT_HPP__
+#define __REPLICA__COMPONENTS__VEHICLE_PHYSICS_COMPONENT_HPP__
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
-#include "DataTypes/Quaternion.hpp"
 
 using namespace DataTypes;
 
-class ControllablePhysicsComponent : public IEntityComponent {
+class VehiclePhysicsComponent : public IEntityComponent {
 private:
 	bool _isDirtyPositionAndStuff = true;
 
 
-	Vector3 position { 0, 0, 0 };
+	Vector3 position{ 0, 0, 0 };
 	Quaternion rotation;
-	bool isPlayerOnGround=true;
+	bool isPlayerOnGround = true;
 	bool onRail = false;
 	Vector3 velocity = Vector3::zero();
 	Vector3 angularVelocity = Vector3::zero();
+public:
+	
 
-	bool __unk__0;
-		float __unk__1;
-		float __unk__2;
-	bool __unk__3;
-		float __unk__4;
-		bool __unk__5;
-	bool __unk__6;
-		bool __unk__7;
-			float __unk__8;
-			bool __unk__9;
 public:
 
-	ControllablePhysicsComponent() : IEntityComponent() {}
+	VehiclePhysicsComponent() : IEntityComponent() {}
 
-	static constexpr int GetTypeID() { return 1; }
+	static constexpr int GetTypeID() { return 30; }
 
-	void SetPosition(Vector3 pos) {
+	void SetPosition(DataTypes::Vector3 pos) {
 		position = pos;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
 	}
 
-	Vector3 GetPosition() {
+	DataTypes::Vector3 GetPosition() {
 		return position;
 	}
 
-	void SetRotation(Quaternion rot) {
+	void SetRotation(DataTypes::Quaternion rot) {
 		rotation = rot;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
 	}
 
-	Quaternion GetRotation() {
+	DataTypes::Quaternion GetRotation() {
 		return rotation;
 	}
 
-	void SetVelocity(Vector3 vel) {
+	void SetVelocity(DataTypes::Vector3 vel) {
 		velocity = vel;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
 	}
 
-	Vector3 GetVelocity() {
+	DataTypes::Vector3 GetVelocity() {
 		return velocity;
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-		/* TODO: Controllable Physics Component Serialization */
-		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write(false);
-			factory->Write(false);
-
-			_isDirtyPositionAndStuff = true;
-		}
-		factory->Write(false);
-		factory->Write(false);
-		factory->Write(false);
-		
+		// Physic specific
+		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyPositionAndStuff);
 		factory->Write(_isDirtyPositionAndStuff);
-		if(_isDirtyPositionAndStuff) {
-			//_isDirtyPositionAndStuff = false;
+		if (_isDirtyPositionAndStuff) {
+			_isDirtyPositionAndStuff = false;
 			factory->Write(position);
 			factory->Write(rotation);
 			factory->Write(isPlayerOnGround);
 			factory->Write(onRail);
 			factory->Write(true); // Velocity 
-				factory->Write(velocity);
+			factory->Write(velocity);
 			factory->Write(true); // Angular Velocity
-				factory->Write(angularVelocity);
+			factory->Write(angularVelocity);
 			factory->Write(false);
 		}
-		
-		if (packetType == ReplicaTypes::PacketTypes::SERIALIZATION) {
+
+		// Racing specific
+		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
+			factory->Write<std::uint8_t>(0);
 			factory->Write(false);
 		}
+		factory->Write(false);
 	}
 
 	/*
@@ -120,11 +105,6 @@ public:
 
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
-	}
-
-
-	void Update() {
-		
 	}
 };
 

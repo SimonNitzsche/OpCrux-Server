@@ -74,7 +74,7 @@ namespace DataTypes {
 				this->data = unsll;
 
 				// Print LWOOBJID data.
-				printData();
+				// printData();
 			}
 
 			/*
