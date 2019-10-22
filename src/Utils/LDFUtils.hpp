@@ -13,7 +13,7 @@
 
 class LDFUtils {
 public:
-	static LDFEntry MakeLDFEntryFromWStringData(std::wstring key, Enums::LDFType type, std::wstring val) {
+	static inline LDFEntry MakeLDFEntryFromWStringData(std::wstring key, Enums::LDFType type, std::wstring val) {
 		LDFEntry e = LDFEntry();
 		switch (type) {
 		case Enums::LDFType::WSTRING: {
