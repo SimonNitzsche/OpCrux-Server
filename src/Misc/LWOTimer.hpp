@@ -15,6 +15,7 @@ public:
 	void Update();
 
 	void AddTimerWithCancel(int timeInMs, std::wstring name, Entity::GameObject * object);
+	void AddTimerWithCancel(float timeInSeconds, std::wstring name, Entity::GameObject * object);
 }; 
 
 

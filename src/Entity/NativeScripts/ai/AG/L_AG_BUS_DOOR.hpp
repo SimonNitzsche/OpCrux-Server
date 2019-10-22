@@ -56,8 +56,8 @@ class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR : public NativeScript {
 
 		if (msg.objId->GetLOT() != 1) return;
 
-		int counter = *self->GetVar(L"counter");
-		int outerCounter = *self->GetVar(L"outerCounter");
+		int counter = self->GetVar(L"counter");
+		int outerCounter = self->GetVar(L"outerCounter");
 
 		if (msg.status == "ENTER") {
 			if (msg.name == "busDoor") {
@@ -80,7 +80,6 @@ class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR : public NativeScript {
 			else if (msg.name == "busDoorOuter") {
 				if (outerCounter > 0) {
 					--outerCounter;
-					int ceds = 43;
 				}
 			}
 
@@ -100,6 +99,7 @@ class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR : public NativeScript {
 	void onArrivedAtDesiredWaypoint(Entity::GameObject * self, GM::ArrivedAtDesiredWaypoint msg) {
 		if (msg.iPathIndex == 1) {
 			// self:PlayFXEffect{ name  = "busDust", effectType = "create"} -- effectID = 642,
+			{GM::PlayFXEffect nmsg; nmsg.name = "busDust"; nmsg.effectType = L"create"; GameMessages::Broadcast(self->GetZoneInstance(), self, nmsg); }
 			// print('play effect busDoor');
 		}
 	}

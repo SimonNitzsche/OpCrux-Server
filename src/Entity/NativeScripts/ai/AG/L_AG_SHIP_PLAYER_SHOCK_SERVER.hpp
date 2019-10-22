@@ -23,7 +23,7 @@ public:
 		print("clicked!");
 		//msg.user:TerminateInteraction{ type = 'fromInteraction', ObjIDTerminator = self }
 
-		if (*self->GetVar(L"bActive")) {
+		if (self->GetVar(L"bActive")) {
 			return;
 		}
 

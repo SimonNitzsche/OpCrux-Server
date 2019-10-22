@@ -14,6 +14,9 @@ void LWOTimer::Update() {
 				//timers.at(it1.first).erase(it1.second.find(it2.first));
 				timers.at(it1.first).erase(it2.first);
 			}
+			else {
+				// Logger::log("TEST", std::string(it2.first.begin(), it2.first.end()) + " time left: " + std::to_string(r2 - currentTime));
+			}
 		}
 }
 }
@@ -27,4 +30,8 @@ void LWOTimer::AddTimerWithCancel(int timeInMs, std::wstring name, Entity::GameO
 	else {
 		// Already exists, can't add again -> Error
 	}
+}
+
+void LWOTimer::AddTimerWithCancel(float timeInSeconds, std::wstring name, Entity::GameObject * object) {
+	AddTimerWithCancel(timeInSeconds * 1000, name, object);
 }

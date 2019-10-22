@@ -96,6 +96,15 @@ public:
 			Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, systemAddress, systemAddress != UNASSIGNED_SYSTEM_ADDRESS);
 	}
 
+	template<typename T = GM::GMBase>
+	static inline void Broadcast(WorldServer * Instance, DataTypes::LWOOBJID target, T gm) {
+		Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, target, gm);
+	}
+
+	template<typename T = GM::GMBase>
+	static inline void Broadcast(WorldServer * Instance, Entity::GameObject * target, T gm) {
+		Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, target->GetLOT(), gm);
+	}
 };
 
 // The Game Messages:

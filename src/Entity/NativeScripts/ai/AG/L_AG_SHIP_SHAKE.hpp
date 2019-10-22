@@ -25,12 +25,12 @@ public:
 
 	void onStartup(Entity::GameObject * self) {
 		// See if object has some variables set in HF
-		if (self->GetVar(L"MaxRepTime")) randTime = *self->GetVar(L"MaxRepTime");
-		if (self->GetVar(L"Radius")) shakeRad = *self->GetVar(L"Radius");
+		if (self->GetVar(L"MaxRepTime")) randTime = self->GetVar(L"MaxRepTime");
+		if (self->GetVar(L"Radius")) shakeRad = self->GetVar(L"Radius");
 #ifdef OPCRUX_PLATFORM_WIN32
-		if (self->GetVar(L"EffectName")) fxName = *self->GetVar(L"EffectName");
+		if (self->GetVar(L"EffectName")) fxName = self->GetVar(L"EffectName");
 #else
-		if (self->GetVar(L"EffectName")) fxName = self->GetVar(L"EffectName")->key;
+		if (self->GetVar(L"EffectName")) fxName = self->GetVar(L"EffectName");
 #endif()
 		// debrisObj = self:GetObjectsInGroup{ group = "DebrisFX"}.objects[1]
 

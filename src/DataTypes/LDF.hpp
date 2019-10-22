@@ -32,6 +32,8 @@ namespace Enums {
 		UNKNOWN_12,
 		STRING,
 		UNKNOWN_14,
+
+		UNASSIGNED_LDFTYPE = 0xff
 	};
 }
 
@@ -43,7 +45,7 @@ private:
 	std::string data;
 
 public:
-	LDFEntry() {};
+	LDFEntry() :type(Enums::LDFType::UNASSIGNED_LDFTYPE) {};
 	const char * getPointer() { return data.c_str(); }
 	void WriteToBitstream(RakNet::BitStream * bs) {
 		switch(type) {
@@ -162,7 +164,7 @@ public:
 	}
 
 	operator bool() const {
-		if (type != Enums::LDFType::BOOLEAN) throw new std::runtime_error("Invalid LDF type.");
+		if (type != Enums::LDFType::BOOLEAN) return type != Enums::LDFType::UNASSIGNED_LDFTYPE;
 		return *data.c_str() != 0;
 	}
 

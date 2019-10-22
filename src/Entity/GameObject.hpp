@@ -302,11 +302,11 @@ namespace Entity {
 
 		public:
 			// Script Stuff
-			std::optional<LDFEntry> GetVar(std::wstring key) {
+			LDFEntry GetVar(std::wstring key) {
 				if (configData.find(key) != configData.end())
 					return configData.at(key);
 				else
-					return {};
+					return LDFEntry();
 			}
 
 			template<typename T>
