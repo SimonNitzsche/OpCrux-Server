@@ -69,6 +69,8 @@ namespace GameCache::Interface::FDB {
 		length = std::strlen(reinterpret_cast<const char*>(memlocation));
 	}
 
+	PointerString::PointerString(FieldValue * fieldValue) : PointerString(fieldValue->getConnection(), fieldValue->getMemoryLocation()) {}
+
 	/*
 		Class: ColumnData
 	*/

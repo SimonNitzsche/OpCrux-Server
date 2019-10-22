@@ -28,12 +28,13 @@ namespace GameCache::Interface::FDB {
 	class FieldValue {
 	private:
 		Connection * conn;
-		DATA_TYPE dataType;
+		DATA_TYPE dataType = DATA_TYPE::INVALID_POINTER;
 		int32_t * data;
+		static const std::uint64_t NULL_DATA = 0ULL;
 	public:
 		FieldValue(Connection * connection, DATA_TYPE type, int32_t * where) : conn(connection), dataType(type), data(where) {}
 		Connection * getConnection() { return conn; }
-		unsigned char * getMemoryLocation() { return reinterpret_cast<unsigned char*>(data); }
+		unsigned char * getMemoryLocation() { auto returnData = reinterpret_cast<unsigned char*>(data); if (returnData != nullptr || dataType != DATA_TYPE::NOTHING) return returnData; return const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(&NULL_DATA)); }
 
 		std::string ToString();
 
@@ -50,6 +51,7 @@ namespace GameCache::Interface::FDB {
 	public:
 		PointerString();
 		PointerString(Connection * connection, unsigned char * where);
+		PointerString(FieldValue * fieldValue);
 		Connection * getConnection() { return conn; }
 		unsigned char * getMemoryLocation() { return memlocation; }
 
