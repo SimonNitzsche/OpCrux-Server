@@ -23,22 +23,23 @@ function showemote(self,target, skillID, skillType)
     --}
 end
 Emote = { emote = emote}  
-
-function getVarables(self)
-    self:SetVar("myTarget", nil)
-    self:SetVar("readyToAttack", true)
-    self:SetVar("WPEvent_NUM", 1)   
-    self:SetVar("AggroEmoteDelay", true) 
-    self:SetVar("delayDone","Start")
-    self:SetVar("aggrotarget",0)
-    self:SetVar("delayDone","Start")
-    self:SetVar("tetherOn",false)
-    self:SetVar("Dead",false) 
-    self:SetVar("myTarget",nil)
-    self:SetVar("inpursuit",false)
-    self:SetVar("AggroOnce", 0 ) 
-    self:SetVar("HearBeat", false)  
-end 
+*/
+	void getVarables(Entity::GameObject * self) {
+		self->SetVar(L"myTarget", static_cast<Entity::GameObject *>(nullptr));
+		self->SetVar(L"readyToAttack", true);
+		self->SetVar(L"WPEvent_NUM", 1);
+		self->SetVar(L"AggroEmoteDelay", true);
+		self->SetVar(L"delayDone", "Start");
+		self->SetVar(L"aggrotarget", 0);
+		self->SetVar(L"delayDone", "Start");
+		self->SetVar(L"tetherOn", false);
+		self->SetVar(L"Dead", false);
+		self->SetVar(L"myTarget", static_cast<Entity::GameObject *>(nullptr));
+		self->SetVar(L"inpursuit", false);
+		self->SetVar(L"AggroOnce", 0);
+		self->SetVar(L"HearBeat", false);
+	}
+/*
 function loadOnce(self)
 
 	self:SetVar("AttackingTarget", "NoTarget" )

@@ -30,7 +30,7 @@ long long ServerInfo::startupStamp() {
 }
 
 long long ServerInfo::uptime() {
-	return timestamp() - appstart;
+	return timestamp() - appstart/CLOCKS_PER_SEC;
 }
 
 long long ServerInfo::timestamp() {
@@ -38,7 +38,7 @@ long long ServerInfo::timestamp() {
 }
 
 long long ServerInfo::uptimeMs() {
-	return (clock() - appstart * 1000);
+	return ((clock()/CLOCKS_PER_SEC) - (appstart/CLOCKS_PER_SEC))*1000;
 }
 
 float ServerInfo::uptime_normalized() {

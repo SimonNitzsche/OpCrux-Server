@@ -130,8 +130,6 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 			go->PopulateFromLDF(&ldfCollection);
 
-			go->Finish();
-
 			objectsManager->RegisterObject(go);
 		}
 	}
@@ -175,11 +173,15 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 				simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(0)->rotation);
 			}
 
-			spawnedObject->Finish();
-
 			// Register
 			Instance->objectsManager->RegisterObject(spawnedObject);
 		}
+	}
+
+
+	// Finish objects
+	for (auto go : this->objectsManager->GetObjects()) {
+		go->Finish();
 	}
 
 	Packet* packet;

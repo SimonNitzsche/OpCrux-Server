@@ -84,6 +84,8 @@ Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
 	this->Instance = instance;
 	this->LOT = LOT;
 
+	this->groups = {};
+
 	if (LOT == 0) {
 		Logger::log("WRLD", "Failed to spawn object: LOT 0 is blacklisted!", LogType::ERR);
 		return;
@@ -380,11 +382,22 @@ void Entity::GameObject::SetSpawner(GameObject * spawner, std::uint32_t spawnerN
 	this->spawner_node = spawnerNodeID;
 }
 
+bool Entity::GameObject::IsWithinGroup(std::wstring groupName) {
+	for (auto g : this->groups) {
+		if (g == groupName)
+			return true;
+	}
+	return false;
+}
+
 void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	
 	configData = *collection;
 
 	// TODO: Populate base data
+	std::wstring groupWstr;
+	LDF_GET_VAL_FROM_COLLECTION(groupWstr, collection, L"groupID", L"");
+	this->groups = StringUtils::splitWString(groupWstr, L';');
 
 	if (this->LOT != 176) {
 		// Add Componets custom

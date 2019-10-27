@@ -74,6 +74,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/Knockback.hpp
 	src/Entity/GameMessages/OfferMission.hpp
 	src/Entity/GameMessages/PlayAnimation.hpp
+	src/Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp
 	src/Entity/GameMessages/PlayEmote.hpp
 	src/Entity/GameMessages/PlayerLoaded.hpp
 	src/Entity/GameMessages/PlayFXEffect.hpp

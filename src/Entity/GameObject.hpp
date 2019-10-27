@@ -63,6 +63,9 @@ namespace Entity {
 			// The Children of this object.
 			std::vector<GameObject *> children;
 
+			// Groups the object is in.
+			std::vector<std::wstring> groups;
+
 			// The Components assigned to this object.
 			std::unordered_map<std::uint32_t, IEntityComponent*> components;
 
@@ -230,6 +233,11 @@ namespace Entity {
 				Sets the spawner object
 			*/
 			void SetSpawner(GameObject * spawner,std::uint32_t spawnerNodeID);
+
+			/*
+				Returns if object is within group
+			*/
+			bool IsWithinGroup(std::wstring groupName);
 
 			/*
 				Only use this on a player.

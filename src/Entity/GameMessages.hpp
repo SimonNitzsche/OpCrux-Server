@@ -119,6 +119,7 @@ public:
 #include "Entity/GameMessages/Knockback.hpp"
 #include "Entity/GameMessages/OfferMission.hpp"
 #include "Entity/GameMessages/PlayAnimation.hpp"
+#include "Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp"
 #include "Entity/GameMessages/PlayEmote.hpp"
 #include "Entity/GameMessages/PlayerLoaded.hpp"
 #include "Entity/GameMessages/PlayFXEffect.hpp"
