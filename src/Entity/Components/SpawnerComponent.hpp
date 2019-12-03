@@ -44,7 +44,7 @@ private:
 	bool noTimedSpawn;
 	float respawnTime;
 	bool respawnVolume;
-	std::wstring respawnVolumeName;
+	std::u16string respawnVolumeName;
 	DataTypes::Vector3 respawnPosition;
 	DataTypes::Quaternion respawnRotation;
 	bool spawnerActiveOnLoad=false;
@@ -96,26 +96,26 @@ public:
 		weight:1
 	*/
 
-		LDF_GET_VAL_FROM_COLLECTION(maxToSpawn, collection, L"max_to_spawn", -1);
-		LDF_GET_VAL_FROM_COLLECTION(noAutoSpawn, collection, L"no_auto_spawn", false);
-		LDF_GET_VAL_FROM_COLLECTION(noTimedSpawn, collection, L"no_timed_spawn", true);
-		LDF_GET_VAL_FROM_COLLECTION(respawnTime, collection, L"respawn", CacheWorldConfig::GetDefaultRespawnTime());
-		LDF_GET_VAL_FROM_COLLECTION(respawnVolume, collection, L"respawnVol", false);
-		LDF_GET_VAL_FROM_COLLECTION(respawnVolumeName, collection, L"respawnVolName", L"");
+		LDF_GET_VAL_FROM_COLLECTION(maxToSpawn, collection, u"max_to_spawn", -1);
+		LDF_GET_VAL_FROM_COLLECTION(noAutoSpawn, collection, u"no_auto_spawn", false);
+		LDF_GET_VAL_FROM_COLLECTION(noTimedSpawn, collection, u"no_timed_spawn", true);
+		LDF_GET_VAL_FROM_COLLECTION(respawnTime, collection, u"respawn", CacheWorldConfig::GetDefaultRespawnTime());
+		LDF_GET_VAL_FROM_COLLECTION(respawnVolume, collection, u"respawnVol", false);
+		LDF_GET_VAL_FROM_COLLECTION(respawnVolumeName, collection, u"respawnVolName", u"");
 
-		std::wstring wStrPos, wStrRot;
-		LDF_GET_VAL_FROM_COLLECTION(wStrPos, collection, L"rspPos", L"NULL");
-		std::vector<std::wstring> vecPos = StringUtils::splitWString(wStrPos, 0x001f);
-		if(wStrPos != L"NULL")
-			respawnPosition = DataTypes::Vector3(std::stof(vecPos.at(0)), std::stof(vecPos.at(1)), std::stof(vecPos.at(2)));
+		std::u16string wStrPos, wStrRot;
+		LDF_GET_VAL_FROM_COLLECTION(wStrPos, collection, u"rspPos", u"NULL");
+		std::vector<std::u16string> vecPos = StringUtils::splitWString(wStrPos, 0x001f);
+		if(wStrPos != u"NULL")
+			respawnPosition = DataTypes::Vector3(std::stof(StringUtils::to_string(vecPos.at(0))), std::stof(StringUtils::to_string(vecPos.at(1))), std::stof(StringUtils::to_string(vecPos.at(2))));
 
-		LDF_GET_VAL_FROM_COLLECTION(wStrRot, collection, L"rspRot", L"NULL");
-		std::vector<std::wstring> vecRot = StringUtils::splitWString(wStrRot, 0x001f);
-		if(wStrRot != L"NULL")
-			respawnRotation = DataTypes::Quaternion(std::stof(vecRot.at(0)), std::stof(vecRot.at(1)), std::stof(vecRot.at(2)), std::stof(vecRot.at(3)));
+		LDF_GET_VAL_FROM_COLLECTION(wStrRot, collection, u"rspRot", u"NULL");
+		std::vector<std::u16string> vecRot = StringUtils::splitWString(wStrRot, 0x001f);
+		if (wStrRot != u"NULL")
+			respawnRotation = DataTypes::Quaternion(std::stof(StringUtils::to_string(vecRot.at(0))), std::stof(StringUtils::to_string(vecRot.at(1))), std::stof(StringUtils::to_string(vecRot.at(2))), std::stof(StringUtils::to_string(vecRot.at(3))));
 
-		LDF_GET_VAL_FROM_COLLECTION(spawnerActiveOnLoad, collection, L"spawner_active_on_load", true);
-		LDF_GET_VAL_FROM_COLLECTION(spawnTemplate, collection, L"spawntemplate", -1);
+		LDF_GET_VAL_FROM_COLLECTION(spawnerActiveOnLoad, collection, u"spawner_active_on_load", true);
+		LDF_GET_VAL_FROM_COLLECTION(spawnTemplate, collection, u"spawntemplate", -1);
 	}
 
 	void SetLUZPath() {

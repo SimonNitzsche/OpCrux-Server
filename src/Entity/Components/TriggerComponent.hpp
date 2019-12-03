@@ -21,7 +21,6 @@ public:
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-		return;
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION && trigger.enabled) {
 			factory->Write(true);
 			factory->Write<std::int32_t>(trigger.id);

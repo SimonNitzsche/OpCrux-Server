@@ -13,6 +13,8 @@ private:
 	bool _dirtyPart2 = true;
 
 	
+	enum class WorldTransitionState : std::uint8_t {IN_WORLD, ENTERING_WORLD, LEAVING_WORLD} worldTransitionState = WorldTransitionState::ENTERING_WORLD;
+
 
 public:
 	SystemAddress clientAddress = UNASSIGNED_SYSTEM_ADDRESS;
@@ -46,10 +48,10 @@ public:
 		factory->Write(false);
 
 		/* Part 2 Serialization */
-		ENABLE_FLAG_ON_CONSTRUCTION(_dirtyPart2);
+		// ENABLE_FLAG_ON_CONSTRUCTION(_dirtyPart2);
 		factory->Write(_dirtyPart2);
 		if (_dirtyPart2) {
-			factory->Write(charInfo.uLevel);
+			factory->Write<std::uint32_t>(charInfo.uLevel);
 			_dirtyPart2 = false;
 		}
 
@@ -86,11 +88,15 @@ public:
 			for (int i = 0; i < 27; ++i)
 				factory->Write<std::uint64_t>(0);
 
-			// Invisible flag
-			factory->Write(false); // ???, makes player invisible
+			// World transition state
+			factory->Write<bool>(static_cast<std::uint8_t>(worldTransitionState) > 0);
+			factory->Write<bool>(static_cast<std::uint8_t>(worldTransitionState) != 2);
 
-			// TODO: Rocket Info
-			factory->Write(false);
+			if (worldTransitionState == WorldTransitionState::ENTERING_WORLD) {
+				// TODO: Rocket Info
+				std::u16string rocketBuild = u""; //u"1:9746;1:9747;1:9748;";
+				StringUtils::writeWStringToBitStream<std::uint16_t>(factory, rocketBuild);
+			}
 		}
 
 		// TODO: Additional flags

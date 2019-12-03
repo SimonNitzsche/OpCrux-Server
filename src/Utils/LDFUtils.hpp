@@ -13,7 +13,7 @@
 
 class LDFUtils {
 public:
-	static inline LDFEntry MakeLDFEntryFromWStringData(std::wstring key, Enums::LDFType type, std::wstring val) {
+	static inline LDFEntry MakeLDFEntryFromWStringData(std::u16string key, Enums::LDFType type, std::u16string val) {
 		LDFEntry e = LDFEntry();
 		switch (type) {
 		case Enums::LDFType::WSTRING: {
@@ -21,35 +21,35 @@ public:
 			break;
 		}
 		case Enums::LDFType::S32: {
-			e = LDFEntry(key, (std::int32_t)std::stoi(val));
+			e = LDFEntry(key, (std::int32_t)std::stoi(StringUtils::to_string(val)));
 			break;
 		}
 		case Enums::LDFType::FLOAT: {
-			e = LDFEntry(key, std::stof(val));
+			e = LDFEntry(key, std::stof(StringUtils::to_string(val)));
 			break;
 		}
 		case Enums::LDFType::DOUBLE: {
-			e = LDFEntry(key, std::stod(val));
+			e = LDFEntry(key, std::stod(StringUtils::to_string(val)));
 			break;
 		}
 		case Enums::LDFType::U32: {
-			e = LDFEntry(key, (std::uint32_t)std::stoi(val));
+			e = LDFEntry(key, (std::uint32_t)std::stoi(StringUtils::to_string(val)));
 			break;
 		}
 		case Enums::LDFType::BOOLEAN: {
-			e = LDFEntry(key, val == L"1");
+			e = LDFEntry(key, val == u"1");
 			break;
 		}
 		case Enums::LDFType::S64: {
-			e = LDFEntry(key, (std::int64_t)std::stoll(val));
+			e = LDFEntry(key, (std::int64_t)std::stoll(StringUtils::to_string(val)));
 			break;
 		}
 		case Enums::LDFType::LWOOBJID: {
-			e = LDFEntry(key, (DataTypes::LWOOBJID)std::stoll(val));
+			e = LDFEntry(key, (DataTypes::LWOOBJID)std::stoll(StringUtils::to_string(val)));
 			break;
 		}
 		case Enums::LDFType::STRING: {
-			std::wstring dummyW = val;
+			std::u16string dummyW = val;
 			std::string dummyS = std::string(dummyW.begin(), dummyW.end());
 			e = LDFEntry(key, dummyS);
 			break;
@@ -60,25 +60,25 @@ public:
 		}
 		return e;
 	}
-	static LDFCollection ParseCollectionFromWString(std::wstring input) {
+	static LDFCollection ParseCollectionFromWString(std::u16string input) {
 		LDFCollection output;
-		std::vector<std::wstring> entries = StringUtils::splitWString(input,0x000a);
+		std::vector<std::u16string> entries = StringUtils::splitWString(input,0x000a);
 		for (int i = 0; i < entries.size(); ++i) {
-			std::wstring entry = entries.at(i);
-			std::vector<std::wstring> key_typeVal = StringUtils::splitWString(entry,0x003d);
-			std::vector<std::wstring> type_val = StringUtils::splitWString(key_typeVal.at(1), 0x003a);
+			std::u16string entry = entries.at(i);
+			std::vector<std::u16string> key_typeVal = StringUtils::splitWString(entry,0x003d);
+			std::vector<std::u16string> type_val = StringUtils::splitWString(key_typeVal.at(1), 0x003a);
 
-			Enums::LDFType type = (Enums::LDFType)std::stoi(type_val.at(0));
+			Enums::LDFType type = (Enums::LDFType)std::stoi(StringUtils::to_string(type_val.at(0)));
 
 			LDFEntry e;
 
 			
-			if (type_val.size() == 1) type_val.push_back(L"");
+			if (type_val.size() == 1) type_val.push_back(u"");
 
-			std::wstring valFinal = type_val.at(1);
+			std::u16string valFinal = type_val.at(1);
 			// Fuse value splited by ":"
 			for (int j = 2; j < type_val.size(); ++j) {
-				valFinal += L":" + type_val.at(j);
+				valFinal += u":" + type_val.at(j);
 			}
 
 			e = MakeLDFEntryFromWStringData(key_typeVal.at(0), type, valFinal);
@@ -87,22 +87,22 @@ public:
 		}
 		return output;
 	}
-	static LDFEntry ReadEntryFromLUZWString(std::wstring key, std::wstring val) {
-		std::vector<std::wstring> type_val = StringUtils::splitWString(val, 0x003a);
-		bool typeDefined = val.find(0x003a) != std::wstring::npos;
-		Enums::LDFType type = typeDefined ? (Enums::LDFType)std::stoi(type_val.at(0)) : Enums::LDFType::WSTRING;
+	static LDFEntry ReadEntryFromLUZWString(std::u16string key, std::u16string val) {
+		std::vector<std::u16string> type_val = StringUtils::splitWString(val, 0x003a);
+		bool typeDefined = val.find(0x003a) != std::u16string::npos;
+		Enums::LDFType type = typeDefined ? (Enums::LDFType)std::stoi(StringUtils::to_string(type_val.at(0))) : Enums::LDFType::WSTRING;
 		if (typeDefined && type_val.size() == 1) {
 			if (type == Enums::LDFType::STRING || type == Enums::LDFType::WSTRING)
-				type_val.push_back(L"");
+				type_val.push_back(u"");
 			else
-				type_val.push_back(L"-1");
+				type_val.push_back(u"-1");
 		}
 
-		std::wstring valFinal = type_val.at(1);
+		std::u16string valFinal = type_val.at(1);
 		if (typeDefined) {
 			// Fuse value splited by ":"
 			for (int j = 2; j < type_val.size(); ++j) {
-				valFinal += L":" + type_val.at(j);
+				valFinal += u":" + type_val.at(j);
 			}
 		}
 

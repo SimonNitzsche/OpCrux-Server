@@ -222,10 +222,10 @@ public:
 		//getchar();
 	}
 
-	static bool IsLoginCorrect(wchar_t * username, wchar_t * password) {
-		std::wstring w_username(username);
+	static bool IsLoginCorrect(char16_t * username, char16_t * password) {
+		std::u16string w_username(username);
 		std::string s_username(w_username.begin(), w_username.end());
-		std::wstring w_password(password);
+		std::u16string w_password(password);
 		std::string s_password(w_password.begin(), w_password.end());
 
 		std::string h_password = sha512(s_password);

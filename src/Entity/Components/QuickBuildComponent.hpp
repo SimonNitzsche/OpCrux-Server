@@ -71,14 +71,13 @@ public:
 		startsQBActivator=7:0
 		tmeSmsh=3:10
 		vlntDth=7:1
-
 		*/
 
-		std::wstring wRebuildPos;
-		LDF_GET_VAL_FROM_COLLECTION(wRebuildPos, collection, L"rspPos", L"NULL");
-		std::vector<std::wstring> vecPos = StringUtils::splitWString(wRebuildPos, 0x001f);
-		if (wRebuildPos != L"NULL")
-			rebuild_activators = DataTypes::Vector3(std::stof(vecPos.at(0)), std::stof(vecPos.at(1)), std::stof(vecPos.at(2)));
+		std::u16string wRebuildPos;
+		LDF_GET_VAL_FROM_COLLECTION(wRebuildPos, collection, u"rspPos", u"NULL");
+		std::vector<std::u16string> vecPos = StringUtils::splitWString(wRebuildPos, 0x001f);
+		if (wRebuildPos != u"NULL")
+			rebuild_activators = DataTypes::Vector3(std::stof(StringUtils::to_string(vecPos.at(0))), std::stof(StringUtils::to_string(vecPos.at(1))), std::stof(StringUtils::to_string(vecPos.at(2))));
 
 
 		// Make Activator

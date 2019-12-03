@@ -6,7 +6,7 @@ namespace GM {
 	struct Die : GMBase {
 		bool bClientDeath = false;
 		bool bSpawnLoot = true;
-		std::wstring deathType=L"";
+		std::u16string deathType=u"";
 		float directionRelative_AngleXZ=0;
 		float directionRelative_AngleY=0;
 		float directionRelative_Force=0;

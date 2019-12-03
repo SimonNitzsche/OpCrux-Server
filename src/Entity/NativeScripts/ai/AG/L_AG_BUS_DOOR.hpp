@@ -22,8 +22,8 @@ class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR : public NativeScript {
 	std::string soundName = "{9a24f1fa-3177-4745-a2df-fbd996d6e1e3}";
 
 	void onStartup(Entity::GameObject * self) {
-		self->SetVar(L"counter", 0);
-		self->SetVar(L"outerCounter", 0);
+		self->SetVar(u"counter", 0);
+		self->SetVar(u"outerCounter", 0);
 		self->SetProximityRadius("busDoor", ProxRadius);
 		self->SetProximityRadius("busDoorOuter", OuterProxRadius);
 		//self:StopPathing()
@@ -56,8 +56,8 @@ class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR : public NativeScript {
 
 		if (msg.objId->GetLOT() != 1) return;
 
-		int counter = self->GetVar(L"counter");
-		int outerCounter = self->GetVar(L"outerCounter");
+		int counter = self->GetVar(u"counter");
+		int outerCounter = self->GetVar(u"outerCounter");
 
 		if (msg.status == "ENTER") {
 			if (msg.name == "busDoor") {
@@ -92,14 +92,14 @@ class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR : public NativeScript {
 		//	
 		// print("proximity update: status="+msg.status+", name="+msg.name+", counter="+std::to_string(counter)+", outerCounter="+std::to_string(outerCounter));
 		//    
-		self->SetVar(L"counter", counter);
-		self->SetVar(L"outerCounter", outerCounter);
+		self->SetVar(u"counter", counter);
+		self->SetVar(u"outerCounter", outerCounter);
 	}
 
 	void onArrivedAtDesiredWaypoint(Entity::GameObject * self, GM::ArrivedAtDesiredWaypoint msg) {
 		if (msg.iPathIndex == 1) {
 			// self:PlayFXEffect{ name  = "busDust", effectType = "create"} -- effectID = 642,
-			{GM::PlayFXEffect nmsg; nmsg.name = "busDust"; nmsg.effectType = L"create"; GameMessages::Broadcast(self->GetZoneInstance(), self, nmsg); }
+			{GM::PlayFXEffect nmsg; nmsg.name = "busDust"; nmsg.effectType = u"create"; GameMessages::Broadcast(self->GetZoneInstance(), self, nmsg); }
 			// print('play effect busDoor');
 		}
 	}

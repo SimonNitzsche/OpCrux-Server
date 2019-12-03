@@ -4,7 +4,7 @@
 
 namespace GM {
 	struct FireEventServerSide : GMBase {
-		std::wstring args = L"";
+		std::u16string args = u"";
 		std::int32_t param1 = -1;
 		std::int32_t param2 = -1;
 		std::int32_t param3 = -1;

@@ -22,7 +22,7 @@ namespace PacketFactory {
 
 	namespace Auth {
 
-		inline void doLoginResponse(RakPeerInterface * rakServer, SystemAddress client, ELoginReturnCode reason, std::wstring customErrorMessage=L"") {
+		inline void doLoginResponse(RakPeerInterface * rakServer, SystemAddress client, ELoginReturnCode reason, std::u16string customErrorMessage=u"") {
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead;
@@ -47,7 +47,7 @@ namespace PacketFactory {
 
 			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip);
 
-			StringUtils::writeBufferedWStringToBitStream(&returnBS, L"fad1892aa57db9e0cf74d45445f71599", 33);
+			StringUtils::writeBufferedWStringToBitStream(&returnBS, u"fad1892aa57db9e0cf74d45445f71599", 33);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			returnBS.Write<uint16_t>(2001);

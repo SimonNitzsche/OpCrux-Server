@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 #include <memory>
+#include <cmath>
 
 namespace GameCache::Interface::FDB {
 
@@ -24,24 +25,7 @@ namespace GameCache::Interface::FDB {
 	};
 
 	class RowData;
-
-	class FieldValue {
-	private:
-		Connection * conn;
-		DATA_TYPE dataType = DATA_TYPE::INVALID_POINTER;
-		int32_t * data;
-		static const std::uint64_t NULL_DATA = 0ULL;
-	public:
-		FieldValue(Connection * connection, DATA_TYPE type, int32_t * where) : conn(connection), dataType(type), data(where) {}
-		Connection * getConnection() { return conn; }
-		unsigned char * getMemoryLocation() { auto returnData = reinterpret_cast<unsigned char*>(data); if (returnData != nullptr || dataType != DATA_TYPE::NOTHING) return returnData; return const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(&NULL_DATA)); }
-
-		std::string ToString();
-
-		operator std::string() {
-			return ToString();
-		}
-	};
+	class FieldValue;
 
 	class PointerString {
 	private:
@@ -57,6 +41,64 @@ namespace GameCache::Interface::FDB {
 
 		operator std::string() const {
 			return std::string(reinterpret_cast<const char*>(memlocation), length);
+		}
+
+		operator std::string_view() const {
+			return std::string_view(reinterpret_cast<const char*>(memlocation), length);
+		}
+	};
+
+	class FieldValue {
+	private:
+		Connection * conn;
+		DATA_TYPE dataType = DATA_TYPE::INVALID_POINTER;
+		int32_t * data;
+		static const std::uint64_t NULL_DATA = 0ULL;
+	public:
+		FieldValue(Connection * connection, DATA_TYPE type, int32_t * where) : conn(connection), dataType(type), data(where) {}
+		Connection * getConnection() { return conn; }
+		unsigned char * getMemoryLocation() { auto returnData = reinterpret_cast<unsigned char*>(data); if (returnData != nullptr || dataType != DATA_TYPE::NOTHING) return returnData; return const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(&NULL_DATA)); }
+
+		std::string ToString();
+
+		inline bool isNull() {
+			return dataType == DATA_TYPE::NOTHING;
+		}
+
+		operator std::string() {
+			return ToString();
+		}
+
+		operator PointerString() {
+			if (isNull()) {
+				return PointerString(conn, nullptr);
+			}
+			return PointerString(conn, getMemoryLocation());
+		}
+
+		operator std::int32_t() {
+			if (isNull()) {
+				return 0;
+			}
+			return *reinterpret_cast<std::int32_t*>(getMemoryLocation());
+		}
+
+		operator std::float_t() {
+			if (isNull()) {
+				return 0;
+			}
+			return *reinterpret_cast<std::float_t*>(getMemoryLocation());
+		}
+
+		operator bool() {
+			return !isNull() && *reinterpret_cast<std::int32_t*>(getMemoryLocation()) == 1;
+		}
+
+		operator std::int64_t() {
+			if (isNull()) {
+				return 0;
+			}
+			return *reinterpret_cast<std::int64_t*>(getMemoryLocation());
 		}
 	};
 
@@ -237,5 +279,9 @@ namespace GameCache::Interface::FDB {
 		~Connection() {}
 	};
 }
+
+
+#define CRUX_CACHE_ADD_COLUMN_GETTER(index, type, name) inline type Get##name(FDB::RowInfo row) {return row[index];}inline type Get##name(std::int32_t id) {return Get##name(getRow(id));}\
+
 
 #endif // !__GAMECACHE__INTERFACE__FASTDATABASE_HPP__

@@ -25,6 +25,8 @@ include_directories(tests)
 
 add_executable(OpCrux_Server
 	src/Common/CrossPlatform.hpp
+	src/Database/Models/OPCRUX_AD/AccountsModel.hpp
+	src/Database/Models/DBModel.hpp
 	src/Database/Database.hpp
 	src/Database/DB_Server.hpp
 	src/DataTypes/AMF3.hpp
@@ -54,6 +56,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/MovingPlatformComponent.hpp
 	src/Entity/Components/PhantomPhysicsComponent.hpp
+	src/Entity/Components/PlatformBoundaryComponent.hpp
 	src/Entity/Components/QuickBuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
@@ -132,6 +135,7 @@ add_executable(OpCrux_Server
 	src/GameCache/ItemComponent.hpp
 	src/GameCache/LootMatrix.hpp
 	src/GameCache/LootMatrixIndex.hpp
+	src/GameCache/Missions.hpp
 	src/GameCache/MovementAIComponent.hpp
 	src/GameCache/MovingPlatforms.hpp
 	src/GameCache/Objects.hpp

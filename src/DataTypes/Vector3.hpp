@@ -17,7 +17,11 @@ namespace DataTypes {
 	class Vector3 {
 		public:
 			// Axis, x, y and z.
-			float x, y, z;
+#pragma pack(push, 1)
+			float x = 0.f;
+			float y = 0.f;
+			float z=0.f;
+#pragma pack(pop)
 
 			/*
 				Returns the sqrMagnitude of this Vector.

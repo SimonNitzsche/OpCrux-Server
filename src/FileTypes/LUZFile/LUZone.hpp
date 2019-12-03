@@ -52,7 +52,7 @@ namespace FileTypes::LUZ {
 	struct ZoneWString {
 		public:
 			uint32_t length = 0;
-			wchar_t * data = nullptr;
+			char16_t * data = nullptr;
 
 			/*
 				Reads the Zone WString.
@@ -63,17 +63,17 @@ namespace FileTypes::LUZ {
 				length = *reinterpret_cast<uint8_t*>(offset);
 
 				// Get the Data.
-				data = reinterpret_cast<wchar_t*>(offset + sizeof(T));
+				data = reinterpret_cast<char16_t*>(offset + sizeof(T));
 
 				// Return the length.
 				return reinterpret_cast<uint8_t*>(data + length);
 			};
 
 			/*
-				Returns a std::wstring of the data.
+				Returns a std::u16string of the data.
 			*/
-			std::wstring ToString() {
-				return std::wstring(data, length);
+			std::u16string ToString() {
+				return std::u16string(data, length);
 			};
 	};
 
@@ -371,7 +371,7 @@ namespace FileTypes::LUZ {
 			std::unordered_map<std::uint32_t, ZoneTriggerFile> triggers;
 			TerrainInfo terrainInfo;
 			std::vector<SceneTransition> sceneTransitions;
-			std::unordered_map<std::wstring, LUZonePathBase*> paths;
+			std::unordered_map<std::u16string, LUZonePathBase*> paths;
 		public:
 			// Constructs a new LUZone, with the path to the filename.
 			LUZone(const std::string& filename);

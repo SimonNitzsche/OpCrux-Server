@@ -28,10 +28,12 @@ namespace DataTypes {
 	struct Quaternion {
 
 		// Quaternion use 4 axis: x, y, z and w.
-		float x = 0;
-		float y = 0;
-		float z = 0;
-		float w = 1;
+#pragma pack(push, 1)
+		float x = 0.f;
+		float y = 0.f;
+		float z = 0.f;
+		float w = 1.f;
+#pragma pack(pop)
 
 		/*
 			Constructs an empty Quaternion.

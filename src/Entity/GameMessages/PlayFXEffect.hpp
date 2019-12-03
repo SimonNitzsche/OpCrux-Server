@@ -10,7 +10,7 @@ namespace GM {
 		}
 
 		std::int32_t effectID = -1;
-		std::wstring effectType = L"";
+		std::u16string effectType = u"";
 		float fScale = 1.0f;
 		std::string name;
 		float priority = 1.0f;

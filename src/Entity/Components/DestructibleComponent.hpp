@@ -76,7 +76,7 @@ public:
 
 	void PopulateFromLDF(LDFCollection * collection) {
 
-		LDF_GET_VAL_FROM_COLLECTION(statsComponent->attributes.isSmashable, collection, L"is_smashable", true);
+		LDF_GET_VAL_FROM_COLLECTION(statsComponent->attributes.isSmashable, collection, u"is_smashable", true);
 		
 	}
 };

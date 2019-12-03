@@ -32,7 +32,7 @@ public:
 struct SceneWString {
 public:
 	uint32_t * length = 0;
-	wchar_t * data = nullptr;
+	char16_t * data = nullptr;
 
 	/*
 		Reads the Zone WString.
@@ -42,17 +42,17 @@ public:
 		length = reinterpret_cast<uint32_t*>(offset);
 
 		// Get the Data.
-		data = reinterpret_cast<wchar_t*>(offset + 4);
+		data = reinterpret_cast<char16_t*>(offset + 4);
 
 		// Return the length.
 		return reinterpret_cast<char*>(data + *length *2);
 	};
 
 	/*
-		Returns a std::wstring of the data.
+		Returns a std::u16string of the data.
 	*/
-	std::wstring ToString() {
-		return std::wstring(data, *length);
+	std::u16string ToString() {
+		return std::u16string(data, *length);
 	};
 };
 

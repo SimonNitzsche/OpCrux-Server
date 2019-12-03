@@ -11,7 +11,7 @@ class VendorComponent : public IEntityComponent {
 private:
 	bool _isDirtyFlag = true;
 
-	bool unknownBitA = true;
+	bool isActive = true;
 	bool unknownBitB = false;
 
 
@@ -26,13 +26,13 @@ public:
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlag);
+		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) _isDirtyFlag = true;
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
-			_isDirtyFlag = false;
-			factory->Write(unknownBitA);
+			factory->Write(isActive);
 			factory->Write(unknownBitB);
 		}
+		_isDirtyFlag = false;
 	}
 
 	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {

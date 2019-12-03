@@ -45,7 +45,7 @@ public:
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {
-		LDF_GET_VAL_FROM_COLLECTION(collectibleID, collection, L"collectible_id", -1);
+		LDF_GET_VAL_FROM_COLLECTION(collectibleID, collection, u"collectible_id", -1);
 	}
 
 };

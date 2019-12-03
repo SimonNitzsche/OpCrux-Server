@@ -3,6 +3,11 @@
 #include "Utils/ServerInfo.hpp"
 #include "Server/WorldServer.hpp"
 
+
+#include <locale>
+#include <string>
+#include <codecvt>
+
 //using namespace Entity::Components::Interface;
 #define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T) {COMP_T * comp = this->GetComponent<COMP_T>(); if(comp != nullptr) { /*Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"...");*/ comp->Serialize(factory, packetType);}}
 #define COMPONENT_ONADD_SWITCH_CASE(COMP_T) {\
@@ -41,6 +46,7 @@
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/MovingPlatformComponent.hpp"
 #include "Entity/Components/PhantomPhysicsComponent.hpp"
+#include "Entity/Components/PlatformBoundaryComponent.hpp"
 #include "Entity/Components/QuickBuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
@@ -194,6 +200,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id) {
 		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PlatformBoundaryComponent);
 
 	default: {
 		Logger::log("WRLD", "Couldn't add component #" + std::to_string(id) + " to GameObject!", LogType::UNEXPECTED);
@@ -294,8 +301,8 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 			// TODO! -> compressed LDF
 		}
 
-		factory->Write(false);
-		//factory->Write(this->GetComponent<TriggerComponent>() != nullptr);
+		//factory->Write(false);
+		factory->Write(this->GetComponent<TriggerComponent>() != nullptr);
 
 		factory->Write(spawner != nullptr);
 		if (spawner != nullptr) { factory->Write(spawner->objectID); }
@@ -305,8 +312,8 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 		//if (spawner_node != 0xFFFFFFFF) { factory->Write(spawner_node); }
 
 		// Object Scale
-		factory->Write(this->scale != 1.0f);
-		if (this->scale != 1.0f)
+		factory->Write(true);
+		if (true)
 			factory->Write(this->scale);
 		
 		// object world state
@@ -345,7 +352,7 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 			ASSERT_MEMBER_VALIDATION(factory, std::int32_t, _valMem_01, _valMem_01 == LOT);
 			ASSERT_MEMBER_VALIDATION(factory, std::uint8_t, _valMem_02, _valMem_02 == name.size());
 			for (int _val_I = 0; _val_I < name.size(); ++_val_I)
-				ASSERT_MEMBER_VALIDATION(factory, wchar_t, _valMem_02_n, _valMem_02_n == name.at(_val_I));
+				ASSERT_MEMBER_VALIDATION(factory, char16_t, _valMem_02_n, _valMem_02_n == name.at(_val_I));
 			ASSERT_MEMBER_VALIDATION(factory, std::uint32_t, _valMem_03, _valMem_03 == _localTimeSinceOnServer);
 			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_04, _valMem_04 == false); // compressed stuff
 			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_05, _valMem_05 == false); // trigger
@@ -382,7 +389,7 @@ void Entity::GameObject::SetSpawner(GameObject * spawner, std::uint32_t spawnerN
 	this->spawner_node = spawnerNodeID;
 }
 
-bool Entity::GameObject::IsWithinGroup(std::wstring groupName) {
+bool Entity::GameObject::IsWithinGroup(std::u16string groupName) {
 	for (auto g : this->groups) {
 		if (g == groupName)
 			return true;
@@ -395,29 +402,29 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	configData = *collection;
 
 	// TODO: Populate base data
-	std::wstring groupWstr;
-	LDF_GET_VAL_FROM_COLLECTION(groupWstr, collection, L"groupID", L"");
-	this->groups = StringUtils::splitWString(groupWstr, L';');
+	std::u16string groupWstr;
+	LDF_GET_VAL_FROM_COLLECTION(groupWstr, collection, u"groupID", u"");
+	this->groups = StringUtils::splitWString(groupWstr, u';');
 
 	if (this->LOT != 176) {
 		// Add Componets custom
 		/* Script Component */ {
-			std::wstring customScript = L"";
-			LDF_GET_VAL_FROM_COLLECTION(customScript, collection, L"custom_script_server", L"");
-			if (customScript != L"") {
+			std::u16string customScript = u"";
+			LDF_GET_VAL_FROM_COLLECTION(customScript, collection, u"custom_script_server", u"");
+			if (customScript != u"") {
 				this->AddComponent<ScriptComponent>();
 			}
 		}
 
 		/* Trigger Component */
-		std::wstring wstrTriggerID = L"";
-		LDF_GET_VAL_FROM_COLLECTION(wstrTriggerID, collection, L"trigger_id", L"NULL");
-		if (wstrTriggerID != L"NULL") {
+		std::u16string wstrTriggerID = u"";
+		LDF_GET_VAL_FROM_COLLECTION(wstrTriggerID, collection, u"trigger_id", u"NULL");
+		if (wstrTriggerID != u"NULL") {
 
 			// Seperate data
-			std::vector<std::wstring> spltTriggerID = StringUtils::splitWString(wstrTriggerID, L':');
-			int triggerSceneID = std::stoi(spltTriggerID.at(0));
-			int triggerID = std::stoi(spltTriggerID.at(1));
+			std::vector<std::u16string> spltTriggerID = StringUtils::splitWString(wstrTriggerID, L':');
+			int triggerSceneID = std::stoi(StringUtils::to_string(spltTriggerID.at(0)));
+			int triggerID = std::stoi(StringUtils::to_string(spltTriggerID.at(1)));
 
 			// Get zone file
 			FileTypes::LUZ::LUZone * zone = Instance->luZone;

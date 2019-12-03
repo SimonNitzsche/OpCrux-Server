@@ -48,7 +48,7 @@ public:
 			obj.config.Read(reinterpret_cast<std::uint8_t*>(data + off + 32));
 			off += 2 * (*obj.config.length) + 36;
 
-			std::wstring test = obj.config.ToString();
+			std::u16string test = obj.config.ToString();
 
 			if (*version >= 7) {
 				if (*reinterpret_cast<std::uint32_t*>(data + off) != 0x00000000) {

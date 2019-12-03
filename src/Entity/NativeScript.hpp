@@ -6,9 +6,9 @@
 #include "Entity/Components/ScriptComponent.hpp"
 
 struct TimerDone {
-	std::wstring name;
+	std::u16string name;
 
-	TimerDone(std::wstring name) : name(name) {}
+	TimerDone(std::u16string name) : name(name) {}
 };
 
 class NativeScript {

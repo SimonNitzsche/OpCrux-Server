@@ -20,7 +20,7 @@ namespace GM {
 			dieMsg.bClientDeath = true;
 			dieMsg.killerID = target->GetObjectID();
 			dieMsg.lootOwnerID = target->GetObjectID();
-			dieMsg.deathType = L"deaded";
+			dieMsg.deathType = u"deaded";
 
 			GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), dieMsg);
 		}

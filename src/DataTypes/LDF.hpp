@@ -13,7 +13,7 @@ class LDFEntry;
 
 // Used to store a set of LDFEntries, so we can change it
 // if needed without digging up delcarations in all classes.
-typedef std::unordered_map<std::wstring, LDFEntry> LDFCollection;
+typedef std::unordered_map<std::u16string, LDFEntry> LDFCollection;
 
 namespace Enums {
 	enum LDFType : std::uint8_t {
@@ -39,7 +39,7 @@ namespace Enums {
 
 class LDFEntry {
 public:
-	std::wstring key;
+	std::u16string key;
 	Enums::LDFType type;
 private:
 	std::string data;
@@ -81,8 +81,8 @@ public:
 		}
 		case Enums::LDFType::WSTRING: {
 			std::uint32_t size = *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
-			wchar_t * wcp = reinterpret_cast<wchar_t*>(const_cast<char*>(data.c_str()) + 4);
-			std::wstring buffer(wcp, size);
+			char16_t * wcp = reinterpret_cast<char16_t*>(const_cast<char*>(data.c_str()) + 4);
+			std::u16string buffer(wcp, size);
 			bs->Write(size);
 			StringUtils::writeBufferedWStringToBitStream(bs, buffer, buffer.size());
 			break;
@@ -90,7 +90,7 @@ public:
 		}
 	}
 public:
-	LDFEntry(std::wstring inputKey, std::wstring input) {
+	LDFEntry(std::u16string inputKey, std::u16string input) {
 		key = inputKey;
 		type = Enums::LDFType::WSTRING;
 		data.resize(input.size() * 2 + 4);
@@ -99,16 +99,16 @@ public:
 		memcpy(const_cast<char*>(data.c_str())+4, input.c_str(), input.size() * 2);
 	}
 
-	LDFEntry(std::wstring inputKey, const wchar_t input[]) : LDFEntry(inputKey, std::wstring(input)) {}
+	LDFEntry(std::u16string inputKey, const char16_t input[]) : LDFEntry(inputKey, std::u16string(input)) {}
 
-	operator std::wstring() const {
+	operator std::u16string() const {
 		if (type != Enums::LDFType::WSTRING) throw new std::runtime_error("Invalid LDF type.");
 		std::uint32_t * size = reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
-		//return std::wstring(reinterpret_cast<wchar_t*>(data + 4), reinterpret_cast<wchar_t*>(data + 4 + (*size *2) -1));
-		return std::wstring(reinterpret_cast<wchar_t*>(const_cast<char*>(data.c_str()) + 4), *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str())));
+		//return std::u16string(reinterpret_cast<char16_t*>(data + 4), reinterpret_cast<char16_t*>(data + 4 + (*size *2) -1));
+		return std::u16string(reinterpret_cast<char16_t*>(const_cast<char*>(data.c_str()) + 4), *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str())));
 	}
 
-	LDFEntry(std::wstring inputKey, std::int32_t input) {
+	LDFEntry(std::u16string inputKey, std::int32_t input) {
 		key = inputKey;	
 		type = Enums::LDFType::S32;
 		data.resize(4);
@@ -120,7 +120,7 @@ public:
 		return *reinterpret_cast<std::int32_t*>(const_cast<char*>(data.c_str()));
 	}
 
-	LDFEntry(std::wstring inputKey, std::float_t input) {
+	LDFEntry(std::u16string inputKey, std::float_t input) {
 		key = inputKey;	
 		type = Enums::LDFType::FLOAT; data.resize(4);
 		memcpy(const_cast<char*>(data.c_str()), &input, 4);
@@ -132,7 +132,7 @@ public:
 		return *reinterpret_cast<std::float_t*>(const_cast<char*>(data.c_str()));
 	}
 
-	LDFEntry(std::wstring inputKey, std::double_t input) {
+	LDFEntry(std::u16string inputKey, std::double_t input) {
 		key = inputKey;	
 		type = Enums::LDFType::DOUBLE;
 		data.resize(8);
@@ -144,7 +144,7 @@ public:
 		return *reinterpret_cast<std::double_t*>(const_cast<char*>(data.c_str()));
 	}
 
-	LDFEntry(std::wstring inputKey, std::uint32_t input) {
+	LDFEntry(std::u16string inputKey, std::uint32_t input) {
 		key = inputKey;	
 		type = Enums::LDFType::U32;
 		data.resize(4);
@@ -156,7 +156,7 @@ public:
 		return *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
 	}
 
-	LDFEntry(std::wstring inputKey, bool input) {
+	LDFEntry(std::u16string inputKey, bool input) {
 		key = inputKey;	
 		type = Enums::LDFType::BOOLEAN;
 		data.resize(1);
@@ -168,7 +168,7 @@ public:
 		return *data.c_str() != 0;
 	}
 
-	LDFEntry(std::wstring inputKey, std::int64_t input) {
+	LDFEntry(std::u16string inputKey, std::int64_t input) {
 		key = inputKey;	
 		type = Enums::LDFType::S64;
 		data.resize(8);
@@ -180,7 +180,7 @@ public:
 		return *reinterpret_cast<std::int64_t*>(const_cast<char*>(data.c_str()));
 	}
 
-	LDFEntry(std::wstring inputKey, DataTypes::LWOOBJID input) {
+	LDFEntry(std::u16string inputKey, DataTypes::LWOOBJID input) {
 		key = inputKey;	
 		type = Enums::LDFType::LWOOBJID;
 		data.resize(8);
@@ -192,7 +192,7 @@ public:
 		return *reinterpret_cast<DataTypes::LWOOBJID*>(const_cast<char*>(data.c_str()));
 	}
 
-	LDFEntry(std::wstring inputKey, std::string input) {
+	LDFEntry(std::u16string inputKey, std::string input) {
 		key = inputKey;	
 		type = Enums::LDFType::STRING;
 		std::uint32_t size = input.size();
@@ -201,7 +201,7 @@ public:
 		memcpy(const_cast<char*>(data.c_str()) + 4, const_cast<char*>(input.c_str()), input.size());
 	}
 
-	LDFEntry(std::wstring inputKey, const char input[]) : LDFEntry(inputKey, std::string(input)) {}
+	LDFEntry(std::u16string inputKey, const char input[]) : LDFEntry(inputKey, std::string(input)) {}
 
 	operator std::string() const {
 		if (type != Enums::LDFType::STRING) throw new std::runtime_error("Invalid LDF type.");

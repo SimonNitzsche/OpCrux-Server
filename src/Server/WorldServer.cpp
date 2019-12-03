@@ -111,6 +111,13 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		*luZone->zoneID = zone;
 	}
 
+	std::int32_t zoneControlLOT = CacheZoneTable::GetZoneControlTemplate(zone);
+	if (zoneControlLOT == 0) zoneControlLOT = 2365;
+	this->zoneControlObject = new Entity::GameObject(this, zoneControlLOT);
+	this->zoneControlObject->SetObjectID(0x3FFFFFFFFFFE);
+	objectsManager->RegisterObject(this->zoneControlObject);
+	this->zoneControlObject->Finish();
+
 	// TODO: Move this to somewhere else
 	for (auto scene : luZone->scenes) {
 		for (auto objT : scene.scene.objectsChunk.objects) {
@@ -265,8 +272,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 			switch (static_cast<EWorldPacketID>(packetHeader.packetID)) {
 			case EWorldPacketID::CLIENT_VALIDATION: {
-				std::wstring wClientName = StringUtils::readBufferedWStringFromBitStream(data);
-				std::wstring wClientKey = StringUtils::readBufferedWStringFromBitStream(data);
+				std::u16string wClientName = StringUtils::readBufferedWStringFromBitStream(data);
+				std::u16string wClientKey = StringUtils::readBufferedWStringFromBitStream(data);
 				std::string sClientFDBChecksum = StringUtils::readBufferedStringFromBitStream(data);
 				ClientSession csFactory;
 				csFactory.accountID = Database::GetAccountIDByClientName(std::string(wClientName.begin(), wClientName.end()));
@@ -284,7 +291,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
 
-				std::wstring customName = StringUtils::readBufferedWStringFromBitStream(data);
+				std::u16string customName = StringUtils::readBufferedWStringFromBitStream(data);
 				std::string s_customName(customName.begin(), customName.end());
 
 				unsigned long predef_0; data->Read(predef_0);
@@ -401,11 +408,13 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
 
-				playerObject->SetName(std::wstring(info.name.begin(), info.name.end()));
+				playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
 				
 				// Bypass disabling of player construction
 				// by missing components
 				playerObject->isSerializable = true;
+
+				objectsManager->RegisterObject(playerObject);
 
 				Logger::log("WRLD", "Create character packet");
 				PacketFactory::World::CreateCharacter(rakServer, clientSession, playerObject);
@@ -421,13 +430,12 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {
-					if (object_to_construct->isSerializable) {
+					if (object_to_construct->isSerializable && object_to_construct->GetComponent<CharacterComponent>() == nullptr /*&& object_to_construct->GetComponent<PetComponent>() == nullptr*/) {
 						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
 						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}
 
-				objectsManager->RegisterObject(playerObject);
 				objectsManager->Construct(playerObject);
 
 				//replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);
@@ -437,6 +445,13 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Server done loading");
 				PacketFactory::World::TestLoad(rakServer, clientSession);
+
+				for (auto object_to_construct : objectsManager->GetObjects()) {
+					if (object_to_construct->isSerializable && (object_to_construct->GetComponent<CharacterComponent>() != nullptr /*|| object_to_construct->GetComponent<PetComponent>() != nullptr*/)) {
+						Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
+					}
+				}
 
 				break;
 			}

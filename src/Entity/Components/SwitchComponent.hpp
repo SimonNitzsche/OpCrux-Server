@@ -26,6 +26,8 @@ public:
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		factory->Write(bToggled);
+		Logger::log("WRLD", "Setting switch " + std::to_string(owner->GetObjectID()) + " to " + (bToggled ? "activated" : "deactivated")+" with "+std::to_string(peopleOnIt)+" people on it.");
+		if (!bToggled) owner->SetDirty();
 	}
 
 	void OnCollisionPhantom(Entity::GameObject * other) {
@@ -58,17 +60,17 @@ public:
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {
-		LDF_GET_VAL_FROM_COLLECTION(is_hit_switch, collection, L"is_hit_switch", false);
-		LDF_GET_VAL_FROM_COLLECTION(is_pressure_switch, collection, L"is_pressure_switch", false);
-		LDF_GET_VAL_FROM_COLLECTION(is_timed_switch, collection, L"is_timed_switch", false);
-		LDF_GET_VAL_FROM_COLLECTION(switch_reset_time, collection, L"switch_reset_time", 0);
-		LDF_GET_VAL_FROM_COLLECTION(switch_users_max, collection, L"switch_users_max", 20);
-		LDF_GET_VAL_FROM_COLLECTION(switch_users_required, collection, L"switch_users_required", 1);
+		LDF_GET_VAL_FROM_COLLECTION(is_hit_switch, collection, u"is_hit_switch", false);
+		LDF_GET_VAL_FROM_COLLECTION(is_pressure_switch, collection, u"is_pressure_switch", false);
+		LDF_GET_VAL_FROM_COLLECTION(is_timed_switch, collection, u"is_timed_switch", false);
+		LDF_GET_VAL_FROM_COLLECTION(switch_reset_time, collection, u"switch_reset_time", 0);
+		LDF_GET_VAL_FROM_COLLECTION(switch_users_max, collection, u"switch_users_max", 20);
+		LDF_GET_VAL_FROM_COLLECTION(switch_users_required, collection, u"switch_users_required", 1);
 	}
 
 	void Update() {
 		if (!bToggled) return;
-		if (ServerInfo::uptime() > deactivateAt) Deactivate();
+		//if (ServerInfo::uptime() > deactivateAt) Deactivate();
 	}
 
 	void Activate() {

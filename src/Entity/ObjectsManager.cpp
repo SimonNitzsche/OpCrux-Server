@@ -43,7 +43,7 @@ std::vector<Entity::GameObject*> ObjectsManager::GetObjects() {
 	return out;
 }
 
-std::vector<Entity::GameObject*> ObjectsManager::GetObjectsInGroup(std::wstring groupName) {
+std::vector<Entity::GameObject*> ObjectsManager::GetObjectsInGroup(std::u16string groupName) {
 	std::vector<Entity::GameObject*> out;
 	for (auto oPair : object_list) {
 		if (oPair.second->IsWithinGroup(groupName)) {

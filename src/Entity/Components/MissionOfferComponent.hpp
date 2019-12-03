@@ -29,8 +29,26 @@ public:
 
 	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 		
+		// If multi interact and type is not 0, we are not the receiver it.
+		if (msg->bIsMultiInteractUse && msg->multiInteractType != 0) { Logger::log("WRLD", "Unknown multiInteractType found: " + std::to_string(msg->multiInteractType), LogType::UNEXPECTED); return; }
+
 		GM::OfferMission missionOffer = GM::OfferMission();
-		missionOffer.missionID = 1727;
+
+		// Get offering missions
+
+		// If multi-interact
+
+		if (msg->bIsMultiInteractUse) {
+			// check if mission is assingable
+
+			missionOffer.missionID = msg->multiInteractID;
+		}
+		else {
+			// pick first that meets requirements
+
+			missionOffer.missionID = 1727;
+		}
+		
 		missionOffer.offerer = owner->GetObjectID();
 
 		GameMessages::Send(owner->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, sender->GetObjectID(), missionOffer);

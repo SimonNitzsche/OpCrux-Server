@@ -32,22 +32,34 @@ public:
 	static constexpr int GetTypeID() { return 3; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+		bool tmpFlag = false;
+
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 			factory->Write(allowGlitchUp);
 			factory->Write<std::int32_t>(unknownCreation32);
 		}
-		factory->Write(_velocityDirty);
-		if (_velocityDirty) {
+
+		if (packetType != ReplicaTypes::PacketTypes::CONSTRUCTION) {
+			factory->Write(false);
+			factory->Write(false);
+			factory->Write(false);
+			return;
+		}
+
+		tmpFlag = _velocityDirty;
+		factory->Write(tmpFlag);
+		if (tmpFlag) {
 			factory->Write(linearVelocity);
 			factory->Write(angularVelocity);
 		}
-		factory->Write(_airSpeedDirty);
-		if (_airSpeedDirty) {
+		tmpFlag = _airSpeedDirty;
+		factory->Write(tmpFlag);
+		if (tmpFlag) {
 			factory->Write(airSpeed);
 		}
-		_posRotDirty = _posRotDirty || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
-		factory->Write(_posRotDirty);
-		if (_posRotDirty) {
+		tmpFlag = _posRotDirty || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
+		factory->Write(tmpFlag);
+		if (tmpFlag) {
 			factory->Write<std::float_t>(position.x);
 			factory->Write<std::float_t>(position.y);
 			factory->Write<std::float_t>(position.z);

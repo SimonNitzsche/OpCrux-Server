@@ -9,7 +9,7 @@ namespace GM {
 			return Enums::EGameMessageID::SERVER_PLAY_EMBEDDED_EFFECT_ON_ALL_NEARBY_CLIENTS;
 		}
 
-		std::wstring effectName = L"";
+		std::u16string effectName = u"";
 		DataTypes::LWOOBJID fromObjectID = 0;
 		float radius = 1.0f;
 

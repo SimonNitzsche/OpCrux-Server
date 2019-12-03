@@ -76,10 +76,10 @@ public:
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {
-		std::wstring customScriptName = L"";
-		LDF_GET_VAL_FROM_COLLECTION(customScriptName, collection, L"custom_script_server", L"");
+		std::u16string customScriptName = u"";
+		LDF_GET_VAL_FROM_COLLECTION(customScriptName, collection, u"custom_script_server", u"");
 
-		if (customScriptName != L"") {
+		if (customScriptName != u"") {
 			scriptName = std::string(customScriptName.begin(), customScriptName.end());
 		}
 	}
@@ -109,7 +109,7 @@ public:
 			instance->onUse(owner, *msg);
 	}
 
-	void OnTimerDone(std::pair<std::wstring, long long> timer) {
+	void OnTimerDone(std::pair<std::u16string, long long> timer) {
 		if (instance)
 			instance->onTimerDone(owner, TimerDone(timer.first));
 	}

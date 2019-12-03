@@ -21,6 +21,7 @@ public:
 	ObjectsManager * objectsManager = nullptr;
 	RakPeerInterface* rakServer;
 	FileTypes::LUZ::LUZone * luZone;
+	Entity::GameObject * zoneControlObject = nullptr;
 	unsigned long long spawnedObjectIDCounter=0;
 	LWOTimer timer;
 public:

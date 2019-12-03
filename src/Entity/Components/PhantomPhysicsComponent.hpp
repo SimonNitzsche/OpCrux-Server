@@ -43,8 +43,10 @@ public:
 		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagEffects);*/
 
 		// Position, Rotation
-		factory->Write(_isDirtyFlagPosRot);
-		if (_isDirtyFlagPosRot) {
+		bool tmpFlag = false;
+		tmpFlag = _isDirtyFlagPosRot;
+		factory->Write(tmpFlag);
+		if (tmpFlag) {
 			factory->Write(position.x);
 			factory->Write(position.y);
 			factory->Write(position.z);
@@ -56,8 +58,9 @@ public:
 		}
 
 		// Physic Effects
-		factory->Write(_isDirtyFlagEffects);
-		if (_isDirtyFlagEffects) {
+		tmpFlag = _isDirtyFlagEffects;
+		factory->Write(tmpFlag);
+		if (tmpFlag) {
 			factory->Write(physEffectActive);
 			if (physEffectActive) {
 				factory->Write<std::uint32_t>(physEffectType);
@@ -67,8 +70,9 @@ public:
 					factory->Write(physEffectMinDistance);
 					factory->Write(physEffectMaxDistance);
 				}
-				factory->Write(_isDirtyFlagPhysEffectDirection);
-				if (_isDirtyFlagPhysEffectDirection) {
+				tmpFlag = _isDirtyFlagPhysEffectDirection;
+				factory->Write(tmpFlag);
+				if (tmpFlag) {
 					factory->Write(physEffectDirection.x * physEffectAmount);
 					factory->Write(physEffectDirection.y * physEffectAmount);
 					factory->Write(physEffectDirection.z * physEffectAmount);

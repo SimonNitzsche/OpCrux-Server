@@ -47,8 +47,8 @@ namespace PacketFactory {
 				DataTypes::LWOOBJID objectID = DataTypes::LWOOBJID::makePlayerObjectID(charInfo.objectID);
 				returnBS.Write(objectID);
 				returnBS.Write(static_cast<std::uint32_t>(charInfo.charIndex));
-				StringUtils::writeBufferedWStringToBitStream(&returnBS, std::wstring(charInfo.name.begin(), charInfo.name.end()));
-				StringUtils::writeBufferedWStringToBitStream(&returnBS, std::wstring(charInfo.pendingName.begin(), charInfo.pendingName.end()));
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, std::u16string(charInfo.name.begin(), charInfo.name.end()));
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, std::u16string(charInfo.pendingName.begin(), charInfo.pendingName.end()));
 				returnBS.Write(static_cast<std::uint16_t>(0));
 				returnBS.Write(charStyle.headColor);
 				returnBS.Write(static_cast<std::uint16_t>(0));
@@ -122,10 +122,10 @@ namespace PacketFactory {
 			RakNet::BitStream contentWrapperBS;
 			
 			std::vector<LDFEntry> ldfEntries;
-			ldfEntries.push_back(LDFEntry(L"template", std::int32_t(1)));
-			ldfEntries.push_back(LDFEntry(L"objid", clientSession->actorID));
-			ldfEntries.push_back(LDFEntry(L"name", go->GetName()));
-			ldfEntries.push_back(LDFEntry(L"xmlData", go->GenerateXML()));
+			ldfEntries.push_back(LDFEntry(u"template", std::int32_t(1)));
+			ldfEntries.push_back(LDFEntry(u"objid", clientSession->actorID));
+			ldfEntries.push_back(LDFEntry(u"name", go->GetName()));
+			ldfEntries.push_back(LDFEntry(u"xmlData", go->GenerateXML()));
 
 			contentWrapperBS.Write(std::uint32_t(ldfEntries.size()));
 			for (int i = 0; i < ldfEntries.size(); ++i) {

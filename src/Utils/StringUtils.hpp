@@ -9,6 +9,8 @@
 #include <memory>
 #include <algorithm>
 #include <cctype>
+#include <locale>
+#include <codecvt>
 
 #include <RakNet/BitStream.h>
 
@@ -25,11 +27,11 @@ namespace StringUtils {
 		return elems;
 	}
 
-	inline std::vector<std::wstring> splitWString(const std::wstring &s, wchar_t delim) {
-		std::wstringstream ss;
+	inline std::vector<std::u16string> splitWString(const std::u16string &s, char16_t delim) {
+		std::basic_stringstream<char16_t> ss;
 		ss.str(s);
-		std::wstring item;
-		std::vector<std::wstring> elems;
+		std::u16string item;
+		std::vector<std::u16string> elems;
 		while (std::getline(ss, item, delim)) {
 			elems.push_back(item);
 		}
@@ -45,13 +47,13 @@ namespace StringUtils {
 	};
 
 	template<class T>
-	inline std::wstring readWStringFromBitStream(RakNet::BitStream * bitstream) {
+	inline std::u16string readWStringFromBitStream(RakNet::BitStream * bitstream) {
 		std::uint32_t size; bitstream->Read<T>(size);
 		std::unique_ptr<char[]> buff = std::make_unique<char[]>(size * 2);
 		bitstream->Read(buff.get(), size * 2);
-		wchar_t * data = reinterpret_cast<wchar_t*>(buff.get());
+		char16_t * data = reinterpret_cast<char16_t*>(buff.get());
 
-		return std::wstring(data, size);
+		return std::u16string(data, size);
 	}
 
 	template<class T>
@@ -65,18 +67,18 @@ namespace StringUtils {
 		return std::string(data, size);
 	}
 
-	inline std::wstring readBufferedWStringFromBitStream(RakNet::BitStream * bitstream, int len = 33) {
+	inline std::u16string readBufferedWStringFromBitStream(RakNet::BitStream * bitstream, int len = 33) {
 		std::unique_ptr<char[]> buff = std::make_unique<char[]>(len * 2);
 		bitstream->Read(buff.get(), len * 2);
 
-		wchar_t * data = reinterpret_cast<wchar_t*>(buff.get());
+		char16_t * data = reinterpret_cast<char16_t*>(buff.get());
 
 		int i;
 		for (i = 0; i < len; ++i) {
 			if (*(data + i) == 0x0000) break;
 		}
 
-		std::wstring returnVal = std::wstring(reinterpret_cast<wchar_t*>(buff.get()), i);
+		std::u16string returnVal = std::u16string(reinterpret_cast<char16_t*>(buff.get()), i);
 
 		return returnVal;
 	};
@@ -110,7 +112,7 @@ namespace StringUtils {
 	}
 
 	template<class T>
-	inline void writeWStringToBitStream(RakNet::BitStream * bitstream, std::wstring text) {
+	inline void writeWStringToBitStream(RakNet::BitStream * bitstream, std::u16string text) {
 		T size = text.size();
 		bitstream->Write<T>(size);
 
@@ -123,7 +125,7 @@ namespace StringUtils {
 		FillZero(bitstream, len - static_cast<unsigned int>(text.length()));
 	}
 
-	inline void writeBufferedWStringToBitStream(RakNet::BitStream * bitstream, std::wstring text, unsigned int len = 33) {
+	inline void writeBufferedWStringToBitStream(RakNet::BitStream * bitstream, std::u16string text, unsigned int len = 33) {
 		if (text.length() > len) text = text.substr(0, len);
 		bitstream->Write(reinterpret_cast<const char*>(text.c_str()), text.length() * 2);
 		FillZero(bitstream, (len - text.length()) * 2);
@@ -143,7 +145,7 @@ namespace StringUtils {
 
 	inline char NibleToHex(char nible) {
 		static const char* hexLookup = "0123456789ABCDEF";
-		return hexLookup[nible];
+		return hexLookup[nible&0xf];
 	}
 
 	inline std::string CharToHex(char c) {
@@ -159,6 +161,17 @@ namespace StringUtils {
 			if (i != 0) out += divider;
 			out += CharToHex(input.at(i));
 		}
+	}
+
+	inline std::string to_string(std::u16string input) {
+		//std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t> convert;
+		//auto p = reinterpret_cast<const int16_t *>(input.data());
+		//return convert.to_bytes(p, p + input.size());
+		return std::string(input.begin(), input.end());
+	}
+
+	inline std::u16string to_u16string(std::string input) {
+		return std::u16string(input.begin(), input.end());
 	}
 }
 

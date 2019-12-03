@@ -9,7 +9,7 @@ using namespace DataTypes;
 
 class MovingPlatformComponent : public IEntityComponent {
 private:
-	std::wstring pathName;
+	std::u16string pathName;
 	std::uint32_t startingPointIndex = 0;
 	bool isReverse = false;
 	
@@ -108,14 +108,14 @@ public:
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {
-		LDF_GET_VAL_FROM_COLLECTION(pathName, collection, L"attached_path", L"");
-		LDF_GET_VAL_FROM_COLLECTION(startingPointIndex, collection, L"attached_path_start", 0);
+		LDF_GET_VAL_FROM_COLLECTION(pathName, collection, u"attached_path", u"");
+		LDF_GET_VAL_FROM_COLLECTION(startingPointIndex, collection, u"attached_path_start", 0);
 		
 		
 	}
 
 	void Awake() {
-		if(pathName != L"")
+		if(pathName != u"")
 			attachedPath = static_cast<FileTypes::LUZ::LUZonePathMovingPlatform*>(owner->GetZoneInstance()->luZone->paths.at(pathName));
 	}
 

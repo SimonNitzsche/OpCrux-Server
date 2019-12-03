@@ -9,7 +9,7 @@ namespace GM {
 			return Enums::EGameMessageID::SERVER_PLAY_ANIMATION;
 		}
 
-		std::wstring animationID = L"";
+		std::u16string animationID = u"";
 		bool bExpectAnimToExist = true;
 		bool bPlayImmediate = false;
 		bool bTriggerOnCompleteMsg = false;

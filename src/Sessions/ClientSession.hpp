@@ -18,7 +18,7 @@
 
 struct ClientSession {
 	SystemAddress systemAddress;
-	std::wstring sessionToken;
+	std::u16string sessionToken;
 	DataTypes::ZoneInfo currentZone;
 	DataTypes::LWOOBJID actorID;
 	unsigned long accountID;

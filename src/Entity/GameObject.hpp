@@ -43,7 +43,7 @@ namespace Entity {
 			int32_t LOT;
 
 			// The Name of this Object.
-			std::wstring name = L"";
+			std::u16string name = u"";
 
 			// The Timestamp this object was created on the server.
 			int64_t creationTimestamp;
@@ -64,7 +64,7 @@ namespace Entity {
 			std::vector<GameObject *> children;
 
 			// Groups the object is in.
-			std::vector<std::wstring> groups;
+			std::vector<std::u16string> groups;
 
 			// The Components assigned to this object.
 			std::unordered_map<std::uint32_t, IEntityComponent*> components;
@@ -118,14 +118,14 @@ namespace Entity {
 			/*
 				Sets name
 			*/
-			void SetName(std::wstring n) {
+			void SetName(std::u16string n) {
 				name = n;
 			}
 
 			/*
 				Gets name
 			*/
-			std::wstring GetName() {
+			std::u16string GetName() {
 				return name;
 			}
 
@@ -237,7 +237,7 @@ namespace Entity {
 			/*
 				Returns if object is within group
 			*/
-			bool IsWithinGroup(std::wstring groupName);
+			bool IsWithinGroup(std::u16string groupName);
 
 			/*
 				Only use this on a player.
@@ -294,7 +294,7 @@ namespace Entity {
 			/*
 				Quick function to create the test object.
 			*/
-			void Test() { objectID = 9ULL; LOT = 1234; name = L"TestName"; }
+			void Test() { objectID = 9ULL; LOT = 1234; name = u"TestName"; }
 
 
 			void OnCollisionPhantom(Entity::GameObject * other);
@@ -310,7 +310,7 @@ namespace Entity {
 
 		public:
 			// Script Stuff
-			LDFEntry GetVar(std::wstring key) {
+			LDFEntry GetVar(std::u16string key) {
 				if (configData.find(key) != configData.end())
 					return configData.at(key);
 				else
@@ -318,7 +318,7 @@ namespace Entity {
 			}
 
 			template<typename T>
-			void SetVar(std::wstring key, T data) {
+			void SetVar(std::u16string key, T data) {
 				auto it = configData.find(key);
 				if (it != configData.end()) {
 					it->second = LDFEntry(key, data);

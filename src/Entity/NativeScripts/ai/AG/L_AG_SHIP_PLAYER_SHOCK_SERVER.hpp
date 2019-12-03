@@ -11,34 +11,34 @@ class NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER : public NativeScript 
 	//----------------------------------------------------------
 
 
-	std::wstring ShockAnim = L"knockback-recovery";
+	std::u16string ShockAnim = u"knockback-recovery";
 	int FXTime = 2000;
 public:
 
 	void onStartup(Entity::GameObject * self) {
-		self->SetVar(L"bActive", false);
+		self->SetVar(u"bActive", false);
 	}
 
 	void onUse(Entity::GameObject * self, GM::RequestUse msg) {
 		print("clicked!");
 		//msg.user:TerminateInteraction{ type = 'fromInteraction', ObjIDTerminator = self }
 
-		if (self->GetVar(L"bActive")) {
+		if (self->GetVar(u"bActive")) {
 			return;
 		}
 
 		auto player = msg.user;
-		self->SetVar(L"bActive", true);
+		self->SetVar(u"bActive", true);
 
 		{ GM::PlayAnimation nmsg; nmsg.animationID = ShockAnim; nmsg.bPlayImmediate = true; nmsg.TriggerEvent(self, player); }
 		{ GM::Knockback nmsg; nmsg.vector = Vector3(-20, 10, -20); nmsg.TriggerEvent(self, player); }
-		{ GM::PlayFXEffect nmsg; nmsg.name = "console_sparks"; nmsg.effectType = L"create"; nmsg.effectID = 1430; nmsg.TriggerEvent(self, self); }
+		{ GM::PlayFXEffect nmsg; nmsg.name = "console_sparks"; nmsg.effectType = u"create"; nmsg.effectID = 1430; nmsg.TriggerEvent(self, self); }
 
-		self->GetZoneInstance()->timer.AddTimerWithCancel(FXTime, L"FXTime", self);
+		self->GetZoneInstance()->timer.AddTimerWithCancel(FXTime, u"FXTime", self);
 	}
 	void onTimerDone(Entity::GameObject * self, TimerDone msg) {
 		{ GM::StopFXEffect nmsg; nmsg.name = "console_sparks"; nmsg.TriggerEvent(self, self); }
-		self->SetVar(L"bActive", false);
+		self->SetVar(u"bActive", false);
 	}
 	
 	
