@@ -11,6 +11,13 @@ namespace GameCache::Interface::FDB {
 		Class: FieldValue
 	*/
 	
+	unsigned char* FieldValue::getMemoryLocation() {
+		auto returnData = reinterpret_cast<unsigned char*>(data);
+		if (returnData != nullptr || dataType != DATA_TYPE::NOTHING)
+			return returnData;
+		return const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(&NULL_DATA));
+	}
+
 	std::string FieldValue::ToString() {
 		switch (dataType) {
 			case DATA_TYPE::NOTHING: {

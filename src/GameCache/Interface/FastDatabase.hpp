@@ -57,8 +57,7 @@ namespace GameCache::Interface::FDB {
 	public:
 		FieldValue(Connection * connection, DATA_TYPE type, int32_t * where) : conn(connection), dataType(type), data(where) {}
 		Connection * getConnection() { return conn; }
-		unsigned char * getMemoryLocation() { auto returnData = reinterpret_cast<unsigned char*>(data); if (returnData != nullptr || dataType != DATA_TYPE::NOTHING) return returnData; return const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(&NULL_DATA)); }
-
+		unsigned char* getMemoryLocation();
 		std::string ToString();
 
 		inline bool isNull() {
