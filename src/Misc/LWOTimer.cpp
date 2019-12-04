@@ -23,7 +23,7 @@ void LWOTimer::Update() {
 }
 }
 
-void LWOTimer::AddTimerWithCancel(int timeInMs, std::u16string name, Entity::GameObject * object) {
+void LWOTimer::AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::GameObject * object) {
 	if (timers.find(object) == timers.end()) timers.insert(std::pair<Entity::GameObject*, std::unordered_map<std::u16string, long long>>(object, {}));
 	if (timers.at(object).find(name) == timers.at(object).end()) {
 		// Add
@@ -35,5 +35,5 @@ void LWOTimer::AddTimerWithCancel(int timeInMs, std::u16string name, Entity::Gam
 }
 
 void LWOTimer::AddTimerWithCancel(float timeInSeconds, std::u16string name, Entity::GameObject * object) {
-	AddTimerWithCancel(std::lroundf(timeInSeconds) * 1000, name, object);
+	AddTimerWithCancelMs(std::lroundf(timeInSeconds) * 1000, name, object);
 }

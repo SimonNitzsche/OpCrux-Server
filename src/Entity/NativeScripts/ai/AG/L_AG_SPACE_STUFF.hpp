@@ -10,7 +10,7 @@ class NATIVESCRIPT__AI__AG__L_AG_SPACE_STUFF : public NativeScript {
 public:
 
 	void onStartup(Entity::GameObject * self) {
-		self->GetZoneInstance()->timer.AddTimerWithCancel(5000, u"FloaterScale", self);
+		self->GetZoneInstance()->timer.AddTimerWithCancelMs(5000, u"FloaterScale", self);
 	}
 
 	void onTimerDone(Entity::GameObject * self, TimerDone msg) {
@@ -22,7 +22,7 @@ public:
 
 			{ GM::PlayAnimation nmsg; nmsg.animationID = StringUtils::to_u16string("scale_0"+std::to_string(scaletype)); nmsg.TriggerEvent(self, self); }
 
-			self->GetZoneInstance()->timer.AddTimerWithCancel(400, u"FloaterPath", self);
+			self->GetZoneInstance()->timer.AddTimerWithCancelMs(400, u"FloaterPath", self);
 		}
 		else if (msg.name == u"FloaterPath") {
 			int pathtype = 1 + rand() % ((4 + 1) - 1); // Rand (1,4)
@@ -32,7 +32,7 @@ public:
 
 			{ GM::PlayAnimation nmsg; nmsg.animationID = StringUtils::to_u16string("path_0" + std::to_string(pathtype)); nmsg.TriggerEvent(self, self); }
 
-			self->GetZoneInstance()->timer.AddTimerWithCancel(randtime * 1000, u"FloaterScale", self);
+			self->GetZoneInstance()->timer.AddTimerWithCancelMs(randtime * 1000, u"FloaterScale", self);
 		}
 	}
 

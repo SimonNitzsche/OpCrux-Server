@@ -35,7 +35,7 @@ public:
 		debrisObject = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"DebrisFX").at(0);
 
 		// Do the first Shake Timer on start up
-		self->GetZoneInstance()->timer.AddTimerWithCancel(repTime * 1000, u"ShakeTimer", self);
+		self->GetZoneInstance()->timer.AddTimerWithCancelMs(repTime * 1000, u"ShakeTimer", self);
 	}
 
 	void onTimerDone(Entity::GameObject * self, TimerDone msg) {

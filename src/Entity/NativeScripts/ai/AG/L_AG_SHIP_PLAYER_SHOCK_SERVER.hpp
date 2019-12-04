@@ -34,7 +34,7 @@ public:
 		{ GM::Knockback nmsg; nmsg.vector = Vector3(-20, 10, -20); nmsg.TriggerEvent(self, player); }
 		{ GM::PlayFXEffect nmsg; nmsg.name = "console_sparks"; nmsg.effectType = u"create"; nmsg.effectID = 1430; nmsg.TriggerEvent(self, self); }
 
-		self->GetZoneInstance()->timer.AddTimerWithCancel(FXTime, u"FXTime", self);
+		self->GetZoneInstance()->timer.AddTimerWithCancelMs(FXTime, u"FXTime", self);
 	}
 	void onTimerDone(Entity::GameObject * self, TimerDone msg) {
 		{ GM::StopFXEffect nmsg; nmsg.name = "console_sparks"; nmsg.TriggerEvent(self, self); }
