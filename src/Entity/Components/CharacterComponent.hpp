@@ -94,7 +94,7 @@ public:
 
 			if (worldTransitionState == WorldTransitionState::ENTERING_WORLD) {
 				// TODO: Rocket Info
-				std::u16string rocketBuild = u""; //u"1:9746;1:9747;1:9748;";
+				std::u16string rocketBuild = u"1:9746;1:9747;1:9748;";
 				StringUtils::writeWStringToBitStream<std::uint16_t>(factory, rocketBuild);
 			}
 		}

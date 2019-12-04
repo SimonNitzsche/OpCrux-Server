@@ -268,7 +268,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(QuickbuildComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent);
-	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent,);
+	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(BouncerComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ScriptedActivityComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RacingControlComponent);

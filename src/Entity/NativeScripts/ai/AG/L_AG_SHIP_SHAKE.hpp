@@ -7,9 +7,9 @@
 
 class NATIVESCRIPT__AI__AG__L_AG_SHIP_SHAKE : public NativeScript {
 
-	int repTime = 2; // base time for the first shake
-	int randTime = 10; // number put into the math.random(), to get the next shake
-	float shakeRad = 500; // radius away from object clients should shake
+	std::int32_t repTime = 2; // base time for the first shake
+	std::int32_t randTime = 10; // number put into the math.random(), to get the next shake
+	std::float_t shakeRad = 500; // radius away from object clients should shake
 	Entity::GameObject * debrisObject = nullptr;
 	// two different shake effect, only have one uncommented at a time
 	std::u16string fxName = u"camshake-bridge"; // Lighter Shake with Angry animation
@@ -25,12 +25,12 @@ public:
 
 	void onStartup(Entity::GameObject * self) {
 		// See if object has some variables set in HF
-		if (self->GetVar(u"MaxRepTime")) randTime = self->GetVar(u"MaxRepTime");
-		if (self->GetVar(u"Radius")) shakeRad = self->GetVar(u"Radius");
+		if (self->GetVar(u"MaxRepTime")) randTime = self->GetVar<std::int32_t>(u"MaxRepTime");
+		if (self->GetVar(u"Radius")) shakeRad = self->GetVar<std::float_t>(u"Radius");
 #ifdef OPCRUX_PLATFORM_WIN32
-		if (self->GetVar(u"EffectName")) fxName = self->GetVar(u"EffectName");
+		if (self->GetVar(u"EffectName")) fxName = self->GetVar<std::u16string>(u"EffectName");
 #else
-		if (self->GetVar(u"EffectName")) fxName = self->GetVar(u"EffectName");
+		if (self->GetVar(u"EffectName")) fxName = self->GetVar<std::u16string>(u"EffectName");
 #endif()
 		debrisObject = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"DebrisFX").at(0);
 

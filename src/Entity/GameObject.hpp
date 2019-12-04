@@ -310,11 +310,16 @@ namespace Entity {
 
 		public:
 			// Script Stuff
-			LDFEntry GetVar(std::u16string key) {
+			LDFEntry GetVarEntry(std::u16string key) {
 				if (configData.find(key) != configData.end())
 					return configData.at(key);
 				else
 					return LDFEntry();
+			}
+
+			template<typename T=LDFEntry>
+			T GetVar(std::u16string key) {
+				return static_cast<T>(static_cast<LDFEntry>(GetVarEntry(key)));
 			}
 
 			template<typename T>
