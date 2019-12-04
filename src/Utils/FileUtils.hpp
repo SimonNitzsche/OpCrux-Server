@@ -12,15 +12,18 @@
 #include <cstdio>
 #include <string>
 #include <memory>
-#include <filesystem>
 #include <fstream>
 
+#ifdef OPCRUX_PLATFORM_WIN32
+
+#include <filesystem>
 /* Make sure filesystem gets loaded correctly. */
-#if __cplusplus < 201703L // If the version of C++ is less than 17
+#if __cplusplus < 201703L && __cplusplus < 180000 // If the version of C++ is less than 17
 // It was still in the experimental:: namespace
 namespace fs = std::experimental::filesystem;
 #else
 namespace fs = std::filesystem;
+#endif
 #endif
 
 
@@ -66,6 +69,7 @@ namespace FileUtils {
 	static std::string savedPacketFolder = "";
 
 	inline void SavePacket(RakNet::BitStream * packetToSave, std::uint16_t portFrom, std::uint16_t portTo) {
+#ifdef OPCRUX_PLATFORM_WIN32
 		// Copy packet
 		unsigned char * _data = packetToSave->GetData();
 
@@ -102,7 +106,7 @@ namespace FileUtils {
 		std::ofstream file (saveFileName.c_str());
 		file.write((char*)_data, packetToSave->GetNumberOfBytesUsed());
 
-		
+#endif
 	}
 
 	inline void ChangeDirectory() {
