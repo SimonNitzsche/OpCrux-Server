@@ -209,7 +209,7 @@ public:
 		std::cout << "\nWARNING!!!! DATABASE HAS BEEN UNLOADED!\n";
 
 		//close connection and free resources
-		SetupStatementHandle();
+		//SetupStatementHandle();
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		SQLDisconnect(sqlConnHandle);
 		SQLFreeHandle(SQL_HANDLE_DBC, sqlConnHandle);
