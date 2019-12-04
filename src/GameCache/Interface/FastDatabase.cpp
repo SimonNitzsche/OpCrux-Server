@@ -15,7 +15,7 @@ namespace GameCache::Interface::FDB {
 		auto returnData = reinterpret_cast<unsigned char*>(data);
 		if (returnData != nullptr || dataType != DATA_TYPE::NOTHING)
 			return returnData;
-		return const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(&NULL_DATA));
+		return nullptr;
 	}
 
 	std::string FieldValue::ToString() {
