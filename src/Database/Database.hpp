@@ -215,7 +215,7 @@ public:
 		SQLFreeHandle(SQL_HANDLE_DBC, sqlConnHandle);
 		SQLFreeHandle(SQL_HANDLE_ENV, sqlEnvHandle);
 
-		Connect();
+		//Connect();
 
 		//pause the console window - exit when key is pressed
 		//std::cout << "\nPress any key to exit...";
