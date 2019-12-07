@@ -17,9 +17,25 @@ LUScene::LUScene(FileTypes::LUZ::LUZone * zone, std::string file) {
 			// If we are at the start of the file, it's okay,
 			// because it's the old non-chunked format.
 			if (i == 0) {
+				//std::uint32_t dOff = 0;
+				//std::uint16_t lvlVersion = *reinterpret_cast<std::uint16_t*>(data);
+				//std::uint32_t lvlVersion32 = static_cast<std::uint32_t>(lvlVersion);
+				//dOff += 265;
+				//for (int j = 0; j < 6; ++j) {
+				//	std::uint32_t tmpCount = *reinterpret_cast<std::uint32_t*>(data + dOff);
+				//	dOff += tmpCount + 4;
+				//}
+				//dOff += 4;
+
+				////std::uint32_t tmpCount2 = *reinterpret_cast<std::uint32_t*>(data + dOff);
+				////dOff += tmpCount2*3 + 4;
+
+				//this->objectsChunk = LVLObjectsChunk(&lvlVersion32, data + dOff);
+
+
 				throw new std::runtime_error("TODO: Implement old level format!");
 
-				// Since it's not chunked no more chunks are read.
+				//// Since it's not chunked no more chunks are read.
 				return;
 			}
 			// Otherwise

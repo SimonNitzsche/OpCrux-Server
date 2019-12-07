@@ -10,7 +10,13 @@ LUZone::LUZone(const std::string& filename) {
 	strFile = filename;
 	filePtr = FileUtils::ReadFileCompletely(filename);
 	data = filePtr.get();
-	Read();
+	if (_isFileLoaded()) {
+		Read();
+	}
+}
+
+bool LUZone::_isFileLoaded() {
+	return data != nullptr;
 }
 
 LUZonePathBase * FileTypes::LUZ::LUZone::AllocatePath(const LUZonePathType pathType) {
@@ -85,27 +91,38 @@ LUZone::~LUZone() {
 }
 
 void LUZone::Read() {
+
+	uint8_t* currentOffset = data;
+	
 	// Head
 	version = reinterpret_cast<uint32_t*>(data + 0);
+	currentOffset += 4;
 	if (*version >= 0x24UL) {
 		unknown1 = reinterpret_cast<uint32_t*>(version + 1);
+		currentOffset += 4;
 	}
 	else { unknown1 = nullptr; }
 
 	zoneID = reinterpret_cast<uint32_t*>((unknown1 ? unknown1 + 1 : version + 2));
-	spawnPos = reinterpret_cast<Position*>(zoneID + 1);
+	currentOffset += 4;
+	if (*version >= 0x26UL) {
+		spawnPos = reinterpret_cast<Position*>(zoneID + 1);
+		currentOffset += 28;
+	}
+	{
+		spawnPos = nullptr;
+	}
 
-	uint8_t * currentOffset;
 	// Scenes
 	{
 		int count(
 			((*version<0x25) ?
-				*(reinterpret_cast<uint8_t*>(spawnPos + 1))
-				: *(reinterpret_cast<uint32_t*>(spawnPos + 1))
+				*(reinterpret_cast<uint8_t*>(currentOffset))
+				: *(reinterpret_cast<uint32_t*>(currentOffset))
 			)
 		);
 
-		currentOffset = reinterpret_cast<uint8_t*>(spawnPos) + 28 + ((*version<0x25) ? 1 : 4);
+		currentOffset += ((*version<0x25) ? 1 : 4);
 
 		for (std::ptrdiff_t i = 0; i < count; ++i) {
 			SceneData sd;

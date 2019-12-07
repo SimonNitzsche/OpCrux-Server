@@ -375,6 +375,7 @@ namespace FileTypes::LUZ {
 		public:
 			// Constructs a new LUZone, with the path to the filename.
 			LUZone(const std::string& filename);
+			bool _isFileLoaded();
 			LUZonePathBase * AllocatePath(const LUZonePathType pathType);
 			LUZonePathWaypointBase * AllocatePathWaypoint(const LUZonePathType pathType);
 			LUZone();
