@@ -88,12 +88,12 @@ public:
 				ClientSession session = clients.at(i);
 
 				if (exclude != session.actorID) {
-					Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, true);
+					Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
 				}
 			}
 		}
 		else
-			Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, systemAddress, systemAddress == UNASSIGNED_SYSTEM_ADDRESS);
+			Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, systemAddress, false);
 	}
 
 	template<typename T = GM::GMBase>

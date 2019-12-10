@@ -363,10 +363,10 @@ namespace FileTypes::LUZ {
 			unsigned char* data;
 			std::string strFile;
 		public:
-			uint32_t * version;
-			uint32_t * unknown1;
-			uint32_t * zoneID;
-			Position * spawnPos;
+			uint32_t version;
+			uint32_t unknown1;
+			uint32_t zoneID;
+			Position spawnPos;
 			std::vector<SceneData> scenes;
 			std::unordered_map<std::uint32_t, ZoneTriggerFile> triggers;
 			TerrainInfo terrainInfo;

@@ -51,7 +51,7 @@ public:
 		
 		missionOffer.offerer = owner->GetObjectID();
 
-		GameMessages::Send(owner->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, sender->GetObjectID(), missionOffer);
+		GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
 
 	}
 

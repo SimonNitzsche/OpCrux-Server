@@ -67,26 +67,40 @@ public:
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Controllable Physics Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
+			// Jetpack
 			factory->Write(false);
+			// Buffs
 			factory->Write(false);
 
 			_isDirtyPositionAndStuff = true;
 		}
+		// Gravity / Runspeed
 		factory->Write(false);
+		// ???
 		factory->Write(false);
+		// ???
 		factory->Write(false);
 		
 		factory->Write(_isDirtyPositionAndStuff);
 		if(_isDirtyPositionAndStuff) {
 			//_isDirtyPositionAndStuff = false;
-			factory->Write(position);
-			factory->Write(rotation);
+			factory->Write(position.x);
+			factory->Write(position.y);
+			factory->Write(position.z);
+			factory->Write(rotation.x);
+			factory->Write(rotation.y);
+			factory->Write(rotation.z);
+			factory->Write(rotation.w);
 			factory->Write(isPlayerOnGround);
 			factory->Write(onRail);
 			factory->Write(true); // Velocity 
-				factory->Write(velocity);
+				factory->Write(velocity.x);
+				factory->Write(velocity.y);
+				factory->Write(velocity.z);
 			factory->Write(true); // Angular Velocity
-				factory->Write(angularVelocity);
+				factory->Write(angularVelocity.x);
+				factory->Write(angularVelocity.y);
+				factory->Write(angularVelocity.z);
 			factory->Write(false);
 		}
 		

@@ -139,7 +139,7 @@ public:
 			(SQLCHAR*)DB_CREDENTIALS,
 			SQL_NTS,
 			retconstring,
-			1024,
+			1000,
 			NULL,
 			SQL_DRIVER_COMPLETE)) {
 

@@ -11,6 +11,7 @@ class LUPExhibitComponent : public IEntityComponent {
 private:
 	bool _isDirty = false;
 	std::int32_t exhibitedLOT=0;
+	std::int32_t cycleIndex=0;
 
 	std::vector<int32_t> exhibitLOTs = {};
 	long long lastupdate = 0;
@@ -41,9 +42,20 @@ public:
 	}
 
 	void CycleExhibitLOT() {
-		// TODO: CycleExhibitLOT()
-		std::uint32_t nextLOT = 0;
+		if (exhibitLOTs.size() == 0) return;
+		cycleIndex = ++cycleIndex % exhibitLOTs.size();
+
+		std::uint32_t nextLOT = exhibitLOTs.at(cycleIndex);
 		SetExhibitLOT(nextLOT);
+	}
+
+	void Awake() {
+		auto rows = Cache.getRows("LUPExhibitModelData");
+		for (int i = 0; i < rows.getRowCount(); ++i) {
+			if (rows.isValid(i)) {
+				exhibitLOTs.push_back(rows[i][0]);
+			}
+		}
 	}
 
 	void Update() {

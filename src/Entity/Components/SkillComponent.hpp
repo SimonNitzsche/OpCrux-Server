@@ -97,7 +97,7 @@ public:
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Skill Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write(_isDirtyFlag);
+			factory->Write(false);
 		}
 	}
 

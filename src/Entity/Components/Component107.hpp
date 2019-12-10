@@ -26,6 +26,9 @@ public:
 	static constexpr int GetTypeID() { return 107; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+		factory->Write(false);
+		return;
+
 		if(possessingObject != 0)
 			ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyPossessingObject);
 		factory->Write(_isDirtyPossessingObject);

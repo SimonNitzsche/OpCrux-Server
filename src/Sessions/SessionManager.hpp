@@ -6,6 +6,7 @@
 #include "ClientSession.hpp"
 #include <vector>
 #include <stdlib.h>
+#include "DataTypes/LWOOBJID.hpp"
 
 class SessionManager {
 	std::vector<ClientSession> clients;
@@ -23,6 +24,16 @@ public:
 		}
 		return nullptr;
 	}
+
+	ClientSession* GetSession(DataTypes::LWOOBJID object) {
+		for (int i = 0; i < clients.size(); ++i) {
+			ClientSession* session = &clients[i];
+			if ((session->actorID) != object) continue;
+			return session;
+		}
+		return nullptr;
+	}
+
 	void AddSession(ClientSession csCopy) {
 		clients.push_back(csCopy);
 	}

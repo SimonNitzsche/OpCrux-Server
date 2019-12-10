@@ -106,9 +106,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
 	Logger::log("WRLD", "Sucessfully loaded zone.");
 
-	if (*luZone->zoneID != zone) {
+	if (luZone->zoneID != zone) {
 		Logger::log("WRLD", "Invalid zoneID within LUZ file, correcting...", LogType::UNEXPECTED);
-		*luZone->zoneID = zone;
+		luZone->zoneID = zone;
 	}
 
 	std::int32_t zoneControlLOT = CacheZoneTable::GetZoneControlTemplate(zone);
@@ -336,7 +336,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, *luZone->zoneID, 0, 0, WORLD_CHECKSUM.at(*luZone->zoneID), luZone->spawnPos->pos, 0);
+				
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, luZone->zoneID, 0, 0, WORLD_CHECKSUM.at(luZone->zoneID), luZone->spawnPos.pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
@@ -397,13 +398,14 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				scpComp->SetRotation(Quaternion(0,0,0,0));*/
 
 				Logger::log("WRLD", "Construct player");
+				replicaManager->AddParticipant(clientSession->systemAddress);
 				Entity::GameObject * playerObject = new Entity::GameObject(this, 1);
 				playerObject->SetObjectID(clientSession->actorID);
 				CharacterComponent * charComp = playerObject->GetComponent<CharacterComponent>();
 				charComp->clientAddress = clientSession->systemAddress;
 				Database::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
-				playerObject->SetPosition(luZone->spawnPos->pos);
-				playerObject->SetRotation(luZone->spawnPos->rot);
+				playerObject->SetPosition(luZone->spawnPos.pos);
+				playerObject->SetRotation(luZone->spawnPos.rot);
 
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
@@ -417,8 +419,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				objectsManager->RegisterObject(playerObject);
 
 				Logger::log("WRLD", "Create character packet");
+
 				PacketFactory::World::CreateCharacter(rakServer, clientSession, playerObject);
 
+				
 				
 				if (zoneID == 1203) {
 					// Racing tests, remove in future!
@@ -436,22 +440,25 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					}
 				}
 
-				objectsManager->Construct(playerObject);
+				
 
 				//replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);
 				//replicaManager->Construct((Replica*)playerObject, false, UNASSIGNED_SYSTEM_ADDRESS, true);
 				//objectsManager->RegisterObject(testStromling);
 				
-
-				Logger::log("WRLD", "Server done loading");
-				PacketFactory::World::TestLoad(rakServer, clientSession);
-
 				for (auto object_to_construct : objectsManager->GetObjects()) {
-					if (object_to_construct->isSerializable && (object_to_construct->GetComponent<CharacterComponent>() != nullptr /*|| object_to_construct->GetComponent<PetComponent>() != nullptr*/)) {
+					if (object_to_construct->GetObjectID() != playerObject->GetObjectID() && object_to_construct->isSerializable && (object_to_construct->GetComponent<CharacterComponent>() != nullptr /*|| object_to_construct->GetComponent<PetComponent>() != nullptr*/)) {
 						Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object_to_construct->GetObjectID()));
 						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}
+
+				objectsManager->Construct(playerObject);
+
+				Logger::log("WRLD", "Server done loading");
+				PacketFactory::World::TestLoad(rakServer, clientSession);
+
+				
 
 				break;
 			}

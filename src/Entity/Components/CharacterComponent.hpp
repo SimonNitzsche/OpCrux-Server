@@ -49,8 +49,8 @@ public:
 
 		/* Part 2 Serialization */
 		// ENABLE_FLAG_ON_CONSTRUCTION(_dirtyPart2);
-		factory->Write(_dirtyPart2);
-		if (_dirtyPart2) {
+		factory->Write(true);
+		if (true) {
 			factory->Write<std::uint32_t>(charInfo.uLevel);
 			_dirtyPart2 = false;
 		}
@@ -86,11 +86,11 @@ public:
 
 			// TODO: Char Stats
 			for (int i = 0; i < 27; ++i)
-				factory->Write<std::uint64_t>(0);
+				factory->Write<std::uint64_t>(i);
 
 			// World transition state
-			factory->Write<bool>(static_cast<std::uint8_t>(worldTransitionState) > 0);
-			factory->Write<bool>(static_cast<std::uint8_t>(worldTransitionState) != 2);
+			factory->Write<bool>(static_cast<std::uint8_t>(worldTransitionState) == 2);
+			factory->Write<bool>(static_cast<std::uint8_t>(worldTransitionState) == 1);
 
 			if (worldTransitionState == WorldTransitionState::ENTERING_WORLD) {
 				// TODO: Rocket Info

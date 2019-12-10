@@ -45,8 +45,7 @@ BridgeMasterServer* masterServerBridge;
 
 #include "Entity/Components/StatsComponent.hpp"
 
-int givenWorldID = 1100;
-
+int givenWorldID = 1000;
 
 class MissionRequirementParser {
 private:
@@ -254,13 +253,14 @@ int main(int argc, char* argv[]) {
 	Database::Connect();
 	//Database::DoATestQuery();
 
-	auto mrp_test = MissionRequirementParser("44|33&22,99,(11|55)");
-
+	Logger::log("MAIN", "Connecting game cache...");
 	Cache.Connect("./res/cdclient.fdb");
 
 	using namespace Entity;
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
+
+	Logger::log("MAIN", "Booting up server instances...");
 
 #ifdef OPCRUX_PLATFORM_WIN32
 	std::system("title OpCrux Server (Standalone)");

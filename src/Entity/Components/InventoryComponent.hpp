@@ -100,7 +100,7 @@ public:
 				factory->Write(false);
 			}
 		}
-		factory->Write(_isDirtyFlagNextStruct);
+		factory->Write(false);
 	}
 
 };

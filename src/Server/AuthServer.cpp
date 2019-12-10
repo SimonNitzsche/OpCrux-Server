@@ -109,8 +109,6 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				bool authSuccess = Database::IsLoginCorrect((char16_t*)name.c_str(), (char16_t*)pswd.c_str());
 
-				Database::DebugTest();
-
 				if (authSuccess)
 					PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 				else

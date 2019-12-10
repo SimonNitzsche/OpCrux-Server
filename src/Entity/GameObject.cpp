@@ -52,6 +52,8 @@
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
+#include "Entity/Components/SoundAmbient3DComponent.hpp"
+#include "Entity/Components/SoundTriggerComponent.hpp"
 #include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/StatsComponent.hpp"
 #include "Entity/Components/SwitchComponent.hpp"
@@ -201,6 +203,8 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id) {
 		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PlatformBoundaryComponent);
+		COMPONENT_ONADD_SWITCH_CASE(SoundAmbient3DComponent);
+		COMPONENT_ONADD_SWITCH_CASE(SoundTriggerComponent);
 
 	default: {
 		Logger::log("WRLD", "Couldn't add component #" + std::to_string(id) + " to GameObject!", LogType::UNEXPECTED);
@@ -284,7 +288,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 
 #define ASSERT_MEMBER_VALIDATION(factory, type, valMem, check) \
 {type valMem; factory->Read<type>(valMem); if(!(check)) throw new std::runtime_error(std::string("Serialization for "+std::string(#valMem)+" is broken."));}
-constexpr auto VALIDATE_MEMBERS = (false);;
+constexpr auto VALIDATE_MEMBERS = (false);
 
 void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 	auto _writeOffsetBegin = factory->GetWriteOffset();
@@ -365,6 +369,7 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 				ASSERT_MEMBER_VALIDATION(factory, std::float_t, _valMem_08_01, _valMem_08_01 == scale);
 			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_09, _valMem_09 == false); // object world state
 			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_10, _valMem_10 == false); // gmlevel?
+			ASSERT_MEMBER_VALIDATION(factory, bool, _valMem_11, _valMem_11 == false); // parent/children
 		}
 		factory->SetReadOffset(_readOffsetBegin);
 	}

@@ -95,34 +95,34 @@ void LUZone::Read() {
 	uint8_t* currentOffset = data;
 	
 	// Head
-	version = reinterpret_cast<uint32_t*>(data + 0);
+	version = *reinterpret_cast<uint32_t*>(data + 0);
 	currentOffset += 4;
-	if (*version >= 0x24UL) {
-		unknown1 = reinterpret_cast<uint32_t*>(version + 1);
+	if (version >= 0x24UL) {
+		unknown1 = *reinterpret_cast<uint32_t*>(currentOffset);
 		currentOffset += 4;
 	}
-	else { unknown1 = nullptr; }
+	else { unknown1 = 0; }
 
-	zoneID = reinterpret_cast<uint32_t*>((unknown1 ? unknown1 + 1 : version + 2));
+	zoneID = *reinterpret_cast<uint32_t*>((currentOffset));
 	currentOffset += 4;
-	if (*version >= 0x26UL) {
-		spawnPos = reinterpret_cast<Position*>(zoneID + 1);
+	if (version >= 0x26UL) {
+		spawnPos = *reinterpret_cast<Position*>(currentOffset);
 		currentOffset += 28;
 	}
-	{
-		spawnPos = nullptr;
+	else {
+		spawnPos = Position();
 	}
 
 	// Scenes
 	{
 		int count(
-			((*version<0x25) ?
+			((version<0x25) ?
 				*(reinterpret_cast<uint8_t*>(currentOffset))
 				: *(reinterpret_cast<uint32_t*>(currentOffset))
 			)
 		);
 
-		currentOffset += ((*version<0x25) ? 1 : 4);
+		currentOffset += ((version<0x25) ? 1 : 4);
 
 		for (std::ptrdiff_t i = 0; i < count; ++i) {
 			SceneData sd;
@@ -151,18 +151,18 @@ void LUZone::Read() {
 	currentOffset = terrainInfo.description.Read(currentOffset);
 
 	// Transisions
-	if (*version >= 0x1f) {
+	if (version >= 0x1f) {
 		uint32_t * countOfScenes = reinterpret_cast<uint32_t*>(currentOffset);
 		currentOffset = reinterpret_cast<uint8_t*>(countOfScenes+1);
 		for (int transIndx = 0; transIndx < *countOfScenes; ++transIndx) {
 			SceneTransition transitionFactory;
 			// Transition Name
-			if (*version < 0x25) {
+			if (version < 0x25) {
 				++currentOffset = transitionFactory.transitionName.Read(reinterpret_cast<uint8_t*>(currentOffset + 1));
 			}
 			
 			// Transition Loops time
-			uint8_t loopTimes = (*version <= 0x21 || *version >= 0x27) ? 2 : 5;
+			uint8_t loopTimes = (version <= 0x21 || version >= 0x27) ? 2 : 5;
 
 			// Transition Points
 			for (int transPtIndx = 0; transPtIndx < loopTimes; ++transPtIndx) {
@@ -175,7 +175,7 @@ void LUZone::Read() {
 	}
 	
 	// Paths
-	if (*version >= 0x23) {
+	if (version >= 0x23) {
 		uint32_t * lengthOfRestOfFile = reinterpret_cast<uint32_t*>(currentOffset);
 		uint32_t * unknown1 = lengthOfRestOfFile + 1;
 		uint32_t * countOfPaths = unknown1 + 1;
