@@ -154,6 +154,7 @@ add_executable(OpCrux_Server
 	src/Misc/LWOTimer.cpp
 	src/Misc/LWOTimer.hpp
 	src/Misc/WORLD_CHECKSUM.hpp
+	src/Missions/MissionRequirementParser.hpp
 	src/NetworkDataTypes/ByteBool.hpp
 	src/NetworkDataTypes/LUPacket.hpp
 	src/PacketFactory/Auth/AuthPackets.hpp

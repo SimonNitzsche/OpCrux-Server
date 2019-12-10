@@ -7,6 +7,7 @@
 #include <sqlext.h>
 #include <sqltypes.h>
 #include <algorithm>
+#include <list>
 
 #include "Common/CrossPlatform.hpp"
 #include "Encryption/sha512.hpp"
@@ -1076,9 +1077,718 @@ public:
 		return 0;
 	}
 
-	static void DebugTest() {
+	struct MissionModel {
+		std::int64_t charID;
+		std::int32_t missionID;
+		std::int32_t state;
+		std::string progress;
+		std::int32_t repeatCount;
+		std::int64_t time;
+	};
 
+	static bool HasMission(std::int64_t charID, std::int32_t missionID) {
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT COUNT(missionID) FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID=?", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to query DB");
+		}
+
+		SQLLEN lenZero = 0;
+
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &charID, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &missionID, 0, &lenZero);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to query DB");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to query DB");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		{
+			if (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+				SQLUBIGINT count;
+				SQLLEN ptrSqlAnswer;
+				SQLGetData(sqlStmtHandle, 1, SQL_C_UBIGINT, &count, 0, &ptrSqlAnswer);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				return count!=0;
+			}
+
+			{
+				std::cout << "Database Exception on Fetch!\n";
+				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				throw std::exception("Unable to query DB");
+
+			}
+		}
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to query DB");
 	}
 
+	/*
+		Note: check with NOT Database::HasMission(...) before executing.
+	*/
+	static MissionModel AddMission(std::int64_t charID, std::int32_t missionID) {
+		MissionModel model;
+		model.charID = charID;
+		model.missionID = missionID;
+		model.state = 2;
+		model.progress = "0";
+		model.repeatCount = 0;
+		model.time = time(0);
+
+		
+		if (HasMission(charID, missionID)) {
+			throw std::exception("Mission already exists!");
+		}
+		SetupStatementHandle();
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time) VALUES(?,?,?,?,?,?)", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to add mission.");
+		}
+
+		SQLLEN lenZero = 0;
+		SQLLEN NTS = SQL_NTS;
+		SQLLEN lenProgress = model.progress.size();
+
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &model.charID, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &model.missionID, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 3, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &model.state, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(model.progress.size(), 1), 0, (SQLPOINTER)model.progress.c_str(), 0, &lenProgress);
+		ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &model.repeatCount, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &model.time, 0, &lenZero);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to add mission.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to add mission.");
+		}
+
+		return model;
+	}
+
+	/*
+		Note: check with Database::HasMission(...) before executing.
+	*/
+	static MissionModel GetMission(std::int64_t charID, std::int32_t missionID) {
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID=?", SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SLONG, SQL_INTEGER, 0, 0, &missionID, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		if (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLBIGINT charID;
+			SQLINTEGER missionID;
+			SQLINTEGER state;
+			SQLCHAR sqlProgress[SQL_RESULT_LEN];
+			SQLINTEGER repeatCount;
+			SQLBIGINT time;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &state, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_TCHAR, &sqlProgress, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+			
+			MissionModel model;
+			model.charID = charID;
+			model.missionID = missionID;
+			model.state = state;
+			model.progress = progress;
+			model.repeatCount = repeatCount;
+			model.time = time;
+
+			return model;
+			
+		}
+
+		std::cout << "Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
+	}
+
+	static std::list<MissionModel> GetAllMissions(std::int64_t charID) {
+		SetupStatementHandle();
+
+		std::list<MissionModel> retVal={};
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=?", SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLBIGINT charID;
+			SQLINTEGER missionID;
+			SQLINTEGER state;
+			SQLCHAR sqlProgress[SQL_RESULT_LEN];
+			SQLINTEGER repeatCount;
+			SQLBIGINT time;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &state, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_TCHAR, &sqlProgress, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+
+			MissionModel model;
+			model.charID = charID;
+			model.missionID = missionID;
+			model.state = state;
+			model.progress = progress;
+			model.repeatCount = repeatCount;
+			model.time = time;
+
+			retVal.push_back(model);
+
+		}
+
+		return retVal;
+
+		std::cout << "Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
+	}
+
+	static std::list<MissionModel> GetAllMissionsByState(std::int64_t charID, std::int32_t state) {
+		SetupStatementHandle();
+
+		std::list<MissionModel> retVal = {};
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? and state=?", SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SLONG, SQL_INTEGER, 0, 0, &state, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLBIGINT charID;
+			SQLINTEGER missionID;
+			SQLINTEGER state;
+			SQLCHAR sqlProgress[SQL_RESULT_LEN];
+			SQLINTEGER repeatCount;
+			SQLBIGINT time;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &state, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_TCHAR, &sqlProgress, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+
+			MissionModel model;
+			model.charID = charID;
+			model.missionID = missionID;
+			model.state = state;
+			model.progress = progress;
+			model.repeatCount = repeatCount;
+			model.time = time;
+
+			retVal.push_back(model);
+
+		}
+
+		return retVal;
+
+		std::cout << "Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
+	}
+
+	static std::list<MissionModel> GetAllMissionsByStates(std::int64_t charID, std::list<std::int32_t> state) {
+		SetupStatementHandle();
+
+		std::list<MissionModel> retVal = {};
+
+		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND state IN (";
+
+		if (state.size() != 0)
+			stmBuilder += "?";
+		for (int i = 1; i < state.size(); ++i)
+			stmBuilder += ",?";
+		stmBuilder += ")";
+		
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)stmBuilder.c_str(), SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+		
+		SQLSMALLINT qI = 2;
+		for (auto it = state.begin(); it != state.end(); ++it, ++qI) {
+			std::int32_t e = *it;
+			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
+		}
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLBIGINT charID;
+			SQLINTEGER missionID;
+			SQLINTEGER state;
+			SQLCHAR sqlProgress[SQL_RESULT_LEN];
+			SQLINTEGER repeatCount;
+			SQLBIGINT time;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &state, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_TCHAR, &sqlProgress, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+
+			MissionModel model;
+			model.charID = charID;
+			model.missionID = missionID;
+			model.state = state;
+			model.progress = progress;
+			model.repeatCount = repeatCount;
+			model.time = time;
+
+			retVal.push_back(model);
+
+		}
+
+		return retVal;
+
+		std::cout << "Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
+	}
+
+	static std::list<MissionModel> GetAllMissionsByIDs(std::int64_t charID, std::list<std::int32_t> missions) {
+		SetupStatementHandle();
+
+		std::list<MissionModel> retVal = {};
+
+		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID IN (";
+
+		if (missions.size() != 0)
+			stmBuilder += "?";
+		for (int i = 1; i < missions.size(); ++i)
+			stmBuilder += ",?";
+		stmBuilder += ")";
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)stmBuilder.c_str(), SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+
+		SQLSMALLINT qI = 2;
+		for (auto it = missions.begin(); it != missions.end(); ++it, ++qI) {
+			std::int32_t e = *it;
+			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
+		}
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLBIGINT charID;
+			SQLINTEGER missionID;
+			SQLINTEGER state;
+			SQLCHAR sqlProgress[SQL_RESULT_LEN];
+			SQLINTEGER repeatCount;
+			SQLBIGINT time;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &state, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_TCHAR, &sqlProgress, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+
+			MissionModel model;
+			model.charID = charID;
+			model.missionID = missionID;
+			model.state = state;
+			model.progress = progress;
+			model.repeatCount = repeatCount;
+			model.time = time;
+
+			retVal.push_back(model);
+
+		}
+
+		return retVal;
+
+		std::cout << "Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
+	}
+
+	static std::list<MissionModel> GetAllMissionsByIDsAndState(std::int64_t charID, std::list<std::int32_t> missions, std::int32_t state) {
+		SetupStatementHandle();
+
+		std::list<MissionModel> retVal = {};
+
+		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND state=? AND missionID IN (";
+
+		if (missions.size() != 0)
+			stmBuilder += "?";
+		for (int i = 1; i < missions.size(); ++i)
+			stmBuilder += ",?";
+		stmBuilder += ")";
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)stmBuilder.c_str(), SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SLONG, SQL_INTEGER, 0, 0, &state, 0);
+
+		SQLSMALLINT qI = 3;
+		for (auto it = missions.begin(); it != missions.end(); ++it, ++qI) {
+			std::int32_t e = *it;
+			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
+		}
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLBIGINT charID;
+			SQLINTEGER missionID;
+			SQLINTEGER state;
+			SQLCHAR sqlProgress[SQL_RESULT_LEN];
+			SQLINTEGER repeatCount;
+			SQLBIGINT time;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &state, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_TCHAR, &sqlProgress, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+
+			MissionModel model;
+			model.charID = charID;
+			model.missionID = missionID;
+			model.state = state;
+			model.progress = progress;
+			model.repeatCount = repeatCount;
+			model.time = time;
+
+			retVal.push_back(model);
+
+		}
+
+		return retVal;
+
+		std::cout << "Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
+	}
+
+	static std::list<MissionModel> GetAllMissionsByIDsAndStates(std::int64_t charID, std::list<std::int32_t> missions, std::list<std::int32_t> states) {
+		SetupStatementHandle();
+
+		std::list<MissionModel> retVal = {};
+
+		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID IN (";
+
+		if (missions.size() != 0)
+			stmBuilder += "?";
+		for (int i = 1; i < missions.size(); ++i)
+			stmBuilder += ",?";
+		stmBuilder += ") AND state IN (";
+
+		if (states.size() != 0)
+			stmBuilder += "?";
+		for (int i = 1; i < states.size(); ++i)
+			stmBuilder += ",?";
+		stmBuilder += ")";
+
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)stmBuilder.c_str(), SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+
+		SQLSMALLINT qI = 2;
+		for (auto it = missions.begin(); it != missions.end(); ++it, ++qI) {
+			std::int32_t e = *it;
+			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
+		}
+		for (auto it = states.begin(); it != states.end(); ++it, ++qI) {
+			std::int32_t e = *it;
+			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
+		}
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLBIGINT charID;
+			SQLINTEGER missionID;
+			SQLINTEGER state;
+			SQLCHAR sqlProgress[SQL_RESULT_LEN];
+			SQLINTEGER repeatCount;
+			SQLBIGINT time;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &state, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_TCHAR, &sqlProgress, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+
+			MissionModel model;
+			model.charID = charID;
+			model.missionID = missionID;
+			model.state = state;
+			model.progress = progress;
+			model.repeatCount = repeatCount;
+			model.time = time;
+
+			retVal.push_back(model);
+
+		}
+
+		return retVal;
+
+		std::cout << "Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
+	}
+
+	/*
+		Note: check with Database::HasMission(...) before executing.
+	*/
+	static void UpdateMission(MissionModel mission) {
+		if (HasMission(mission.charID, mission.missionID)) {
+			throw std::exception("Mission already exists!");
+		}
+		SetupStatementHandle();
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.Missions SET state=?,progress=?,repeatCount=?,time=?) WHERE charID=? AND missionID=?", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to add mission.");
+		}
+
+		SQLLEN lenZero = 0;
+		SQLLEN NTS = SQL_NTS;
+		SQLLEN lenProgress = mission.progress.size();
+
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.state, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(mission.progress.size(), 1), 0, (SQLPOINTER)mission.progress.c_str(), 0, &lenProgress);
+		ret = SQLBindParameter(sqlStmtHandle, 3, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.repeatCount, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &mission.time, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &mission.charID, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.missionID, 0, &lenZero);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to add mission.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to add mission.");
+		}
+	}
 };
 #endif // !__DATABASE_HPP__
