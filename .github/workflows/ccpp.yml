@@ -1,0 +1,15 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: cmake .
+      run: cmake .
+    - name: make OpCrux_Server
+      run: make OpCrux_Server
