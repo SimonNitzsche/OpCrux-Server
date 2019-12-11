@@ -14,10 +14,6 @@ namespace CacheComponentsRegistry {
 				FDB::RowInfo rowInfo = rth[i];
 				if (*reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation()) == id) {
 					while (rowInfo.isValid()) {
-
-						int a = *reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation());
-						int b = *reinterpret_cast<int32_t*>(rowInfo[1].getMemoryLocation());
-
 						if (*reinterpret_cast<int32_t*>(rowInfo[1].getMemoryLocation()) == component_type)
 							return rowInfo;
 						if (rowInfo.isLinkedRowInfoValid()) {
