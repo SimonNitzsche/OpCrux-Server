@@ -14,7 +14,7 @@ private:
 
 public:
 
-	SoundAmbient3DComponent() : IEntityComponent() {}
+	SoundAmbient3DComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 
 	static constexpr int GetTypeID() { return 56; }

@@ -23,7 +23,7 @@ private:
 	FileTypes::LUZ::LUZonePathMovingPlatform * attachedPath = nullptr;
 public:
 
-	MovingPlatformComponent() : IEntityComponent() {}
+	MovingPlatformComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 25; }
 

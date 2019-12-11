@@ -11,7 +11,7 @@ private:
 	
 public:
 
-	RenderComponent() : IEntityComponent() {}
+	RenderComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 2; }
 

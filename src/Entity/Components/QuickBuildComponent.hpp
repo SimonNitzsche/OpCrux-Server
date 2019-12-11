@@ -26,18 +26,18 @@ private:
 
 public:
 
-	QuickbuildComponent() : IEntityComponent() {}
+	QuickbuildComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 48; }
 
 	void OnEnable() {
 		if ((statsComponent = owner->GetComponent<StatsComponent>()) == nullptr) {
-			owner->AddComponent<StatsComponent>();
+			owner->AddComponent<StatsComponent>(0);
 			statsComponent = owner->GetComponent<StatsComponent>();
 
 			if (statsComponent == nullptr) {
 				Logger::log("WRLD", "Something went wrong QuickbuildComponent::OnEnable()");
-				statsComponent = new StatsComponent();
+				statsComponent = new StatsComponent(0);
 			}
 		}
 	}

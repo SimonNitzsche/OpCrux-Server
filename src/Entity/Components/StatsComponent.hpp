@@ -43,7 +43,7 @@ public:
 
 public:
 
-	StatsComponent() : IEntityComponent() {}
+	StatsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 200; }
 

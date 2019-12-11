@@ -4,8 +4,7 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "Entity/GameObject.hpp"
 
-#include "GameCache/ComponentsRegistry.hpp"
-#include "GameCache/MovementAIComponent.hpp"
+#include "GameCache/MissionNPCComponent.hpp"
 #include "Utils/ServerInfo.hpp"
 
 #include "Entity/GameMessages.hpp"
@@ -19,7 +18,7 @@ private:
 
 public:
 
-	MissionOfferComponent() : IEntityComponent() {}
+	MissionOfferComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 73; }
 
@@ -45,6 +44,7 @@ public:
 		}
 		else {
 			// pick first that meets requirements
+			auto masterRow = CacheMissionNPCComponent::getRow(GetComponentID());
 
 			missionOffer.missionID = 1727;
 		}

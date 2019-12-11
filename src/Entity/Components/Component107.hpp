@@ -21,7 +21,7 @@ public:
 		_isDirtyPossessingObject = true;
 	}
 
-	Component107() : IEntityComponent() {}
+	Component107(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 107; }
 

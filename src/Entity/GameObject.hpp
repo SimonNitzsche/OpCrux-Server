@@ -183,12 +183,12 @@ namespace Entity {
 			void Tick();
 
 			/*
-				Returns an component by class
+				Returns an component by Type
 			*/
-			IEntityComponent * GetComponentByType(int id);
+			IEntityComponent* GetComponentByType(int id);
 
 			/*
-				Returns an component by Type
+				Returns an component by class
 			*/
 			template<class T = IEntityComponent>
 			inline T * GetComponent();
@@ -196,13 +196,14 @@ namespace Entity {
 			/*
 				Adds an component by ID
 			*/
-			IEntityComponent * AddComponentByID(int id);
+			IEntityComponent* AddComponentByID(int id, int compID);
+
 
 			/*
 				Adds an component by class
 			*/
 			template<class T = IEntityComponent>
-			inline T* AddComponent();
+			inline T* AddComponent(std::int32_t componentID);
 
 			/*
 				Serializes the Object.

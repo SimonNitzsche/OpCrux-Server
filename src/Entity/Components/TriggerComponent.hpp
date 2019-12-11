@@ -11,7 +11,7 @@ private:
 
 public:
 
-	TriggerComponent() : IEntityComponent(), trigger(-1, false) {}
+	TriggerComponent(std::int32_t componentID) : IEntityComponent(componentID), trigger(-1, false) {}
 	
 	static constexpr int GetTypeID() { return 69; }
 

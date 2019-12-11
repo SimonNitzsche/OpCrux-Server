@@ -17,7 +17,7 @@ private:
 
 public:
 
-	VendorComponent() : IEntityComponent() {}
+	VendorComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 16; }
 

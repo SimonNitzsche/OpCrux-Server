@@ -25,11 +25,17 @@ x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 	/*
 		Components require to extend this class.
 	*/
-	class IEntityComponent {
+		class IEntityComponent {
+		private:
+			std::int32_t componentID = -1;
 		public:
 
 			// The Owner Game Object.
 			Entity::GameObject * owner = nullptr;
+
+			std::int32_t GetComponentID() {
+				return componentID;
+			}
 
 			// Return the component type
 			static constexpr int GetTypeID() { return -1; };
@@ -66,13 +72,13 @@ x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 
 			virtual ~IEntityComponent() = default;
 
-			IEntityComponent() = default;
+			IEntityComponent(std::int32_t componentID) : componentID(componentID) {};
 
 			void SetOwner(Entity::GameObject * obj) {
 				owner = obj;
 			}
 			
-	};
+		};
 //}
 
 //using namespace Entity::Components::Interface;

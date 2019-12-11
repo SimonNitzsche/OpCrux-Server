@@ -27,7 +27,7 @@ private:
 
 public:
 
-	SimplePhysicsComponent() : IEntityComponent() {}
+	SimplePhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 3; }
 

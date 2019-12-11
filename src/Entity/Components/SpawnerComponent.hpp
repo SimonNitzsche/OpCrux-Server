@@ -55,7 +55,7 @@ public:
 	DataTypes::Quaternion originRot;
 public:
 
-	SpawnerComponent() : IEntityComponent() {}
+	SpawnerComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 10; }
 

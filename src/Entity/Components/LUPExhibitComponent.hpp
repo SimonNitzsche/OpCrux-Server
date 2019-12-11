@@ -20,7 +20,7 @@ private:
 	long long lastSet = 0;
 public:
 
-	LUPExhibitComponent() : IEntityComponent() {}
+	LUPExhibitComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 75; }
 

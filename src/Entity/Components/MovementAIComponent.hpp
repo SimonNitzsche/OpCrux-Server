@@ -27,7 +27,7 @@ private:
 
 public:
 
-	MovementAIComponent() : IEntityComponent() {}
+	MovementAIComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 31; }
 

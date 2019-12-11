@@ -32,7 +32,7 @@ private:
 
 public:
 
-	PhantomPhysicsComponent() : IEntityComponent() {}
+	PhantomPhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 40; }
 

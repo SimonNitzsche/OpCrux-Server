@@ -81,8 +81,8 @@ namespace CacheComponentsRegistry {
 		return FDB::RowInfo();
 	}
 
-	inline std::vector<std::uint32_t> GetObjectComponentTypes(int32_t lot) {
-		std::vector<std::uint32_t> ret;
+	inline std::vector<std::pair<std::int32_t,std::int32_t>> GetObjectComponentTypes(int32_t lot) {
+		std::vector<std::pair<std::int32_t, std::int32_t>> ret;
 		FDB::RowTopHeader rth = Cache.getRows("ComponentsRegistry");
 		for (int i = 0; i < rth.getRowCount(); ++i) {
 			try {
@@ -90,7 +90,7 @@ namespace CacheComponentsRegistry {
 				FDB::RowInfo rowInfo = rth[i];
 				if (*reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation()) == lot) {
 					while (rowInfo.isValid()) {
-						ret.push_back(*reinterpret_cast<int32_t*>(rowInfo[1].getMemoryLocation()));
+						ret.push_back({ *reinterpret_cast<std::int32_t*>(rowInfo[1].getMemoryLocation()),* reinterpret_cast<std::int32_t*>(rowInfo[2].getMemoryLocation()) });
 						if (rowInfo.isLinkedRowInfoValid()) {
 							rowInfo = rowInfo.getLinkedRowInfo();
 						}

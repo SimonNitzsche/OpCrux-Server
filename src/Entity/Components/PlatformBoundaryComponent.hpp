@@ -14,7 +14,7 @@ private:
 
 public:
 
-	PlatformBoundaryComponent() : IEntityComponent() {}
+	PlatformBoundaryComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 
 	static constexpr int GetTypeID() { return 27; }

@@ -28,7 +28,7 @@ private:
 public:
 	std::map<std::uint32_t, InventoryItemStack> inventory = {};
 
-	InventoryComponent() : IEntityComponent() {}
+	InventoryComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 17; }
 

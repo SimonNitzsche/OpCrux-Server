@@ -18,18 +18,18 @@ private:
 
 public:
 
-	CollectibleComponent() : IEntityComponent() {}
+	CollectibleComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 23; }
 
 	void OnEnable() {
 		if ((statsComponent = owner->GetComponent<StatsComponent>()) == nullptr) {
-			owner->AddComponent<StatsComponent>();
+			owner->AddComponent<StatsComponent>(0);
 			statsComponent = owner->GetComponent<StatsComponent>();
 
 			if (statsComponent == nullptr) {
 				Logger::log("WRLD", "Something went wrong CollectibleComponent::OnEnable()");
-				statsComponent = new StatsComponent();
+				statsComponent = new StatsComponent(0);
 			}
 		}
 	}

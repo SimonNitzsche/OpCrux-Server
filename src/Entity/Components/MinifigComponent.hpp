@@ -17,7 +17,7 @@ private:
 
 public:
 
-	MinifigComponent() : IEntityComponent() {}
+	MinifigComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 35; }
 

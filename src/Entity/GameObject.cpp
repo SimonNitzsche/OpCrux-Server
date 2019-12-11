@@ -12,7 +12,7 @@
 #define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T) {COMP_T * comp = this->GetComponent<COMP_T>(); if(comp != nullptr) { /*Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"...");*/ comp->Serialize(factory, packetType);}}
 #define COMPONENT_ONADD_SWITCH_CASE(COMP_T) {\
 	case COMP_T::GetTypeID(): {\
-		COMP_T * comp = new COMP_T();\
+		COMP_T * comp = new COMP_T(compID);\
 		components.insert(std::make_pair(COMP_T::GetTypeID(), comp));\
 		comp->SetOwner(this); \
 		comp->OnEnable();\
@@ -104,8 +104,8 @@ Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
 	this->creationTimestamp = ServerInfo::uptime();
 
 	// Add components
-	for (std::uint32_t component_type : component_types_to_be_added) {
-		this->AddComponentByID(component_type);
+	for (auto component_type : component_types_to_be_added) {
+		this->AddComponentByID(component_type.first, component_type.second);
 	}
 }
 
@@ -164,7 +164,7 @@ T * Entity::GameObject::GetComponent() {
 	return static_cast<T*>(GetComponentByType(T::GetTypeID()));
 }
 
-IEntityComponent * Entity::GameObject::AddComponentByID(int id) {
+IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 	switch (id) {
 		/* ========== SERIALIZED ========== */
 		COMPONENT_ONADD_SWITCH_CASE(StatsComponent);
@@ -218,8 +218,8 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id) {
 }
 
 template<class T>
-T * Entity::GameObject::AddComponent() {
-	return static_cast<T*>(this->AddComponentByID(T::GetTypeID()));
+T * Entity::GameObject::AddComponent(std::int32_t componentID) {
+	return static_cast<T*>(this->AddComponentByID(T::GetTypeID(), componentID));
 }
 
 void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
@@ -417,7 +417,7 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 			std::u16string customScript = u"";
 			LDF_GET_VAL_FROM_COLLECTION(customScript, collection, u"custom_script_server", u"");
 			if (customScript != u"") {
-				this->AddComponent<ScriptComponent>();
+				this->AddComponent<ScriptComponent>(-1);
 			}
 		}
 
@@ -441,7 +441,7 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 				// Get trigger
 				for (int i = 0; i < triggerFile.triggers.size(); ++i) {
 					if (triggerFile.triggers.at(i).id == triggerID) {
-						this->AddComponent<TriggerComponent>();
+						this->AddComponent<TriggerComponent>(0);
 						TriggerComponent * triggerComp = static_cast<TriggerComponent*>(this->GetComponent<TriggerComponent>());
 						triggerComp->AssignTrigger(triggerFile.triggers.at(i));
 						break;

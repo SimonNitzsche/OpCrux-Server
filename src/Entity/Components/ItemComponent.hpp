@@ -17,7 +17,7 @@ private:
 
 public:
 
-	ItemComponent() : IEntityComponent() {}
+	ItemComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 
 	static constexpr int GetTypeID() { return 11; }

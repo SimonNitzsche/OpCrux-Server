@@ -30,7 +30,7 @@ private:
 			bool __unk__9;
 public:
 
-	ControllablePhysicsComponent() : IEntityComponent() {}
+	ControllablePhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 1; }
 
