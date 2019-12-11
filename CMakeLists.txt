@@ -137,6 +137,7 @@ add_executable(OpCrux_Server
 	src/GameCache/ItemComponent.hpp
 	src/GameCache/LootMatrix.hpp
 	src/GameCache/LootMatrixIndex.hpp
+	src/GameCache/MissionNPCComponent.hpp
 	src/GameCache/Missions.hpp
 	src/GameCache/MovementAIComponent.hpp
 	src/GameCache/MovingPlatforms.hpp
