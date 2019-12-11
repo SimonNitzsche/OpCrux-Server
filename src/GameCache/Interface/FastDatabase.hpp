@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <memory>
 #include <cmath>
+#include <list>
 
 namespace GameCache::Interface::FDB {
 
@@ -184,6 +185,16 @@ namespace GameCache::Interface::FDB {
 
 		FieldValue operator [] (uint32_t indexOfColumn) {
 			return getRowData(indexOfColumn);
+		}
+
+		std::list<RowInfo> flatIt() {
+			std::list<RowInfo> rList = { *this };
+			RowInfo tmpRI = *this;
+			while (tmpRI.isLinkedRowInfoValid()) {
+				tmpRI = tmpRI.getLinkedRowInfo();
+				rList.push_back(tmpRI);
+			}
+			return rList;
 		}
 
 		FieldValue operator [] (std::string columnName) {
