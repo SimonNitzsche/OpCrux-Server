@@ -1,4 +1,0 @@
-
-// Put your MSSQL credentials in here
-
-#define DB_CREDENTIALS "DRIVER={Driver};SERVER={IP};UID={user};PWD={password};"

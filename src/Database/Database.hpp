@@ -14,8 +14,8 @@
 #include "GameCache/Interface/FastDatabase.hpp"
 #include "GameCache/ComponentsRegistry.hpp"
 #include "DataTypes/Vector3.hpp"
-
-#include "DB_Server.hpp"
+#include "Configuration/ConfDatabase.hpp"
+#include "Configuration/ConfigurationManager.hpp"
 
 #define SQL_RESULT_LEN 240
 #define SQL_RETURN_CODE_LEN 1000
@@ -135,9 +135,25 @@ public:
 		//just make sure you define the server name and the port
 		//You have the option to use a username/password instead of a trusted connection
 		//but is more secure to use a trusted connection
+
+		auto dbConf = &Configuration::ConfigurationManager::dbConf;
+
+		std::string connStrBuilder = \
+			"DRIVER={"\
+			+ dbConf->GetStringVal("DBConnection", "DBDRIVER")\
+			+ "};SERVER="\
+			+ dbConf->GetStringVal("DBConnection", "DBHOST")\
+			+ ";UID="\
+			+ dbConf->GetStringVal("DBConnection", "DBUSER")\
+			+ ";PWD="\
+			+ dbConf->GetStringVal("DBConnection", "DBPASS")\
+			+ ";";
+	
+
+
 		switch (SQLDriverConnect(sqlConnHandle,
 			NULL,
-			(SQLCHAR*)DB_CREDENTIALS,
+			(SQLCHAR*)connStrBuilder.c_str(),
 			SQL_NTS,
 			retconstring,
 			1000,

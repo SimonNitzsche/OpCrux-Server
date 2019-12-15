@@ -25,10 +25,12 @@ include_directories(tests)
 
 add_executable(OpCrux_Server
 	src/Common/CrossPlatform.hpp
+	src/Configuration/ConfDatabase.hpp
+	src/Configuration/ConfigurationManager.cpp
+	src/Configuration/ConfigurationManager.hpp
 	src/Database/Models/OPCRUX_AD/AccountsModel.hpp
 	src/Database/Models/DBModel.hpp
 	src/Database/Database.hpp
-	src/Database/DB_Server.hpp
 	src/DataTypes/AMF3.hpp
 	src/DataTypes/LDF.hpp
 	src/DataTypes/LEGO_GUID.hpp
@@ -118,6 +120,7 @@ add_executable(OpCrux_Server
 	src/Enums/ESystem.hpp
 	src/Enums/StringEnums.hpp
 	src/Exceptions/ExNetException.hpp
+	src/FileTypes/INIFile/ConfFile.hpp
 	src/FileTypes/LUZFile/LUZone.cpp
 	src/FileTypes/LUZFile/LUZone.hpp
 	src/FileTypes/LVLFile/LUScene.cpp

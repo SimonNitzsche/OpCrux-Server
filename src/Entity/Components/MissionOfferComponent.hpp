@@ -44,7 +44,10 @@ public:
 		}
 		else {
 			// pick first that meets requirements
-			auto masterRow = CacheMissionNPCComponent::getRow(GetComponentID());
+			auto missionsOffering = CacheMissionNPCComponent::getRow(GetComponentID()).flatIt();
+			for (auto it = missionsOffering.begin(); it != missionsOffering.end(); ++it) {
+
+			}
 
 			missionOffer.missionID = 1727;
 		}

@@ -64,6 +64,45 @@ namespace FileUtils {
 		return file.substr(0, file.find_last_of("\\/"));
 	}
 	
+	inline bool FileExists(std::string &file) {
+		struct stat buf;
+		return (stat(file.c_str(), &buf) == 0);
+	}
+
+	inline std::string ReadTextFile(std::string& filename) {
+		// Open
+		FILE* file;
+		fopen_s(&file, filename.c_str(), "r");
+
+		// Check
+		if (file == nullptr) {
+			Logger::log("FileUtils::ReadFileCompletely", "Couldn't load file \"" + filename + "\"");
+			return nullptr;
+		}
+
+		// Get file size
+		fseek(file, 0, SEEK_END);
+		long int size = ftell(file);
+
+		// Reading data to array of unsigned chars
+		std::unique_ptr<unsigned char[]> data = std::make_unique<unsigned char[]>(size);
+		fseek(file, 0, SEEK_SET);
+		int bytes_read = fread(data.get(), sizeof(unsigned char), size, file);
+
+		// Cleanup
+		fclose(file);
+
+		// return
+		return std::string(data.get(), data.get() + size);
+	}
+
+	inline void SaveTextFile(std::string &file, std::string &data) {
+		std::ofstream stream;
+		stream.open(file);
+		stream << data;
+		stream.close();
+	}
+
 	/* Used by SavePacket(...), to know the current packet index for saving. */
 	static std::uint32_t savedPacketIndex = 0;
 	static std::string savedPacketFolder = "";

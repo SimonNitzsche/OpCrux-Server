@@ -343,4 +343,4 @@ CMakeCache.txt
 **/*.a
 
 # MSSQL creds
-src/Database/DB_Server.hpp
+bin/conf/*.ini

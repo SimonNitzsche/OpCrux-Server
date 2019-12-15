@@ -25,6 +25,7 @@
 #include "Utils/StringUtils.hpp"
 #include <chrono>
 
+#include "Configuration/ConfigurationManager.hpp"
 #include "Database/Database.hpp"
 
 using namespace std::chrono;
@@ -33,25 +34,27 @@ std::vector<ILUServer *> virtualServerInstances;
 
 enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 
+GameCache::Interface::FDB::Connection Cache;
+BridgeMasterServer* masterServerBridge;
+
+int givenWorldID = 1000;
+
+
 // Following Includes are for testing
 #include "FileTypes/LUZFile/LUZone.hpp"
 #include "Entity/GameObject.hpp"
 #include "GameCache/WorldConfig.hpp"
-
-#include "DataTypes/LDF.hpp"
-
-GameCache::Interface::FDB::Connection Cache;
-BridgeMasterServer* masterServerBridge;
-
 #include "Entity/Components/StatsComponent.hpp"
-
-int givenWorldID = 1000;
+#include "DataTypes/LDF.hpp"
 
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();
 	std::string ipMaster = "127.0.0.1";
 	//std::string ipMaster = "foxsog.com";
 
+	Configuration::ConfigurationManager::Load();
+
+	Logger::log("MAIN", "Connecting to database...");
 	Database::Connect();
 	//Database::DoATestQuery();
 
