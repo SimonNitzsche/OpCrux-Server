@@ -9,7 +9,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: cmake ..
-      run: cmake ..
-    - name: make OpCrux_Server
-      run: make OpCrux_Server
+    - name: configure
+      run: mkdir build && cd build && cmake ..
+    - name: build
+      run: cmake --build build --config OpCrux_Server
