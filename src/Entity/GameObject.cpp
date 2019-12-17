@@ -628,7 +628,7 @@ std::string Entity::GameObject::GenerateXML() {
 
 	ss << "<?xml version=\"1.0\"?>";
 
-	ss << "<obj v=\"" << std::to_string(LOT) << ">";
+	ss << "<obj v=\"" << std::to_string(LOT) << "\">";
 	{
 		ss << "<buff/>";
 		ss << "<skil/>";
@@ -664,6 +664,22 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "/>";
 		}
 		{
+			ss << "<char ";
+				ss << "cm=\"" << std::to_string(0x7FFFFFFFFFFFFFFF) << "\" ";
+				ss << "acct=\"" << charInfo.accountID << "\" ";
+				ss << "cc=\"" << charInfo.currency << "\" ";
+				ss << "co=\"" << Instance->sessionManager.GetSession(objectID)->systemAddress.port << "\" ";
+				ss << "ttip=\"" << Instance->sessionManager.GetSession(objectID)->systemAddress.binaryAddress << "\" ";
+				ss << "time=\"" << 40000 << "\"";
+			ss << ">";
+			{
+				ss << "<ue/>";
+				ss << "<vl/>";
+				ss << "<zs/>";
+			}
+			ss << "</char>";
+		}
+		{
 			ss << "<lvl l=\"" << std::to_string(charInfo.uLevel) << "\" cv=\"1\" sb=\"525\"/>";
 		}
 		{
@@ -677,6 +693,32 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<mis>";
 			{
 				// TODO
+
+				ss << "<done>";
+				{
+					auto missionsDone = Database::GetAllMissionsByStates(objectID & 0xFFFFFFFF, { 8, 9 });
+					for (auto it = missionsDone.begin(); it != missionsDone.end(); ++it) {
+						ss << "<m id=\"" << it->missionID << "\" cts=\"" << it->time << "\" cct=\"" << it->repeatCount << "\"/>";
+					}
+				}
+				ss << "</done>";
+				ss << "<cur>";
+				{
+					auto missionsActive = Database::GetAllMissionsByStates(objectID & 0xFFFFFFFF, { 2, 4, 10, 12 });
+					for (auto it = missionsActive.begin(); it != missionsActive.end(); ++it) {
+						ss << "<m id=\"" << it->missionID << "\">";
+
+						if (it->progress != "") {
+							auto taskprogress = StringUtils::splitString(it->progress, ',');
+							for (int i = 0; i < taskprogress.size(); ++i) {
+								ss << "<sv v=\"" << taskprogress.at(i) << "\"/>";
+							}
+						}
+
+						ss << "</m>";
+					}
+				}
+				ss << "</cur>";
 			}
 			ss << "</mis>";
 		}
@@ -684,13 +726,12 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<mnt a=\"0\"/>";
 		}
 		{
-			ss << "<dest ";
+			ss << "<dest";
 			
 				// TODO
 			ss << "/>";
 		}
 	}
 	ss << "</obj>";
-
 	return ss.str();
 }
