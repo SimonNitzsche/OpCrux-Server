@@ -1174,7 +1174,7 @@ public:
 			throw std::exception("Mission already exists!");
 		}
 		SetupStatementHandle();
-		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time,chosenReward) VALUES(?,?,?,?,?,?)", SQL_NTS);
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time,chosenReward) VALUES(?,?,?,?,?,?,?)", SQL_NTS);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -1798,7 +1798,7 @@ public:
 			throw std::exception("Mission already exists!");
 		}
 		SetupStatementHandle();
-		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.Missions SET state=?,progress=?,repeatCount=?,time=?) WHERE charID=? AND missionID=?", SQL_NTS);
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.Missions SET state=?,progress=?,repeatCount=?,time=?,chosenReward=?) WHERE charID=? AND missionID=?", SQL_NTS);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -1813,8 +1813,9 @@ public:
 		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(mission.progress.size(), 1), 0, (SQLPOINTER)mission.progress.c_str(), 0, &lenProgress);
 		ret = SQLBindParameter(sqlStmtHandle, 3, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.repeatCount, 0, &lenZero);
 		ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &mission.time, 0, &lenZero);
-		ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &mission.charID, 0, &lenZero);
-		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.missionID, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.chosenReward, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &mission.charID, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 7, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.missionID, 0, &lenZero);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
