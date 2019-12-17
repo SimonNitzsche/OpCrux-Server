@@ -11,6 +11,7 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 	// Please keep it sorted by Name:
 	switch (msgID) {
 		GM_DESERIALIZE_SWITCH_CASE(GM::FireEventServerSide);
+		GM_DESERIALIZE_SWITCH_CASE(GM::MissionDialogueOK);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayEmote);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayerLoaded);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestUse);
