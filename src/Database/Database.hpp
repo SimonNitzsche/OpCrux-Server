@@ -1100,6 +1100,7 @@ public:
 		std::string progress;
 		std::int32_t repeatCount;
 		std::int64_t time;
+		std::int32_t chosenReward;
 	};
 
 	static bool HasMission(std::int64_t charID, std::int32_t missionID) {
@@ -1166,13 +1167,14 @@ public:
 		model.progress = "0";
 		model.repeatCount = 0;
 		model.time = time(0);
+		model.chosenReward = -1;
 
 		
 		if (HasMission(charID, missionID)) {
 			throw std::exception("Mission already exists!");
 		}
 		SetupStatementHandle();
-		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time) VALUES(?,?,?,?,?,?)", SQL_NTS);
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time,chosenReward) VALUES(?,?,?,?,?,?)", SQL_NTS);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -1189,6 +1191,7 @@ public:
 		ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(model.progress.size(), 1), 0, (SQLPOINTER)model.progress.c_str(), 0, &lenProgress);
 		ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &model.repeatCount, 0, &lenZero);
 		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &model.time, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 7, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &model.chosenReward, 0, &lenZero);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
@@ -1213,7 +1216,7 @@ public:
 	static MissionModel GetMission(std::int64_t charID, std::int32_t missionID) {
 		SetupStatementHandle();
 
-		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID=?", SQL_NTS);
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID=?", SQL_NTS);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
@@ -1250,6 +1253,7 @@ public:
 			SQLCHAR sqlProgress[SQL_RESULT_LEN];
 			SQLINTEGER repeatCount;
 			SQLBIGINT time;
+			SQLINTEGER chosenReward;
 
 			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
@@ -1258,6 +1262,7 @@ public:
 			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &chosenReward, 0, &ptrSqlAnswer);
 			
 			MissionModel model;
 			model.charID = charID;
@@ -1266,6 +1271,7 @@ public:
 			model.progress = progress;
 			model.repeatCount = repeatCount;
 			model.time = time;
+			model.chosenReward = chosenReward;
 
 			return model;
 			
@@ -1282,7 +1288,7 @@ public:
 
 		std::list<MissionModel> retVal={};
 
-		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=?", SQL_NTS);
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=?", SQL_NTS);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
@@ -1318,6 +1324,7 @@ public:
 			SQLCHAR sqlProgress[SQL_RESULT_LEN];
 			SQLINTEGER repeatCount;
 			SQLBIGINT time;
+			SQLINTEGER chosenReward;
 
 			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
@@ -1326,6 +1333,7 @@ public:
 			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &chosenReward, 0, &ptrSqlAnswer);
 
 			MissionModel model;
 			model.charID = charID;
@@ -1334,6 +1342,7 @@ public:
 			model.progress = progress;
 			model.repeatCount = repeatCount;
 			model.time = time;
+			model.chosenReward = chosenReward;
 
 			retVal.push_back(model);
 
@@ -1352,7 +1361,7 @@ public:
 
 		std::list<MissionModel> retVal = {};
 
-		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? and state=?", SQL_NTS);
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? and state=?", SQL_NTS);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
@@ -1389,6 +1398,7 @@ public:
 			SQLCHAR sqlProgress[SQL_RESULT_LEN];
 			SQLINTEGER repeatCount;
 			SQLBIGINT time;
+			SQLINTEGER chosenReward;
 
 			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
@@ -1397,6 +1407,7 @@ public:
 			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &chosenReward, 0, &ptrSqlAnswer);
 
 			MissionModel model;
 			model.charID = charID;
@@ -1405,6 +1416,7 @@ public:
 			model.progress = progress;
 			model.repeatCount = repeatCount;
 			model.time = time;
+			model.chosenReward = chosenReward;
 
 			retVal.push_back(model);
 
@@ -1423,7 +1435,7 @@ public:
 
 		std::list<MissionModel> retVal = {};
 
-		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND state IN (";
+		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND state IN (";
 
 		if (state.size() != 0)
 			stmBuilder += "?";
@@ -1473,6 +1485,7 @@ public:
 			SQLCHAR sqlProgress[SQL_RESULT_LEN];
 			SQLINTEGER repeatCount;
 			SQLBIGINT time;
+			SQLINTEGER chosenReward;
 
 			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
@@ -1481,6 +1494,7 @@ public:
 			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &chosenReward, 0, &ptrSqlAnswer);
 
 			MissionModel model;
 			model.charID = charID;
@@ -1489,6 +1503,7 @@ public:
 			model.progress = progress;
 			model.repeatCount = repeatCount;
 			model.time = time;
+			model.chosenReward = chosenReward;
 
 			retVal.push_back(model);
 
@@ -1507,7 +1522,7 @@ public:
 
 		std::list<MissionModel> retVal = {};
 
-		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID IN (";
+		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID IN (";
 
 		if (missions.size() != 0)
 			stmBuilder += "?";
@@ -1557,6 +1572,7 @@ public:
 			SQLCHAR sqlProgress[SQL_RESULT_LEN];
 			SQLINTEGER repeatCount;
 			SQLBIGINT time;
+			SQLINTEGER chosenReward;
 
 			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
@@ -1565,6 +1581,7 @@ public:
 			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &chosenReward, 0, &ptrSqlAnswer);
 
 			MissionModel model;
 			model.charID = charID;
@@ -1573,6 +1590,7 @@ public:
 			model.progress = progress;
 			model.repeatCount = repeatCount;
 			model.time = time;
+			model.chosenReward = chosenReward;
 
 			retVal.push_back(model);
 
@@ -1591,7 +1609,7 @@ public:
 
 		std::list<MissionModel> retVal = {};
 
-		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND state=? AND missionID IN (";
+		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND state=? AND missionID IN (";
 
 		if (missions.size() != 0)
 			stmBuilder += "?";
@@ -1642,6 +1660,7 @@ public:
 			SQLCHAR sqlProgress[SQL_RESULT_LEN];
 			SQLINTEGER repeatCount;
 			SQLBIGINT time;
+			SQLINTEGER chosenReward;
 
 			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
@@ -1650,6 +1669,7 @@ public:
 			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &chosenReward, 0, &ptrSqlAnswer);
 
 			MissionModel model;
 			model.charID = charID;
@@ -1658,6 +1678,7 @@ public:
 			model.progress = progress;
 			model.repeatCount = repeatCount;
 			model.time = time;
+			model.chosenReward = chosenReward;
 
 			retVal.push_back(model);
 
@@ -1676,7 +1697,7 @@ public:
 
 		std::list<MissionModel> retVal = {};
 
-		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID IN (";
+		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID IN (";
 
 		if (missions.size() != 0)
 			stmBuilder += "?";
@@ -1737,6 +1758,7 @@ public:
 			SQLCHAR sqlProgress[SQL_RESULT_LEN];
 			SQLINTEGER repeatCount;
 			SQLBIGINT time;
+			SQLINTEGER chosenReward;
 
 			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &charID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &missionID, 0, &ptrSqlAnswer);
@@ -1745,6 +1767,7 @@ public:
 			std::string progress((char*)&sqlProgress, ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &repeatCount, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &time, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &chosenReward, 0, &ptrSqlAnswer);
 
 			MissionModel model;
 			model.charID = charID;
@@ -1753,6 +1776,7 @@ public:
 			model.progress = progress;
 			model.repeatCount = repeatCount;
 			model.time = time;
+			model.chosenReward = chosenReward;
 
 			retVal.push_back(model);
 
