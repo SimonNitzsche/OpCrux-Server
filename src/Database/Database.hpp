@@ -1455,7 +1455,7 @@ public:
 		
 		SQLSMALLINT qI = 2;
 		for (auto it = state.begin(); it != state.end(); ++it, ++qI) {
-			std::int32_t e = *it;
+			std::int32_t &e = *it;
 			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
 		}
 
@@ -1542,7 +1542,7 @@ public:
 
 		SQLSMALLINT qI = 2;
 		for (auto it = missions.begin(); it != missions.end(); ++it, ++qI) {
-			std::int32_t e = *it;
+			std::int32_t &e = *it;
 			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
 		}
 
@@ -1630,7 +1630,7 @@ public:
 
 		SQLSMALLINT qI = 3;
 		for (auto it = missions.begin(); it != missions.end(); ++it, ++qI) {
-			std::int32_t e = *it;
+			std::int32_t &e = *it;
 			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
 		}
 
@@ -1724,11 +1724,11 @@ public:
 
 		SQLSMALLINT qI = 2;
 		for (auto it = missions.begin(); it != missions.end(); ++it, ++qI) {
-			std::int32_t e = *it;
+			std::int32_t &e = *it;
 			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
 		}
 		for (auto it = states.begin(); it != states.end(); ++it, ++qI) {
-			std::int32_t e = *it;
+			std::int32_t &e = *it;
 			ret = SQLBindParam(sqlStmtHandle, qI, SQL_C_SLONG, SQL_INTEGER, 0, 0, &e, 0);
 		}
 
@@ -1808,6 +1808,8 @@ public:
 		SQLLEN lenZero = 0;
 		SQLLEN NTS = SQL_NTS;
 		SQLLEN lenProgress = mission.progress.size();
+
+		mission.time = time(0);
 
 		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.state, 0, &lenZero);
 		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(mission.progress.size(), 1), 0, (SQLPOINTER)mission.progress.c_str(), 0, &lenProgress);
