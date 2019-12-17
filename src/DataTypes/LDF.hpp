@@ -76,7 +76,7 @@ public:
 			char * cp = const_cast<char*>(data.c_str()) + 4;
 			std::string buffer(cp, size);
 			bs->Write(size);
-			bs->Write(buffer);
+			StringUtils::writeBufferedStringToBitStream(bs, buffer, buffer.size());
 			break;
 		}
 		case Enums::LDFType::WSTRING: {
