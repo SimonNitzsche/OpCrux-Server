@@ -31,7 +31,7 @@ private:
 		}
 		else {
 			m = std::stoi(static_cast<std::string>(sv));
-			t = 4;
+			t = 8;
 		}
 		return std::pair<std::int32_t, std::int32_t>{m, t};
 	}
@@ -55,7 +55,7 @@ private:
 		// In case we ran into an error before
 		if (!parseSucceeded) return false;
 
-		bool bufferResult = true;
+		bool bufferResult = false;
 		std::uint32_t bufferBegin = inputIndex;
 		std::uint32_t bufferLength = 0;
 
