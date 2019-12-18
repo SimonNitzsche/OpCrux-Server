@@ -1,6 +1,7 @@
 #ifndef __ENTITY__GM__MissionDialogueOK_HPP__
 #define __ENTITY__GM__MissionDialogueOK_HPP__
 #include "Entity/GameMessages.hpp"
+#include "Entity/GameMessages/NotifyMission.hpp"
 #include "Database/Database.hpp"
 
 namespace GM {
@@ -26,7 +27,13 @@ namespace GM {
 			Logger::log("WRLD", "Triggered MissionDialogueOK.");
 			
 			if (!Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
-				Database::AddMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
+				auto mis = Database::AddMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
+				{
+					GM::NotifyMission gm;
+					gm.missionID = mis.missionID;
+					gm.missionState = mis.state;
+				GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
+				}
 			}
 
 			//Entity::GameObject* targetObject = sender->GetZoneInstance()->objectsManager->GetObjectByID(objectID);

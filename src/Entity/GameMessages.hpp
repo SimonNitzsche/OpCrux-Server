@@ -118,6 +118,7 @@ public:
 #include "Entity/GameMessages/FireEventServerSide.hpp"
 #include "Entity/GameMessages/Knockback.hpp"
 #include "Entity/GameMessages/MissionDialogueOK.hpp"
+#include "Entity/GameMessages/NotifyMission.hpp"
 #include "Entity/GameMessages/OfferMission.hpp"
 #include "Entity/GameMessages/PlayAnimation.hpp"
 #include "Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp"
