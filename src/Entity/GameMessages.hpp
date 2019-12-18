@@ -103,7 +103,7 @@ public:
 
 	template<typename T = GM::GMBase>
 	static inline void Broadcast(WorldServer * Instance, Entity::GameObject * target, T gm) {
-		Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, target->GetLOT(), gm);
+		Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm);
 	}
 };
 

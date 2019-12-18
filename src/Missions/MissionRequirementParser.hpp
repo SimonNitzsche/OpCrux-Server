@@ -10,7 +10,7 @@ private:
 	std::uint32_t inputIndex = 0;
 	std::uint32_t openBrackets = 0;
 	static const std::uint32_t openBracketsLimit = 12;
-	bool isOperatorOR = false; // 0 = AND, 1 = OR
+	bool isOperatorOR = true; // 0 = AND, 1 = OR
 	std::list<Database::MissionModel> m_availableMissions;
 public:
 	bool result = false;
@@ -164,8 +164,8 @@ public:
 		std::list<std::string_view> result = {};
 		std::uint32_t buffer_begin = 0;
 		std::uint32_t buffer_end = 0;
-		for (int i = 0; i < statement.size(); ++i) {
-			switch (statement.at(i)) {
+		for (int i = 0; i <= statement.size(); ++i) {
+			switch ((i < statement.size())?statement.at(i):'\0') {
 
 				// Accept [0-9,:]
 			case '0':

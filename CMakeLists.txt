@@ -62,6 +62,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/QuickBuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
+	src/Entity/Components/ScriptedActivityComponent.hpp
 	src/Entity/Components/SimplePhysicsComponent.hpp
 	src/Entity/Components/SkillComponent.hpp
 	src/Entity/Components/SoundAmbient3DComponent.hpp
@@ -101,6 +102,7 @@ add_executable(OpCrux_Server
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp
+	src/Entity/NativeScripts/ai/NP/L_NPC_NP_SPACEMAN_BOB.hpp
 	src/Entity/NativeScripts/OMIS.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp

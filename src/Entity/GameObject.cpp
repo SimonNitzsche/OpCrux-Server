@@ -50,6 +50,7 @@
 #include "Entity/Components/QuickBuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
+#include "Entity/Components/ScriptedActivityComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
 #include "Entity/Components/SoundAmbient3DComponent.hpp"
@@ -189,7 +190,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(SwitchComponent);
 		COMPONENT_ONADD_SWITCH_CASE(VendorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(BouncerComponent);
-		//COMPONENT_ONADD_SWITCH_CASE(ScriptedActivityComponent);
+		COMPONENT_ONADD_SWITCH_CASE(ScriptedActivityComponent);
 		//COMPONENT_ONADD_SWITCH_CASE(RacingControlComponent);
 		COMPONENT_ONADD_SWITCH_CASE(LUPExhibitComponent);
 		//COMPONENT_ONADD_SWITCH_CASE(ModelComponent);
@@ -274,7 +275,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(SwitchComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(BouncerComponent);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(ScriptedActivityComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(ScriptedActivityComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RacingControlComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(LUPExhibitComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ModelComponent);

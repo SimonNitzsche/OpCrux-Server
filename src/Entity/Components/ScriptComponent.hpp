@@ -49,12 +49,14 @@ private:
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp"
+#include "Entity/NativeScripts/ai/NP/L_NPC_NP_SPACEMAN_BOB.hpp"
 	const std::unordered_map<std::string, script_factory> factories{
 		{"TestScript", []() -> script_ptr {return std::make_shared<TestScript>(); }},
 		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }},
 		{"scripts\\ai\\AG\\L_AG_SHIP_PLAYER_SHOCK_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER>(); }},
 		{"scripts\\ai\\AG\\L_AG_SHIP_SHAKE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_SHAKE>(); }},
-		{"scripts\\ai\\AG\\L_AG_SPACE_STUFF.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SPACE_STUFF>();  }}
+		{"scripts\\ai\\AG\\L_AG_SPACE_STUFF.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SPACE_STUFF>();  }},
+		{"scripts\\ai\\NP\\L_NPC_NP_SPACEMAN_BOB.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB>();  }}
 	};
 
 private:
