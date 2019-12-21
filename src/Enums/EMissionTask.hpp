@@ -1,0 +1,48 @@
+#ifndef __ENUMS__EMISSIONTASK_HPP__
+#define __ENUMS__EMISSIONTASK_HPP__
+
+#include <memory>
+
+namespace Enums {
+	enum class EMissionTask : std::int32_t {
+		KILL = 0,
+		SCRIPT = 1,
+		WIN_ACTIVITY = 2,
+		COLLECTIBLE = 3,
+		TALK_TO_NPC = 4,
+		EMOTE = 5,
+		SMASH_CHAIN = 6,
+		BUY = 7,
+		SELL = 8,
+		USE_ITEM = 9,
+		USE_SKILL = 10,
+		GATHER = 11,
+		EXPLORE = 12,
+		INVENTORY_CHANGE = 13,
+		MINIGAME_ACHIEVEMENT = 14,
+		INTERACT = 15,
+		MISSION_COMPLETE = 16,
+		REPUTATION = 17,
+		VOTING = 18,
+		SHOWCASE = 19,
+		HEAL = 20,
+		RECEIVE_CAST = 21,
+		TAME_PET = 22,
+		RACING = 23,
+		FLAG = 24,
+		PLACE_MODEL = 25,
+		REMOVE_MODEL = 26,
+		ADD_BEHAVIOR = 27,
+		REMOVE_BEHAVIOR = 28,
+		CLAIM_PROPERTY = 29,
+		PROPERTY_TRAVEL_TO = 30,
+		TIME_PLAYED = 31,
+		DONATE = 32,
+		UNKNOWN_33 = 33,
+		UNKNOWN_34 = 34,
+		TEAM = 35,
+		UNKNOWN_36 = 36
+	};
+}
+
+#endif

@@ -575,7 +575,12 @@ void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 }
 
 
+#include "GameCache/MissionTasks.hpp"
+
 void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
+
+	// Handle Interact task
+
 	/* Mailbox (Script got removed) */
 	if(this->LOT == 3964) {
 		Logger::log("WRLD", "GameObject::OnRequestUse TODO: Implement Mailbox", LogType::INFO);

@@ -115,6 +115,7 @@ add_executable(OpCrux_Server
 	src/Enums/EComponents.hpp
 	src/Enums/EGameMessages.hpp
 	src/Enums/EGeneralPackets.hpp
+	src/Enums/EMissionTask.hpp
 	src/Enums/EPackets.hpp
 	src/Enums/EPathBehavior.hpp
 	src/Enums/EPathType.hpp
@@ -146,6 +147,7 @@ add_executable(OpCrux_Server
 	src/GameCache/LootMatrixIndex.hpp
 	src/GameCache/MissionNPCComponent.hpp
 	src/GameCache/Missions.hpp
+	src/GameCache/MissionTasks.hpp
 	src/GameCache/MovementAIComponent.hpp
 	src/GameCache/MovingPlatforms.hpp
 	src/GameCache/Objects.hpp
@@ -162,6 +164,8 @@ add_executable(OpCrux_Server
 	src/Misc/LWOTimer.cpp
 	src/Misc/LWOTimer.hpp
 	src/Misc/WORLD_CHECKSUM.hpp
+	src/Missions/MissionManager.cpp
+	src/Missions/MissionManager.hpp
 	src/Missions/MissionRequirementParser.hpp
 	src/NetworkDataTypes/ByteBool.hpp
 	src/NetworkDataTypes/LUPacket.hpp
