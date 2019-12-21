@@ -209,6 +209,12 @@ set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
 set_property(TARGET rapidxml PROPERTY CXX_STANDARD 98)
 
 target_link_libraries(OpCrux_Server
+	Bullet3Collision
+	Bullet3Common
+	Bullet3Dynamics
+	Bullet3Geometry
+	Bullet3OpenCL_clew
+	Bullet2FileLoader
 	json
 	Mongoose
 	RakNet
