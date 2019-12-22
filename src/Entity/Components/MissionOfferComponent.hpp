@@ -11,6 +11,7 @@
 #include "Database/Database.hpp"
 
 #include "Entity/GameMessages.hpp"
+#include "Entity/Components/MissionOfferComponent.hpp"
 
 using namespace DataTypes;
 
@@ -43,6 +44,31 @@ public:
 		auto missionsOffering = CacheMissionNPCComponent::getRow(GetComponentID()).flatIt();
 		for (auto it = missionsOffering.begin(); it != missionsOffering.end(); ++it) {
 			// Only if offering mission
+			if (CacheMissionNPCComponent::GetAcceptsMission(*it)) {
+				std::int32_t missionID = CacheMissionNPCComponent::GetMissionID(*it);
+
+				// Check if it's the selected mission on multi interact
+				if (msg->bIsMultiInteractUse && msg->multiInteractID != missionID) continue;
+
+				auto cacheMission = CacheMissions::getRow(missionID);
+
+				bool missionRepeatable = CacheMissions::GetRepeatable(cacheMission);
+
+				// If mission added
+				if (!Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
+					continue;
+				}
+
+				auto dbMission = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
+				if (dbMission.state == 4 || dbMission.state == 12) {
+					missionOffer.missionID = missionID;
+
+					missionOffer.offerer = owner->GetObjectID();
+
+					GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
+					return;
+				}
+			}
 			if (CacheMissionNPCComponent::GetOffersMission(*it)) {
 				std::int32_t missionID = CacheMissionNPCComponent::GetMissionID(*it);
 
@@ -57,7 +83,7 @@ public:
 				if (Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
 					// or available / repeatable availabl
 					auto dbMission = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
-					if (!(dbMission.state == 1 || (missionRepeatable && 9))) {
+					if (!(dbMission.state == 1 || (missionRepeatable && dbMission.state == 9))) {
 						// Skip
 						continue;
 					}
@@ -78,9 +104,12 @@ public:
 					missionRequirementsPassed = true;
 				}
 
+
 				if (missionRequirementsPassed) {
-					missionOffer.missionID = missionID;
-					break;
+					missionOffer.offerer = owner->GetObjectID();
+
+					GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
+					return;
 				}
 			}
 		}

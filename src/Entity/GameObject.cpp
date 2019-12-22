@@ -2,7 +2,7 @@
 
 #include "Utils/ServerInfo.hpp"
 #include "Server/WorldServer.hpp"
-
+#include "Missions/MissionManager.hpp"
 
 #include <locale>
 #include <string>
@@ -580,6 +580,8 @@ void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 
 	// Handle Interact task
+	MissionManager::LaunchTaskEvent(Enums::EMissionTask::TALK_TO_NPC, this, sender->GetObjectID());
+	MissionManager::LaunchTaskEvent(Enums::EMissionTask::INTERACT, this, sender->GetObjectID());
 
 	/* Mailbox (Script got removed) */
 	if(this->LOT == 3964) {
@@ -715,7 +717,7 @@ std::string Entity::GameObject::GenerateXML() {
 						ss << "<m id=\"" << it->missionID << "\">";
 
 						if (it->progress != "") {
-							auto taskprogress = StringUtils::splitString(it->progress, ',');
+							auto taskprogress = StringUtils::splitString(it->progress, '|');
 							for (int i = 0; i < taskprogress.size(); ++i) {
 								ss << "<sv v=\"" << taskprogress.at(i) << "\"/>";
 							}

@@ -35,6 +35,17 @@ namespace GM {
 				GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
 				}
 			}
+			else {
+				auto mis = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
+				if (bIsComplete && (mis.state == 4 || mis.state == 12)) {
+					mis.state = 8;
+					Database::UpdateMission(mis);
+					GM::NotifyMission gm;
+					gm.missionID = mis.missionID;
+					gm.missionState = mis.state;
+					GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
+				}
+			}
 
 			//Entity::GameObject* targetObject = sender->GetZoneInstance()->objectsManager->GetObjectByID(objectID);
 			/*if (targetObject)

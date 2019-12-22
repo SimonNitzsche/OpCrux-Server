@@ -13,6 +13,7 @@
 #include "Encryption/sha512.hpp"
 #include "GameCache/Interface/FastDatabase.hpp"
 #include "GameCache/ComponentsRegistry.hpp"
+#include "GameCache/MissionTasks.hpp"
 #include "DataTypes/Vector3.hpp"
 #include "Configuration/ConfDatabase.hpp"
 #include "Configuration/ConfigurationManager.hpp"
@@ -1101,6 +1102,20 @@ public:
 		std::int32_t repeatCount;
 		std::int64_t time;
 		std::int32_t chosenReward;
+
+		void updateTime() {
+			time = ::time(0);
+		}
+
+		std::list<std::int32_t> GetTaskProgress() {
+			std::list<std::int32_t> returnVal;
+			auto tSplitS = StringUtils::splitString(progress, '|');
+			for (int i = 0; i < tSplitS.size(); ++i) {
+				returnVal.push_back(std::stoi(tSplitS.at(i)));
+			}
+			return returnVal;
+		}
+
 	};
 
 	static bool HasMission(std::int64_t charID, std::int32_t missionID) {
@@ -1164,11 +1179,18 @@ public:
 		model.charID = charID;
 		model.missionID = missionID;
 		model.state = 2;
-		model.progress = "0";
 		model.repeatCount = 0;
 		model.time = time(0);
 		model.chosenReward = -1;
 
+		std::list<std::int32_t> initialProgress = {};
+		auto mtr = CacheMissionTasks::getRow(missionID);
+		while (mtr.isValid()) {
+			initialProgress.push_back(0);
+			if (!mtr.isLinkedRowInfoValid()) break;
+			mtr = mtr.getLinkedRowInfo();
+		}
+		model.progress = StringUtils::IntListToString(initialProgress, '|');
 		
 		if (HasMission(charID, missionID)) {
 			throw std::exception("Mission already exists!");
@@ -1794,11 +1816,11 @@ public:
 		Note: check with Database::HasMission(...) before executing.
 	*/
 	static void UpdateMission(MissionModel mission) {
-		if (HasMission(mission.charID, mission.missionID)) {
-			throw std::exception("Mission already exists!");
+		if (!HasMission(mission.charID, mission.missionID)) {
+			throw std::exception("Mission does not exists on player!");
 		}
 		SetupStatementHandle();
-		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.Missions SET state=?,progress=?,repeatCount=?,time=?,chosenReward=?) WHERE charID=? AND missionID=?", SQL_NTS);
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.Missions SET state=?,progress=?,repeatCount=?,time=?,chosenReward=? WHERE charID=? AND missionID=?", SQL_NTS);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);

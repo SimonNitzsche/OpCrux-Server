@@ -11,6 +11,7 @@
 #include <cctype>
 #include <locale>
 #include <codecvt>
+#include <list>
 
 #include <RakNet/BitStream.h>
 
@@ -168,6 +169,17 @@ namespace StringUtils {
 		//auto p = reinterpret_cast<const int16_t *>(input.data());
 		//return convert.to_bytes(p, p + input.size());
 		return std::string(input.begin(), input.end());
+	}
+
+	inline std::string IntListToString(std::list<std::int32_t> input, char fuser = ',') {
+		std::string output = "";
+		for (auto it = input.begin(); it != input.end(); ++it) {
+			if (it != input.begin()) {
+				output += fuser;
+			}
+			output += std::to_string(*it);
+		}
+		return output;
 	}
 
 	inline std::u16string to_u16string(std::string input) {
