@@ -1107,15 +1107,6 @@ public:
 			time = ::time(0);
 		}
 
-		std::list<std::int32_t> GetTaskProgress() {
-			std::list<std::int32_t> returnVal;
-			auto tSplitS = StringUtils::splitString(progress, '|');
-			for (int i = 0; i < tSplitS.size(); ++i) {
-				returnVal.push_back(std::stoi(tSplitS.at(i)));
-			}
-			return returnVal;
-		}
-
 	};
 
 	static bool HasMission(std::int64_t charID, std::int32_t missionID) {

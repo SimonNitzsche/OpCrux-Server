@@ -644,7 +644,7 @@ std::string Entity::GameObject::GenerateXML() {
 	{
 		ss << "<buff/>";
 		ss << "<skil/>";
-		ss << "<inv csl=\"" << std::to_string(0) << "\">";
+		ss << "<inv csl=\"" << std::to_string(9626) << "\">";
 		{
 			ss << "<bag>";
 			{
@@ -678,16 +678,45 @@ std::string Entity::GameObject::GenerateXML() {
 		{
 			ss << "<char ";
 				ss << "cm=\"" << std::to_string(0x7FFFFFFFFFFFFFFF) << "\" ";
-				ss << "acct=\"" << charInfo.accountID << "\" ";
 				ss << "cc=\"" << charInfo.currency << "\" ";
-				ss << "co=\"" << Instance->sessionManager.GetSession(objectID)->systemAddress.port << "\" ";
-				ss << "ttip=\"" << Instance->sessionManager.GetSession(objectID)->systemAddress.binaryAddress << "\" ";
-				ss << "time=\"" << 40000 << "\"";
+				ss << "gm=\"" << 0 << "\" ";
+				ss << "edit=\"" << 0 << "\" ";
+				ss << "acct=\"" << charInfo.accountID << "\" ";
+				ss << "llog=\"" << 1327707052 << "\" ";
+				//ss << "ttip=\"" << Instance->sessionManager.GetSession(objectID)->systemAddress.binaryAddress << "\" ";
+				ss << "ttip=\"16777216\"";
+				// ss << "mldt=\"0\ ";
+				// ss << "lzid=\"2341502167811299\" ";
+				// ss << "lzx=\"-25.6\" ";
+				// ss << "lzy=\"463.6\" ";
+				// ss << "lzz=\"185.2\" ";
+				// ss << "lzrx=\"0.000000\" ";
+				// ss << "lzry=\"0.924854\" ";
+				// ss << "lzrz=\"0.000000\" ";
+				// ss << "lzrw=\"-0.380322\" ";
+				// ss << "lzcs=\"156173405\" ";
+				// ss << "gid=\"0\" ";
+				// ss << "gn=\"\" ";
+				// ss << "lcbp=\"1:13264;1:13265;1:13266;\" ";
+				// ss << "v=\"3\" ";
+				// ss << "vd=\"15366\" ";
+				// ss << "time=\"252519\" ";
+				// ss << "lrx=\"30.5\" ";
+				// ss << "lry=\"470.9\" ";
+				// ss << "lrz=\"193.5\" ";
+				// ss << "lrrx=\"0.000000\" ";
+				// ss << "lrry=\"-0.677600\" ";
+				// ss << "lrrz=\"0.000000\" ";
+				// ss << "lrrw=\"0.735500\" ";
+				// ss << "ls=\"93940\" ";
+				// ss << "ft=\"0\" ";
+				// ss << "co=\"" << Instance->sessionManager.GetSession(objectID)->systemAddress.port << "\" ";
+				// ss << "stt=\"768568;13644;4683;2376;11480;345;471;22;24177;13104;13678;1951641;78;11559;947;11012;17524;16499;693599;612;1673;63;439;48;392;22;15;\"";
 			ss << ">";
 			{
-				ss << "<ue/>";
-				ss << "<vl/>";
-				ss << "<zs/>";
+				ss << "<ue></ue>";
+				ss << "<vl></vl>";
+				ss << "<zs></zs>";
 			}
 			ss << "</char>";
 		}
@@ -695,12 +724,16 @@ std::string Entity::GameObject::GenerateXML() {
 			//ss << "<lvl l=\"" << std::to_string(charInfo.uLevel) << "\" cv=\"1\" sb=\"525\"/>";
 		}
 		{
-			/*ss << "<flag>";
+			ss << "<flag>";
 			{
 				// TODO
+				ss << "<f id=\"0\" v=\"0\"/>";
 			}
-			ss << "</flag>";*/
+			ss << "</flag>";
 			//ss << "<flag/>";
+		}
+		{
+			ss << "<pet a=\"0\"></pet>";
 		}
 		{
 			ss << "<mis>";
@@ -720,11 +753,21 @@ std::string Entity::GameObject::GenerateXML() {
 					auto missionsActive = Database::GetAllMissionsByStates(objectID & 0xFFFFFFFF, { 2, 4, 10, 12 });
 					for (auto it = missionsActive.begin(); it != missionsActive.end(); ++it) {
 						ss << "<m id=\"" << it->missionID << "\">";
-
+						auto c_missionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
 						if (it->progress != "") {
 							auto taskprogress = StringUtils::splitString(it->progress, '|');
 							for (int i = 0; i < taskprogress.size(); ++i) {
-								ss << "<sv v=\"" << taskprogress.at(i) << "\"/>";
+								// Collectible tasks are handled differently.
+								if (CacheMissionTasks::GetTaskType(*std::next(c_missionTasks.begin(), i)) == 3) {
+									auto subtaskprogress = StringUtils::splitString(taskprogress.at(i), ':');
+									ss << "<sv v=\"" << subtaskprogress.size() << "\"/>";
+									for (int j = 0; j < subtaskprogress.size(); ++j) {
+										ss << "<sv v=\"" << subtaskprogress.at(j) << "\"/>";
+									}
+								}
+								else {
+									ss << "<sv v=\"" << taskprogress.at(i) << "\"/>";
+								}
 							}
 						}
 
@@ -732,6 +775,7 @@ std::string Entity::GameObject::GenerateXML() {
 					}
 				}
 				ss << "</cur>";
+				ss << "<ts></ts>";
 			}
 			ss << "</mis>";
 		}
@@ -739,7 +783,7 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<mnt a=\"0\"/>";
 		}
 		{
-			ss << "<dest/>";
+			//ss << "<dest hm=\"9\" hc=\"9\" im=\"23\" ic=\"33\" am=\"0\" ac=\"14\" rsh=\"4\" rsi=\"6\" d=\"0\" imm=\"0\"/>";
 			
 				// TODO
 		}

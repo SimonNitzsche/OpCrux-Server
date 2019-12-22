@@ -79,17 +79,24 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
                 auto missionModel = *it;
 
 
-                auto missionTasksProgress = it->GetTaskProgress();
+                auto missionTasksProgress = StringUtils::splitString(it->progress, '|');
                 auto updateTasks = possibleMissions.at(it->missionID);
 
-                for (auto it2 = updateTasks.begin(); it2 != updateTasks.end(); ++it2) {
-                    int currentVal = *std::next(missionTasksProgress.begin(), it2->first);
-                    int updatedVal = currentVal | (1 << updateVal);
-                    *std::next(missionTasksProgress.begin(), it2->first) = updatedVal;
-                    if (*std::next(missionTasksProgress.begin(), it2->first) != updatedVal) throw;
+                std::int32_t subTaskValue = (caster->GetZoneInstance()->luZone->zoneID << 8) + (updateVal & 0xFF);
+
+                for (int i = 0; i < missionTasksProgress.size(); ++i) {
+
+                    auto subTaskProgStr = StringUtils::splitString(missionTasksProgress.at(i), ':');
+                    auto subTaskProg = StringUtils::StringVectorToIntList(subTaskProgStr);
+
+                    if (std::find(subTaskProg.begin(), subTaskProg.end(), subTaskValue) == subTaskProg.end()) {
+                        subTaskProg.push_back(subTaskValue);
+                    }
+
+                    missionTasksProgress.at(i) = StringUtils::IntListToString(subTaskProg, ':');
                 }
 
-                missionModel.progress = StringUtils::IntListToString(missionTasksProgress, '|');
+                missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
                 updateMissions.push_back(missionModel);
             }
         }
@@ -109,14 +116,14 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
                 auto missionModel = *it;
                 
                 
-                auto missionTasksProgress = it->GetTaskProgress();
+                auto missionTasksProgress = StringUtils::splitString(it->progress, '|');
                 auto updateTasks = possibleMissions.at(it->missionID);
                 
-                for (auto it2 = updateTasks.begin(); it2 != updateTasks.end(); ++it2) {
-                    *std::next(missionTasksProgress.begin(), it2->first) += updateVal;
+                for (int i = 0; i < missionTasksProgress.size(); ++i) {
+                    missionTasksProgress.at(i) = std::to_string(std::stoi(missionTasksProgress.at(i)) + updateVal);
                 }
 
-                missionModel.progress = StringUtils::IntListToString(missionTasksProgress, '|');
+                missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
                 updateMissions.push_back(missionModel);
             }
         }
@@ -218,7 +225,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
 bool MissionManager::CheckIfMissionIsReadyToComplete(std::int32_t missionID, std::string &progress) {
     Database::MissionModel mm; mm.missionID; mm.progress = progress;
-    auto mp = mm.GetTaskProgress();
+    auto mp = StringUtils::splitString(mm.progress, '|');
 
     std::int32_t rowIndex = 0;
     auto row = CacheMissionTasks::getRow(missionID);
@@ -228,14 +235,11 @@ bool MissionManager::CheckIfMissionIsReadyToComplete(std::int32_t missionID, std
         if (CacheMissionTasks::GetTaskType(row) == 3) {
             std::int32_t sum = 0;
             std::int32_t targetVal = CacheMissionTasks::GetTargetValue(row);
-            std::int32_t progVal = *std::next(mp.begin(), rowIndex);
-            for (int i = 0; i < targetVal; ++i) {
-                if (progVal & (1 << i)) ++sum;
-            }
-            if (sum < targetVal) return false;
+            std::string progVal = *std::next(mp.begin(), rowIndex);
+            if (StringUtils::splitString(progVal, ':').size() < targetVal) return false;
         }
         else {
-            if (*std::next(mp.begin(), rowIndex) < CacheMissionTasks::GetTargetValue(row)) return false;
+            if (std::stoi(*std::next(mp.begin(), rowIndex)) < CacheMissionTasks::GetTargetValue(row)) return false;
         }
 
         if (!row.isLinkedRowInfoValid()) break;

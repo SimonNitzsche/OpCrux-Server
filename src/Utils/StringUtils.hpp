@@ -185,6 +185,25 @@ namespace StringUtils {
 		return output;
 	}
 
+	inline std::string StringVectorToString(std::vector<std::string> input, char fuser = ',') {
+		std::string output = "";
+		for (int i = 0; i < input.size(); ++i) {
+			if (i != 0) {
+				output += fuser;
+			}
+			output += input.at(i);
+		}
+		return output;
+	}
+
+	inline std::list<std::int32_t> StringVectorToIntList(std::vector<std::string> input){
+		std::list<std::int32_t> output = {};
+		for (int i = 0; i < input.size(); ++i) {
+			output.push_back(std::stoi(input.at(i)));
+		}
+		return output;
+	}
+
 	inline std::u16string to_u16string(std::string input) {
 		return std::u16string(input.begin(), input.end());
 	}
