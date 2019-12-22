@@ -17,7 +17,7 @@ namespace GM {
 
 		void Serialize(RakNet::BitStream* bs) {
 			GM_VAR_SERIALIZE(bs, missionID);
-			GM_VAR_DESERIALIZE(bs, missionState);
+			GM_VAR_SERIALIZE(bs, missionState);
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, sendingRewards, false);
 		}
 	};
