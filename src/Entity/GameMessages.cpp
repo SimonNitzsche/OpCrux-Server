@@ -8,19 +8,22 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 	Entity::GameObject * senderObject = Instance->objectsManager->GetObjectByID(session->actorID);
 	Entity::GameObject * targetObject = Instance->objectsManager->GetObjectByID(targetObjectID);
 
+	// Only put GMs sent by the client below
 	// Please keep it sorted by Name:
 	switch (msgID) {
 		GM_DESERIALIZE_SWITCH_CASE(GM::FireEventServerSide);
+		GM_DESERIALIZE_SWITCH_CASE(GM::HasBeenCollected);
 		GM_DESERIALIZE_SWITCH_CASE(GM::MissionDialogueOK);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayEmote);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayerLoaded);
-		GM_DESERIALIZE_SWITCH_CASE(GM::RequestUse);
-		GM_DESERIALIZE_SWITCH_CASE(GM::RequestSmashPlayer);
+		GM_DESERIALIZE_SWITCH_CASE(GM::RequestLinkedMission);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestResurrect);
+		GM_DESERIALIZE_SWITCH_CASE(GM::RequestSmashPlayer);
+		GM_DESERIALIZE_SWITCH_CASE(GM::RequestUse);
 		GM_DESERIALIZE_SWITCH_CASE(GM::StartSkill);
 		GM_DESERIALIZE_SWITCH_CASE(GM::SyncSkill);
 	default: {
-			Logger::log("WRLD", "Tried to deserialize unhandled GM #" + std::to_string(msgID), LogType::WARN);
+		Logger::log("WRLD", "Tried to deserialize unhandled GM #" + std::to_string(msgID), LogType::WARN);
 	}
 	}
 }

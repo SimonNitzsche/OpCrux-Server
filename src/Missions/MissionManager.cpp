@@ -65,8 +65,36 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
         break;
     case Enums::EMissionTask::WIN_ACTIVITY:
         break;
-    case Enums::EMissionTask::COLLECTIBLE:
+    case Enums::EMissionTask::COLLECTIBLE: {
+        auto possibleMissions = GetMissionTasksByTaskTypeAndTarget(taskType, caster->GetLOT());
+
+        if (possibleMissions.size() != 0) {
+            std::list<std::int32_t> possibleMissionsOM = {};
+            for (auto it = possibleMissions.begin(); it != possibleMissions.end(); ++it) {
+                possibleMissionsOM.push_back(it->first);
+            }
+
+            auto currentMissions = Database::GetAllMissionsByIDsAndStates(dbPlayerID, possibleMissionsOM, { 2, 10 });
+            for (auto it = currentMissions.begin(); it != currentMissions.end(); ++it) {
+                auto missionModel = *it;
+
+
+                auto missionTasksProgress = it->GetTaskProgress();
+                auto updateTasks = possibleMissions.at(it->missionID);
+
+                for (auto it2 = updateTasks.begin(); it2 != updateTasks.end(); ++it2) {
+                    int currentVal = *std::next(missionTasksProgress.begin(), it2->first);
+                    int updatedVal = currentVal | (1 << updateVal);
+                    *std::next(missionTasksProgress.begin(), it2->first) = updatedVal;
+                    if (*std::next(missionTasksProgress.begin(), it2->first) != updatedVal) throw;
+                }
+
+                missionModel.progress = StringUtils::IntListToString(missionTasksProgress, '|');
+                updateMissions.push_back(missionModel);
+            }
+        }
         break;
+    }
     case Enums::EMissionTask::TALK_TO_NPC: {
         auto possibleMissions = GetMissionTasksByTaskTypeAndTarget(taskType, caster->GetLOT());
         
@@ -172,6 +200,10 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
         if (CheckIfMissionIsReadyToComplete(it->missionID, it->progress)) {
             if (it->state == 2 || it->state == 10) {
                 it->state += 2;
+
+                GM::NotifyMissionTask tMsg;
+                tMsg.missionID = it->missionID;
+
             }
 
             GM::NotifyMission msg;
@@ -192,7 +224,19 @@ bool MissionManager::CheckIfMissionIsReadyToComplete(std::int32_t missionID, std
     auto row = CacheMissionTasks::getRow(missionID);
     while (row.isValid()) {
 
-        if (*std::next(mp.begin(), rowIndex) < CacheMissionTasks::GetTargetValue(row)) return false;
+        // Collectibles are handled differently
+        if (CacheMissionTasks::GetTaskType(row) == 3) {
+            std::int32_t sum = 0;
+            std::int32_t targetVal = CacheMissionTasks::GetTargetValue(row);
+            std::int32_t progVal = *std::next(mp.begin(), rowIndex);
+            for (int i = 0; i < targetVal; ++i) {
+                if (progVal & (1 << i)) ++sum;
+            }
+            if (sum < targetVal) return false;
+        }
+        else {
+            if (*std::next(mp.begin(), rowIndex) < CacheMissionTasks::GetTargetValue(row)) return false;
+        }
 
         if (!row.isLinkedRowInfoValid()) break;
         row = row.getLinkedRowInfo();

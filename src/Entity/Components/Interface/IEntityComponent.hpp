@@ -13,6 +13,7 @@ namespace Entity {
 }
 
 namespace GM {
+	class HasBeenCollected;
 	class RequestUse;
 };
 
@@ -64,6 +65,7 @@ x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 
 
 			/* Game Messages */
+			virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg) {};
 			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {};
 
 			// Optional void.

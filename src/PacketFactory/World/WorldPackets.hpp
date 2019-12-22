@@ -124,14 +124,13 @@ namespace PacketFactory {
 			std::vector<LDFEntry> ldfEntries;
 			ldfEntries.push_back(LDFEntry(u"template", std::int32_t(1)));
 			ldfEntries.push_back(LDFEntry(u"objid", clientSession->actorID));
-			ldfEntries.push_back(LDFEntry(u"name", go->GetName()));
 			ldfEntries.push_back(LDFEntry(u"xmlData", go->GenerateXML()));
+			ldfEntries.push_back(LDFEntry(u"name", go->GetName()));
 
 			contentWrapperBS.Write(std::uint32_t(ldfEntries.size()));
 			for (int i = 0; i < ldfEntries.size(); ++i) {
 				LDFEntry entry = ldfEntries[i];
-				contentWrapperBS.Write<std::uint8_t>((entry.key.size() & 0xFF) * 2);
-				StringUtils::writeBufferedWStringToBitStream(&contentWrapperBS, entry.key, entry.key.size());
+				StringUtils::writeWStringToBitStream<std::uint8_t>(&contentWrapperBS, entry.key, true);
 				contentWrapperBS.Write<std::uint8_t>(entry.type);
 				entry.WriteToBitstream(&contentWrapperBS);
 			}

@@ -1,10 +1,13 @@
 #ifndef __ENTITY__GM__MissionDialogueOK_HPP__
 #define __ENTITY__GM__MissionDialogueOK_HPP__
 #include "Entity/GameMessages.hpp"
-#include "Entity/GameMessages/NotifyMission.hpp"
 #include "Database/Database.hpp"
 
+#include "Entity/GameMessages/NotifyMission.hpp"
+#include "Entity/GameMessages/RequestUse.hpp"
+
 namespace GM {
+
 	struct MissionDialogueOK : GMBase {
 		bool bIsComplete;
 		std::int32_t iMissionState;
@@ -32,7 +35,7 @@ namespace GM {
 					GM::NotifyMission gm;
 					gm.missionID = mis.missionID;
 					gm.missionState = mis.state;
-				GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
+					GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
 				}
 			}
 			else {
@@ -44,6 +47,24 @@ namespace GM {
 					gm.missionID = mis.missionID;
 					gm.missionState = mis.state;
 					GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
+				
+					// Try to offer next mission.
+					auto responderObj = sender->GetZoneInstance()->objectsManager->GetObjectByID(responder);
+					if (responderObj != nullptr) {
+						GM::RequestUse requestUseMSG;
+						requestUseMSG.bIsMultiInteractUse = false;
+						requestUseMSG.objectID = responder;
+						requestUseMSG.user = sender;
+						responderObj->OnRequestUse(sender, &requestUseMSG);
+						/*MissionOfferComponent* misOfferComp = responderObj->GetComponent<MissionOfferComponent>();
+						if (misOfferComp != nullptr) {
+							GM::RequestUse requestUseMSG;
+							requestUseMSG.bIsMultiInteractUse = false;
+							requestUseMSG.objectID = responder;
+							requestUseMSG.user = sender;
+							misOfferComp->OnRequestUse(sender, &requestUseMSG);
+						}*/
+					}
 				}
 			}
 

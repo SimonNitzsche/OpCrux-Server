@@ -7,6 +7,7 @@
 #include "Entity/Components/DestructibleComponent.hpp"
 
 #include "Entity/GameObject.hpp"
+#include "Entity/GameMessages.hpp"
 
 #include "Utils/LDFUtils.hpp"
 
@@ -32,6 +33,11 @@ public:
 				statsComponent = new StatsComponent(0);
 			}
 		}
+	}
+
+	void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg) {
+		Logger::log("WRLD", "Collectible " + std::to_string(collectibleID) + " has been collected.");
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::COLLECTIBLE, owner, msg->playerID, collectibleID);
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {

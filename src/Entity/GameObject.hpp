@@ -15,6 +15,7 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
 namespace GM {
+	class HasBeenCollected;
 	class StartSkill;
 	class SyncSkill;
 }
@@ -305,6 +306,7 @@ namespace Entity {
 			/* Game Messages */
 			//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }
 
+			virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg);
 			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg);
 			void OnStartSkill(const GM::StartSkill msg);
 			void OnSyncSkill(const GM::SyncSkill msg);

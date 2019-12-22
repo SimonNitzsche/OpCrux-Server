@@ -113,8 +113,11 @@ namespace StringUtils {
 	}
 
 	template<class T>
-	inline void writeWStringToBitStream(RakNet::BitStream * bitstream, std::u16string text) {
+	inline void writeWStringToBitStream(RakNet::BitStream * bitstream, std::u16string text, bool writeSizeOfBytes=false) {
 		T size = text.size();
+
+		if (writeSizeOfBytes) size *= 2;
+
 		bitstream->Write<T>(size);
 
 		bitstream->Write(reinterpret_cast<const char*>(text.c_str()), text.size() * 2);

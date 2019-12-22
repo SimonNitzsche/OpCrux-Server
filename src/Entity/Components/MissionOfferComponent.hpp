@@ -77,26 +77,37 @@ public:
 
 				bool missionRepeatable = CacheMissions::GetRepeatable(cacheMission);
 				
+				bool isMissionActive = false;
+
 				// If mission added
 				if (Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
-					// or available / repeatable availabl
+					// or available / repeatable available
 					auto dbMission = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
 					if (!(dbMission.state == 1 || (missionRepeatable && dbMission.state == 9))) {
 						// Skip
 						continue;
 					}
+					if (dbMission.state == 2 || dbMission.state == 10) {
+						isMissionActive = true;
+					}
 				}
 
-				std::string_view prereqMissionID = CacheMissions::GetPrereqMissionID(cacheMission);
 
 				bool missionRequirementsPassed = false;
 
-				if (prereqMissionID != "") {
-					auto missionSweep = MissionRequirementParser::sweepMissionListNumerical(prereqMissionID);
+				if (!isMissionActive) {
+					std::string_view prereqMissionID = CacheMissions::GetPrereqMissionID(cacheMission);
 
-					auto missionSweepDB = Database::GetAllMissionsByIDs(sender->GetObjectID() & 0xFFFFFFFF, missionSweep);
+					if (prereqMissionID != "") {
+						auto missionSweep = MissionRequirementParser::sweepMissionListNumerical(prereqMissionID);
 
-					missionRequirementsPassed = MissionRequirementParser(prereqMissionID, missionSweepDB).result;
+						auto missionSweepDB = Database::GetAllMissionsByIDs(sender->GetObjectID() & 0xFFFFFFFF, missionSweep);
+
+						missionRequirementsPassed = MissionRequirementParser(prereqMissionID, missionSweepDB).result;
+					}
+					else {
+						missionRequirementsPassed = true;
+					}
 				}
 				else {
 					missionRequirementsPassed = true;

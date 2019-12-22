@@ -577,6 +577,10 @@ void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 
 #include "GameCache/MissionTasks.hpp"
 
+void Entity::GameObject::OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg) {
+	for (auto i : components) i.second->OnHasBeenCollected(sender, msg);
+}
+
 void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 
 	// Handle Interact task
@@ -668,7 +672,7 @@ std::string Entity::GameObject::GenerateXML() {
 				ss << "rh=\"" << std::to_string(charStyle.rightHand) << "\" ";
 				ss << "es=\"" << std::to_string(charStyle.eyebrowStyle) << "\" ";
 				ss << "ess=\"" << std::to_string(charStyle.eyesStyle) << "\" ";
-				ss << "ms=\"" << std::to_string(charStyle.mouthStyle) << "\"";
+				ss << "ms=\"" << std::to_string(charStyle.mouthStyle) << "\" ";
 			ss << "/>";
 		}
 		{
@@ -688,14 +692,15 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "</char>";
 		}
 		{
-			ss << "<lvl l=\"" << std::to_string(charInfo.uLevel) << "\" cv=\"1\" sb=\"525\"/>";
+			//ss << "<lvl l=\"" << std::to_string(charInfo.uLevel) << "\" cv=\"1\" sb=\"525\"/>";
 		}
 		{
-			ss << "<flag>";
+			/*ss << "<flag>";
 			{
 				// TODO
 			}
-			ss << "</flag>";
+			ss << "</flag>";*/
+			//ss << "<flag/>";
 		}
 		{
 			ss << "<mis>";
@@ -734,10 +739,9 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<mnt a=\"0\"/>";
 		}
 		{
-			ss << "<dest";
+			ss << "<dest/>";
 			
 				// TODO
-			ss << "/>";
 		}
 	}
 	ss << "</obj>";

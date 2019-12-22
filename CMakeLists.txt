@@ -79,9 +79,11 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/EchoSyncSkill.hpp
 	src/Entity/GameMessages/EmotePlayed.hpp
 	src/Entity/GameMessages/FireEventServerSide.hpp
+	src/Entity/GameMessages/HasBeenCollected.hpp
 	src/Entity/GameMessages/Knockback.hpp
 	src/Entity/GameMessages/MissionDialogueOK.hpp
 	src/Entity/GameMessages/NotifyMission.hpp
+	src/Entity/GameMessages/NotifyMissionTask.hpp
 	src/Entity/GameMessages/OfferMission.hpp
 	src/Entity/GameMessages/PlayAnimation.hpp
 	src/Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp
@@ -90,6 +92,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/PlayFXEffect.hpp
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
+	src/Entity/GameMessages/RequestLinkedMission.hpp
 	src/Entity/GameMessages/RequestResurrect.hpp
 	src/Entity/GameMessages/RequestSmashPlayer.hpp
 	src/Entity/GameMessages/RequestUse.hpp

@@ -75,8 +75,7 @@ public:
 			std::uint32_t size = *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
 			char * cp = const_cast<char*>(data.c_str()) + 4;
 			std::string buffer(cp, size);
-			bs->Write(size);
-			StringUtils::writeBufferedStringToBitStream(bs, buffer, buffer.size());
+			StringUtils::writeStringToBitStream<std::uint32_t>(bs, buffer);
 			break;
 		}
 		case Enums::LDFType::WSTRING: {
