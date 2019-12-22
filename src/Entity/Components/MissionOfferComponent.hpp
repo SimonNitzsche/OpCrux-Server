@@ -55,18 +55,16 @@ public:
 				bool missionRepeatable = CacheMissions::GetRepeatable(cacheMission);
 
 				// If mission added
-				if (!Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
-					continue;
-				}
+				if (Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
+					auto dbMission = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
+					if (dbMission.state == 4 || dbMission.state == 12) {
+						missionOffer.missionID = missionID;
 
-				auto dbMission = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
-				if (dbMission.state == 4 || dbMission.state == 12) {
-					missionOffer.missionID = missionID;
+						missionOffer.offerer = msg->objectID;
 
-					missionOffer.offerer = owner->GetObjectID();
-
-					GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
-					return;
+						GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
+						return;
+					}
 				}
 			}
 			if (CacheMissionNPCComponent::GetOffersMission(*it)) {
@@ -106,8 +104,8 @@ public:
 
 
 				if (missionRequirementsPassed) {
-					missionOffer.offerer = owner->GetObjectID();
-
+					missionOffer.offerer = msg->objectID;
+					missionOffer.missionID = missionID;
 					GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
 					return;
 				}
