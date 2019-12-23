@@ -347,4 +347,3 @@ bin/conf/*.ini
 
 # Bullet Data
 libs/bullet3-*/data/*
-libs/bullet3-*/examples/*
