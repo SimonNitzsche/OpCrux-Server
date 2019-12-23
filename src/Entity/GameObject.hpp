@@ -295,6 +295,16 @@ namespace Entity {
 			}
 
 			/*
+				Sets the imagination
+			*/
+			void SetImagination(std::int32_t imag);
+
+			/*
+				Gets the imagination
+			*/
+			std::int32_t GetImagination();
+
+			/*
 				Quick function to create the test object.
 			*/
 			void Test() { objectID = 9ULL; LOT = 1234; name = u"TestName"; }

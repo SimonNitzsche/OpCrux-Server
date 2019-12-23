@@ -47,6 +47,11 @@ public:
 
 	static constexpr int GetTypeID() { return 200; }
 
+	void SetDirty() {
+		_isDirtyFlagAttributes = true;
+		owner->SetDirty();
+	}
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		
 		// Parameters
@@ -54,41 +59,43 @@ public:
 			_useCustomParameters = true;
 			factory->Write(_useCustomParameters);
 			if (_useCustomParameters) {
-				factory->Write(parameters[0]);
-				factory->Write(parameters[1]);
-				factory->Write(parameters[2]);
-				factory->Write(parameters[3]);
-				factory->Write(parameters[4]);
-				factory->Write(parameters[5]);
-				factory->Write(parameters[6]);
-				factory->Write(parameters[7]);
-				factory->Write(parameters[8]);
+				factory->Write<std::uint32_t>(parameters[0]);
+				factory->Write<std::uint32_t>(parameters[1]);
+				factory->Write<std::uint32_t>(parameters[2]);
+				factory->Write<std::uint32_t>(parameters[3]);
+				factory->Write<std::uint32_t>(parameters[4]);
+				factory->Write<std::uint32_t>(parameters[5]);
+				factory->Write<std::uint32_t>(parameters[6]);
+				factory->Write<std::uint32_t>(parameters[7]);
+				factory->Write<std::uint32_t>(parameters[8]);
 			}
 		}
 
 		// Attributes
 		// ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlagAttributes);
-		//if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION)
-			//_isDirtyFlagAttributes = true;
+		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION)
+			_isDirtyFlagAttributes = true;
+
+
 		factory->Write(_isDirtyFlagAttributes);
 		if (_isDirtyFlagAttributes) {
-			factory->Write(attributes.currentHealth);
-			factory->Write(attributes.dupMaxHealth);
-			factory->Write(attributes.currentArmor);
-			factory->Write(attributes.dupMaxArmor);
-			factory->Write(attributes.currentImagination);
-			factory->Write(attributes.dupMaxImagination);
-			factory->Write(attributes.damageAbsorptionPoints);
-			factory->Write(attributes.immunity);
-			factory->Write(attributes.isGMImmune);
-			factory->Write(attributes.isShielded);
-			factory->Write(attributes.maxHealth);
-			factory->Write(attributes.maxArmor);
-			factory->Write(attributes.maxImagination);
+			factory->Write<std::uint32_t>(attributes.currentHealth);
+			factory->Write<std::float_t>(attributes.dupMaxHealth);
+			factory->Write<std::uint32_t>(attributes.currentArmor);
+			factory->Write<std::float_t>(attributes.dupMaxArmor);
+			factory->Write<std::uint32_t>(attributes.currentImagination);
+			factory->Write<std::float_t>(attributes.dupMaxImagination);
+			factory->Write<std::uint32_t>(attributes.damageAbsorptionPoints);
+			factory->Write<bool>(attributes.immunity);
+			factory->Write<bool>(attributes.isGMImmune);
+			factory->Write<bool>(attributes.isShielded);
+			factory->Write<std::float_t>(attributes.maxHealth);
+			factory->Write<std::float_t>(attributes.maxArmor);
+			factory->Write<std::float_t>(attributes.maxImagination);
 			factory->Write<std::uint32_t>(attributes.factions.size());
 			for (std::int32_t faction : attributes.factions)
 				factory->Write<std::int32_t>(faction);
-			factory->Write(attributes.isSmashable);
+			factory->Write<bool>(attributes.isSmashable);
 			
 			// Unknown stuff
 			if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
@@ -103,8 +110,8 @@ public:
 		_isDirtyFlagAttributes = false;
 
 		// Unknown flag and data bit
-		factory->Write(true);
-		if (true) {
+		factory->Write(false);
+		if (false) {
 			factory->Write(false);
 		}
 	}

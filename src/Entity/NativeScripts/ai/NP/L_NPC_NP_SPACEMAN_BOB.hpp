@@ -13,6 +13,8 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 			// TODO SetImagination(6)
 			// TODO UpdateMissionTask{taskType = "complete", value = 664, value2 = 1, target = self}
 
+			self->GetZoneInstance()->objectsManager->GetObjectByID(msg.responder)->SetImagination(6);
+
 			Database::MissionModel model;
 			if (!Database::HasMission(msg.responder.getPureID(), 664)) {
 				model = Database::AddMission(msg.responder.getPureID(), 664);

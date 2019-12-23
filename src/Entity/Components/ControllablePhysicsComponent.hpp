@@ -84,23 +84,23 @@ public:
 		factory->Write(_isDirtyPositionAndStuff);
 		if(_isDirtyPositionAndStuff) {
 			//_isDirtyPositionAndStuff = false;
-			factory->Write(position.x);
-			factory->Write(position.y);
-			factory->Write(position.z);
-			factory->Write(rotation.x);
-			factory->Write(rotation.y);
-			factory->Write(rotation.z);
-			factory->Write(rotation.w);
-			factory->Write(isPlayerOnGround);
-			factory->Write(onRail);
+			factory->Write<std::float_t>(position.x);
+			factory->Write<std::float_t>(position.y);
+			factory->Write<std::float_t>(position.z);
+			factory->Write<std::float_t>(rotation.x);
+			factory->Write<std::float_t>(rotation.y);
+			factory->Write<std::float_t>(rotation.z);
+			factory->Write<std::float_t>(rotation.w);
+			factory->Write<bool>(isPlayerOnGround);
+			factory->Write<bool>(onRail);
 			factory->Write(true); // Velocity 
-				factory->Write(velocity.x);
-				factory->Write(velocity.y);
-				factory->Write(velocity.z);
+				factory->Write<std::float_t>(velocity.x);
+				factory->Write<std::float_t>(velocity.y);
+				factory->Write<std::float_t>(velocity.z);
 			factory->Write(true); // Angular Velocity
-				factory->Write(angularVelocity.x);
-				factory->Write(angularVelocity.y);
-				factory->Write(angularVelocity.z);
+				factory->Write<std::float_t>(angularVelocity.x);
+				factory->Write<std::float_t>(angularVelocity.y);
+				factory->Write<std::float_t>(angularVelocity.z);
 			factory->Write(false);
 		}
 		

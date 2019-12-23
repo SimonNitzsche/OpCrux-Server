@@ -4,6 +4,8 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "Database/Database.hpp"
 
+#include "Entity/Components/DestructibleComponent.hpp"
+
 class CharacterComponent : public IEntityComponent {
 private:
 	Database::Str_DB_CharInfo charInfo = Database::Str_DB_CharInfo();
@@ -41,6 +43,20 @@ public:
 
 	Database::Str_DB_CharStyle GetCharStyle() {
 		return charStyle;
+	}
+
+	void SetImagination(std::int32_t imag) {
+		charInfo.imagination = imag;
+		Database::UpdateChar(charInfo);
+	}
+
+	std::int32_t GetImagination() {
+		return charInfo.imagination;
+	}
+
+	void Awake() {
+		auto destComp = owner->GetComponent<DestructibleComponent>();
+		destComp->SetImagination(GetImagination());
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {

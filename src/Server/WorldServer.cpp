@@ -409,6 +409,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
+				DestructibleComponent* charDestComp = playerObject->GetComponent<DestructibleComponent>();
+				charDestComp->SetImagination(info.imagination);
 
 				playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
 				

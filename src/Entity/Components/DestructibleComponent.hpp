@@ -36,8 +36,7 @@ public:
 		}
 
 		StatsComponent::Attributes * attributes = &statsComponent->attributes;
-		std::uint32_t compID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 7);
-		GameCache::Interface::FDB::RowInfo rowInfo = CacheDestructibleComponent::getRow(compID);
+		GameCache::Interface::FDB::RowInfo rowInfo = CacheDestructibleComponent::getRow(GetComponentID());
 
 		attributes->currentHealth = CacheDestructibleComponent::GetLife(rowInfo);
 		attributes->maxHealth = attributes->currentHealth;
@@ -63,8 +62,10 @@ public:
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Destructible Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write(false);
-			factory->Write(false);
+			factory->Write(true);
+			factory->Write<std::uint32_t>(0);
+			factory->Write(true);
+			factory->Write<std::uint32_t>(0);
 		}
 
 		// Note: This is the first component that is able to serialize the StatsComponent, so no check is necessary.
@@ -72,6 +73,18 @@ public:
 			statsComponent->Serialize(factory, packetType);
 		else
 			Logger::log("WRLD", "Couldn't serialize StatsComponent after DestructibleComponent!", LogType::UNEXPECTED);
+	}
+
+	void SetImagination(std::int32_t imag) {
+		statsComponent->attributes.currentImagination = imag;
+		if (statsComponent->attributes.maxImagination < imag) {
+			statsComponent->attributes.maxImagination = imag;
+		}
+		statsComponent->SetDirty();
+	}
+
+	std::int32_t GetImagination() {
+		return statsComponent->attributes.currentImagination;
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {

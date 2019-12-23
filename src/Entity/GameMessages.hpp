@@ -133,6 +133,7 @@ public:
 #include "Entity/GameMessages/RequestResurrect.hpp"
 #include "Entity/GameMessages/RequestSmashPlayer.hpp"
 #include "Entity/GameMessages/RequestUse.hpp"
+#include "Entity/GameMessages/RestoreToPostLoadStats.hpp"
 #include "Entity/GameMessages/Resurrect.hpp"
 #include "Entity/GameMessages/SetGravityScale.hpp"
 #include "Entity/GameMessages/StartSkill.hpp"

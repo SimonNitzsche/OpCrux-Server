@@ -96,6 +96,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RequestResurrect.hpp
 	src/Entity/GameMessages/RequestSmashPlayer.hpp
 	src/Entity/GameMessages/RequestUse.hpp
+	src/Entity/GameMessages/RestoreToPostLoadStats.hpp
 	src/Entity/GameMessages/Resurrect.hpp
 	src/Entity/GameMessages/SetGravityScale.hpp
 	src/Entity/GameMessages/StartSkill.hpp

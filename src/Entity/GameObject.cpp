@@ -556,6 +556,25 @@ DataTypes::Quaternion Entity::GameObject::GetRotation() {
 	return DataTypes::Quaternion();
 }
 
+void Entity::GameObject::SetImagination(std::int32_t imag) {
+	auto charComp = GetComponent<CharacterComponent>();
+	if (charComp != nullptr) {
+		charComp->SetImagination(imag);
+	}
+	auto destComp = GetComponent<DestructibleComponent>();
+	if (destComp != nullptr) {
+		destComp->SetImagination(imag);
+	}
+}
+
+std::int32_t Entity::GameObject::GetImagination() {
+	auto destComp = GetComponent<DestructibleComponent>();
+	if (destComp != nullptr) {
+		return destComp->GetImagination();
+	}
+	return 0;
+}
+
 void Entity::GameObject::OnCollisionPhantom(Entity::GameObject * other) {
 	Logger::log("WRLD", "OnCollisionPhantom");
 	for (auto component : this->components) {
@@ -739,7 +758,7 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "</char>";
 		}
 		{
-			//ss << "<lvl l=\"" << std::to_string(charInfo.uLevel) << "\" cv=\"1\" sb=\"525\"/>";
+			ss << "<lvl l=\"" << std::to_string(charInfo.uLevel) << "\" cv=\"1\" sb=\"525\"/>";
 		}
 		{
 			ss << "<flag>";
@@ -801,7 +820,7 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<mnt a=\"0\"/>";
 		}
 		{
-			//ss << "<dest hm=\"9\" hc=\"9\" im=\"23\" ic=\"33\" am=\"0\" ac=\"14\" rsh=\"4\" rsi=\"6\" d=\"0\" imm=\"0\"/>";
+			ss << "<dest hm=\"9\" hc=\"9\" im=\"23\" ic=\"33\" am=\"0\" ac=\"14\" rsh=\"4\" rsi=\"6\" d=\"0\" imm=\"0\"/>";
 			
 				// TODO
 		}

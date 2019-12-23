@@ -816,6 +816,59 @@ public:
 		return {};
 	}
 
+	static void UpdateChar(Str_DB_CharInfo charInfo) {
+		// TODO check if char exists.
+		if (false) {
+			throw std::exception("Player does not exist.");
+		}
+		SetupStatementHandle();
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=? WHERE objectID=?", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to prepare sql.");
+		}
+
+		SQLLEN lenZero = 0;
+		SQLLEN NTS = SQL_NTS;
+		SQLLEN lenName = charInfo.name.size();
+		SQLLEN lenPendingName = charInfo.pendingName.size();
+
+
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(charInfo.name.size(), 1), 0, (SQLPOINTER)charInfo.name.c_str(), 0, &lenName);
+		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(charInfo.pendingName.size(), 1), 0, (SQLPOINTER)charInfo.pendingName.c_str(), 0, &lenPendingName);
+		ret = SQLBindParameter(sqlStmtHandle, 3, SQL_PARAM_INPUT, SQL_C_USHORT, SQL_SMALLINT, 0, 0, &charInfo.lastWorld, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_USHORT, SQL_SMALLINT, 0, 0, &charInfo.lastInstance, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &charInfo.lastClone, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &charInfo.lastLog, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 7, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &charInfo.position.x, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 8, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &charInfo.position.y, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 9, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &charInfo.position.z, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 10, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &charInfo.uScore, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 11, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &charInfo.uLevel, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 12, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &charInfo.currency, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 13, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &charInfo.reputation, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 14, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &charInfo.health, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 15, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &charInfo.imagination, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 16, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, 0, 0, &charInfo.armor, 0, &lenZero);
+
+		ret = SQLBindParameter(sqlStmtHandle, 17, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &charInfo.objectID, 0, &lenZero);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to bind parameters.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to execute query.");
+		}
+	}
+
 	static unsigned long CreateCharStyle(
 		int headColor, int head, int chestColor, int chest,
 		int legs, int hairStyle, int hairColor, int leftHand,

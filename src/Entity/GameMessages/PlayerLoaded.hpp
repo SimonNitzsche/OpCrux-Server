@@ -2,6 +2,8 @@
 #define __ENTITY__GM__PlayerLoaded_HPP__
 #include "Entity/GameMessages.hpp"
 
+#include "Entity/GameMessages/RestoreToPostLoadStats.hpp"
+
 namespace GM {
 	struct PlayerLoaded : GMBase {
 		DataTypes::LWOOBJID playerID;
@@ -21,6 +23,9 @@ namespace GM {
 				Logger::log("WRLD", "["+ sender->GetNameStr() +"] Player " + player->GetNameStr() + " loaded.");
 			else
 				Logger::log("WRLD", "[" + sender->GetNameStr() + "] Unknown player " + std::to_string(playerID) + " loaded.");
+
+			GM::RestoreToPostLoadStats  rtpls;
+			GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), rtpls);
 		}
 	};
 }
