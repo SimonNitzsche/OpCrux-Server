@@ -106,6 +106,11 @@ public:
 		}
 	}
 
+	void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg) {
+		if (instance)
+			instance->onMissionDialogueOK(owner, *msg);
+	}
+
 	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 		if (instance)
 			instance->onUse(owner, *msg);

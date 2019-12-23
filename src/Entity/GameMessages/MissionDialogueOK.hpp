@@ -68,6 +68,8 @@ namespace GM {
 				}
 			}
 
+			target->OnMissionDialogueOK(sender, this);
+
 			//Entity::GameObject* targetObject = sender->GetZoneInstance()->objectsManager->GetObjectByID(objectID);
 			/*if (targetObject)
 				targetObject->OnRequestUse(sender, this);

@@ -581,6 +581,24 @@ void Entity::GameObject::OnHasBeenCollected(Entity::GameObject* sender, GM::HasB
 	for (auto i : components) i.second->OnHasBeenCollected(sender, msg);
 }
 
+void Entity::GameObject::OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg) {
+	for (auto i : components) i.second->OnMissionDialogueOK(sender, msg);
+
+	// Make sure next mission gets offered on completion.
+	auto misOfferComp = GetComponent<MissionOfferComponent>();
+	if (misOfferComp != nullptr) {
+		if (Database::HasMission(sender->GetObjectID().getPureID(), msg->missionID)) {
+			std::int32_t missionState = Database::GetMission(sender->GetObjectID().getPureID(), msg->missionID).state;
+			if (missionState == 8 || missionState == 9) {
+				GM::RequestUse requestUseMSG;
+				requestUseMSG.bIsMultiInteractUse = false;
+				requestUseMSG.objectID = objectID;
+				misOfferComp->OnRequestUse(sender, &requestUseMSG);
+			}
+		}
+	}
+}
+
 void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 
 	// Handle Interact task

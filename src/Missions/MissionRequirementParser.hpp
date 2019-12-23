@@ -72,12 +72,14 @@ private:
 
 				if (bufferLength != 0) {
 					// set operator
-					isOperatorOR = (statement.at(inputIndex) == '|');
+					isOperatorOR = (statement.at(inputIndex) != '&');
 					// perform operation
 					bufferResult = doBitOperation(bufferResult, hasMissionFromBuffer(statement.substr(bufferBegin, bufferLength)));
 					// reset buffer
-					bufferBegin = inputIndex + 1;
 					bufferLength = 0;
+
+					while (statement.at(inputIndex + 1) == ' ') { ++inputIndex; }
+					bufferBegin = inputIndex + 1;
 				}
 
 				break;
