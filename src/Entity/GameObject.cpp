@@ -37,6 +37,7 @@
 #include "Entity/Components/Component107.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/DestructibleComponent.hpp"
+#include "Entity/Components/GenericActivatorComponent.hpp"
 #include "Entity/Components/InventoryComponent.hpp"
 #include "Entity/Components/ItemComponent.hpp"
 #include "Entity/Components/LUPExhibitComponent.hpp"
@@ -199,6 +200,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(Component107);
 		COMPONENT_ONADD_SWITCH_CASE(TriggerComponent);
 		/* ========== NON-SERIALIZED ========== */
+		COMPONENT_ONADD_SWITCH_CASE(GenericActivatorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent);

@@ -74,7 +74,7 @@ public:
 		*/
 
 		std::u16string wRebuildPos;
-		LDF_GET_VAL_FROM_COLLECTION(wRebuildPos, collection, u"rspPos", u"NULL");
+		LDF_GET_VAL_FROM_COLLECTION(wRebuildPos, collection, u"rebuild_activators", u"NULL");
 		std::vector<std::u16string> vecPos = StringUtils::splitWString(wRebuildPos, 0x001f);
 		if (wRebuildPos != u"NULL")
 			rebuild_activators = DataTypes::Vector3(std::stof(StringUtils::to_string(vecPos.at(0))), std::stof(StringUtils::to_string(vecPos.at(1))), std::stof(StringUtils::to_string(vecPos.at(2))));
@@ -107,7 +107,7 @@ public:
 		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlag);
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
-			factory->Write<std::uint32_t>(2);
+			factory->Write<std::uint32_t>(0);
 			factory->Write(true);
 			factory->Write(true);
 			factory->Write<std::float_t>(0);

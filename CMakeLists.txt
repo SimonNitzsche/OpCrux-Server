@@ -49,6 +49,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/Component107.hpp
 	src/Entity/Components/ControllablePhysicsComponent.hpp
 	src/Entity/Components/DestructibleComponent.hpp
+	src/Entity/Components/GenericActivatorComponent.hpp
 	src/Entity/Components/InventoryComponent.hpp
 	src/Entity/Components/ItemComponent.hpp
 	src/Entity/Components/LUPExhibitComponent.hpp
