@@ -5,6 +5,7 @@
 
 #include "Entity/Components/StatsComponent.hpp"
 #include "Entity/Components/PhantomPhysicsComponent.hpp"
+#include "Entity/Components/ScriptedActivityComponent.hpp"
 #include "Entity/GameObject.hpp"
 
 using namespace DataTypes;
@@ -14,25 +15,38 @@ struct ScriptedActivityStructEntry {
 	float parameters[10];
 };
 
-class QuickbuildComponent : public IEntityComponent {
+class QuickbuildComponent : public ScriptedActivityComponent {
+	friend class ScriptedActivityComponent;
 private:
 	StatsComponent * statsComponent;
-	//std::unordered_map<DataTypes::LWOOBJID, float[10]> parameters = {};
 
 	bool _isDirtyFlagActivity = false;
 	bool _isDirtyFlag = false;
 
 	DataTypes::Vector3 rebuild_activators;
 
+	/*
+		0 = Open
+		2 = Completed
+		4 = Resetting
+		5 = Building
+		6 = Incomplete
+	*/
+	std::uint32_t qbState = 0;
+	bool qbSuccess = false;
+	bool qbEnabled = true;
+	std::float_t timeSinceStartOfBuild = 0.0f;
+	std::float_t timeOfPausedRebuilds = 0.0f;
+
 public:
 
-	QuickbuildComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
+	QuickbuildComponent(std::int32_t componentID) : ScriptedActivityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 48; }
 
 	void OnEnable() {
-		if ((statsComponent = owner->GetComponent<StatsComponent>()) == nullptr) {
-			owner->AddComponent<StatsComponent>(0);
+		if ((statsComponent = ScriptedActivityComponent::owner->GetComponent<StatsComponent>()) == nullptr) {
+			ScriptedActivityComponent::owner->AddComponent<StatsComponent>(0);
 			statsComponent = owner->GetComponent<StatsComponent>();
 
 			if (statsComponent == nullptr) {
@@ -81,37 +95,30 @@ public:
 
 
 		// Make Activator
-		Entity::GameObject * activator = new Entity::GameObject(owner->GetZoneInstance(), 6604);
-		activator->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
-		owner->AddChild(activator);
+		Entity::GameObject * activator = new Entity::GameObject(ScriptedActivityComponent::owner->GetZoneInstance(), 6604);
+		activator->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + ScriptedActivityComponent::owner->GetZoneInstance()->spawnedObjectIDCounter++));
+		ScriptedActivityComponent::owner->AddChild(activator);
 		activator->isSerializable = true;
 		activator->GetComponent<PhantomPhysicsComponent>()->SetPosition(rebuild_activators);
-		owner->GetZoneInstance()->objectsManager->RegisterObject(activator);
+		ScriptedActivityComponent::owner->GetZoneInstance()->objectsManager->RegisterObject(activator);
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO */
 		// Check if Destructible or Collectible component is attached, if so don't serialize
-		if (owner->GetComponent<DestructibleComponent>() == nullptr && owner->GetComponent<CollectibleComponent>() == nullptr)
+		if (ScriptedActivityComponent::owner->GetComponent<DestructibleComponent>() == nullptr && ScriptedActivityComponent::owner->GetComponent<CollectibleComponent>() == nullptr)
 			statsComponent->Serialize(factory, packetType);
 
-		factory->Write(_isDirtyFlagActivity);
-		if (_isDirtyFlagActivity) {
-			factory->Write<std::uint32_t>(0);
-			/*for (auto it : parameters) {
-				factory->Write(it.first);
-				factory->Write(it.second);
-			}*/
-		}
+		ScriptedActivityComponent::Serialize(factory, packetType);
 
 		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlag);
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
-			factory->Write<std::uint32_t>(0);
-			factory->Write(false);
-			factory->Write(true);
-			factory->Write<std::float_t>(0);
-			factory->Write<std::float_t>(0);
+			factory->Write<std::uint32_t>(qbState);
+			factory->Write(qbSuccess);
+			factory->Write(qbEnabled);
+			factory->Write<std::float_t>(timeSinceStartOfBuild);
+			factory->Write<std::float_t>(timeOfPausedRebuilds);
 			if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 				factory->Write(false);
 				factory->Write(rebuild_activators.x);
@@ -123,6 +130,16 @@ public:
 
 		_isDirtyFlag = false;
 		
+	}
+
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
+		if (qbState == 0) {
+			AddPlayerToActivity(sender->GetObjectID());
+			{GM::RebuildNotifyState msg; msg.player = sender->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 5); GameMessages::Broadcast(sender->GetZoneInstance(), this->owner, msg); }
+		}
+
+		this->_isDirtyFlag = true;
+		this->owner->SetDirty();
 	}
 
 };

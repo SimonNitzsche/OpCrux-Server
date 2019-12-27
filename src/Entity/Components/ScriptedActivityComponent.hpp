@@ -3,12 +3,17 @@
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
+#include <memory>
+#include <unordered_map>
 
-using namespace DataTypes;
+#include "DataTypes/LWOOBJID.hpp"
 
 class ScriptedActivityComponent : public IEntityComponent {
 private:
 
+	bool _componentDirty = false;
+
+	std::map<DataTypes::LWOOBJID, std::vector<std::float_t>> playerActivityData;
 
 public:
 
@@ -17,7 +22,36 @@ public:
 	static constexpr int GetTypeID() { return 39; }
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
-		factory->Write(false);
+		ENABLE_FLAG_ON_CONSTRUCTION(_componentDirty);
+		
+		factory->Write(_componentDirty);
+		if (_componentDirty) {
+			factory->Write<std::uint32_t>(playerActivityData.size());
+			for (auto it = playerActivityData.begin(); it != playerActivityData.end(); ++it) {
+				factory->Write<std::uint64_t>(it->first);
+				for (int i = 0; i < 10; ++i) {
+					factory->Write<std::float_t>(it->second.at(i));
+				}
+			}
+		}
+	}
+
+	bool PlayerInActivity(DataTypes::LWOOBJID player) {
+		// std::find is broken somehow, so we have to iterate by our own.
+		for (auto it = playerActivityData.begin(); it != playerActivityData.end(); ++it)
+			if (it->first == player)
+				return true;
+		return false;
+	}
+
+	void AddPlayerToActivity(DataTypes::LWOOBJID player) {
+		if (PlayerInActivity(player)) return;
+		playerActivityData.insert({ player, {0,0, 0,0, 0,0, 0,0, 0,0} });
+	}
+
+	void RemovePlayerFromActivity(DataTypes::LWOOBJID player) {
+		if (!PlayerInActivity(player)) return;
+		playerActivityData.erase(player);
 	}
 
 	void PopulateFromLDF(LDFCollection collection) {

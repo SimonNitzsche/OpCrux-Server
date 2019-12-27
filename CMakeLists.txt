@@ -93,6 +93,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/PlayFXEffect.hpp
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
+	src/Entity/GameMessages/RebuildNotifyState.hpp
 	src/Entity/GameMessages/RequestLinkedMission.hpp
 	src/Entity/GameMessages/RequestResurrect.hpp
 	src/Entity/GameMessages/RequestSmashPlayer.hpp

@@ -129,6 +129,7 @@ public:
 #include "Entity/GameMessages/PlayFXEffect.hpp"
 #include "Entity/GameMessages/PlayNDAudioEmitter.hpp"
 #include "Entity/GameMessages/ProximityUpdate.hpp"
+#include "Entity/GameMessages/RebuildNotifyState.hpp"
 #include "Entity/GameMessages/RequestLinkedMission.hpp"
 #include "Entity/GameMessages/RequestResurrect.hpp"
 #include "Entity/GameMessages/RequestSmashPlayer.hpp"
