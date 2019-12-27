@@ -121,10 +121,12 @@ add_executable(OpCrux_Server
 	src/Entity/NativeScript.hpp
 	src/Entity/ObjectsManager.cpp
 	src/Entity/ObjectsManager.hpp
+	src/Enums/EChatChannel.hpp
 	src/Enums/EComponents.hpp
+	src/Enums/EDisconnectReason.hpp
 	src/Enums/EFailReason.hpp
 	src/Enums/EGameMessages.hpp
-	src/Enums/EGeneralPackets.hpp
+	src/Enums/ELoginReturnCode.hpp
 	src/Enums/EMissionTask.hpp
 	src/Enums/EPackets.hpp
 	src/Enums/EPathBehavior.hpp
