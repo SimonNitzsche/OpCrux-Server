@@ -50,6 +50,7 @@
 #include "Entity/Components/PhantomPhysicsComponent.hpp"
 #include "Entity/Components/PlatformBoundaryComponent.hpp"
 #include "Entity/Components/QuickBuildComponent.hpp"
+#include "Entity/Components/RebuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/ScriptedActivityComponent.hpp"
@@ -208,6 +209,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PlatformBoundaryComponent);
+		COMPONENT_ONADD_SWITCH_CASE(RebuildComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SoundAmbient3DComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SoundTriggerComponent);
 

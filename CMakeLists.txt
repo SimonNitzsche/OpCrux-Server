@@ -62,6 +62,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/PhantomPhysicsComponent.hpp
 	src/Entity/Components/PlatformBoundaryComponent.hpp
 	src/Entity/Components/QuickBuildComponent.hpp
+	src/Entity/Components/RebuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
 	src/Entity/Components/ScriptedActivityComponent.hpp
