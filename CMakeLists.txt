@@ -44,6 +44,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/Interface/IEntityComponent.hpp
 	src/Entity/Components/BaseCombatAIComponent.hpp
 	src/Entity/Components/BouncerComponent.hpp
+	src/Entity/Components/BuildBorderComponent.hpp
 	src/Entity/Components/CharacterComponent.hpp
 	src/Entity/Components/CollectibleComponent.hpp
 	src/Entity/Components/Component107.hpp

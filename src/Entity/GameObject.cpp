@@ -32,6 +32,7 @@
 // Components
 #include "Entity/Components/BaseCombatAIComponent.hpp"
 #include "Entity/Components/BouncerComponent.hpp"
+#include "Entity/Components/BuildBorderComponent.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
 #include "Entity/Components/CollectibleComponent.hpp"
 #include "Entity/Components/Component107.hpp"
@@ -200,6 +201,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(Component107);
 		COMPONENT_ONADD_SWITCH_CASE(TriggerComponent);
 		/* ========== NON-SERIALIZED ========== */
+		COMPONENT_ONADD_SWITCH_CASE(BuildBorderComponent);
 		COMPONENT_ONADD_SWITCH_CASE(GenericActivatorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent);
