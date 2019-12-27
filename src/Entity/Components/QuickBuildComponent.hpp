@@ -136,6 +136,7 @@ public:
 		if (qbState == 0) {
 			AddPlayerToActivity(sender->GetObjectID());
 			{GM::RebuildNotifyState msg; msg.player = sender->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 5); GameMessages::Broadcast(sender->GetZoneInstance(), this->owner, msg); }
+			{GM::EnableRebuild msg; msg.user = sender->GetObjectID(); msg.bEnable = true; GameMessages::Broadcast(sender->GetZoneInstance(), this->owner, msg); }
 		}
 
 		this->_isDirtyFlag = true;

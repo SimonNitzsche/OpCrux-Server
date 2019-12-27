@@ -79,6 +79,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/EchoStartSkill.hpp
 	src/Entity/GameMessages/EchoSyncSkill.hpp
 	src/Entity/GameMessages/EmotePlayed.hpp
+	src/Entity/GameMessages/EnableRebuild.hpp
 	src/Entity/GameMessages/FireEventServerSide.hpp
 	src/Entity/GameMessages/HasBeenCollected.hpp
 	src/Entity/GameMessages/Knockback.hpp
@@ -119,6 +120,7 @@ add_executable(OpCrux_Server
 	src/Entity/ObjectsManager.cpp
 	src/Entity/ObjectsManager.hpp
 	src/Enums/EComponents.hpp
+	src/Enums/EFailReason.hpp
 	src/Enums/EGameMessages.hpp
 	src/Enums/EGeneralPackets.hpp
 	src/Enums/EMissionTask.hpp

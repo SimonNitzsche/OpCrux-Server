@@ -115,6 +115,7 @@ public:
 #include "Entity/GameMessages/EchoStartSkill.hpp"
 #include "Entity/GameMessages/EchoSyncSkill.hpp"
 #include "Entity/GameMessages/EmotePlayed.hpp"
+#include "Entity/GameMessages/EnableRebuild.hpp"
 #include "Entity/GameMessages/FireEventServerSide.hpp"
 #include "Entity/GameMessages/HasBeenCollected.hpp"
 #include "Entity/GameMessages/Knockback.hpp"
