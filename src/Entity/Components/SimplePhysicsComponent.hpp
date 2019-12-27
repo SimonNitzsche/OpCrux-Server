@@ -49,12 +49,16 @@ public:
 		tmpFlag = _velocityDirty;
 		factory->Write(tmpFlag);
 		if (tmpFlag) {
-			factory->Write(linearVelocity);
-			factory->Write(angularVelocity);
+			factory->Write<std::float_t>(linearVelocity.x);
+			factory->Write<std::float_t>(linearVelocity.y);
+			factory->Write<std::float_t>(linearVelocity.z);
+			factory->Write<std::float_t>(angularVelocity.x);
+			factory->Write<std::float_t>(angularVelocity.y);
+			factory->Write<std::float_t>(angularVelocity.z);
 		}
 		tmpFlag = _airSpeedDirty;
-		factory->Write(tmpFlag);
-		if (tmpFlag) {
+		factory->Write(tmpFlag&&airSpeed!=0);
+		if (tmpFlag&&airSpeed!=0) {
 			factory->Write(airSpeed);
 		}
 		tmpFlag = _posRotDirty || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;

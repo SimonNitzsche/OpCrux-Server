@@ -723,7 +723,7 @@ std::string Entity::GameObject::GenerateXML() {
 				ss << "acct=\"" << charInfo.accountID << "\" ";
 				ss << "llog=\"" << 1327707052 << "\" ";
 				//ss << "ttip=\"" << Instance->sessionManager.GetSession(objectID)->systemAddress.binaryAddress << "\" ";
-				ss << "ttip=\"16777216\"";
+				//ss << "ttip=\"16777216\"";
 				// ss << "mldt=\"0\ ";
 				// ss << "lzid=\"2341502167811299\" ";
 				// ss << "lzx=\"-25.6\" ";

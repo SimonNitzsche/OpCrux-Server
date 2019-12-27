@@ -29,6 +29,7 @@ public:
 
 	void SetEnabled(bool enabled) {
 		bEnabled = enabled;
+		_isDirtyFlag = true;
 		owner->SetDirty();
 	}
 

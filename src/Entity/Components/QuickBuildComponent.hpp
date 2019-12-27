@@ -98,7 +98,7 @@ public:
 		Entity::GameObject * activator = new Entity::GameObject(ScriptedActivityComponent::owner->GetZoneInstance(), 6604);
 		activator->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + ScriptedActivityComponent::owner->GetZoneInstance()->spawnedObjectIDCounter++));
 		ScriptedActivityComponent::owner->AddChild(activator);
-		activator->isSerializable = true;
+		//activator->isSerializable = true;
 		activator->GetComponent<PhantomPhysicsComponent>()->SetPosition(rebuild_activators);
 		ScriptedActivityComponent::owner->GetZoneInstance()->objectsManager->RegisterObject(activator);
 	}
