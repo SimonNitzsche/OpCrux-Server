@@ -83,7 +83,7 @@ public:
 		// Make Activator
 		Entity::GameObject * activator = new Entity::GameObject(owner->GetZoneInstance(), 6604);
 		activator->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
-		activator->SetParent(owner);
+		owner->AddChild(activator);
 		activator->isSerializable = true;
 		activator->GetComponent<PhantomPhysicsComponent>()->SetPosition(rebuild_activators);
 		owner->GetZoneInstance()->objectsManager->RegisterObject(activator);
@@ -97,8 +97,8 @@ public:
 
 		factory->Write(_isDirtyFlagActivity);
 		if (_isDirtyFlagActivity) {
-			/*factory->Write<std::uint32_t>(parameters.size());
-			for (auto it : parameters) {
+			factory->Write<std::uint32_t>(0);
+			/*for (auto it : parameters) {
 				factory->Write(it.first);
 				factory->Write(it.second);
 			}*/
@@ -108,7 +108,7 @@ public:
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
 			factory->Write<std::uint32_t>(0);
-			factory->Write(true);
+			factory->Write(false);
 			factory->Write(true);
 			factory->Write<std::float_t>(0);
 			factory->Write<std::float_t>(0);

@@ -332,8 +332,8 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 
 	/*factory->Write(baseDataDirty);
 	if (baseDataDirty) {*/
-	factory->Write(false);
-	if(false) {
+	factory->Write(true);
+	if(true) {
 		factory->Write(parent != nullptr);
 		if (parent != nullptr) {
 			factory->Write<std::uint64_t>(parent->objectID);
