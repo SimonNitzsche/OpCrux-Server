@@ -101,7 +101,7 @@ public:
 			}
 			else {
 				Logger::log("WRLD", "Unable to load script \"" + scriptName + "\": Script not found.", LogType::WARN);
-				owner->isSerializable = false;
+				//owner->isSerializable = false;
 			}
 		}
 	}
