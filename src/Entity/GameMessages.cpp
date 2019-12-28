@@ -16,12 +16,14 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 		GM_DESERIALIZE_SWITCH_CASE(GM::MissionDialogueOK);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayEmote);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayerLoaded);
+		GM_DESERIALIZE_SWITCH_CASE(GM::RebuildCancel);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestLinkedMission);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestResurrect);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestSmashPlayer);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestUse);
 		GM_DESERIALIZE_SWITCH_CASE(GM::StartSkill);
 		GM_DESERIALIZE_SWITCH_CASE(GM::SyncSkill);
+		GM_DESERIALIZE_SWITCH_CASE(GM::TerminateInteraction);
 	default: {
 		Logger::log("WRLD", "Tried to deserialize unhandled GM #" + std::to_string(msgID), LogType::WARN);
 	}

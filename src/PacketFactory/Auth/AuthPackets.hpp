@@ -15,7 +15,7 @@
 #include "Utils/ServerInfo.hpp"
 #include "Utils/IPUtils.hpp"
 
-#include "Enums/EAuthPackets.hpp"
+#include "Enums/ELoginReturnCode.hpp"
 #include "NetworkDataTypes/ByteBool.hpp"
 
 namespace PacketFactory {

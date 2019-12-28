@@ -96,6 +96,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/PlayFXEffect.hpp
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
+	src/Entity/GameMessages/RebuildCancel.hpp
 	src/Entity/GameMessages/RebuildNotifyState.hpp
 	src/Entity/GameMessages/RequestLinkedMission.hpp
 	src/Entity/GameMessages/RequestResurrect.hpp
@@ -107,6 +108,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/StartSkill.hpp
 	src/Entity/GameMessages/StopFXEffect.hpp
 	src/Entity/GameMessages/SyncSkill.hpp
+	src/Entity/GameMessages/TerminateInteraction.hpp
 	src/Entity/GameMessages/VendorOpenWindow.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
@@ -135,6 +137,7 @@ add_executable(OpCrux_Server
 	src/Enums/EPropertyRentalTimeUnit.hpp
 	src/Enums/ERemoteConnection.hpp
 	src/Enums/ESystem.hpp
+	src/Enums/ETerminateType.hpp
 	src/Enums/StringEnums.hpp
 	src/Exceptions/ExNetException.hpp
 	src/FileTypes/INIFile/ConfFile.hpp
@@ -168,6 +171,7 @@ add_executable(OpCrux_Server
 	src/GameCache/PhysicsComponent.hpp
 	src/GameCache/Preconditions.hpp
 	src/GameCache/PropertyEntranceComponent.hpp
+	src/GameCache/RebuildComponent.hpp
 	src/GameCache/ScriptComponent.hpp
 	src/GameCache/SkillBehavior.hpp
 	src/GameCache/VendorComponent.hpp

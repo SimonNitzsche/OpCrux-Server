@@ -44,6 +44,13 @@ public:
 		return false;
 	}
 
+	std::list<DataTypes::LWOOBJID> GetPlayersInActivity() {
+		std::list<DataTypes::LWOOBJID> retList {};
+		for (auto it = playerActivityData.begin(); it != playerActivityData.end(); ++it)
+			retList.push_back(it->first);
+		return retList;
+	}
+
 	void AddPlayerToActivity(DataTypes::LWOOBJID player) {
 		if (PlayerInActivity(player)) return;
 		playerActivityData.insert({ player, {0,0, 0,0, 0,0, 0,0, 0,0} });

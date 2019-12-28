@@ -8,7 +8,7 @@
 #include "Enums/EGameMessages.hpp"
 #include "Server/WorldServer.hpp"
 
-#include "Enums/EGeneralPackets.hpp"
+#include "Enums/EDisconnectReason.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/EPackets.hpp"
 
@@ -130,6 +130,7 @@ public:
 #include "Entity/GameMessages/PlayFXEffect.hpp"
 #include "Entity/GameMessages/PlayNDAudioEmitter.hpp"
 #include "Entity/GameMessages/ProximityUpdate.hpp"
+#include "Entity/GameMessages/RebuildCancel.hpp"
 #include "Entity/GameMessages/RebuildNotifyState.hpp"
 #include "Entity/GameMessages/RequestLinkedMission.hpp"
 #include "Entity/GameMessages/RequestResurrect.hpp"
@@ -141,6 +142,7 @@ public:
 #include "Entity/GameMessages/StartSkill.hpp"
 #include "Entity/GameMessages/StopFXEffect.hpp"
 #include "Entity/GameMessages/SyncSkill.hpp"
+#include "Entity/GameMessages/TerminateInteraction.hpp"
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
 
 #endif

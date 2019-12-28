@@ -7,6 +7,7 @@
 #include "Entity/Components/PhantomPhysicsComponent.hpp"
 #include "Entity/Components/ScriptedActivityComponent.hpp"
 #include "Entity/GameObject.hpp"
+#include "GameCache/RebuildComponent.hpp"
 
 using namespace DataTypes;
 
@@ -38,6 +39,14 @@ private:
 	std::float_t timeSinceStartOfBuild = 0.0f;
 	std::float_t timeOfPausedRebuilds = 0.0f;
 
+
+	std::float_t completionTime;
+
+
+	clock_t buildStartTime = 0;
+	clock_t buildCompleteTime = 0;
+	Entity::GameObject * buildingPlayer = nullptr;
+
 public:
 
 	QuickbuildComponent(std::int32_t componentID) : ScriptedActivityComponent(componentID) {}
@@ -58,6 +67,29 @@ public:
 
 	void Awake() {
 		
+	}
+
+	void Update() {
+		// When building
+		if (qbState == 5) {
+			// When build time is up
+			if ((buildStartTime - ::time(0) + completionTime) <= .0f) {
+				{GM::RebuildNotifyState msg; msg.player = buildingPlayer->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 2); GameMessages::Broadcast(buildingPlayer->GetZoneInstance(), this->owner, msg); }
+				{GM::PlayFXEffect msg; msg.effectID = 507; msg.effectType = u"create"; msg.fScale = 1.0f; msg.name = "BrickFadeUpVisCompleteEffect"; msg.priority = 0.4000000059604645f; msg.serialize = true; GameMessages::Broadcast(buildingPlayer->GetZoneInstance(), this->owner, msg); }
+				{GM::EnableRebuild msg; msg.user = buildingPlayer->GetObjectID(); msg.bSuccess; msg.fDuration = completionTime; GameMessages::Broadcast(buildingPlayer->GetZoneInstance(), this->owner, msg); }
+				{GM::TerminateInteraction msg; msg.ObjIDTerminator = buildingPlayer->GetObjectID(); msg.type = Enums::ETerminateType::FROM_INTERACTION; GameMessages::Broadcast(buildingPlayer->GetZoneInstance(), this->owner, msg); }
+
+				this->_isDirtyFlag = true;
+				this->owner->SetDirty();
+			}
+		}
+		// When completed
+		else if (qbState == 2) {
+			if (false) {
+				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
+			}
+
+		}
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {
@@ -86,6 +118,10 @@ public:
 		tmeSmsh=3:10
 		vlntDth=7:1
 		*/
+
+		auto cacheRow = CacheRebuildComponent::getRow(GetComponentID());
+
+		LDF_GET_VAL_FROM_COLLECTION(completionTime, collection, u"compTime", CacheRebuildComponent::GetCompleteTime(cacheRow));
 
 		std::u16string wRebuildPos;
 		LDF_GET_VAL_FROM_COLLECTION(wRebuildPos, collection, u"rebuild_activators", u"NULL");
@@ -133,8 +169,11 @@ public:
 	}
 
 	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
+		// When active
 		if (qbState == 0) {
 			AddPlayerToActivity(sender->GetObjectID());
+			buildStartTime = ::time(0);
+			buildingPlayer = sender;
 			{GM::RebuildNotifyState msg; msg.player = sender->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 5); GameMessages::Broadcast(sender->GetZoneInstance(), this->owner, msg); }
 			{GM::EnableRebuild msg; msg.user = sender->GetObjectID(); msg.bEnable = true; GameMessages::Broadcast(sender->GetZoneInstance(), this->owner, msg); }
 		}
