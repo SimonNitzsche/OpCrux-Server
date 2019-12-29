@@ -9,6 +9,12 @@ class ObjectsManager;
 
 #include "Misc/LWOTimer.hpp"
 
+class btDefaultCollisionConfiguration;
+class btCollisionDispatcher;
+class btBroadphaseInterface;
+class btSequentialImpulseConstraintSolver;
+class btDiscreteDynamicsWorld;
+
 class WorldServer : ILUServer {
 private:
 	std::vector<std::string> mf_FirstNames = {};
@@ -21,6 +27,11 @@ public:
 	ObjectsManager * objectsManager = nullptr;
 	RakPeerInterface* rakServer;
 	FileTypes::LUZ::LUZone * luZone;
+	btDefaultCollisionConfiguration* collisionConfiguration;
+	btCollisionDispatcher* collisionDispatcher;
+	btBroadphaseInterface* overlappingPairCache;
+	btSequentialImpulseConstraintSolver* constraintSolver;
+	btDiscreteDynamicsWorld* dynamicsWorld;
 	Entity::GameObject * zoneControlObject = nullptr;
 	unsigned long long spawnedObjectIDCounter=0;
 	LWOTimer timer;

@@ -11,6 +11,8 @@ private:
 	Database::Str_DB_CharInfo charInfo = Database::Str_DB_CharInfo();
 	Database::Str_DB_CharStyle charStyle = Database::Str_DB_CharStyle();
 
+	std::map<std::uint32_t, std::uint64_t> flags;
+
 	// Dirty flags
 	bool _dirtyPart2 = true;
 
@@ -52,6 +54,28 @@ public:
 
 	std::int32_t GetImagination() {
 		return charInfo.imagination;
+	}
+
+	bool GetFlag(std::int32_t flagIndex) {
+		//auto flagChunk = std::find(flags.begin(), flags.end(), flagIndex/64);
+		auto flagChunk = flags.find(flagIndex / 64);
+		if (flagChunk != flags.end()) {
+			return (flagChunk->second & (1ULL << (flagIndex % 64)));
+		}
+		return false;
+	}
+
+	void SetFlag(std::int32_t flagIndex, bool value) {
+		// Set flag
+		//auto flagChunk = std::find(flags.begin(), flags.end(), flagIndex / 64);
+		auto flagChunk = flags.find(flagIndex / 64);
+		if (flagChunk != flags.end()) {
+			flagChunk->second ^= (-value ^ flagChunk->second) & (1ULL << (flagIndex % 64));
+		}
+		else {
+			flags.insert({ flagIndex / 64, 1ULL << (flagIndex % 64) });
+		}
+		// TODO: Apply changes to DB
 	}
 
 	void Awake() {

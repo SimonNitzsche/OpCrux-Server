@@ -4,6 +4,7 @@ project(OpCrux_Server)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+SET(USE_MSVC_RUNTIME_LIBRARY_DLL true)
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -22,6 +23,10 @@ include_directories(include)
 include_directories(libs)
 include_directories(src)
 include_directories(tests)
+
+INCLUDE_DIRECTORIES(
+${BULLET_PHYSICS_SOURCE_DIR}/src
+)
 
 add_executable(OpCrux_Server
 	src/Common/CrossPlatform.hpp
@@ -104,6 +109,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RequestUse.hpp
 	src/Entity/GameMessages/RestoreToPostLoadStats.hpp
 	src/Entity/GameMessages/Resurrect.hpp
+	src/Entity/GameMessages/ServerTerminateInteraction.hpp
 	src/Entity/GameMessages/SetGravityScale.hpp
 	src/Entity/GameMessages/StartSkill.hpp
 	src/Entity/GameMessages/StopFXEffect.hpp
@@ -224,9 +230,18 @@ set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
 set_property(TARGET rapidxml PROPERTY CXX_STANDARD 98)
 
+IF(WIN32)
+	SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Shared Libs" FORCE)
+ELSE(WIN32)
+	SET(BUILD_SHARED_LIBS ON CACHE BOOL "Shared Libs" FORCE)
+ENDIF(WIN32)
+
 target_link_libraries(OpCrux_Server
-	Bullet3Collision
+	BulletDynamics
+	BulletCollision
+	LinearMath
 	Bullet3Common
+	Bullet3Collision
 	Bullet3Dynamics
 	Bullet3Geometry
 	Bullet3OpenCL_clew

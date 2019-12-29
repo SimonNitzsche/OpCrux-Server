@@ -37,7 +37,7 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 GameCache::Interface::FDB::Connection Cache;
 BridgeMasterServer* masterServerBridge;
 
-int givenWorldID = 1000;
+int givenWorldID = 1800;
 
 
 // Following Includes are for testing
@@ -66,6 +66,8 @@ int main(int argc, char* argv[]) {
 	MODE_SERVER = SERVERMODE::STANDALONE;
 
 	Logger::log("MAIN", "Booting up server instances...");
+
+	
 
 #ifdef OPCRUX_PLATFORM_WIN32
 	std::system("title OpCrux Server (Standalone)");

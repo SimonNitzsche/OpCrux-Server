@@ -11,6 +11,8 @@
 #include <RakNet/ReplicaManager.h>
 #include <RakNet/NetworkIDManager.h>
 
+#include <bullet3-2.89/src/btBulletDynamicsCommon.h>
+
 #include "Enums/EPackets.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/ESystem.hpp"
@@ -98,97 +100,127 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		return;
 	}
 
-	// Get zone file
-	std::string zoneName = CacheZoneTable::GetZoneName(zone);
+	/*
+		LOAD WORLD STUFF. Zone 0 is char selection only, so we don't need to load world.
+	*/
 
-	// Load Zone
-	Logger::log("WRLD", "Loading Zone: " + zoneName);
-	luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
-	Logger::log("WRLD", "Sucessfully loaded zone.");
+	if (zone != 0) {
+		/// collision configuration contains default setup for memory, collision setup.
+		/// Advanced users can create their own configuration.
+		collisionConfiguration = new btDefaultCollisionConfiguration();
 
-	if (luZone->zoneID != zone) {
-		Logger::log("WRLD", "Invalid zoneID within LUZ file, correcting...", LogType::UNEXPECTED);
-		luZone->zoneID = zone;
-	}
+		/// use the default collision dispatcher. For parallel processing you can use a diffent
+		/// dispatcher(see Extras / BulletMultiThreaded)
+		collisionDispatcher = new btCollisionDispatcher(collisionConfiguration);
 
-	std::int32_t zoneControlLOT = CacheZoneTable::GetZoneControlTemplate(zone);
-	if (zoneControlLOT == 0) zoneControlLOT = 2365;
-	this->zoneControlObject = new Entity::GameObject(this, zoneControlLOT);
-	this->zoneControlObject->SetObjectID(0x3FFFFFFFFFFE);
-	objectsManager->RegisterObject(this->zoneControlObject);
-	this->zoneControlObject->Finish();
+		/// btDbvtBroadphase is a good general purpose broadphase. You can also try out
+		/// btAxis3Sweep.
+		overlappingPairCache = new btDbvtBroadphase();
 
-	// TODO: Move this to somewhere else
-	for (auto scene : luZone->scenes) {
-		for (auto objT : scene.scene.objectsChunk.objects) {
-			Entity::GameObject * go = new Entity::GameObject(this, *objT.LOT);
-			go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ 70368744177664ULL | *objT.objectID));
-			LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
-			
-			// If Spawner
-			SpawnerComponent * spawnerComp = static_cast<SpawnerComponent*>(go->GetComponentByType(10));
-			if (spawnerComp != nullptr) {
-				spawnerComp->originPos = objT.spawnPos->pos;
-				spawnerComp->originRot = objT.spawnPos->rot;
-			}
-			go->isSerializable = false;
+		/// the default constraint solver. For parallel processing you can use a different solver
+		/// (see Extras / BulletMultiThreaded)
+		constraintSolver = new btSequentialImpulseConstraintSolver();
 
-			go->SetScale(*objT.scale);
+		/// Create physic world
+		dynamicsWorld = new btDiscreteDynamicsWorld(collisionDispatcher, overlappingPairCache, constraintSolver, collisionConfiguration);
 
-			go->PopulateFromLDF(&ldfCollection);
+		// Set gravity
+		dynamicsWorld->setGravity(btVector3(0, -CacheWorldConfig::GetPEGravityValue(), 0));
 
-			objectsManager->RegisterObject(go);
+		// Get zone file
+		std::string zoneName = CacheZoneTable::GetZoneName(zone);
+
+		// Load Zone
+		Logger::log("WRLD", "Loading Zone: " + zoneName);
+		luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
+		Logger::log("WRLD", "Sucessfully loaded zone.");
+
+		if (luZone->zoneID != zone) {
+			Logger::log("WRLD", "Invalid zoneID within LUZ file, correcting...", LogType::UNEXPECTED);
+			luZone->zoneID = zone;
 		}
-	}
 
-	// Path's Network Spawner
-	for (auto pathBase : luZone->paths) {
-		if (pathBase.second->pathType == FileTypes::LUZ::LUZonePathType::Spawner) {
-			auto spawnerPath = reinterpret_cast<FileTypes::LUZ::LUZonePathSpawner*>(pathBase.second);
-			WorldServer * Instance = this;
+		std::int32_t zoneControlLOT = CacheZoneTable::GetZoneControlTemplate(zone);
+		if (zoneControlLOT == 0) zoneControlLOT = 2365;
+		this->zoneControlObject = new Entity::GameObject(this, zoneControlLOT);
+		this->zoneControlObject->SetObjectID(0x3FFFFFFFFFFE);
+		objectsManager->RegisterObject(this->zoneControlObject);
+		this->zoneControlObject->Finish();
 
-			if (spawnerPath->spawnedLOT == 0) continue;
+		// TODO: Move this to somewhere else
+		for (auto scene : luZone->scenes) {
+			for (auto objT : scene.scene.objectsChunk.objects) {
+				Entity::GameObject* go = new Entity::GameObject(this, *objT.LOT);
+				go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ 70368744177664ULL | *objT.objectID));
+				LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
 
-			// Create
-			Entity::GameObject * spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
+				// If Spawner
+				SpawnerComponent* spawnerComp = static_cast<SpawnerComponent*>(go->GetComponentByType(10));
+				if (spawnerComp != nullptr) {
+					spawnerComp->originPos = objT.spawnPos->pos;
+					spawnerComp->originRot = objT.spawnPos->rot;
+				}
+				go->isSerializable = false;
 
+				go->SetScale(*objT.scale);
 
-			if (!spawnedObject->isSerializable) {
-				// Spawn Error Object
-				delete[] spawnedObject;
-				spawnedObject = new Entity::GameObject(Instance, 1845);
+				go->PopulateFromLDF(&ldfCollection);
 
+				objectsManager->RegisterObject(go);
 			}
-
-			// Set ObjectID
-			spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
-			//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
-
-
-			// Populate LDF
-			spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(0)->config);
-
-			// Set Position/Rotation
-			ControllablePhysicsComponent * controllablePhysicsComponent = spawnedObject->GetComponent<ControllablePhysicsComponent>();
-			if (controllablePhysicsComponent != nullptr) {
-				controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(0)->position);
-				controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(0)->rotation);
-			}
-			SimplePhysicsComponent * simplePhysicsComponent = spawnedObject->GetComponent<SimplePhysicsComponent>();
-			if (simplePhysicsComponent != nullptr) {
-				simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(0)->position);
-				simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(0)->rotation);
-			}
-
-			// Register
-			Instance->objectsManager->RegisterObject(spawnedObject);
 		}
-	}
+
+		// Path's Network Spawner
+		for (auto pathBase : luZone->paths) {
+			if (pathBase.second->pathType == FileTypes::LUZ::LUZonePathType::Spawner) {
+				auto spawnerPath = reinterpret_cast<FileTypes::LUZ::LUZonePathSpawner*>(pathBase.second);
+				WorldServer* Instance = this;
+
+				if (spawnerPath->spawnedLOT == 0) continue;
+
+				for (int i = 0; i < spawnerPath->numberToMaintain; ++i) {
+					// Create
+					Entity::GameObject* spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
 
 
-	// Finish objects
-	for (auto go : this->objectsManager->GetObjects()) {
-		go->Finish();
+					if (!spawnedObject->isSerializable) {
+						// Spawn Error Object
+						delete[] spawnedObject;
+						spawnedObject = new Entity::GameObject(Instance, 1845);
+
+					}
+
+					// Set ObjectID
+					spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
+					//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
+
+
+					// Populate LDF
+					spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(i)->config);
+
+					// Set Position/Rotation
+					ControllablePhysicsComponent* controllablePhysicsComponent = spawnedObject->GetComponent<ControllablePhysicsComponent>();
+					if (controllablePhysicsComponent != nullptr) {
+						controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i)->position);
+						controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i)->rotation);
+					}
+					SimplePhysicsComponent* simplePhysicsComponent = spawnedObject->GetComponent<SimplePhysicsComponent>();
+					if (simplePhysicsComponent != nullptr) {
+						simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i)->position);
+						simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i)->rotation);
+					}
+
+					// Register
+					Instance->objectsManager->RegisterObject(spawnedObject);
+				}
+			}
+		}
+
+
+		// Finish objects
+		for (auto go : this->objectsManager->GetObjects()) {
+			go->Finish();
+		}
 	}
 
 	Packet* packet;
@@ -521,4 +553,9 @@ WorldServer::~WorldServer() {
 	if (replicaManager) delete[] replicaManager;
 	if (networkIdManager) delete[] networkIdManager;
 	if (luZone) delete[] luZone;
+	if (collisionConfiguration) delete collisionConfiguration;
+	if (collisionDispatcher) delete collisionDispatcher;
+	if (overlappingPairCache) delete overlappingPairCache;
+	if (constraintSolver) delete constraintSolver;
+	if (dynamicsWorld) delete dynamicsWorld;
 }
