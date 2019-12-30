@@ -18,6 +18,13 @@ namespace GM {
 			GM_VAR_DESERIALIZE(bs, bFlag);
 			GM_VAR_DESERIALIZE(bs, iFlagID);
 		}
+
+		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
+			auto playerComp = target->GetComponent<CharacterComponent>();
+			if (playerComp != nullptr) {
+				playerComp->SetFlag(iFlagID, bFlag);
+			}
+		}
 	};
 }
 
