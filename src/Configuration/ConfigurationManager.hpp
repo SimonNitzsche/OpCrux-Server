@@ -3,11 +3,13 @@
 
 #include "FileTypes/INIFile/ConfFile.hpp"
 #include "Configuration/ConfDatabase.hpp"
+#include "Configuration/ConfPorts.hpp"
 
 namespace Configuration {
 	class ConfigurationManager {
 	public:
 		static ConfDatabase dbConf;
+		static ConfPorts portsConf;
 
 		static void Load();
 

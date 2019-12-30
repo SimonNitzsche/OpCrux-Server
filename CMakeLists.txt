@@ -33,6 +33,7 @@ add_executable(OpCrux_Server
 	src/Configuration/ConfDatabase.hpp
 	src/Configuration/ConfigurationManager.cpp
 	src/Configuration/ConfigurationManager.hpp
+	src/Configuration/ConfPorts.hpp
 	src/Database/Models/OPCRUX_AD/AccountsModel.hpp
 	src/Database/Models/DBModel.hpp
 	src/Database/Database.hpp
