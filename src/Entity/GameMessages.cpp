@@ -14,6 +14,7 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 		GM_DESERIALIZE_SWITCH_CASE(GM::FireEventServerSide);
 		GM_DESERIALIZE_SWITCH_CASE(GM::HasBeenCollected);
 		GM_DESERIALIZE_SWITCH_CASE(GM::MissionDialogueOK);
+		GM_DESERIALIZE_SWITCH_CASE(GM::NotifyClientFlagChange);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayEmote);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayerLoaded);
 		GM_DESERIALIZE_SWITCH_CASE(GM::RebuildCancel);
@@ -23,7 +24,9 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 		GM_DESERIALIZE_SWITCH_CASE(GM::RequestUse);
 		GM_DESERIALIZE_SWITCH_CASE(GM::StartSkill);
 		GM_DESERIALIZE_SWITCH_CASE(GM::SyncSkill);
+		GM_DESERIALIZE_SWITCH_CASE(GM::SetFlag);
 		GM_DESERIALIZE_SWITCH_CASE(GM::TerminateInteraction);
+		GM_DESERIALIZE_SWITCH_CASE(GM::SetTooltipFlag);
 	default: {
 		Logger::log("WRLD", "Tried to deserialize unhandled GM #" + std::to_string(msgID), LogType::WARN);
 	}

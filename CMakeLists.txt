@@ -91,6 +91,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/HasBeenCollected.hpp
 	src/Entity/GameMessages/Knockback.hpp
 	src/Entity/GameMessages/MissionDialogueOK.hpp
+	src/Entity/GameMessages/NotifyClientFlagChange.hpp
 	src/Entity/GameMessages/NotifyMission.hpp
 	src/Entity/GameMessages/NotifyMissionTask.hpp
 	src/Entity/GameMessages/OfferMission.hpp
@@ -110,7 +111,9 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RestoreToPostLoadStats.hpp
 	src/Entity/GameMessages/Resurrect.hpp
 	src/Entity/GameMessages/ServerTerminateInteraction.hpp
+	src/Entity/GameMessages/SetFlag.hpp
 	src/Entity/GameMessages/SetGravityScale.hpp
+	src/Entity/GameMessages/SetTooltipFlag.hpp
 	src/Entity/GameMessages/StartSkill.hpp
 	src/Entity/GameMessages/StopFXEffect.hpp
 	src/Entity/GameMessages/SyncSkill.hpp
