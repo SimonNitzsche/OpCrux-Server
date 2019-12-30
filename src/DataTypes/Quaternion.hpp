@@ -165,6 +165,15 @@ namespace DataTypes {
 			return Vector3(x * vector.x, y * vector.y, z * vector.z);
 		}
 
+		const btQuaternion getBt() const {
+			btQuaternion btQuat;
+			btQuat.setX(x);
+			btQuat.setY(y);
+			btQuat.setZ(z);
+			btQuat.setW(w);
+			return btQuat;
+		}
+
 		/*
 			Wrapper functions to rotate the Quaternion in x, y and z axis.
 		*/

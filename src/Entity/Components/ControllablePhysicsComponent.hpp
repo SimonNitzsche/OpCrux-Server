@@ -4,12 +4,17 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "DataTypes/Quaternion.hpp"
 
+#include "bullet3-2.89/src/btBulletDynamicsCommon.h"
+
 using namespace DataTypes;
 
 class ControllablePhysicsComponent : public IEntityComponent {
 private:
 	bool _isDirtyPositionAndStuff = true;
 
+	btTransform * transform;
+	btRigidBody * rigidBody;
+	btCollisionShape* collisionShape;
 
 	Vector3 position { 0, 0, 0 };
 	Quaternion rotation;
@@ -32,12 +37,32 @@ public:
 
 	ControllablePhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
+	void OnEnable() {
+		collisionShape = new btBoxShape(btVector3(5, 5, 5));
+		transform = new btTransform();
+		transform->setIdentity();
+		btScalar mass(0.0f);
+		SetPosition(position);
+		SetRotation(rotation);
+		btDefaultMotionState* motionState = new btDefaultMotionState(*transform);
+		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collisionShape, btVector3(0, 0, 0));
+		rigidBody = new btRigidBody(rbInfo);
+		owner->GetZoneInstance()->dynamicsWorld->addRigidBody(rigidBody);
+	}
+
+	~ControllablePhysicsComponent() {
+		delete transform;
+		delete rigidBody;
+		delete collisionShape;
+	}
+
 	static constexpr int GetTypeID() { return 1; }
 
 	void SetPosition(Vector3 pos) {
 		position = pos;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
+		transform->setOrigin(pos.getBt());
 	}
 
 	Vector3 GetPosition() {
@@ -48,6 +73,7 @@ public:
 		rotation = rot;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
+		transform->setRotation(rotation.getBt());
 	}
 
 	Quaternion GetRotation() {

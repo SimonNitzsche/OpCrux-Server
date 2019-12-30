@@ -47,6 +47,8 @@
 
 #include "Misc/WORLD_CHECKSUM.hpp"
 
+#include "bullet3-2.89/src/LinearMath/btIDebugDraw.h"
+
 
 #include "Entity/GameMessages.hpp"
 using namespace Exceptions;
@@ -268,6 +270,7 @@ void WorldServer::GameLoopThread() {
 
 void WorldServer::GamePhysicsThread() {
 	while (ServerInfo::bRunning) {
+		dynamicsWorld->stepSimulation(0.0166667f, 10);
 		objectsManager->OnPhysicsUpdate();
 		RakSleep(300);
 	}
