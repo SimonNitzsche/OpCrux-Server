@@ -2,6 +2,7 @@
 #include "GameCache/Missions.hpp"
 #include "GameCache/MissionTasks.hpp"
 #include "Entity/GameObject.hpp"
+#include "Entity/Components/CharacterComponent.hpp"
 #include "Database/Database.hpp"
 #include "Server/WorldServer.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
@@ -44,6 +45,14 @@ std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> MissionManager::Get
 	}
 
 	return missionsFound;
+}
+
+void MissionManager::UpdateMissionTask(Entity::GameObject * sender, Entity::GameObject* player, std::int32_t missionID, std::int32_t taskMask, std::float_t update) {
+    GM::NotifyMissionTask msgNotifyMissionTask;
+    msgNotifyMissionTask.missionID = missionID;
+    msgNotifyMissionTask.taskMask = taskMask;
+    msgNotifyMissionTask.updates = { update };
+    GameMessages::Send(player, player->GetObjectID(), msgNotifyMissionTask);
 }
 
 void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameObject * caster, DataTypes::LWOOBJID player, std::int32_t updateVal) {
