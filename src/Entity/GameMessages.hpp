@@ -97,6 +97,11 @@ public:
 	}
 
 	template<typename T = GM::GMBase>
+	static void Send(Entity::GameObject * receiver, DataTypes::LWOOBJID sender, T gm, DataTypes::LWOOBJID exclude = 0ULL) {
+		Send(receiver->GetZoneInstance(), receiver->GetZoneInstance()->sessionManager.GetSession(receiver->GetObjectID())->systemAddress, sender, gm);
+	}
+
+	template<typename T = GM::GMBase>
 	static inline void Broadcast(WorldServer * Instance, DataTypes::LWOOBJID target, T gm) {
 		Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, target, gm);
 	}
