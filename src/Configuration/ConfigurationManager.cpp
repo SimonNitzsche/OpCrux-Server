@@ -1,8 +1,10 @@
 #include "FileTypes/INIFile/ConfFile.hpp"
 #include "Configuration/ConfDatabase.hpp"
 #include "Configuration/ConfigurationManager.hpp"
+#include "Configuration/ConfPorts.hpp"
 
 Configuration::ConfDatabase Configuration::ConfigurationManager::dbConf;
+Configuration::ConfPorts Configuration::ConfigurationManager::portsConf;
 
 void Configuration::ConfigurationManager::Load() {
 	Logger::log("CONF", "Loading configuration files...");

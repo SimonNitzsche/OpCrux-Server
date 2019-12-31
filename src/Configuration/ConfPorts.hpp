@@ -18,20 +18,20 @@ namespace Configuration {
 				// [Auth]
 				{"Auth", {
 					// PORT
-					{"PORT", "1001"},
+					{"PORT", "1001"}
 				}},
 
 				// [World]
-				{
+				{"World", {
 					// PORTMIN
 					{"PORTMIN", "2002"},
 					// PORTMAX
 					{"PORTMAX", "2199"}
-				}
+				}}
 
 				
 			};
-		}
+		};
 	};
 }
 
