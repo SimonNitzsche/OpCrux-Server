@@ -23,7 +23,7 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 				model = Database::GetMission(msg.responder.getPureID(), 664);
 			}
 			model.state = 8;
-			model.progress = 1;
+			model.progress = "1";
 			Database::UpdateMission(model);
 		}
 	}
