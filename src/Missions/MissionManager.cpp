@@ -218,9 +218,20 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
             }
 
+            /*
+                Mission completion
+            */
+
             GM::NotifyMission msg;
             msg.missionID = it->missionID;
+            msg.missionState = 0;
+            msg.sendingRewards = true;
+            GameMessages::Send(playerObject, player, msg);
+
+            // TODO: Send rewards
+
             msg.missionState = it->state;
+            msg.sendingRewards = false;
             GameMessages::Send(Instance, Instance->sessionManager.GetSession(player)->systemAddress, player, msg);
         }
 
