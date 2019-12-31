@@ -22,7 +22,7 @@ std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> MissionManager::Get
 
 			// Check for target first, then for taskType -> better performance
 			std::int32_t c_target = CacheMissionTasks::GetTarget(rowInfo);
-			if (c_target == target) {
+			if (c_target == target || c_target <= 0) {
 				std::int32_t c_taskType = CacheMissionTasks::GetTaskType(rowInfo);
 				if (c_taskType == static_cast<std::int32_t>(taskType)) {
                     std::int32_t c_uid = CacheMissionTasks::GetUID(rowInfo);
@@ -74,7 +74,6 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
         for (auto it = possibleMissions.begin(); it != possibleMissions.end(); ++it) {
             possibleMissionsOM.push_back(it->first);
         }
-
 
         auto currentMissions = Database::GetAllMissionsByIDsAndStates(dbPlayerID, possibleMissionsOM, { 2, 10 });
     
