@@ -59,11 +59,13 @@ void AbstractAggregateBehavior::StartUnCast(long nextBehavior, RakNet::BitStream
 		// And
 		BehaviorAnd bAnd = BehaviorAnd();
 		bAnd.UnCast(nextBehavior, bs);
+		break;
 	}
 	case 6: {
 		// Movement Switch
 		BehaviorMovementSwitch movementSwitch = BehaviorMovementSwitch();
 		movementSwitch.UnCast(nextBehavior, bs);
+		break;
 	}
 	default:
 		Logger::log("WRLD", "TODO: Implement behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)), LogType::UNEXPECTED);
