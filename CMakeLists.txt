@@ -163,6 +163,7 @@ add_executable(OpCrux_Server
 	src/GameCache/Interface/FastDatabase.hpp
 	src/GameCache/BehaviorParameter.hpp
 	src/GameCache/BehaviorTemplate.hpp
+	src/GameCache/BehaviorTemplateName.hpp
 	src/GameCache/DestructibleComponent.hpp
 	src/GameCache/ComponentsRegistry.hpp
 	src/GameCache/Emotes.hpp
