@@ -65,6 +65,7 @@ void AbstractAggregateBehavior::StartUnCast(long nextBehavior, RakNet::BitStream
 		movementSwitch.UnCast(nextBehavior, bs);
 	}
 	default:
+		Logger::log("WRLD", "TODO: Implement behavior template id #" + std::to_string(templateID), LogType::UNEXPECTED);
 		break;
 	}
 }
