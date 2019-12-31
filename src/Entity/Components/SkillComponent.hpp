@@ -50,6 +50,17 @@ struct BehaviorMovementSwitch : AbstractAggregateBehavior {
 	}
 };
 
+struct BehaviorChain : AbstractAggregateBehavior {
+
+	void UnCast(std::int32_t behaviorID, RakNet::BitStream* bs) {
+		std::uint32_t chainIndex; bs->Read(chainIndex);
+
+		
+		std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "behavior " + std::to_string(chainIndex));
+		StartUnCast(nextID, bs);
+	}
+};
+
 
 void AbstractAggregateBehavior::StartUnCast(long nextBehavior, RakNet::BitStream * bs) {
 	if (nextBehavior == -1) return;
@@ -65,6 +76,12 @@ void AbstractAggregateBehavior::StartUnCast(long nextBehavior, RakNet::BitStream
 		// Movement Switch
 		BehaviorMovementSwitch movementSwitch = BehaviorMovementSwitch();
 		movementSwitch.UnCast(nextBehavior, bs);
+		break;
+	}
+	case 38: {
+		// Chain
+		BehaviorChain bChain = BehaviorChain();
+		bChain.UnCast(nextBehavior, bs);
 		break;
 	}
 	default:
