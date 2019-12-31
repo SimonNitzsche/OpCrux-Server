@@ -8,6 +8,7 @@
 
 #include "GameCache/BehaviorParameter.hpp"
 #include "GameCache/BehaviorTemplate.hpp"
+#include "GameCache/BehaviorTemplateName.hpp"
 #include "GameCache/SkillBehavior.hpp"
 
 struct AbstractAggregateBehavior {
@@ -65,7 +66,7 @@ void AbstractAggregateBehavior::StartUnCast(long nextBehavior, RakNet::BitStream
 		movementSwitch.UnCast(nextBehavior, bs);
 	}
 	default:
-		Logger::log("WRLD", "TODO: Implement behavior template id #" + std::to_string(templateID), LogType::UNEXPECTED);
+		Logger::log("WRLD", "TODO: Implement behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)), LogType::UNEXPECTED);
 		break;
 	}
 }
