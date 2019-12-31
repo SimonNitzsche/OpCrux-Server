@@ -102,6 +102,8 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
                     if (std::find(subTaskProg.begin(), subTaskProg.end(), subTaskValue) == subTaskProg.end()) {
                         subTaskProg.push_back(subTaskValue);
+
+                        UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), subTaskValue);
                     }
 
                     missionTasksProgress.at(i) = StringUtils::IntListToString(subTaskProg, ':');
@@ -123,6 +125,8 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
                 for (int i = 0; i < missionTasksProgress.size(); ++i) {
                     missionTasksProgress.at(i) = std::to_string(std::stoi(missionTasksProgress.at(i)) + updateVal);
+
+                    UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
                 }
 
                 missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
