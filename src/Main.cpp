@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 	std::string ipMaster = "127.0.0.1";
 	//std::string ipMaster = "foxsog.com";
 
-	std::string hf = "res/physics/captainshouse.hkx";
+	std::string hf = "res/physics/env_nim_ag_puffytree.hkx";
 	HKX::HKXFile hkx; hkx.Load(hf);
 
 	Configuration::ConfigurationManager::Load();

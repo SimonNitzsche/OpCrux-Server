@@ -20,7 +20,7 @@ namespace HKX {
 		std::vector<hkTypeMember> members;
 		std::vector<hkEnum> enums;
 		std::vector<std::vector<hkEnum>> sub_enums;
-		std::vector<std::string> sub_enum_names;
+		std::vector<std::string_view> sub_enum_names;
 
 		hkType* parent;
 		std::uint32_t parent_address;
