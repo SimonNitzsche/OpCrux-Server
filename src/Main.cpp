@@ -46,11 +46,15 @@ int givenWorldID = 1000;
 #include "GameCache/WorldConfig.hpp"
 #include "Entity/Components/StatsComponent.hpp"
 #include "DataTypes/LDF.hpp"
+#include "FileTypes/HKXFile/hkxFile.hpp"
 
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();
 	std::string ipMaster = "127.0.0.1";
 	//std::string ipMaster = "foxsog.com";
+
+	std::string hf = "res/physics/captainshouse.hkx";
+	HKX::HKXFile hkx; hkx.Load(hf);
 
 	Configuration::ConfigurationManager::Load();
 
