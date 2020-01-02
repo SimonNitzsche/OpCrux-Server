@@ -2,6 +2,111 @@
 
 using namespace HKX;
 
+void HKX::HKXFile::LoadStructure(std::uint32_t & currentOffset, std::string_view type_name) {
+	std::uint32_t startOffset = currentOffset;
+	bool found = false;
+
+	for (auto it = hkTypes.begin(); it != hkTypes.end(); ++it) {
+		if (it->name != type_name) continue;
+		std::uint32_t arrayOffset = startOffset + it->object_size;
+		found = true;
+
+		if (it->parent != nullptr) LoadStructure(currentOffset, it->parent->name);
+
+		for (int i = 0; i < it->members.size(); ++i) {
+			std::string_view main_type = hkTypeMember::ToStringView(it->members.at(i).tag[0]);
+			std::string_view sub_type = hkTypeMember::ToStringView(it->members.at(i).tag[1]);
+
+			currentOffset = startOffset + it->members.at(i).offset;
+
+			if (main_type == "enum") main_type = sub_type;
+
+			if (main_type == "struct") {
+				LoadStructure(currentOffset, it->members.at(i).structure);
+			}
+			else if (main_type == "pointer") {
+				for (auto it2 = data_pointers.begin(); it2 != data_pointers.end(); ++it2) {
+					if (currentOffset == it2->abs_address) {
+						// Move pointer to target
+						currentOffset = it2->target_address;
+						break;
+					}
+				}
+			}
+			else if (main_type == "array" || main_type == "simple_array") {
+				currentOffset += 4;
+				std::uint32_t count = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+				currentOffset += 4;
+
+				if (count == 0) {
+					// Array is empty, skip
+					continue;
+				}
+
+				for (auto it2 = data_pointers.begin(); it2 != data_pointers.end(); ++it2) {
+					if (currentOffset - 8 == it2->abs_address) {
+						// Move pointer
+						currentOffset = it2->target_address;
+						break;
+					}
+				}
+
+				std::uint32_t targetOffset = currentOffset;
+				std::uint32_t size = 1;
+
+				for (auto it2 = hkTypes.begin(); it2 != hkTypes.end(); ++it2) {
+					if (it2->name == it->members.at(i).structure) {
+						size = it2->object_size;
+						break;
+					}
+				}
+
+				for (int j = 0; j < count; ++j) {
+					if (sub_type == "struct") {
+						currentOffset = targetOffset * size;
+						LoadStructure(currentOffset, it->members.at(i).structure);
+					}
+					else {
+						if (sub_type != "pointer") {
+							LoadElement(currentOffset, sub_type);
+						}
+					}
+				}
+			}
+
+		}
+	}
+}
+
+void HKX::HKXFile::LoadElement(std::uint32_t & currentOffset, std::string_view main_type) {
+	if (main_type == "int16" || main_type == "uint16" || main_type == "half") {
+		std::uint16_t value = *reinterpret_cast<std::uint16_t*>(this->file.get() + currentOffset);
+		currentOffset += 2;
+	}
+	else if (main_type == "int32" || main_type == "uint32" || main_type == "ulong") {
+		std::uint32_t value = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+		currentOffset += 4;
+	}
+	else if (main_type == "real") {
+		std::float_t value = *reinterpret_cast<std::float_t*>(this->file.get() + currentOffset);
+		currentOffset += 4;
+	}
+	else if (main_type == "string_pointer" || main_type == "cstring") {
+		unsigned char * value = this->file.get() + *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+		currentOffset += 4;
+	}
+	else if (main_type == "variant") {
+		std::pair<std::uint32_t, std::uint32_t> value = { *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset),* reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset + 4) };
+		currentOffset += 8;
+	}
+	else if (main_type == "int64" || main_type == "uint64") {
+		std::uint64_t value = *reinterpret_cast<std::uint64_t*>(this->file.get() + currentOffset);
+		currentOffset += 8;
+	}
+
+	// TODO: Implement others
+}
+
 void HKXFile::Load(std::string& file) {
 	this->file = FileUtils::ReadFileCompletely(file);
 
@@ -296,7 +401,67 @@ void HKXFile::Load(std::string& file) {
 		else
 		// __data__
 		if (!strcmp(sectionHeader->m_sectionTag, "__data__")) {
+			for (int i = 0; currentOffset < sectionHeader->m_absoluteDataStart + sectionHeader->m_globalFixupsOffset; ++i) {
+				currentOffset = sectionHeader->m_absoluteDataStart + sectionHeader->m_localFixupsOffset + i * 8;
+				std::uint32_t address = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+				currentOffset += 4;
+				if (address == -1) break;
+				std::uint32_t address_2 = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+				currentOffset += 4;
 
+				hkPointer pointer;
+				pointer.abs_address = address + sectionHeader->m_absoluteDataStart;
+				pointer.target_address = address_2 + sectionHeader->m_absoluteDataStart;
+
+				data_pointers.push_back(pointer);
+			}
+
+			for (int i = 0; currentOffset < sectionHeader->m_absoluteDataStart + sectionHeader->m_virtualFixupsOffset; ++i) {
+				currentOffset = sectionHeader->m_absoluteDataStart + sectionHeader->m_globalFixupsOffset + i * 12;
+
+				std::uint32_t address = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+				currentOffset += 4;
+				if (address == -1) break;
+				std::uint32_t type = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+				currentOffset += 4;
+				std::uint32_t meta_address = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+				currentOffset += 4;
+
+				hkPointer pointer;
+				pointer.abs_address = sectionHeader->m_absoluteDataStart + address;
+				pointer.target_address = sectionHeader->m_absoluteDataStart + meta_address;
+
+				data_global_pointers.push_back(pointer);
+			}
+		
+			for (int i = 0; (sectionHeader->m_absoluteDataStart + sectionHeader->m_virtualFixupsOffset + i * 12) < sectionHeader->m_absoluteDataStart + sectionHeader->m_exportsOffset; ++i) {
+				currentOffset = sectionHeader->m_absoluteDataStart + sectionHeader->m_virtualFixupsOffset + i * 12;
+
+				std::uint32_t address = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+				currentOffset += 4;
+				currentOffset += 4;
+
+				if (address == -1) break;
+
+				std::uint32_t name_address = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+				currentOffset += 4;
+
+				std::uint32_t currentOffsetReferencePoint = currentOffset;
+				
+				currentOffset = class_name_global_address + name_address;
+
+				auto name = this->file.get() + currentOffset;
+				int cnamelen;
+				for (cnamelen = 0; cnamelen < 256 && name[cnamelen]; ++cnamelen);
+				std::string_view type_name = std::string_view(const_cast<const char*>(reinterpret_cast<char*>(name)), cnamelen);
+				currentOffset += cnamelen + 1;
+
+				currentOffset = sectionHeader->m_absoluteDataStart + address;
+
+				LoadStructure(currentOffset, type_name);
+
+				currentOffset = currentOffsetReferencePoint;
+			}
 		}
 	}
 }

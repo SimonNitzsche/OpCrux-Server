@@ -37,6 +37,9 @@ namespace HKX {
 		std::list<hkLink> data_links;
 		std::list<hkPointer> data_pointers;
 		std::list<hkPointer> data_global_pointers;
+	private:
+		void LoadStructure(std::uint32_t & currentOffset, std::string_view type_name);
+		void LoadElement(std::uint32_t & currentOffset, std::string_view main_type);
 	public:
 		HKXFile() {}
 		void Load(std::string& filename);
