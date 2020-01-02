@@ -150,7 +150,10 @@ add_executable(OpCrux_Server
 	src/Enums/ETerminateType.hpp
 	src/Enums/StringEnums.hpp
 	src/Exceptions/ExNetException.hpp
+	src/FileTypes/HKXFile/hkClassEnum.hpp
+	src/FileTypes/HKXFile/hkClassMember.hpp
 	src/FileTypes/HKXFile/hkClassName.hpp
+	src/FileTypes/HKXFile/hkDataObject.hpp
 	src/FileTypes/HKXFile/hkEnum.hpp
 	src/FileTypes/HKXFile/hkLink.hpp
 	src/FileTypes/HKXFile/hkPointer.hpp

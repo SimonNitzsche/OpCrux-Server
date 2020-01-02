@@ -19,6 +19,8 @@ void HKX::HKXFile::LoadStructure(std::uint32_t & currentOffset, std::string_view
 
 			currentOffset = startOffset + it->members.at(i).offset;
 
+			continue;
+
 			if (main_type == "enum") main_type = sub_type;
 
 			if (main_type == "struct") {
@@ -340,6 +342,8 @@ void HKXFile::Load(std::string& file) {
 						currentOffset += (pad == 16) ? 0 : pad;
 					}
 				}
+				
+				// hkClassEnum
 				else {
 					// Enums
 					hkEnum en;
@@ -439,6 +443,8 @@ void HKXFile::Load(std::string& file) {
 
 				std::uint32_t address = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
 				currentOffset += 4;
+
+				std::uint32_t unknownVFO_0 = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
 				currentOffset += 4;
 
 				if (address == -1) break;
