@@ -202,7 +202,6 @@ add_executable(OpCrux_Server
 	src/GameCache/ZoneTable.hpp
 	src/Misc/LWOTimer.cpp
 	src/Misc/LWOTimer.hpp
-	src/Misc/WORLD_CHECKSUM.hpp
 	src/Missions/MissionManager.cpp
 	src/Missions/MissionManager.hpp
 	src/Missions/MissionRequirementParser.hpp

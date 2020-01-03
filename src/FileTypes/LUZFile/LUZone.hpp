@@ -364,7 +364,8 @@ namespace FileTypes::LUZ {
 			std::string strFile;
 		public:
 			uint32_t version;
-			uint32_t unknown1;
+			uint32_t revision;
+			uint32_t revisionChecksum;
 			uint32_t zoneID;
 			Position spawnPos;
 			std::vector<SceneData> scenes;
@@ -376,6 +377,7 @@ namespace FileTypes::LUZ {
 			// Constructs a new LUZone, with the path to the filename.
 			LUZone(const std::string& filename);
 			bool _isFileLoaded();
+			std::uint32_t calculateRevisionChecksum();
 			LUZonePathBase * AllocatePath(const LUZonePathType pathType);
 			LUZonePathWaypointBase * AllocatePathWaypoint(const LUZonePathType pathType);
 			LUZone();

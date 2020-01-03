@@ -19,6 +19,23 @@ bool LUZone::_isFileLoaded() {
 	return data != nullptr;
 }
 
+std::uint32_t FileTypes::LUZ::LUZone::calculateRevisionChecksum() {
+#define CRUX_LUZ_CALC_CHECKSUM(v,r,t) {v+=r>>0x10;t+=v;v+=r&0xFFFF;t+=v;}
+	std::uint32_t v = 0xFFFF, t = 0xFFFF;
+	CRUX_LUZ_CALC_CHECKSUM(v, 0xFFFF, t);
+	CRUX_LUZ_CALC_CHECKSUM(v, 0, t);
+	CRUX_LUZ_CALC_CHECKSUM(v, this->revision, t);
+
+	for (int i = 0; i < this->scenes.size(); ++i) {
+		LUScene scene = this->scenes.at(i).scene;
+		CRUX_LUZ_CALC_CHECKSUM(v, *this->scenes.at(i).sceneID, t);
+		CRUX_LUZ_CALC_CHECKSUM(v, *this->scenes.at(i).layerID, t);
+		CRUX_LUZ_CALC_CHECKSUM(v, *scene.infoChunk.revision, t);
+	}
+#undef CRUX_LUZ_CALC_CHECKSUM
+	return ((((t & 0xFFFF) + (t >> 0x10)) << 0x10) | ((v & 0xFFFF) + (v >> 0x10)));
+}
+
 LUZonePathBase * FileTypes::LUZ::LUZone::AllocatePath(const LUZonePathType pathType) {
 	switch (pathType) {
 		case LUZonePathType::Movement:
@@ -98,10 +115,10 @@ void LUZone::Read() {
 	version = *reinterpret_cast<uint32_t*>(data + 0);
 	currentOffset += 4;
 	if (version >= 0x24UL) {
-		unknown1 = *reinterpret_cast<uint32_t*>(currentOffset);
+		revision = *reinterpret_cast<uint32_t*>(currentOffset);
 		currentOffset += 4;
 	}
-	else { unknown1 = 0; }
+	else { revision = 0; }
 
 	zoneID = *reinterpret_cast<uint32_t*>((currentOffset));
 	currentOffset += 4;
@@ -384,4 +401,6 @@ void LUZone::Read() {
 			paths.insert({ pathFactory->pathName.ToString(), pathFactory });
 		}
 	}
+	
+	this->revisionChecksum = calculateRevisionChecksum();
 }

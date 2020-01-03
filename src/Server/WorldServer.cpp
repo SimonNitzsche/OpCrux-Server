@@ -45,8 +45,6 @@
 #include "Utils/LDFUtils.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
 
-#include "Misc/WORLD_CHECKSUM.hpp"
-
 #include "bullet3-2.89/src/LinearMath/btIDebugDraw.h"
 
 
@@ -372,7 +370,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
 				
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, luZone->zoneID, 0, 0, WORLD_CHECKSUM.at(luZone->zoneID), luZone->spawnPos.pos, 0);
+				PacketFactory::World::LoadStaticZone(rakServer, clientSession, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
