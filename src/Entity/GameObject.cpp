@@ -770,10 +770,15 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<flag>";
 			{
 				// TODO
-				ss << "<f id=\"0\" v=\"0\"/>";
+				auto charComp = GetComponent<CharacterComponent>();
+				auto flagChunks = charComp->GetFlagChunks();
+				for (auto it = flagChunks.begin(); it != flagChunks.end(); ++it) {
+					if (it->second != 0) {
+						ss << "<f id=\"" << it->first << "\" v=\"" << it->second << "\"/>";
+					}
+				}
 			}
 			ss << "</flag>";
-			//ss << "<flag/>";
 		}
 		{
 			ss << "<pet a=\"0\"></pet>";

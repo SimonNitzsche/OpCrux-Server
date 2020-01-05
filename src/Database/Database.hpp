@@ -15,6 +15,7 @@
 #include "GameCache/ComponentsRegistry.hpp"
 #include "GameCache/MissionTasks.hpp"
 #include "DataTypes/Vector3.hpp"
+#include "DataTypes/LWOOBJID.hpp"
 #include "Configuration/ConfDatabase.hpp"
 #include "Configuration/ConfigurationManager.hpp"
 
@@ -1898,6 +1899,101 @@ public:
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::exception("Unable to add mission.");
 		}
+	}
+
+
+	// UPDATE OPCRUX_GD.dbo.FlagChunks SET playerID=0, chunkID=0, chunkData=0; IF @@ROWCOUNT=0 INSERT INTO OPCRUX_GD.dbo.FlagChunks VALUES(0,0,1);
+	static void SetFlag(DataTypes::LWOOBJID playerID, std::uint32_t chunkID, std::uint32_t chunkData) {
+
+		SetupStatementHandle();
+		// Try to update, if not exist insert
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.FlagChunks SET chunkData=? WHERE playerID=? AND chunkID=?; IF @@ROWCOUNT=0 INSERT INTO OPCRUX_GD.dbo.FlagChunks(playerID,chunkID,chunkData) VALUES(?,?,?);", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("sql error.");
+		}
+
+		SQLLEN lenZero = 0;
+		SQLLEN NTS = SQL_NTS;
+
+		std::uint64_t ppid = playerID.getPureID();
+
+
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &chunkData, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &ppid, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 3, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &chunkID, 0, &lenZero);
+
+		ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &ppid, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &chunkID, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &chunkData, 0, &lenZero);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("error.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO && ret != SQL_NO_DATA) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("error.");
+		}
+	}
+
+	static std::map<std::uint32_t, std::uint64_t> GetFlagChunks(std::int64_t charID) {
+		SetupStatementHandle();
+
+		std::map<std::uint32_t, std::uint64_t> retVal = {};
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT chunkID, chunkData FROM OPCRUX_GD.dbo.FlagChunks WHERE playerID=?", SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLINTEGER chunkID;
+			SQLBIGINT chunkData;
+
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &chunkID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &chunkData, 0, &ptrSqlAnswer);
+
+			retVal.insert({chunkID, chunkData});
+
+		}
+
+		return retVal;
+
+		std::cout << "Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
 	}
 };
 #endif // !__DATABASE_HPP__

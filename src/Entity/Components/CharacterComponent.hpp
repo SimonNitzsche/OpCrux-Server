@@ -56,6 +56,10 @@ public:
 		return charInfo.imagination;
 	}
 
+	std::map<std::uint32_t, std::uint64_t> GetFlagChunks() {
+		return flags;
+	}
+
 	bool GetFlag(std::int32_t flagIndex) {
 		//auto flagChunk = std::find(flags.begin(), flags.end(), flagIndex/64);
 		auto flagChunk = flags.find(flagIndex / 64);
@@ -68,19 +72,26 @@ public:
 	void SetFlag(std::int32_t flagIndex, bool value) {
 		// Set flag
 		//auto flagChunk = std::find(flags.begin(), flags.end(), flagIndex / 64);
-		auto flagChunk = flags.find(flagIndex / 64);
+		std::uint32_t chunkID = flagIndex / 64;
+		std::uint64_t chunkData;
+		auto flagChunk = flags.find(chunkID);
 		if (flagChunk != flags.end()) {
 			flagChunk->second ^= (-value ^ flagChunk->second) & (1ULL << (flagIndex % 64));
+			chunkData = flagChunk->second;
 		}
 		else {
-			flags.insert({ flagIndex / 64, 1ULL << (flagIndex % 64) });
+			chunkData = 1ULL << (flagIndex % 64);
+			flags.insert({ chunkID, chunkData });
 		}
-		// TODO: Apply changes to DB
+
+
+		Database::SetFlag(this->owner->GetObjectID(), chunkID, chunkData);
 	}
 
 	void Awake() {
 		auto destComp = owner->GetComponent<DestructibleComponent>();
 		destComp->SetImagination(GetImagination());
+		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
