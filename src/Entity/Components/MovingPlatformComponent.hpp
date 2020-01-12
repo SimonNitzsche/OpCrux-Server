@@ -67,12 +67,9 @@ public:
 			factory->Write(false);
 		}
 
-	}
 
-	void Update() {
-		if ((ServerInfo::uptime() % 10) != 0) return;
 		if (attachedPath && attachedPath != nullptr) {
-			RakSleep(1000);
+			//RakSleep(1000);
 
 			RakNet::BitStream testBs = RakNet::BitStream();
 			LUPacketHeader returnBSHead;
@@ -105,6 +102,11 @@ public:
 				owner->GetZoneInstance()->rakServer->Send(&testBs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
 			}
 		}
+	}
+
+	void Update() {
+		//if ((ServerInfo::uptime() % 100) != 0) return;
+		
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {

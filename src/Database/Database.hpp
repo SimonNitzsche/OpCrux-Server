@@ -18,6 +18,7 @@
 #include "DataTypes/LWOOBJID.hpp"
 #include "Configuration/ConfDatabase.hpp"
 #include "Configuration/ConfigurationManager.hpp"
+#include "DataTypes/LDF.hpp"
 
 #define SQL_RESULT_LEN 240
 #define SQL_RETURN_CODE_LEN 1000
@@ -1995,5 +1996,54 @@ public:
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
 	}
+
+	struct ItemModel {
+		std::uint64_t objectID;
+		std::uint64_t ownerID;
+		std::uint64_t subkey;
+		std::uint32_t tab;
+		std::uint32_t slot;
+		std::uint32_t templateID;
+		std::uint32_t count;
+		struct ItemAttributes {
+		private:
+			std::uint8_t data;
+		public:
+			inline std::uint8_t GetAttributes() {
+				return data;
+			}
+
+			inline void SetAttributes(std::uint8_t attributes) {
+				data = attributes;
+			}
+
+			inline bool GetAttribute(std::uint8_t index) {
+				if (index > 0x08) throw std::out_of_range("Index higher than 8");
+				return data & index;
+			}
+
+			inline void SetAttribute(std::uint8_t index, bool flag) {
+				if (index > 0x08) throw std::out_of_range("Index higher than 8");
+				data ^= (-flag ^ data) & (std::uint8_t(1) << index);
+			}
+
+			inline bool GetBound() {
+				return GetAttribute(0x01);
+			}
+
+			inline void SetBound(bool flag) {
+				SetAttribute(0x01, flag);
+			}
+
+			inline bool GetEquipped() {
+				return GetAttribute(0x02);
+			}
+
+			inline bool SetEquipped(bool flag) {
+				SetAttribute(0x02, flag);
+			}
+		} attributes;
+		LDFCollection metadata;
+	};
 };
 #endif // !__DATABASE_HPP__
