@@ -2019,7 +2019,7 @@ public:
 
 			inline bool GetAttribute(std::uint8_t index) {
 				if (index > 0x08) throw std::out_of_range("Index higher than 8");
-				return data & index;
+				return data & (std::uint8_t(1) << index);
 			}
 
 			inline void SetAttribute(std::uint8_t index, bool flag) {

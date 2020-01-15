@@ -91,7 +91,7 @@ public:
 		std::vector<std::u16string> type_val = StringUtils::splitWString(val, 0x003a);
 		bool typeDefined = val.find(0x003a) != std::u16string::npos;
 		Enums::LDFType type = typeDefined ? (Enums::LDFType)std::stoi(StringUtils::to_string(type_val.at(0))) : Enums::LDFType::WSTRING;
-		if (typeDefined && type_val.size() == 1) {
+		if (type_val.size() == 1) {
 			if (type == Enums::LDFType::STRING || type == Enums::LDFType::WSTRING)
 				type_val.push_back(u"");
 			else

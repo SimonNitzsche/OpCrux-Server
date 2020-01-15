@@ -3,7 +3,7 @@
 		{
 			"name": "x64-Release",
 			"generator": "Ninja",
-			"configurationType": "RelWithDebInfo",
+			"configurationType": "Release",
 			"inheritEnvironments": [ "msvc_x64_x64" ],
 			"buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
 			"installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
@@ -31,6 +31,34 @@
 			"variables": [
 				{
 					"name": "BUILD_SHARED_LIBS",
+					"value": "True",
+					"type": "BOOL"
+				}
+			]
+		},
+		{
+			"name": "x86-Debug",
+			"generator": "Ninja",
+			"configurationType": "Debug",
+			"buildRoot": "${projectDir}\\out\\build\\${name}",
+			"installRoot": "${projectDir}\\out\\install\\${name}",
+			"cmakeCommandArgs": "",
+			"buildCommandArgs": "-v",
+			"ctestCommandArgs": "",
+			"inheritEnvironments": [ "msvc_x86" ],
+			"variables": [
+				{
+					"name": "BUILD_SHARED_LIBS",
+					"value": "True",
+					"type": "BOOL"
+				},
+				{
+					"name": "INSTALL_LIBS",
+					"value": "True",
+					"type": "BOOL"
+				},
+				{
+					"name": "USE_MSVC_RUNTIME_LIBRARY_DLL",
 					"value": "True",
 					"type": "BOOL"
 				}

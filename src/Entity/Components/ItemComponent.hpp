@@ -5,8 +5,6 @@
 #include "Entity/GameObject.hpp"
 
 #include "GameCache/ComponentsRegistry.hpp"
-#include "GameCache/MovementAIComponent.hpp"
-#include "Utils/ServerInfo.hpp"
 
 using namespace DataTypes;
 

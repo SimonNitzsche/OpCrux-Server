@@ -1,4 +1,5 @@
 add_subdirectory(bullet3-2.89)
+add_subdirectory(cop)
 add_subdirectory(json)
 add_subdirectory(Mongoose)
 add_subdirectory(RakNet)

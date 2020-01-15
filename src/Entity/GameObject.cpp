@@ -47,11 +47,18 @@
 #include "Entity/Components/MissionOfferComponent.hpp"
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/MovingPlatformComponent.hpp"
+#include "Entity/Components/PropertyComponent.hpp"
+#include "Entity/Components/PropertyEntranceComponent.hpp"
+#include "Entity/Components/PropertyManagementComponent.hpp"
+#include "Entity/Components/PropertyPlaqueComponent.hpp"
+#include "Entity/Components/PropertyVendorComponent.hpp"
+#include "Entity/Components/ProximityMonitorComponent.hpp"
 #include "Entity/Components/PhantomPhysicsComponent.hpp"
 #include "Entity/Components/PlatformBoundaryComponent.hpp"
 #include "Entity/Components/QuickBuildComponent.hpp"
 #include "Entity/Components/RebuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
+#include "Entity/Components/RocketLaunchComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/ScriptedActivityComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
@@ -204,7 +211,15 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		/* ========== NON-SERIALIZED ========== */
 		COMPONENT_ONADD_SWITCH_CASE(BuildBorderComponent);
 		COMPONENT_ONADD_SWITCH_CASE(GenericActivatorComponent);
+		COMPONENT_ONADD_SWITCH_CASE(ItemComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PropertyComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PropertyEntranceComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PropertyManagementComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PropertyPlaqueComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PropertyVendorComponent);
+		COMPONENT_ONADD_SWITCH_CASE(ProximityMonitorComponent);
+		COMPONENT_ONADD_SWITCH_CASE(RocketLaunchComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent);
@@ -698,6 +713,7 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<items nn=\"1\">";
 			{
 				// TODO
+				ss << "<in t=0><i l=\"6086\" id=\"1152921507005357158\" s=\"6\" b=\"1\"/></in>";
 			}
 			ss << "</items>";
 		}

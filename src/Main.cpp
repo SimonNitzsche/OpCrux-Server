@@ -37,7 +37,7 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
 GameCache::Interface::FDB::Connection Cache;
 BridgeMasterServer* masterServerBridge;
 
-int givenWorldID = 1000;
+int givenWorldID = 1350;
 
 
 // Following Includes are for testing
@@ -47,6 +47,7 @@ int givenWorldID = 1000;
 #include "Entity/Components/StatsComponent.hpp"
 #include "DataTypes/LDF.hpp"
 #include "FileTypes/HKXFile/hkxFile.hpp"
+#include <cop/cop.h>
 
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();
@@ -71,7 +72,7 @@ int main(int argc, char* argv[]) {
 
 	Logger::log("MAIN", "Booting up server instances...");
 
-	
+	//std::uintptr_t * c = CreateCOPScene();
 
 #ifdef OPCRUX_PLATFORM_WIN32
 	std::system("title OpCrux Server (Standalone)");

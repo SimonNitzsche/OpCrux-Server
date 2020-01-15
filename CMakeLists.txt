@@ -65,11 +65,18 @@ add_executable(OpCrux_Server
 	src/Entity/Components/MissionOfferComponent.hpp
 	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/MovingPlatformComponent.hpp
+	src/Entity/Components/PropertyComponent.hpp
+	src/Entity/Components/PropertyEntranceComponent.hpp
+	src/Entity/Components/PropertyManagementComponent.hpp
+	src/Entity/Components/PropertyPlaqueComponent.hpp
+	src/Entity/Components/PropertyVendorComponent.hpp
+	src/Entity/Components/ProximityMonitorComponent.hpp
 	src/Entity/Components/PhantomPhysicsComponent.hpp
 	src/Entity/Components/PlatformBoundaryComponent.hpp
 	src/Entity/Components/QuickBuildComponent.hpp
 	src/Entity/Components/RebuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
+	src/Entity/Components/RocketLaunchComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
 	src/Entity/Components/ScriptedActivityComponent.hpp
 	src/Entity/Components/SimplePhysicsComponent.hpp
@@ -246,6 +253,8 @@ set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
 set_property(TARGET rapidxml PROPERTY CXX_STANDARD 98)
 
+SET(RuntimeLibrary "MSd_DynamicDebug")
+
 IF(WIN32)
 	SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Shared Libs" FORCE)
 ELSE(WIN32)
@@ -262,6 +271,7 @@ target_link_libraries(OpCrux_Server
 	Bullet3Geometry
 	Bullet3OpenCL_clew
 	Bullet2FileLoader
+	cop
 	json
 	Mongoose
 	RakNet
@@ -269,8 +279,8 @@ target_link_libraries(OpCrux_Server
 )
 
 if(WIN32)
-	target_link_libraries(OpCrux_Server wsock32 ws2_32 odbc32)
+	target_link_libraries(OpCrux_Server wsock32 ws2_32 odbc32 ${CMAKE_CURRENT_SOURCE_DIR}/libs/cop/cop32.lib)
 endif()
 if(UNIX)
-	target_link_libraries(OpCrux_Server pthread odbc)
+	target_link_libraries(OpCrux_Server pthread odbc ${CMAKE_CURRENT_SOURCE_DIR}/libs/cop/cop64.lib)
 endif()

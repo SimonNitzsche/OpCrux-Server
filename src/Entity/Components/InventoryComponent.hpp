@@ -69,6 +69,15 @@ public:
 			else
 				break;
 		}
+
+		if (owner->GetLOT() == 1) {
+			InventoryItemStack itemStack = InventoryItemStack();
+			itemStack.LOT = 6086;
+			itemStack.objectID = 1152921507005357158;
+			itemStack.quantity = 1;
+			itemStack.equip = true;
+			inventory.insert({ slotID++, itemStack });
+		}
 		
 		_isDirtyFlagEquippedItems = slotID != 0;
 
