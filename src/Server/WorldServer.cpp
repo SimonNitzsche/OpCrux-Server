@@ -49,6 +49,8 @@
 
 
 #include "Entity/GameMessages.hpp"
+#include <Entity\Components\ModuleAssemblyComponent.hpp>
+#include <Entity\Components\PossessableComponent.hpp>
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
@@ -196,18 +198,18 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 
 					// Populate LDF
-					spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(i)->config);
+					spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->config);
 
 					// Set Position/Rotation
 					ControllablePhysicsComponent* controllablePhysicsComponent = spawnedObject->GetComponent<ControllablePhysicsComponent>();
 					if (controllablePhysicsComponent != nullptr) {
-						controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i)->position);
-						controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i)->rotation);
+						controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->position);
+						controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->rotation);
 					}
 					SimplePhysicsComponent* simplePhysicsComponent = spawnedObject->GetComponent<SimplePhysicsComponent>();
 					if (simplePhysicsComponent != nullptr) {
-						simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i)->position);
-						simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i)->rotation);
+						simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->position);
+						simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->rotation);
 					}
 
 					// Register
@@ -464,6 +466,59 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 					playerObject->SetPosition(DataTypes::Vector3(-1457.71f, 2794.0f, -351.61f));
 
+				}
+
+				if (zoneID == 1303) {
+					WorldServer* Instance = this;
+
+					// Spawn custom car.
+					Entity::GameObject* myCar = new Entity::GameObject(Instance, 8092);
+
+
+					if (!myCar->isSerializable) {
+						// Spawn Error Object
+						delete[] myCar;
+						myCar = new Entity::GameObject(Instance, 1845);
+
+					}
+
+					// Set ObjectID
+					myCar->SetObjectID(288300744895890180);
+
+					// Set Parent
+					myCar->SetParent(this->zoneControlObject);
+
+					// Set Spawner
+					//spawnedObject->SetSpawner(this->owner, -1);
+
+					myCar->Finish();
+
+					// Set Position/Rotation
+					//spawnedObject->SetPosition(DataTypes::Vector3(-1475.7, 794.0, -351.6));
+					myCar->SetPosition(DataTypes::Vector3(-1.85433960, 203.026459, -27.7652206));
+					myCar->SetRotation(DataTypes::Quaternion(0, 0.8638404011726379, 0, 0.5037656426429749));
+
+					auto modAComp = myCar->GetComponent<ModuleAssemblyComponent>();
+					modAComp->SetAssembly(u"1:8129;1:8130;1:13513;1:13512;1:13515;1:13516;1:13514;");
+
+					// Register
+					Instance->objectsManager->RegisterObject(myCar);
+
+					// Construct
+					if (myCar->isSerializable)
+						Instance->objectsManager->Construct(myCar);
+
+
+
+					DataTypes::Vector3 pos = playerObject->GetPosition();
+					pos.y += 10;
+					playerObject->SetPosition(pos);
+					//playerObject->SetPosition(DataTypes::Vector3(-1475.7, 794.0, -351.6));
+					playerObject->SetDirty();
+
+					myCar->GetComponent<PossessableComponent>()->driver = playerObject->GetObjectID();
+					myCar->SetDirty();
+					
 				}
 
 

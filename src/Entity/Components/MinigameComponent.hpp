@@ -2,20 +2,22 @@
 #define __REPLICA__COMPONENTS__MINIGAME_COMPONENT_HPP__
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
+#include "Entity/Components/ScriptedActivityComponent.hpp"
 
 using namespace DataTypes;
 
-class MinigameComponent : public IEntityComponent {
+class MinigameComponent : public ScriptedActivityComponent {
+	friend class ScriptedActivityComponent;
 private:
 
 public:
 
-	MinigameComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
+	MinigameComponent(std::int32_t componentID) : ScriptedActivityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 50; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-		factory->Write<std::uint32_t>(0x88);
+		ScriptedActivityComponent::Serialize(factory, packetType);
 	}
 };
 

@@ -70,12 +70,19 @@ public:
 			factory->Write(true); // Angular Velocity
 			factory->Write(angularVelocity);
 			factory->Write(false);
+
+
+			factory->Write(false);
+			factory->Write(0.0f);
+			if (packetType != ReplicaTypes::PacketTypes::CONSTRUCTION) {
+				factory->Write(false);
+			}
 		}
 
 		// Racing specific
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write<std::uint8_t>(0);
-			factory->Write(false);
+			factory->Write<std::uint8_t>(5);
+			factory->Write(true);
 		}
 		factory->Write(false);
 	}

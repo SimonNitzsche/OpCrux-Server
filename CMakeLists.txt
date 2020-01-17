@@ -63,17 +63,21 @@ add_executable(OpCrux_Server
 	src/Entity/Components/MinifigComponent.hpp
 	src/Entity/Components/MinigameComponent.hpp
 	src/Entity/Components/MissionOfferComponent.hpp
+	src/Entity/Components/ModuleAssemblyComponent.hpp
 	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/MovingPlatformComponent.hpp
+	src/Entity/Components/PhantomPhysicsComponent.hpp
+	src/Entity/Components/PlatformBoundaryComponent.hpp
+	src/Entity/Components/PossessableComponent.hpp
 	src/Entity/Components/PropertyComponent.hpp
 	src/Entity/Components/PropertyEntranceComponent.hpp
 	src/Entity/Components/PropertyManagementComponent.hpp
 	src/Entity/Components/PropertyPlaqueComponent.hpp
 	src/Entity/Components/PropertyVendorComponent.hpp
 	src/Entity/Components/ProximityMonitorComponent.hpp
-	src/Entity/Components/PhantomPhysicsComponent.hpp
-	src/Entity/Components/PlatformBoundaryComponent.hpp
 	src/Entity/Components/QuickBuildComponent.hpp
+	src/Entity/Components/RacingControlComponent.hpp
+	src/Entity/Components/RacingStatsComponent.hpp
 	src/Entity/Components/RebuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/RocketLaunchComponent.hpp

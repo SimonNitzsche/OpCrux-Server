@@ -20,6 +20,10 @@ public:
 
 	static constexpr int GetTypeID() { return 11; }
 
+	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
+		factory->Write(false);
+	}
+
 };
 
 #endif

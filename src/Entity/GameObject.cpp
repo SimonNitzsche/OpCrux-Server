@@ -45,6 +45,7 @@
 #include "Entity/Components/MinifigComponent.hpp"
 #include "Entity/Components/MinigameComponent.hpp"
 #include "Entity/Components/MissionOfferComponent.hpp"
+#include "Entity/Components/ModuleAssemblyComponent.hpp"
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/MovingPlatformComponent.hpp"
 #include "Entity/Components/PropertyComponent.hpp"
@@ -55,7 +56,10 @@
 #include "Entity/Components/ProximityMonitorComponent.hpp"
 #include "Entity/Components/PhantomPhysicsComponent.hpp"
 #include "Entity/Components/PlatformBoundaryComponent.hpp"
+#include "Entity/Components/PossessableComponent.hpp"
 #include "Entity/Components/QuickBuildComponent.hpp"
+#include "Entity/Components/RacingControlComponent.hpp"
+#include "Entity/Components/RacingStatsComponent.hpp"
 #include "Entity/Components/RebuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/RocketLaunchComponent.hpp"
@@ -179,8 +183,8 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 	switch (id) {
 		/* ========== SERIALIZED ========== */
 		COMPONENT_ONADD_SWITCH_CASE(StatsComponent);
-		//COMPONENT_ONADD_SWITCH_CASE(Component108);
-		//COMPONENT_ONADD_SWITCH_CASE(ModuleAssemblyComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PossessableComponent);
+		COMPONENT_ONADD_SWITCH_CASE(ModuleAssemblyComponent);
 		COMPONENT_ONADD_SWITCH_CASE(ControllablePhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SimplePhysicsComponent);
 		//COMPONENT_ONADD_SWITCH_CASE(RigidBodyPhantomPhysicsComponent);
@@ -194,6 +198,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(InventoryComponent);
 		COMPONENT_ONADD_SWITCH_CASE(ScriptComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SkillComponent);
+		COMPONENT_ONADD_SWITCH_CASE(ItemComponent);
 		COMPONENT_ONADD_SWITCH_CASE(BaseCombatAIComponent);
 		COMPONENT_ONADD_SWITCH_CASE(QuickbuildComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MovingPlatformComponent);
@@ -201,7 +206,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(VendorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(BouncerComponent);
 		COMPONENT_ONADD_SWITCH_CASE(ScriptedActivityComponent);
-		//COMPONENT_ONADD_SWITCH_CASE(RacingControlComponent);
+		COMPONENT_ONADD_SWITCH_CASE(RacingControlComponent);
 		COMPONENT_ONADD_SWITCH_CASE(LUPExhibitComponent);
 		//COMPONENT_ONADD_SWITCH_CASE(ModelComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RenderComponent);
@@ -211,7 +216,6 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		/* ========== NON-SERIALIZED ========== */
 		COMPONENT_ONADD_SWITCH_CASE(BuildBorderComponent);
 		COMPONENT_ONADD_SWITCH_CASE(GenericActivatorComponent);
-		COMPONENT_ONADD_SWITCH_CASE(ItemComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PropertyComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PropertyEntranceComponent);
@@ -219,6 +223,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(PropertyPlaqueComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PropertyVendorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(ProximityMonitorComponent);
+		COMPONENT_ONADD_SWITCH_CASE(RacingStatsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RocketLaunchComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent);
@@ -275,8 +280,8 @@ void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::Pa
 }
 
 void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-	//SERIALIZE_COMPONENT_IF_ATTACHED(Component108);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(ModuleAssemblyComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(PossessableComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(ModuleAssemblyComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ControllablePhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SimplePhysicsComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(RigidBodyPhantomPhysicsComponent);
@@ -290,6 +295,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(InventoryComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ScriptComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SkillComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(ItemComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(BaseCombatAIComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(QuickbuildComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(MovingPlatformComponent);
@@ -297,7 +303,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(VendorComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(BouncerComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ScriptedActivityComponent);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(RacingControlComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(RacingControlComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(LUPExhibitComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ModelComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(RenderComponent);
@@ -493,12 +499,12 @@ void Entity::GameObject::SetPosition(DataTypes::Vector3 position) {
 	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		rigidBodyPhantomPhysicsComponent->SetPosition(position);
-	}
-	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
+	}*/
+	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
 	if (vehiclePhysicsComponent != nullptr) {
 		vehiclePhysicsComponent->SetPosition(position);
 		return;
-	}*/
+	}
 	auto phantomPhysicsComponent = this->GetComponent<PhantomPhysicsComponent>();
 	if (phantomPhysicsComponent != nullptr) {
 		phantomPhysicsComponent->SetPosition(position);
@@ -518,11 +524,11 @@ void Entity::GameObject::SetRotation(DataTypes::Quaternion rotation) {
 	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		rigidBodyPhantomPhysicsComponent->SetRotation(rotation);
-	}
-	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
+	}*/
+	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
 	if (vehiclePhysicsComponent != nullptr) {
 		vehiclePhysicsComponent->SetRotation(rotation);
-	}*/
+	}
 	auto phantomPhysicsComponent = this->GetComponent<PhantomPhysicsComponent>();
 	if (phantomPhysicsComponent != nullptr) {
 		phantomPhysicsComponent->SetRotation(rotation);
@@ -541,11 +547,11 @@ DataTypes::Vector3 Entity::GameObject::GetPosition() {
 	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		return rigidBodyPhantomPhysicsComponent->GetPosition();
-	}
-	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
+	}*/
+	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
 	if (vehiclePhysicsComponent != nullptr) {
 		return vehiclePhysicsComponent->GetPosition();
-	}*/
+	}
 	auto phantomPhysicsComponent = this->GetComponent<PhantomPhysicsComponent>();
 	if (phantomPhysicsComponent != nullptr) {
 		return phantomPhysicsComponent->GetPosition();
@@ -565,11 +571,11 @@ DataTypes::Quaternion Entity::GameObject::GetRotation() {
 	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		return rigidBodyPhantomPhysicsComponent->GetRotation();
-	}
-	auto vehiclePhysicsComponent = static_cast<VehiclePhysicsComponent*>(this->GetComponentByID(30));
+	}*/
+	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
 	if (vehiclePhysicsComponent != nullptr) {
 		return vehiclePhysicsComponent->GetRotation();
-	}*/
+	}
 	auto phantomPhysicsComponent = this->GetComponent<PhantomPhysicsComponent>();
 	if (phantomPhysicsComponent != nullptr) {
 		return phantomPhysicsComponent->GetRotation();
