@@ -51,6 +51,7 @@
 #include "Entity/GameMessages.hpp"
 #include <Entity\Components\ModuleAssemblyComponent.hpp>
 #include <Entity\Components\PossessableComponent.hpp>
+#include <Entity\GameMessages\NotifyRacingClient.hpp>
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
@@ -180,7 +181,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 				if (spawnerPath->spawnedLOT == 0) continue;
 
-				for (int i = 0; i < spawnerPath->numberToMaintain; ++i) {
+				for (int i = 0; i < spawnerPath->numberToMaintain && i < spawnerPath->waypoints.size(); ++i) {
 					// Create
 					Entity::GameObject* spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
 
@@ -468,6 +469,32 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				}
 
+				Logger::log("WRLD", "Sending serialization");
+				for (auto object_to_construct : objectsManager->GetObjects()) {
+					if (object_to_construct->isSerializable && object_to_construct->GetComponent<CharacterComponent>() == nullptr /*&& object_to_construct->GetComponent<PetComponent>() == nullptr*/) {
+						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
+					}
+				}
+
+				
+
+				//replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);
+				//replicaManager->Construct((Replica*)playerObject, false, UNASSIGNED_SYSTEM_ADDRESS, true);
+				//objectsManager->RegisterObject(testStromling);
+				
+				for (auto object_to_construct : objectsManager->GetObjects()) {
+					if (object_to_construct->GetObjectID() != playerObject->GetObjectID() && object_to_construct->isSerializable && (object_to_construct->GetComponent<CharacterComponent>() != nullptr /*|| object_to_construct->GetComponent<PetComponent>() != nullptr*/)) {
+						Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
+					}
+				}
+
+				objectsManager->Construct(playerObject);
+
+				Logger::log("WRLD", "Server done loading");
+				PacketFactory::World::TestLoad(rakServer, clientSession);
+
 				if (zoneID == 1303) {
 					WorldServer* Instance = this;
 
@@ -508,7 +535,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					if (myCar->isSerializable)
 						Instance->objectsManager->Construct(myCar);
 
-
+					{ GM::NotifyVehicleOfRacingObject msg; msg.racingObjectID = zoneControlObject->GetObjectID(); GameMessages::Broadcast(this, myCar, msg); }
+					{ GM::RacingPlayerLoaded msg; msg.playerID = playerObject->GetObjectID(); msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(this, zoneControlObject, msg); }
+					{ GM::NotifyRacingClient msg; msg.eventType = Enums::ERacingClientNotificationType::ACTIVITY_START; GameMessages::Broadcast(this, zoneControlObject, msg); }
 
 					DataTypes::Vector3 pos = playerObject->GetPosition();
 					pos.y += 10;
@@ -518,36 +547,13 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 					myCar->GetComponent<PossessableComponent>()->driver = playerObject->GetObjectID();
 					myCar->SetDirty();
-					
+
+					charComp->MountTo(myCar);
+					playerObject->SetDirty();
+
+					{GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(this, myCar, msg); }
+
 				}
-
-
-				Logger::log("WRLD", "Sending serialization");
-				for (auto object_to_construct : objectsManager->GetObjects()) {
-					if (object_to_construct->isSerializable && object_to_construct->GetComponent<CharacterComponent>() == nullptr /*&& object_to_construct->GetComponent<PetComponent>() == nullptr*/) {
-						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
-						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
-					}
-				}
-
-				
-
-				//replicaManager->Construct(testStromling, false, UNASSIGNED_SYSTEM_ADDRESS, true);
-				//replicaManager->Construct((Replica*)playerObject, false, UNASSIGNED_SYSTEM_ADDRESS, true);
-				//objectsManager->RegisterObject(testStromling);
-				
-				for (auto object_to_construct : objectsManager->GetObjects()) {
-					if (object_to_construct->GetObjectID() != playerObject->GetObjectID() && object_to_construct->isSerializable && (object_to_construct->GetComponent<CharacterComponent>() != nullptr /*|| object_to_construct->GetComponent<PetComponent>() != nullptr*/)) {
-						Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object_to_construct->GetObjectID()));
-						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
-					}
-				}
-
-				objectsManager->Construct(playerObject);
-
-				Logger::log("WRLD", "Server done loading");
-				PacketFactory::World::TestLoad(rakServer, clientSession);
-
 				
 
 				break;

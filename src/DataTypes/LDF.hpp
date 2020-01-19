@@ -15,6 +15,8 @@ class LDFEntry;
 // if needed without digging up delcarations in all classes.
 typedef std::unordered_map<std::u16string, LDFEntry> LDFCollection;
 
+#define LDF_COLLECTION_INIT_ENTRY(name,var) {name, LDFEntry(name,var)}
+
 namespace Enums {
 	enum LDFType : std::uint8_t {
 		WSTRING,

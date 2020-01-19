@@ -124,6 +124,13 @@ void LUZone::Read() {
 	currentOffset += 4;
 	if (version >= 0x26UL) {
 		spawnPos = *reinterpret_cast<Position*>(currentOffset);
+
+		float tmpX, tmpY, tmpZ, tmpW;
+		tmpX = spawnPos.rot.w;
+		tmpY = spawnPos.rot.x;
+		tmpZ = spawnPos.rot.y;
+		tmpW = spawnPos.rot.z;
+		spawnPos.rot = DataTypes::Quaternion(tmpX, tmpY, tmpZ, tmpW);
 		currentOffset += 28;
 	}
 	else {

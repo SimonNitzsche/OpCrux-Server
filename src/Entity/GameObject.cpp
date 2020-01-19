@@ -623,6 +623,10 @@ void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 
 #include "GameCache/MissionTasks.hpp"
 
+void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
+	for (auto i : components) i.second->OnDie(sender, msg);
+}
+
 void Entity::GameObject::OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg) {
 	for (auto i : components) i.second->OnHasBeenCollected(sender, msg);
 }
@@ -645,6 +649,10 @@ void Entity::GameObject::OnMissionDialogueOK(Entity::GameObject* sender, GM::Mis
 	}
 }
 
+void Entity::GameObject::OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg) {
+	for (auto i : components) i.second->OnRequestDie(sender, msg);
+}
+
 void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 
 	// Handle Interact task
@@ -657,6 +665,10 @@ void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUs
 	}
 
 	for (auto i : components) i.second->OnRequestUse(sender, msg);
+}
+
+void Entity::GameObject::OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg) {
+	for (auto i : components) i.second->OnSetFlag(sender, msg);
 }
 
 void Entity::GameObject::OnStartSkill(const GM::StartSkill msg) {

@@ -113,6 +113,12 @@ public:
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
 	}
+
+	void OnDie(Entity::GameObject* sender, GM::Die* msg) {
+		// TODO: GM::SetResurrectResoteValues
+		// TODO: GM::VehicleStopBoost
+		{GM::Resurrect nmsg; nmsg.bRezImmediately = true; GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, nmsg); }
+	}
 };
 
 #endif

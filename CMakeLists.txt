@@ -106,6 +106,8 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/NotifyClientFlagChange.hpp
 	src/Entity/GameMessages/NotifyMission.hpp
 	src/Entity/GameMessages/NotifyMissionTask.hpp
+	src/Entity/GameMessages/NotifyRacingClient.hpp
+	src/Entity/GameMessages/NotifyVehicleOfRacingObject
 	src/Entity/GameMessages/OfferMission.hpp
 	src/Entity/GameMessages/PlayAnimation.hpp
 	src/Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp
@@ -114,8 +116,10 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/PlayFXEffect.hpp
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
+	src/Entity/GameMessages/RacingPlayerLoaded.hpp
 	src/Entity/GameMessages/RebuildCancel.hpp
 	src/Entity/GameMessages/RebuildNotifyState.hpp
+	src/Entity/GameMessages/RequestDie.hpp
 	src/Entity/GameMessages/RequestLinkedMission.hpp
 	src/Entity/GameMessages/RequestResurrect.hpp
 	src/Entity/GameMessages/RequestSmashPlayer.hpp
@@ -130,12 +134,15 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/StopFXEffect.hpp
 	src/Entity/GameMessages/SyncSkill.hpp
 	src/Entity/GameMessages/TerminateInteraction.hpp
+	src/Entity/GameMessages/VehicleUnlockInput.hpp
 	src/Entity/GameMessages/VendorOpenWindow.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp
 	src/Entity/NativeScripts/ai/NP/L_NPC_NP_SPACEMAN_BOB.hpp
+	src/Entity/NativeScripts/ai/RACING/TRACK_GF/GF_RACE_SERVER.hpp
+	src/Entity/NativeScripts/ai/RACING/RACE_IMAGINATION_SPAWNER.hpp
 	src/Entity/NativeScripts/OMIS.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp
@@ -149,6 +156,7 @@ add_executable(OpCrux_Server
 	src/Enums/EDisconnectReason.hpp
 	src/Enums/EFailReason.hpp
 	src/Enums/EGameMessages.hpp
+	src/Enums/EKillType.hpp
 	src/Enums/ELoginReturnCode.hpp
 	src/Enums/EMissionTask.hpp
 	src/Enums/EPackets.hpp
@@ -156,6 +164,7 @@ add_executable(OpCrux_Server
 	src/Enums/EPathType.hpp
 	src/Enums/EPropertyAchievement.hpp
 	src/Enums/EPropertyRentalTimeUnit.hpp
+	src/Enums/ERacingClientNotificationType.hpp
 	src/Enums/ERemoteConnection.hpp
 	src/Enums/ESystem.hpp
 	src/Enums/ETerminateType.hpp

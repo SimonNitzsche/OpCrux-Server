@@ -1,7 +1,6 @@
 #ifndef __ENTITY__GM__SetFlag_HPP__
 #define __ENTITY__GM__SetFlag_HPP__
 #include "Entity/GameMessages.hpp"
-#include "Entity/Components/CharacterComponent.hpp"
 
 namespace GM {
 	struct SetFlag : GMBase {
@@ -21,11 +20,7 @@ namespace GM {
 		}
 
 		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-			auto playerComp = target->GetComponent<CharacterComponent>();
-			if (playerComp != nullptr) {
-				playerComp->SetFlag(iFlagID, bFlag);
-				MissionManager::LaunchTaskEvent(Enums::EMissionTask::FLAG, sender, target->GetObjectID(), iFlagID);
-			}
+			target->OnSetFlag(sender, this);
 		}
 	};
 }

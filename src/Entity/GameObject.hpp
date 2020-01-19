@@ -17,6 +17,8 @@
 namespace GM {
 	class HasBeenCollected;
 	class MissionDialogueOK;
+	class RequestDie;
+	class SetFlag;
 	class StartSkill;
 	class SyncSkill;
 }
@@ -317,11 +319,14 @@ namespace Entity {
 			/* Game Messages */
 			//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }
 
+			virtual void OnDie(Entity::GameObject* sender, GM::Die* msg);
 			virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg);
 			virtual void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg);
+			virtual void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg);
 			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg);
-			void OnStartSkill(const GM::StartSkill msg);
-			void OnSyncSkill(const GM::SyncSkill msg);
+			virtual void OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg);
+			virtual void OnStartSkill(const GM::StartSkill msg);
+			virtual void OnSyncSkill(const GM::SyncSkill msg);
 
 		public:
 			// Script Stuff

@@ -37,7 +37,7 @@ namespace GM {
 
 		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
 
-			RakNet::BitStream bs = RakNet::BitStream();
+			/*RakNet::BitStream bs = RakNet::BitStream();
 			LUPacketHeader returnBSHead;
 			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
 			returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
@@ -74,7 +74,7 @@ namespace GM {
 			bs.Write<std::uint8_t>(1);
 			StringUtils::writeStringToBitStream<std::uint32_t>(&bs, "ToggleUIDebugger");
 			sender->GetZoneInstance()->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-
+			*/
 			Logger::log("WRLD", "Triggered StartSkill handle " + std::to_string(uiSkillHandle) + " with skillID " + std::to_string(skillID));
 			GM::EchoStartSkill echoGM; {
 				echoGM.bUsedMouse = bUsedMouse;

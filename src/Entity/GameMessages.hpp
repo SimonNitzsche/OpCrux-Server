@@ -1,6 +1,5 @@
 #ifndef __ENTITY__GameMessages_HPP__
 #define __ENTITY__GameMessages_HPP__
-
 #include "Sessions/ClientSession.hpp"
 #include <RakNet/BitStream.h>
 #include <RakNet/RakNetTypes.h>
@@ -20,7 +19,6 @@
 
 #define GM_DESERIALIZE_SWITCH_CASE(name)\
 	case name::GetID(): {name msg = name(); msg.Deserialize(bs); msg.TriggerEvent(senderObject, targetObject); break;}
-
 
 #define GM_VAR_DESERIALIZE_STRING(bs, parameter)  {parameter = StringUtils::readStringFromBitStream<std::uint32_t>(bs);}
 #define GM_VAR_DESERIALIZE_WSTRING(bs, parameter) {parameter = StringUtils::readWStringFromBitStream<std::uint32_t>(bs);}
@@ -56,9 +54,9 @@ namespace GM {
 	struct GMBase {
 		GMBase() {}
 		static constexpr Enums::EGameMessageID GetID() { return (Enums::EGameMessageID)(-1); };
-		virtual void Deserialize(RakNet::BitStream * bs) {};
-		virtual void Serialize(RakNet::BitStream * bs) {};
-		virtual void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {};
+		virtual void Deserialize(RakNet::BitStream* bs) {};
+		virtual void Serialize(RakNet::BitStream* bs) {};
+		virtual void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {};
 	};
 }
 
@@ -128,6 +126,7 @@ public:
 #include "Entity/GameMessages/NotifyClientFlagChange.hpp"
 #include "Entity/GameMessages/NotifyMission.hpp"
 #include "Entity/GameMessages/NotifyMissionTask.hpp"
+#include "Entity/GameMessages/NotifyVehicleOfRacingObject.hpp"
 #include "Entity/GameMessages/OfferMission.hpp"
 #include "Entity/GameMessages/PlayAnimation.hpp"
 #include "Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp"
@@ -136,8 +135,10 @@ public:
 #include "Entity/GameMessages/PlayFXEffect.hpp"
 #include "Entity/GameMessages/PlayNDAudioEmitter.hpp"
 #include "Entity/GameMessages/ProximityUpdate.hpp"
+#include "Entity/GameMessages/RacingPlayerLoaded.hpp"
 #include "Entity/GameMessages/RebuildCancel.hpp"
 #include "Entity/GameMessages/RebuildNotifyState.hpp"
+#include "Entity/GameMessages/RequestDie.hpp"
 #include "Entity/GameMessages/RequestLinkedMission.hpp"
 #include "Entity/GameMessages/RequestResurrect.hpp"
 #include "Entity/GameMessages/RequestSmashPlayer.hpp"
@@ -152,6 +153,7 @@ public:
 #include "Entity/GameMessages/StopFXEffect.hpp"
 #include "Entity/GameMessages/SyncSkill.hpp"
 #include "Entity/GameMessages/TerminateInteraction.hpp"
+#include "Entity/GameMessages/VehicleUnlockInput.hpp"
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
 
 #endif

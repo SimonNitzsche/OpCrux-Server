@@ -13,9 +13,12 @@ namespace Entity {
 }
 
 namespace GM {
+	class Die;
 	class HasBeenCollected;
 	class MissionDialogueOK;
+	class RequestDie;
 	class RequestUse;
+	class SetFlag;
 };
 
 /* set x true if x or construction */
@@ -66,9 +69,12 @@ x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 
 
 			/* Game Messages */
+			virtual void OnDie(Entity::GameObject* sender, GM::Die* msg) {};
 			virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg) {};
 			virtual void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg) {};
+			virtual void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg) {};
 			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {};
+			virtual void OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg) {};
 
 			// Optional void.
 			// Used to set components variables on load from LDF like from LUZ.

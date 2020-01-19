@@ -25,19 +25,19 @@ end
 Emote = { emote = emote}  
 */
 	void getVarables(Entity::GameObject * self) {
-		self->SetVar(L"myTarget", static_cast<Entity::GameObject *>(nullptr));
-		self->SetVar(L"readyToAttack", true);
-		self->SetVar(L"WPEvent_NUM", 1);
-		self->SetVar(L"AggroEmoteDelay", true);
-		self->SetVar(L"delayDone", "Start");
-		self->SetVar(L"aggrotarget", 0);
-		self->SetVar(L"delayDone", "Start");
-		self->SetVar(L"tetherOn", false);
-		self->SetVar(L"Dead", false);
-		self->SetVar(L"myTarget", static_cast<Entity::GameObject *>(nullptr));
-		self->SetVar(L"inpursuit", false);
-		self->SetVar(L"AggroOnce", 0);
-		self->SetVar(L"HearBeat", false);
+		self->SetVar(u"myTarget", static_cast<Entity::GameObject *>(nullptr));
+		self->SetVar(u"readyToAttack", true);
+		self->SetVar(u"WPEvent_NUM", 1);
+		self->SetVar(u"AggroEmoteDelay", true);
+		self->SetVar(u"delayDone", "Start");
+		self->SetVar(u"aggrotarget", 0);
+		self->SetVar(u"delayDone", "Start");
+		self->SetVar(u"tetherOn", false);
+		self->SetVar(u"Dead", false);
+		self->SetVar(u"myTarget", static_cast<Entity::GameObject *>(nullptr));
+		self->SetVar(u"inpursuit", false);
+		self->SetVar(u"AggroOnce", 0);
+		self->SetVar(u"HearBeat", false);
 	}
 /*
 function loadOnce(self)

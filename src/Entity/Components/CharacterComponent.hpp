@@ -6,6 +6,8 @@
 
 #include "Entity/Components/DestructibleComponent.hpp"
 
+#include "Entity/GameMessages/SetFlag.hpp"
+
 class CharacterComponent : public IEntityComponent {
 private:
 	Database::Str_DB_CharInfo charInfo = Database::Str_DB_CharInfo();
@@ -16,12 +18,23 @@ private:
 	// Dirty flags
 	bool _dirtyPart2 = true;
 
+	Entity::GameObject* mountedObject = nullptr;
+
 	
 	enum class WorldTransitionState : std::uint8_t {IN_WORLD, ENTERING_WORLD, LEAVING_WORLD} worldTransitionState = WorldTransitionState::ENTERING_WORLD;
 
 
 public:
 	SystemAddress clientAddress = UNASSIGNED_SYSTEM_ADDRESS;
+
+	void MountTo(Entity::GameObject * mount) {
+		mountedObject = mount;
+		owner->SetDirty();
+	}
+
+	void UnMount() {
+		MountTo(nullptr);
+	}
 
 	void SetLevel(std::uint32_t newLevel) {
 		charInfo.uLevel = newLevel;
@@ -94,9 +107,19 @@ public:
 		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
 	}
 
+	void OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg) {
+		this->SetFlag(msg->iFlagID, msg->bFlag);
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::FLAG, sender, owner->GetObjectID(), msg->iFlagID);
+	}
+
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Part 1 Serialization */
-		factory->Write(false);
+		factory->Write(mountedObject != nullptr);
+		if (mountedObject != nullptr) {
+			factory->Write(true);
+			factory->Write(mountedObject->GetObjectID());
+			factory->Write<std::uint8_t>(1);
+		}
 
 		/* Part 2 Serialization */
 		// ENABLE_FLAG_ON_CONSTRUCTION(_dirtyPart2);
