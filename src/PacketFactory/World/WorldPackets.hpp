@@ -104,7 +104,7 @@ namespace PacketFactory {
 				returnBS.Write<std::uint16_t>(0x1fd); // Server Done Loading All Objects
 
 				// Send
-				rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
+				//rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
 			}
 		}
 

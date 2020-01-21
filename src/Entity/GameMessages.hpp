@@ -113,6 +113,7 @@ public:
 // The Game Messages:
 
 // Define by include
+#include "Entity/GameMessages/ActivityStart.hpp"
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
 #include "Entity/GameMessages/Die.hpp"
 #include "Entity/GameMessages/EchoStartSkill.hpp"

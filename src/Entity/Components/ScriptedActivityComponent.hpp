@@ -22,7 +22,7 @@ public:
 	static constexpr int GetTypeID() { return 39; }
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
-		ENABLE_FLAG_ON_CONSTRUCTION(_componentDirty);
+		//ENABLE_FLAG_ON_CONSTRUCTION(_componentDirty);
 		
 		factory->Write(_componentDirty);
 		if (_componentDirty) {
@@ -54,11 +54,15 @@ public:
 	void AddPlayerToActivity(DataTypes::LWOOBJID player) {
 		if (PlayerInActivity(player)) return;
 		playerActivityData.insert({ player, {0,0, 0,0, 0,0, 0,0, 0,0} });
+		_componentDirty = true;
+		this->owner->SetDirty();
 	}
 
 	void RemovePlayerFromActivity(DataTypes::LWOOBJID player) {
 		if (!PlayerInActivity(player)) return;
 		playerActivityData.erase(player);
+		_componentDirty = true;
+		this->owner->SetDirty();
 	}
 
 	void PopulateFromLDF(LDFCollection collection) {

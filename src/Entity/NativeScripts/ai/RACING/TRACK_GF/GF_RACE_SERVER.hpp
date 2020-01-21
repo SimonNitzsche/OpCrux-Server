@@ -57,9 +57,9 @@ public:
 			LDF_COLLECTION_INIT_ENTRY(u"Blue_Mark", 4843)
 		};
 		
-		print("ConfigureRacingControl...");
+		// print("ConfigureRacingControl...");
 		// self:ConfigureRacingControl{parameters=racingParams}
-		print("...Done");
+		// print("...Done");
 	}
 
 /*

@@ -80,6 +80,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/RacingStatsComponent.hpp
 	src/Entity/Components/RebuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
+	src/Entity/Components/RigidBodyPhantomPhysics.hpp
 	src/Entity/Components/RocketLaunchComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
 	src/Entity/Components/ScriptedActivityComponent.hpp
@@ -93,6 +94,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/TriggerComponent.hpp
 	src/Entity/Components/VehiclePhysicsComponent.hpp
 	src/Entity/Components/VendorComponent.hpp
+	src/Entity/GameMessages/ActivityStart.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
 	src/Entity/GameMessages/EchoStartSkill.hpp

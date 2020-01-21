@@ -1,8 +1,13 @@
 #ifndef __ENTITY__GM__PlayerLoaded_HPP__
 #define __ENTITY__GM__PlayerLoaded_HPP__
+#include "Entity/Components/RacingControlComponent.hpp"
+
+
 #include "Entity/GameMessages.hpp"
 
 #include "Entity/GameMessages/RestoreToPostLoadStats.hpp"
+#include <Entity\GameMessages\NotifyRacingClient.hpp>
+#include <Entity\GameMessages\ActivityStart.hpp>
 
 namespace GM {
 	struct PlayerLoaded : GMBase {
@@ -26,6 +31,13 @@ namespace GM {
 
 			GM::RestoreToPostLoadStats  rtpls;
 			GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), rtpls);
+
+			auto zoneControlObject = sender->GetZoneInstance()->zoneControlObject;
+			auto racingComp = zoneControlObject->GetComponent<RacingControlComponent>();
+			if (racingComp != nullptr) {
+				racingComp->msgPlayerAddedToWorldLocal(playerID);
+			}
+
 		}
 	};
 }

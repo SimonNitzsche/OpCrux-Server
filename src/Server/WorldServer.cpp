@@ -52,6 +52,7 @@
 #include <Entity\Components\ModuleAssemblyComponent.hpp>
 #include <Entity\Components\PossessableComponent.hpp>
 #include <Entity\GameMessages\NotifyRacingClient.hpp>
+#include <Entity\Components\RacingControlComponent.hpp>
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
@@ -498,60 +499,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				if (zoneID == 1303) {
 					WorldServer* Instance = this;
 
-					// Spawn custom car.
-					Entity::GameObject* myCar = new Entity::GameObject(Instance, 8092);
-
-
-					if (!myCar->isSerializable) {
-						// Spawn Error Object
-						delete[] myCar;
-						myCar = new Entity::GameObject(Instance, 1845);
-
-					}
-
-					// Set ObjectID
-					myCar->SetObjectID(288300744895890180);
-
-					// Set Parent
-					myCar->SetParent(this->zoneControlObject);
-
-					// Set Spawner
-					//spawnedObject->SetSpawner(this->owner, -1);
-
-					myCar->Finish();
-
-					// Set Position/Rotation
-					//spawnedObject->SetPosition(DataTypes::Vector3(-1475.7, 794.0, -351.6));
-					myCar->SetPosition(DataTypes::Vector3(-1.85433960, 203.026459, -27.7652206));
-					myCar->SetRotation(DataTypes::Quaternion(0, 0.8638404011726379, 0, 0.5037656426429749));
-
-					auto modAComp = myCar->GetComponent<ModuleAssemblyComponent>();
-					modAComp->SetAssembly(u"1:8129;1:8130;1:13513;1:13512;1:13515;1:13516;1:13514;");
-
-					// Register
-					Instance->objectsManager->RegisterObject(myCar);
-
-					// Construct
-					if (myCar->isSerializable)
-						Instance->objectsManager->Construct(myCar);
-
-					{ GM::NotifyVehicleOfRacingObject msg; msg.racingObjectID = zoneControlObject->GetObjectID(); GameMessages::Broadcast(this, myCar, msg); }
-					{ GM::RacingPlayerLoaded msg; msg.playerID = playerObject->GetObjectID(); msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(this, zoneControlObject, msg); }
-					{ GM::NotifyRacingClient msg; msg.eventType = Enums::ERacingClientNotificationType::ACTIVITY_START; GameMessages::Broadcast(this, zoneControlObject, msg); }
-
-					DataTypes::Vector3 pos = playerObject->GetPosition();
-					pos.y += 10;
-					playerObject->SetPosition(pos);
-					//playerObject->SetPosition(DataTypes::Vector3(-1475.7, 794.0, -351.6));
-					playerObject->SetDirty();
-
-					myCar->GetComponent<PossessableComponent>()->driver = playerObject->GetObjectID();
-					myCar->SetDirty();
-
-					charComp->MountTo(myCar);
-					playerObject->SetDirty();
-
-					{GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(this, myCar, msg); }
+					
 
 				}
 				

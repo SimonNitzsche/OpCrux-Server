@@ -12,7 +12,6 @@ class RacingStatsComponent : public IEntityComponent {
 private:
 
 
-
 public:
 
 	RacingStatsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}

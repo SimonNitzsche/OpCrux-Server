@@ -62,6 +62,7 @@
 #include "Entity/Components/RacingStatsComponent.hpp"
 #include "Entity/Components/RebuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
+#include "Entity/Components/RigidBodyPhantomPhysics.hpp"
 #include "Entity/Components/RocketLaunchComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/ScriptedActivityComponent.hpp"
@@ -187,7 +188,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(ModuleAssemblyComponent);
 		COMPONENT_ONADD_SWITCH_CASE(ControllablePhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SimplePhysicsComponent);
-		//COMPONENT_ONADD_SWITCH_CASE(RigidBodyPhantomPhysicsComponent);
+		COMPONENT_ONADD_SWITCH_CASE(RigidBodyPhantomPhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(VehiclePhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PhantomPhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(DestructibleComponent);
@@ -284,7 +285,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(ModuleAssemblyComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ControllablePhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SimplePhysicsComponent);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(RigidBodyPhantomPhysicsComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(RigidBodyPhantomPhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(VehiclePhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(PhantomPhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(DestructibleComponent);
@@ -495,11 +496,11 @@ void Entity::GameObject::SetPosition(DataTypes::Vector3 position) {
 	auto simplePhysicsComponent = this->GetComponent<SimplePhysicsComponent>();
 	if (simplePhysicsComponent != nullptr) {
 		simplePhysicsComponent->SetPosition(position);
-	}/*
-	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
+	}
+	auto rigidBodyPhantomPhysicsComponent = this->GetComponent<RigidBodyPhantomPhysicsComponent>();
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		rigidBodyPhantomPhysicsComponent->SetPosition(position);
-	}*/
+	}
 	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
 	if (vehiclePhysicsComponent != nullptr) {
 		vehiclePhysicsComponent->SetPosition(position);
@@ -520,11 +521,11 @@ void Entity::GameObject::SetRotation(DataTypes::Quaternion rotation) {
 	auto simplePhysicsComponent = this->GetComponent<SimplePhysicsComponent>();
 	if (simplePhysicsComponent != nullptr) {
 		simplePhysicsComponent->SetRotation(rotation);
-	}/*
-	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
+	}
+	auto rigidBodyPhantomPhysicsComponent = this->GetComponent<RigidBodyPhantomPhysicsComponent>();
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		rigidBodyPhantomPhysicsComponent->SetRotation(rotation);
-	}*/
+	}
 	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
 	if (vehiclePhysicsComponent != nullptr) {
 		vehiclePhysicsComponent->SetRotation(rotation);
@@ -543,11 +544,11 @@ DataTypes::Vector3 Entity::GameObject::GetPosition() {
 	auto simplePhysicsComponent = this->GetComponent<SimplePhysicsComponent>();
 	if (simplePhysicsComponent != nullptr) {
 		return simplePhysicsComponent->GetPosition();
-	}/*
-	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
+	}
+	auto rigidBodyPhantomPhysicsComponent = this->GetComponent<RigidBodyPhantomPhysicsComponent>();
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		return rigidBodyPhantomPhysicsComponent->GetPosition();
-	}*/
+	}
 	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
 	if (vehiclePhysicsComponent != nullptr) {
 		return vehiclePhysicsComponent->GetPosition();
@@ -567,11 +568,11 @@ DataTypes::Quaternion Entity::GameObject::GetRotation() {
 	auto simplePhysicsComponent = this->GetComponent<SimplePhysicsComponent>();
 	if (simplePhysicsComponent != nullptr) {
 		return simplePhysicsComponent->GetRotation();
-	}/*
-	auto rigidBodyPhantomPhysicsComponent = static_cast<RigidBodyPhantomPhysicsComponent*>(this->GetComponentByID(20));
+	}
+	auto rigidBodyPhantomPhysicsComponent = this->GetComponent<RigidBodyPhantomPhysicsComponent>();
 	if (rigidBodyPhantomPhysicsComponent != nullptr) {
 		return rigidBodyPhantomPhysicsComponent->GetRotation();
-	}*/
+	}
 	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
 	if (vehiclePhysicsComponent != nullptr) {
 		return vehiclePhysicsComponent->GetRotation();
