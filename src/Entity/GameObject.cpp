@@ -603,6 +603,20 @@ std::int32_t Entity::GameObject::GetImagination() {
 	return 0;
 }
 
+void Entity::GameObject::Possess(Entity::GameObject* other) {
+	auto charComp = this->GetComponent<CharacterComponent>();
+	if (charComp != nullptr) {
+		auto possessComp = other->GetComponent<PossessableComponent>();
+		if (possessComp != nullptr) {
+			charComp->MountTo(other);
+			this->SetDirty();
+
+			possessComp->driver = objectID;
+			other->SetDirty();
+		}
+	}
+}
+
 void Entity::GameObject::OnCollisionPhantom(Entity::GameObject * other) {
 	Logger::log("WRLD", "OnCollisionPhantom");
 	for (auto component : this->components) {

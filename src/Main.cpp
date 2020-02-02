@@ -1,4 +1,4 @@
-#define HOST_ENDIAN_IS_BIG
+﻿#define HOST_ENDIAN_IS_BIG
 #define BIG_ENDIAN
 
 #include "Common/HardConfig.hpp"
@@ -27,12 +27,13 @@
 
 #include "Configuration/ConfigurationManager.hpp"
 #include "Database/Database.hpp"
+#include "Server/UGCServer.hpp"
 
 using namespace std::chrono;
 
 std::vector<ILUServer *> virtualServerInstances;
 
-enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH } MODE_SERVER;
+enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH, UGCOP } MODE_SERVER;
 
 GameCache::Interface::FDB::Connection Cache;
 BridgeMasterServer* masterServerBridge;
@@ -97,6 +98,12 @@ int main(int argc, char* argv[]) {
 			std::system("title OpCrux Server (Auth only)");
 #endif
 		}
+		else if (arg == "--ugcop") {
+			MODE_SERVER = SERVERMODE::UGCOP;
+#ifdef OPCRUX_PLATFORM_WIN32
+			std::system("title OpCrux Server (UGC only)");
+#endif
+		}
 		else if (arg == "--worldID" && i < argc) {
 			givenWorldID = std::stoi(argv[i + 1]);
 		}
@@ -132,6 +139,12 @@ int main(int argc, char* argv[]) {
 		WorldServer * charSelectWs;
 		std::thread wT([](WorldServer * ws) { ws = new WorldServer(givenWorldID, 0,2001); }, charSelectWs);
 		wT.detach();
+	}
+
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::UGCOP) {
+		UGCServer* ugcServer;
+		std::thread ugcT([](UGCServer* ugcs) {ugcs = new UGCServer(); }, ugcServer);
+		ugcT.detach();
 	}
 
 	while (ServerInfo::bRunning) RakSleep(30);

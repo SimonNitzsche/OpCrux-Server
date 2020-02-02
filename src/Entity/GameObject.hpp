@@ -311,6 +311,8 @@ namespace Entity {
 			*/
 			void Test() { objectID = 9ULL; LOT = 1234; name = u"TestName"; }
 
+			void Possess(Entity::GameObject* other);
+
 
 			void OnCollisionPhantom(Entity::GameObject * other);
 			void OnOffCollisionPhantom(Entity::GameObject * other);

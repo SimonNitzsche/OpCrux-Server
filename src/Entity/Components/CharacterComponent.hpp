@@ -28,6 +28,9 @@ public:
 	SystemAddress clientAddress = UNASSIGNED_SYSTEM_ADDRESS;
 
 	void MountTo(Entity::GameObject * mount) {
+		if (mountedObject != nullptr) {
+			UnMount();
+		}
 		mountedObject = mount;
 		owner->SetDirty();
 	}

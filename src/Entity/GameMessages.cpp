@@ -14,6 +14,7 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 		GM_DESERIALIZE_SWITCH_CASE(GM::FireEventServerSide);
 		GM_DESERIALIZE_SWITCH_CASE(GM::HasBeenCollected);
 		GM_DESERIALIZE_SWITCH_CASE(GM::MissionDialogueOK);
+		GM_DESERIALIZE_SWITCH_CASE(GM::ModuleAssemblyQueryData);
 		GM_DESERIALIZE_SWITCH_CASE(GM::NotifyClientFlagChange);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayEmote);
 		GM_DESERIALIZE_SWITCH_CASE(GM::PlayerLoaded);

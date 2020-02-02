@@ -1,5 +1,7 @@
 add_subdirectory(bullet3-2.89)
 add_subdirectory(cop)
+add_subdirectory(glad/include)
+add_subdirectory(glfw-3.3.2)
 add_subdirectory(json)
 add_subdirectory(Mongoose)
 add_subdirectory(RakNet)

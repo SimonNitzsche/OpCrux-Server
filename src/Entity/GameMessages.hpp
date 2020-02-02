@@ -124,6 +124,8 @@ public:
 #include "Entity/GameMessages/HasBeenCollected.hpp"
 #include "Entity/GameMessages/Knockback.hpp"
 #include "Entity/GameMessages/MissionDialogueOK.hpp"
+#include "Entity/GameMessages/ModuleAssemblyDBDataForClient.hpp"
+#include "Entity/GameMessages/ModuleAssemblyQueryData.hpp"
 #include "Entity/GameMessages/NotifyClientFlagChange.hpp"
 #include "Entity/GameMessages/NotifyMission.hpp"
 #include "Entity/GameMessages/NotifyMissionTask.hpp"

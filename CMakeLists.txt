@@ -29,6 +29,7 @@ ${BULLET_PHYSICS_SOURCE_DIR}/src
 )
 
 add_executable(OpCrux_Server
+	libs/glad/src/glad.c
 	src/Common/CrossPlatform.hpp
 	src/Configuration/ConfDatabase.hpp
 	src/Configuration/ConfigurationManager.cpp
@@ -105,6 +106,8 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/HasBeenCollected.hpp
 	src/Entity/GameMessages/Knockback.hpp
 	src/Entity/GameMessages/MissionDialogueOK.hpp
+	src/Entity/GameMessages/ModuleAssemblyDBDataForClient.hpp
+	src/Entity/GameMessages/ModuleAssemblyQueryData.hpp
 	src/Entity/GameMessages/NotifyClientFlagChange.hpp
 	src/Entity/GameMessages/NotifyMission.hpp
 	src/Entity/GameMessages/NotifyMissionTask.hpp
@@ -232,6 +235,8 @@ add_executable(OpCrux_Server
 	src/PacketFactory/Auth/AuthPackets.hpp
 	src/PacketFactory/General/GeneralPackets.hpp
 	src/PacketFactory/World/WorldPackets.hpp
+	src/Rendering/UGCRenderer.cpp
+	src/Rendering/UGCRenderer.hpp
 	src/Replica/ReplicaTypes.hpp
 	src/Server/Bridges/BridgeMasterServer.cpp
 	src/Server/Bridges/BridgeMasterServer.hpp
@@ -241,6 +246,8 @@ add_executable(OpCrux_Server
 	src/Server/AuthServer.hpp
 	src/Server/MasterServer.cpp
 	src/Server/MasterServer.hpp
+	src/Server/UGCServer.cpp
+	src/Server/UGCServer.hpp
 	src/Server/WorldServer.cpp
 	src/Server/WorldServer.hpp
 	src/Sessions/ClientSession.hpp
@@ -263,6 +270,8 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 )
 
+
+set_property(TARGET glad PROPERTY CXX_STANDARD 98)
 set_property(TARGET json PROPERTY CXX_STANDARD 98)
 set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
@@ -287,11 +296,38 @@ target_link_libraries(OpCrux_Server
 	Bullet3OpenCL_clew
 	Bullet2FileLoader
 	cop
+	glad
+	glfw
 	json
 	Mongoose
 	RakNet
 	rapidxml
 )
+
+#some code to support OpenGL and Glew cross platform
+IF (WIN32)
+        INCLUDE_DIRECTORIES(
+             ${BULLET_PHYSICS_SOURCE_DIR}/btgui/OpenGLWindow/GlewWindows
+        )
+        ADD_DEFINITIONS(-DGLEW_STATIC)
+	LINK_LIBRARIES( ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} )
+ELSE(WIN32)
+        IF(APPLE)
+                find_library(COCOA NAMES Cocoa)
+                MESSAGE(${COCOA})
+                link_libraries(${COCOA} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+
+        ELSE(APPLE)
+                INCLUDE_DIRECTORIES(
+                        ${BULLET_PHYSICS_SOURCE_DIR}/btgui/OpenGLWindow/GlewWindows
+                )
+                ADD_DEFINITIONS("-DGLEW_INIT_OPENGL11_FUNCTIONS=1")
+                ADD_DEFINITIONS("-DGLEW_STATIC")
+                ADD_DEFINITIONS("-DGLEW_DYNAMIC_LOAD_ALL_GLX_FUNCTIONS=1")
+
+                LINK_LIBRARIES(  pthread ${DL} )
+        ENDIF(APPLE)
+ENDIF(WIN32)
 
 if(WIN32)
 	target_link_libraries(OpCrux_Server wsock32 ws2_32 odbc32 ${CMAKE_CURRENT_SOURCE_DIR}/libs/cop/cop32.lib)

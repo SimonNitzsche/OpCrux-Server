@@ -10,7 +10,7 @@ public:
 
 	bool isDirty = false;
 	DataTypes::LWOOBJID subkey;
-	bool unknownBit = false;
+	bool useOptionalParts = false;
 	std::u16string assembly;
 
 	static constexpr int GetTypeID() { return 61; }
@@ -23,7 +23,7 @@ public:
 				if (subkey != 0ULL) {
 					factory->Write(subkey);
 				}
-				factory->Write(unknownBit);
+				factory->Write(useOptionalParts);
 				StringUtils::writeWStringToBitStream<std::uint16_t>(factory, assembly);
 			}
 		}
@@ -39,6 +39,14 @@ public:
 		assembly = _assembly;
 		isDirty = true;
 		owner->SetDirty();
+	}
+
+	void onModuleAssemblyQueryData() {
+		// TODO: Load from db.
+		std::u16string ma = u"1:8129;1:8130;1:13513;1:13512;1:13515;1:13516;1:13514;";
+		this->SetAssembly(ma);
+
+		{ GM::ModuleAssemblyDBDataForClient msg; msg.assemblyID = 0; msg.blob = ma; GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, msg); }
 	}
 
 };

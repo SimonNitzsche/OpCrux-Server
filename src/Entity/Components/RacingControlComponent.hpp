@@ -15,6 +15,9 @@
 #include "Entity/GameMessages/ActivityStart.hpp"
 #include "Entity/GameMessages/NotifyRacingClient.hpp"
 #include "Entity/GameMessages/RacingPlayerLoaded.hpp"
+#include "Entity/Components/PossessableComponent.hpp"
+#include "Entity/GameMessages/VehicleUnlockInput.hpp"
+
 
 using namespace DataTypes;
 
@@ -35,7 +38,7 @@ private:
 	bool _playerInfo2Dirty;
 	std::list<RacingPlayerInfo> playerInfo;
 
-	std::uint16_t numberOfLaps = 3;
+	std::uint16_t numberOfLaps = 3; // remainingLaps
 	std::u16string pathName = u"MainPath";
 
 public:
@@ -106,6 +109,7 @@ public:
 		myCar->SetRotation(DataTypes::Quaternion(0, 0.8638404011726379, 0, 0.5037656426429749));
 
 		auto modAComp = myCar->GetComponent<ModuleAssemblyComponent>();
+
 		modAComp->SetAssembly(u"1:8129;1:8130;1:13513;1:13512;1:13515;1:13516;1:13514;");
 
 		// Register
@@ -117,15 +121,15 @@ public:
 
 
 
-		{ GM::RacingPlayerLoaded msg; msg.playerID = playerID; msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
-
-
-
-
 		
 
-		//{ GM::NotifyVehicleOfRacingObject msg; msg.racingObjectID = zoneControlObject->GetObjectID(); GameMessages::Broadcast(this, myCar, msg); }
+		playerObject->Possess(myCar);
 
+		{ GM::NotifyVehicleOfRacingObject msg; msg.racingObjectID = this->owner->GetObjectID(); GameMessages::Broadcast(this->owner->GetZoneInstance(), myCar, msg); }
+	}
+
+	void onAcknowledgePossession(Entity::GameObject* player, Entity::GameObject* car) {
+		//{ GM::RacingPlayerLoaded msg; msg.playerID = playerID; msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
 
 		//DataTypes::Vector3 pos = playerObject->GetPosition();
 		//pos.y += 10;
@@ -135,13 +139,8 @@ public:
 
 
 
-		//myCar->GetComponent<PossessableComponent>()->driver = playerObject->GetObjectID();
-		//myCar->SetDirty();
 
-		//charComp->MountTo(myCar);
-		//playerObject->SetDirty();
-
-		//{GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(this, myCar, msg); }
+		// {GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(owner->GetZoneInstance(), myCar, msg); }
 
 
 		//
@@ -149,8 +148,8 @@ public:
 		//Test();
 		//this->owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
 
-		//{ GM::NotifyRacingClient msg; msg.eventType = Enums::ERacingClientNotificationType::ACTIVITY_START; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
-		//{ GM::ActivityStart msg; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
+		{ GM::NotifyRacingClient msg; msg.eventType = Enums::ERacingClientNotificationType::ACTIVITY_START; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
+		{ GM::ActivityStart msg; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
 	}
 
 	void Update() {
