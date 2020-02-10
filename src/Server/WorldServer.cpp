@@ -98,6 +98,12 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	this->objectsManager = new ObjectsManager(this);
 
+	bool useDebugRenderer = false;
+	if (useDebugRenderer) {
+		debugRenderer = new DebugRenderer();
+		debugRenderer->AssignZoneInstance(this);
+	}
+
 	// Check startup
 	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
 		std::cin.get();
@@ -240,6 +246,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	while (ServerInfo::bRunning) {
 		RakSleep(30);
+		if (debugRenderer != nullptr) {
+			debugRenderer->Paint();
+		}
 		while (packet = rakServer->Receive()) {
 			try {
 				handlePacket(rakServer, reinterpret_cast<LUPacket*>(packet));
@@ -263,9 +272,17 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 }
 
 void WorldServer::GameLoopThread() {
-	while (ServerInfo::bRunning) {
+	while (true) {
 		objectsManager->OnUpdate();
 		timer.Update();
+		
+		RakSleep(300);
+	}
+}
+
+void WorldServer::DebugRendererThread() {
+	while (ServerInfo::bRunning) {
+		
 		RakSleep(300);
 	}
 }

@@ -6,6 +6,7 @@
 #include "FileTypes/LUZFile/LUZone.hpp"
 class ObjectsManager;
 #include "Entity/ObjectsManager.hpp"
+#include "Rendering/DebugRenderer.hpp"
 
 #include "Misc/LWOTimer.hpp"
 
@@ -25,6 +26,7 @@ public:
 	ReplicaManager * replicaManager = nullptr;
 	NetworkIDManager * networkIdManager = nullptr;
 	ObjectsManager * objectsManager = nullptr;
+	DebugRenderer* debugRenderer = nullptr;
 	RakPeerInterface* rakServer;
 	FileTypes::LUZ::LUZone * luZone;
 	btDefaultCollisionConfiguration* collisionConfiguration;
@@ -38,6 +40,7 @@ public:
 public:
 	WorldServer(int zone, int instanceID, int port);
 	void GameLoopThread();
+	void DebugRendererThread();
 	void GamePhysicsThread();
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 	~WorldServer();

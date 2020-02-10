@@ -175,6 +175,8 @@ add_executable(OpCrux_Server
 	src/Enums/ETerminateType.hpp
 	src/Enums/StringEnums.hpp
 	src/Exceptions/ExNetException.hpp
+	src/FileTypes/GFile/GeometryFile.cpp
+	src/FileTypes/GFile/GeometryFile.hpp
 	src/FileTypes/HKXFile/hkClassEnum.hpp
 	src/FileTypes/HKXFile/hkClassMember.hpp
 	src/FileTypes/HKXFile/hkClassName.hpp
@@ -235,6 +237,8 @@ add_executable(OpCrux_Server
 	src/PacketFactory/Auth/AuthPackets.hpp
 	src/PacketFactory/General/GeneralPackets.hpp
 	src/PacketFactory/World/WorldPackets.hpp
+	src/Rendering/DebugRenderer.cpp
+	src/Rendering/DebugRenderer.hpp
 	src/Rendering/UGCRenderer.cpp
 	src/Rendering/UGCRenderer.hpp
 	src/Replica/ReplicaTypes.hpp

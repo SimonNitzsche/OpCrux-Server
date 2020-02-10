@@ -3,11 +3,6 @@
 #include "Utils/Logger.hpp"
 
 UGCRenderer::UGCRenderer() {
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 	window = glfwCreateWindow(800, 600, "UGC Renderer", nullptr, nullptr);
 
 	if (window == nullptr) {
@@ -28,11 +23,14 @@ UGCRenderer::UGCRenderer() {
 }
 
 void UGCRenderer::Paint() {
-	if (!glfwWindowShouldClose(window)) {
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-	else {
+	glfwMakeContextCurrent(window);
+	if (glfwWindowShouldClose(window)) {
 		glfwTerminate();
+		return;
 	}
+
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+
+	
 }

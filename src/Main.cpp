@@ -1,6 +1,9 @@
 ﻿#define HOST_ENDIAN_IS_BIG
 #define BIG_ENDIAN
 
+#include <glad/include/glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include "Common/HardConfig.hpp"
 
 #include <stdlib.h>
@@ -70,6 +73,12 @@ int main(int argc, char* argv[]) {
 	using namespace Entity;
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
+
+	Logger::log("MAIN", "Setting up GLFW in case a renderer is being active.");
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	Logger::log("MAIN", "Booting up server instances...");
 
@@ -143,8 +152,8 @@ int main(int argc, char* argv[]) {
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::UGCOP) {
 		UGCServer* ugcServer;
-		std::thread ugcT([](UGCServer* ugcs) {ugcs = new UGCServer(); }, ugcServer);
-		ugcT.detach();
+		//std::thread ugcT([](UGCServer* ugcs) {ugcs = new UGCServer(); }, ugcServer);
+		//ugcT.detach();
 	}
 
 	while (ServerInfo::bRunning) RakSleep(30);
