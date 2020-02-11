@@ -8,6 +8,7 @@ public:
 	AuthServer();
 	~AuthServer();
 private:
+	void RequestMasterUserAuthConfirmation(SystemAddress systemAddress, std::uint64_t accountID);
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 };
 

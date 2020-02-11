@@ -21,6 +21,12 @@ public:
 	int processID;
 };
 
+enum ClientSessionMRState {
+	IN_TRANSFER,
+	IN_WORLD_LOADING,
+	IN_WORLD
+};
+
 // Client Session Master Reference (server client session as reference for master)
 struct ClientSessionMR {
 public:
@@ -28,6 +34,7 @@ public:
 	DataTypes::LWOOBJID objectID;
 	SystemAddress systemAddress;
 	MachineProcess * process;
+	ClientSessionMRState sessionState;
 };
 
 struct Machine {
@@ -51,10 +58,10 @@ public:
 private:
 	inline MachineProcess * GetMachineProcess(Packet * packet) {
 		for (int i = 0; i < connected_machines.size(); ++i) {
-			Machine * m = &(connected_machines[i]);
+			Machine* m = &(connected_machines[i]);
 			if (m->dottedIP == packet->systemAddress.ToString(false)) {
 				for (int j = 0; j < m->processes.size(); ++j) {
-					MachineProcess * p = &(m->processes[j]);
+					MachineProcess* p = &(m->processes[j]);
 					if (p->port == packet->systemAddress.port) {
 						if (p->machine == nullptr) p->machine = m;
 						return &(connected_machines[i].processes[j]);
@@ -62,7 +69,17 @@ private:
 				}
 			}
 		}
+
 		Logger::log("MasterServer", "GetMachineProcess(): Couldn't find MachineProcess.", LogType::UNEXPECTED);
+		return nullptr;
+	}
+
+	inline ClientSessionMR* GetClientSessionMR(std::uint32_t accountID) {
+		for (auto it = connected_clients.begin(); it != connected_clients.end(); ++it) {
+			if (it->accountID == accountID) {
+				return it._Ptr;
+			}
+		}
 		return nullptr;
 	}
 public:

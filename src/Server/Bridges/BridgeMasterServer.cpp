@@ -135,6 +135,26 @@ void BridgeMasterServer::SayHello() {
 	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
+void BridgeMasterServer::ClientLoginAuth(SystemAddress systemAddress, int accountID) {
+	if (!_connected) {
+		throw std::runtime_error("Not connected to Master Server.");
+	}
+	if (!_listening) {
+		throw std::runtime_error("Not listening.");
+	}
+
+	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGIN_REQUEST));
+
+	packet->Write(false); // Is World?
+
+	packet->Write(RakNet::RakString(systemAddress.ToString(true)));
+	packet->Write(accountID);
+
+	RakNet::BitStream* packetPTR = packet.get();
+	Logger::log("Bridge", "Send Client logon");
+	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
 void BridgeMasterServer::ClientWorldAuth(SystemAddress systemAddress, int accountID) {
 	if (!_connected) {
 		throw std::runtime_error("Not connected to Master Server.");
@@ -144,6 +164,8 @@ void BridgeMasterServer::ClientWorldAuth(SystemAddress systemAddress, int accoun
 	}
 
 	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGIN_REQUEST));
+
+	packet->Write(true); // Is World?
 
 	packet->Write(RakNet::RakString(systemAddress.ToString(true)));
 	packet->Write(accountID);

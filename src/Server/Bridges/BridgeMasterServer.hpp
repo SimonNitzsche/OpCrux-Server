@@ -28,6 +28,7 @@ public:
 	void Connect();
 	void Listen();
 	void SayHello();
+	void ClientLoginAuth(SystemAddress systemAddress, int accountID);
 	void ClientWorldAuth(SystemAddress systemAddress, int accountID);
 	void ClientDisconnect(SystemAddress systemAddress);
 	void ChooseWorldServer();

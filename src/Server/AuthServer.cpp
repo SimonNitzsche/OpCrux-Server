@@ -73,6 +73,10 @@ AuthServer::AuthServer() : ILUServer() {
 	
 }
 
+void AuthServer::RequestMasterUserAuthConfirmation(SystemAddress systemAddress, std::uint64_t accountID) {
+	masterServerBridge->ClientLoginAuth(systemAddress, accountID);
+}
+
 void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	RakNet::BitStream *data = new RakNet::BitStream(packet->getData(), packet->getLength(), false);
 	LUPacketHeader packetHeader = packet->getHeader();
@@ -109,8 +113,11 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				bool authSuccess = Database::IsLoginCorrect((char16_t*)name.c_str(), (char16_t*)pswd.c_str());
 
-				if (authSuccess)
+				if (authSuccess) {
+					std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
+					RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
 					PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+				}
 				else
 					PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
 			}

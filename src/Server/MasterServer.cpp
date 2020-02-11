@@ -123,9 +123,10 @@ void MasterServer::Listen() {
 					case EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGIN_REQUEST: {
 						MachineProcess * mp = GetMachineProcess(packet);
 						
-
+						bool isWorldRequest;
 						ClientSessionMR sessionMR;
 						RakNet::RakString sysAddress;
+						data->Read(isWorldRequest);
 						data->Read(sysAddress);
 						sessionMR.systemAddress.SetBinaryAddress(sysAddress);
 						data->Read(sessionMR.accountID);
