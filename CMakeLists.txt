@@ -28,6 +28,8 @@ INCLUDE_DIRECTORIES(
 ${BULLET_PHYSICS_SOURCE_DIR}/src
 )
 
+find_package(ODBC REQUIRED)
+
 add_executable(OpCrux_Server
 	libs/glad/src/glad.c
 	src/Common/CrossPlatform.hpp
