@@ -51,7 +51,6 @@ int givenWorldID = 1303;
 #include "Entity/Components/StatsComponent.hpp"
 #include "DataTypes/LDF.hpp"
 #include "FileTypes/HKXFile/hkxFile.hpp"
-#include <cop/cop.h>
 
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();

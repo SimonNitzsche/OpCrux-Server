@@ -301,7 +301,6 @@ target_link_libraries(OpCrux_Server
 	Bullet3Geometry
 	Bullet3OpenCL_clew
 	Bullet2FileLoader
-	cop
 	glad
 	glfw
 	json
@@ -336,8 +335,8 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 if(WIN32)
-	target_link_libraries(OpCrux_Server wsock32 ws2_32 odbc32 ${CMAKE_CURRENT_SOURCE_DIR}/libs/cop/cop32.lib)
+	target_link_libraries(OpCrux_Server wsock32 ws2_32 odbc32 )
 endif()
 if(UNIX)
-	target_link_libraries(OpCrux_Server pthread odbc ${CMAKE_CURRENT_SOURCE_DIR}/libs/cop/cop64.lib)
+	target_link_libraries(OpCrux_Server pthread odbc )
 endif()
