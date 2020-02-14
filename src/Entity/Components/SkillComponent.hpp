@@ -1,6 +1,8 @@
 #ifndef __REPLICA__COMPONENTS__SKILL_COMPONENT_HPP__
 #define __REPLICA__COMPONENTS__SKILL_COMPONENT_HPP__
 
+#include <mutex>
+
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
 #include "Entity/GameMessages/StartSkill.hpp"
@@ -11,101 +13,41 @@
 #include "GameCache/BehaviorTemplateName.hpp"
 #include "GameCache/SkillBehavior.hpp"
 
-struct AbstractAggregateBehavior {
-	virtual void UnCast() {};
-	static void StartUnCast(long nextBehavior, RakNet::BitStream * bs);
-};
-
-struct BehaviorAnd : AbstractAggregateBehavior {
-
-	void UnCast(std::int32_t behaviorID, RakNet::BitStream * bs) {
-		
-		auto ri = CacheBehaviorParameter::GetBehaviorRow(behaviorID);
-		if (!ri.isValid())
-			throw new std::runtime_error("Unable to query row.");
-
-		// Initial call
-		std::int32_t nextID = *reinterpret_cast<float*>(ri[2].getMemoryLocation());
-		StartUnCast(nextID, bs);
-
-		// For all others
-		while (ri.isLinkedRowInfoValid()) {
-			ri = ri.getLinkedRowInfo();
-			nextID = *reinterpret_cast<float*>(ri[2].getMemoryLocation());
-			StartUnCast(nextID, bs);
-		}
-	}
-};
-
-struct BehaviorMovementSwitch : AbstractAggregateBehavior {
-	
-	void UnCast(std::int32_t behaviorID, RakNet::BitStream * bs) {
-		std::uint32_t movementType; bs->Read(movementType);
-
-		static const std::string switchTypes[] { "moving_action", "ground_action", "jump_action", "falling_action", "air_action", "double_jump_action", "jetpack_action" };
-		if (movementType <= 6) {
-			std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, switchTypes[movementType]);
-			StartUnCast(nextID, bs);
-		}
-	}
-};
-
-struct BehaviorChain : AbstractAggregateBehavior {
-
-	void UnCast(std::int32_t behaviorID, RakNet::BitStream* bs) {
-		std::uint32_t chainIndex; bs->Read(chainIndex);
-
-		
-		std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "behavior " + std::to_string(chainIndex));
-		StartUnCast(nextID, bs);
-	}
-};
-
-
-void AbstractAggregateBehavior::StartUnCast(long nextBehavior, RakNet::BitStream * bs) {
-	if (nextBehavior == -1) return;
-	long templateID = CacheBehaviorTemplate::GetTemplateID(nextBehavior);
-	switch (templateID) {
-	case 3: {
-		// And
-		BehaviorAnd bAnd = BehaviorAnd();
-		bAnd.UnCast(nextBehavior, bs);
-		break;
-	}
-	case 6: {
-		// Movement Switch
-		BehaviorMovementSwitch movementSwitch = BehaviorMovementSwitch();
-		movementSwitch.UnCast(nextBehavior, bs);
-		break;
-	}
-	case 38: {
-		// Chain
-		BehaviorChain bChain = BehaviorChain();
-		bChain.UnCast(nextBehavior, bs);
-		break;
-	}
-	default:
-		Logger::log("WRLD", "TODO: Implement behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)), LogType::UNEXPECTED);
-		break;
-	}
-}
 
 using namespace DataTypes;
+
+struct SkillStackParameters {
+	bool bUsedMouse = false;
+	std::float_t fCasterLatency = 0.0f;
+	std::int32_t iCastType = 0;
+	DataTypes::Vector3 lastClickedPosit = DataTypes::Vector3::zero();
+	DataTypes::LWOOBJID optionalOriginatorID = 0ULL;
+	DataTypes::LWOOBJID optionalTargetID = 0ULL;
+	DataTypes::Quaternion originatorRot = DataTypes::Quaternion();
+	std::uint32_t uiBehvaiorHandle = 0;
+	std::uint32_t uiSkillHandle = 0;
+	bool bDone = false;
+};
 
 class SkillComponent : public IEntityComponent {
 private:
 	bool _isDirtyFlag = false;
 
+	SkillStackParameters parameters;
+
 	std::uint32_t currentHandle = 0;
 	std::uint32_t currentSkill = 0;
 
-	void UnCast(const std::string sBitStream) {
-		RakNet::BitStream bs = RakNet::BitStream(reinterpret_cast<unsigned char*>(const_cast<char*>(sBitStream.c_str())), sBitStream.size(), false);
-		unsigned long behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
-		AbstractAggregateBehavior::StartUnCast(behaviorID, &bs);
-	}
+	void UnCast(const std::string sBitStream, long behaviorID = 0);
+
+	std::unordered_map<std::uint32_t /*behaviorHandle*/, std::int32_t /*behaviorAction*/> behaviorHandles;
+	std::mutex mutex_behaviorHandles;
 
 public:
+
+	SkillStackParameters GetParameters() {
+		return parameters;
+	}
 
 	SkillComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
@@ -125,13 +67,73 @@ public:
 	inline void OnStartSkill(GM::StartSkill msg) {
 		currentSkill = msg.skillID;
 		currentHandle = msg.uiSkillHandle;
+
+		parameters.bUsedMouse = msg.bUsedMouse;
+		parameters.fCasterLatency = msg.fCasterLatency;
+		parameters.iCastType = msg.iCastType;
+		parameters.lastClickedPosit = msg.lastClickedPosit;
+		parameters.optionalOriginatorID = msg.optionalOriginatorID;
+		parameters.optionalTargetID = msg.optionalTargetID;
+		parameters.originatorRot = msg.originatorRot;
+		parameters.uiSkillHandle = msg.uiSkillHandle;
+
+		GM::EchoStartSkill echoGM; {
+			echoGM.bUsedMouse = msg.bUsedMouse;
+			echoGM.fCasterLatency = msg.fCasterLatency;
+			echoGM.iCastType = msg.iCastType;
+			echoGM.lastClickedPosit = msg.lastClickedPosit;
+			echoGM.optionalOriginatorID = msg.optionalOriginatorID;
+			echoGM.optionalTargetID = msg.optionalTargetID;
+			echoGM.originatorRot = msg.originatorRot;
+			echoGM.sBitStream = msg.sBitStream;
+			echoGM.skillID = msg.skillID;
+			echoGM.uiSkillHandle = msg.uiSkillHandle;
+		}
+		GameMessages::Broadcast(this->owner, echoGM, true);
+
 		UnCast(msg.sBitStream);
 	}
 
 	inline void OnSyncSkill(GM::SyncSkill msg) {
+		parameters.bDone = msg.bDone;
+		parameters.uiBehvaiorHandle = msg.uiBehaviorHandle;
+		parameters.uiSkillHandle = msg.uiSkillHandle;
 
+		mutex_behaviorHandles.lock();
+		auto behaviorIDIt = behaviorHandles.find(msg.uiBehaviorHandle);
+		std::int32_t behaviorID = 0;
+		if (behaviorIDIt != behaviorHandles.end()) {
+			behaviorID = behaviorIDIt->second;
+			behaviorHandles.erase(behaviorIDIt);
+		}
+		mutex_behaviorHandles.unlock();
+
+		GM::EchoSyncSkill echoGM; {
+			echoGM.bDone = msg.bDone;
+			echoGM.sBitStream = msg.sBitStream;
+			echoGM.uiBehaviorHandle = msg.uiBehaviorHandle;
+			echoGM.uiSkillHandle = msg.uiSkillHandle;
+		}
+		GameMessages::Broadcast(this->owner, echoGM, true);
+
+		if (behaviorID <= 0) return;
+		UnCast(msg.sBitStream, behaviorID);
+	}
+
+	inline void AddBehaviorHandle(std::uint32_t behaviorHandle, std::int32_t behaviorAction) {
+		mutex_behaviorHandles.lock();
+		behaviorHandles.insert({ behaviorHandle, behaviorAction });
+		mutex_behaviorHandles.unlock();
 	}
 
 };
 
+#include "Entity/Components/SkillComponent/AbstractAggregateBehavior.hpp"
+
+
+void SkillComponent::UnCast(const std::string sBitStream, long behaviorID) {
+	RakNet::BitStream bs = RakNet::BitStream(reinterpret_cast<unsigned char*>(const_cast<char*>(sBitStream.c_str())), sBitStream.size(), false);
+	if(behaviorID <= 0) behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
+	AbstractAggregateBehavior::StartUnCast(this, behaviorID, &bs);
+}
 #endif

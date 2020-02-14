@@ -31,7 +31,12 @@
 			"variables": [
 				{
 					"name": "BUILD_SHARED_LIBS",
-					"value": "True",
+					"value": "False",
+					"type": "BOOL"
+				},
+				{
+					"name": "USE_MSVC_RUNTIME_LIBRARY_DLL",
+					"value": "False",
 					"type": "BOOL"
 				}
 			]

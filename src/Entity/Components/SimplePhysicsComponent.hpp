@@ -56,9 +56,9 @@ public:
 			factory->Write<std::float_t>(angularVelocity.y);
 			factory->Write<std::float_t>(angularVelocity.z);
 		}
-		tmpFlag = _airSpeedDirty;
-		factory->Write(tmpFlag&&airSpeed!=0);
-		if (tmpFlag&&airSpeed!=0) {
+		tmpFlag = _airSpeedDirty && airSpeed != 0;
+		factory->Write(tmpFlag);
+		if (tmpFlag) {
 			factory->Write(airSpeed);
 		}
 		tmpFlag = _posRotDirty || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;

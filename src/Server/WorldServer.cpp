@@ -489,7 +489,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {
-					if (object_to_construct->isSerializable && object_to_construct->GetComponent<CharacterComponent>() == nullptr /*&& object_to_construct->GetComponent<PetComponent>() == nullptr*/) {
+					if (object_to_construct->isSerializable && !object_to_construct->GetIsServerOnly() && object_to_construct->GetComponent<CharacterComponent>() == nullptr /*&& object_to_construct->GetComponent<PetComponent>() == nullptr*/) {
 						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
 						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}

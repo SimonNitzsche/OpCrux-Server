@@ -29,8 +29,8 @@
 		GM_VAR_DESERIALIZE(bs,parameter);\
 	}\
 	else {\
-		bool useDefault; bs->Read(useDefault);\
-		if(!useDefault) parameter = defaultVal;\
+		bool notDefault; bs->Read(notDefault);\
+		if(!notDefault) parameter = defaultVal;\
 		else GM_VAR_DESERIALIZE(bs, parameter);\
 	}\
 }
@@ -44,8 +44,8 @@
 		GM_VAR_SERIALIZE(bs,parameter);\
 	}\
 	else {\
-		bool useDefault = parameter == defaultVal; bs->Write(useDefault);\
-		if(!useDefault)\
+		bool notDefault = !(parameter == defaultVal); bs->Write(notDefault);\
+		if(notDefault)\
 			GM_VAR_SERIALIZE(bs, parameter);\
 	}\
 }
@@ -86,6 +86,9 @@ public:
 				ClientSession session = clients.at(i);
 
 				if (exclude != session.actorID) {
+#define quote(x) #x
+					if (Instance->objectsManager->GetObjectByID(session.actorID) == nullptr) continue;
+					Logger::log(typeid(T).name(), "Broadcasting to " + Instance->objectsManager->GetObjectByID(session.actorID)->GetNameStr());
 					Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
 				}
 			}
@@ -99,6 +102,8 @@ public:
 		Send(receiver->GetZoneInstance(), receiver->GetZoneInstance()->sessionManager.GetSession(receiver->GetObjectID())->systemAddress, sender, gm);
 	}
 
+	
+
 	template<typename T = GM::GMBase>
 	static inline void Broadcast(WorldServer * Instance, DataTypes::LWOOBJID target, T gm) {
 		Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, target, gm);
@@ -107,6 +112,11 @@ public:
 	template<typename T = GM::GMBase>
 	static inline void Broadcast(WorldServer * Instance, Entity::GameObject * target, T gm) {
 		Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm);
+	}
+
+	template<typename T = GM::GMBase>
+	static inline void Broadcast(Entity::GameObject* target, T gm, bool excludeSelf = false) {
+		Send(target->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm, excludeSelf?target->GetObjectID():0Ui64);
 	}
 };
 

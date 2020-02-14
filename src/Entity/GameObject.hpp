@@ -82,6 +82,9 @@ namespace Entity {
 			// Needs serialization
 			bool baseDataDirty = false;
 
+			// Don't construct to client if set
+			bool serverOnly = false;
+
 			WorldServer * Instance;
 
 			LDFCollection configData;
@@ -170,6 +173,21 @@ namespace Entity {
 			std::uint32_t GetLOT() {
 				return LOT;
 			}
+
+			/*
+				Sets if object is server only
+			*/
+			void SetIsServerOnly() {
+				serverOnly = true;
+			}
+
+			/*
+				Gets if object is server only
+			*/
+			bool GetIsServerOnly() {
+				return serverOnly;
+			}
+
 
 			/*
 				Called to update the object.

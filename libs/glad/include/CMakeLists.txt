@@ -4,4 +4,4 @@ set(GLAD_SRC
 	KHR/khrplatform.h
 )
 
-add_library(glad ${GLAD_SRC})
+add_library(glad STATIC ${GLAD_SRC})

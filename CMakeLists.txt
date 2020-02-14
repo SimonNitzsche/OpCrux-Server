@@ -51,6 +51,18 @@ add_executable(OpCrux_Server
 	src/Encryption/sha512.cpp
 	src/Encryption/sha512.hpp
 	src/Entity/Components/Interface/IEntityComponent.hpp
+	src/Entity/Components/SkillComponent/AbstractAggregateBehavior.hpp
+	src/Entity/Components/SkillComponent/BehaviorAlterCooldown.hpp
+	src/Entity/Components/SkillComponent/BehaviorAlterChainDelay.hpp
+	src/Entity/Components/SkillComponent/BehaviorAnd.hpp
+	src/Entity/Components/SkillComponent/BehaviorAttackDelay.hpp
+	src/Entity/Components/SkillComponent/BehaviorChain.hpp
+	src/Entity/Components/SkillComponent/BehaviorChangeOrientation.hpp
+	src/Entity/Components/SkillComponent/BehaviorDuration.hpp
+	src/Entity/Components/SkillComponent/BehaviorForceMovement.hpp
+	src/Entity/Components/SkillComponent/BehaviorMovementSwitch.hpp
+	src/Entity/Components/SkillComponent/BehaviorStun.hpp
+	src/Entity/Components/SkillComponent/BehaviorTacArc.hpp
 	src/Entity/Components/BaseCombatAIComponent.hpp
 	src/Entity/Components/BouncerComponent.hpp
 	src/Entity/Components/BuildBorderComponent.hpp
@@ -84,11 +96,13 @@ add_executable(OpCrux_Server
 	src/Entity/Components/RebuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/RigidBodyPhantomPhysics.hpp
+	src/Entity/Components/RocketLandingComponent.hpp
 	src/Entity/Components/RocketLaunchComponent.hpp
 	src/Entity/Components/ScriptComponent.hpp
 	src/Entity/Components/ScriptedActivityComponent.hpp
 	src/Entity/Components/SimplePhysicsComponent.hpp
 	src/Entity/Components/SkillComponent.hpp
+	src/Entity/Components/SoundAmbient2DComponent.hpp
 	src/Entity/Components/SoundAmbient3DComponent.hpp
 	src/Entity/Components/SoundTriggerComponent.hpp
 	src/Entity/Components/SpawnerComponent.hpp
@@ -287,27 +301,7 @@ SET(RuntimeLibrary "MSd_DynamicDebug")
 
 IF(WIN32)
 	SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Shared Libs" FORCE)
-ELSE(WIN32)
-	SET(BUILD_SHARED_LIBS ON CACHE BOOL "Shared Libs" FORCE)
 ENDIF(WIN32)
-
-target_link_libraries(OpCrux_Server
-	BulletDynamics
-	BulletCollision
-	LinearMath
-	Bullet3Common
-	Bullet3Collision
-	Bullet3Dynamics
-	Bullet3Geometry
-	Bullet3OpenCL_clew
-	Bullet2FileLoader
-	glad
-	glfw
-	json
-	Mongoose
-	RakNet
-	rapidxml
-)
 
 #some code to support OpenGL and Glew cross platform
 IF (WIN32)
@@ -340,3 +334,24 @@ endif()
 if(UNIX)
 	target_link_libraries(OpCrux_Server pthread odbc )
 endif()
+
+target_link_libraries(OpCrux_Server
+	glad
+	BulletDynamics
+	BulletCollision
+	LinearMath
+	Bullet3Common
+	Bullet3Collision
+	Bullet3Dynamics
+	Bullet3Geometry
+	Bullet3OpenCL_clew
+	Bullet2FileLoader
+	glfw
+	json
+	Mongoose
+	ws2_32
+	RakNet
+	rapidxml
+)
+
+

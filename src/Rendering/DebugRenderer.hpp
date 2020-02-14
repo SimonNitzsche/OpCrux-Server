@@ -2,7 +2,7 @@
 #define __RENDERING__DEBUGRENDERER_HPP__
 
 #include <glad/include/glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "../include/GLFW/glfw3.h"
 
 class WorldServer;
 

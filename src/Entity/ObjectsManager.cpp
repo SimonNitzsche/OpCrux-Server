@@ -59,6 +59,9 @@ void ObjectsManager::Construct(DataTypes::LWOOBJID objID, SystemAddress addr) {
 	Entity::GameObject * gameObject = GetObjectByID(objID);
 	if (gameObject != nullptr)
 		Construct(gameObject);
+	else {
+		Logger::log("WRLD", "Error: Cannot construct an object that does not exist! objID: " + std::to_string(objID), LogType::ERR);
+	}
 }
 
 void ObjectsManager::Construct(Entity::GameObject * object, SystemAddress addr) {
@@ -73,22 +76,24 @@ void ObjectsManager::Serialize() {
 
 void ObjectsManager::Serialize(DataTypes::LWOOBJID objID) {
 	Entity::GameObject * gameObject = GetObjectByID(objID);
-	if (gameObject != nullptr)
+	if (gameObject != nullptr && !gameObject->GetIsServerOnly())
 		Serialize(gameObject);
 }
 
 void ObjectsManager::Serialize(Entity::GameObject * object) {
-	RM->SignalSerializeNeeded(object, UNASSIGNED_SYSTEM_ADDRESS, true);
+	if(!object->GetIsServerOnly())
+		RM->SignalSerializeNeeded(object, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
 void ObjectsManager::Destruct(DataTypes::LWOOBJID objID) {
 	Entity::GameObject * gameObject = GetObjectByID(objID);
-	if (gameObject != nullptr)
+	if (gameObject != nullptr && !gameObject->GetIsServerOnly())
 		Destruct(gameObject);
 }
 
 void ObjectsManager::Destruct(Entity::GameObject * object) {
-	RM->Destruct(object, UNASSIGNED_SYSTEM_ADDRESS, true);
+	if(!object->GetIsServerOnly())
+		RM->Destruct(object, UNASSIGNED_SYSTEM_ADDRESS, true);
 	object_list.erase(object->GetObjectID());
 }
 
@@ -101,7 +106,8 @@ void ObjectsManager::OnUpdate() {
 	for (auto oPair : object_list)
 		if (oPair.second->IsObjectDirty())
 			if(oPair.second)
-				Serialize(oPair.second);
+				if (!oPair.second->GetIsServerOnly())
+					Serialize(oPair.second);
 }
 
 void ObjectsManager::OnPhysicsUpdate() {

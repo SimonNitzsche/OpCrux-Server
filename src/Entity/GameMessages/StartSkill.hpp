@@ -76,19 +76,6 @@ namespace GM {
 			sender->GetZoneInstance()->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 			*/
 			Logger::log("WRLD", "Triggered StartSkill handle " + std::to_string(uiSkillHandle) + " with skillID " + std::to_string(skillID));
-			GM::EchoStartSkill echoGM; {
-				echoGM.bUsedMouse = bUsedMouse;
-				echoGM.fCasterLatency = fCasterLatency;
-				echoGM.iCastType = iCastType;
-				echoGM.lastClickedPosit = lastClickedPosit;
-				echoGM.optionalOriginatorID = optionalOriginatorID;
-				echoGM.optionalTargetID = optionalTargetID;
-				echoGM.originatorRot = originatorRot;
-				echoGM.sBitStream = sBitStream;
-				echoGM.skillID = skillID;
-				echoGM.uiSkillHandle = uiSkillHandle;
-			}
-			GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), echoGM, sender->GetObjectID());
 			sender->OnStartSkill(*this);
 		}
 	};

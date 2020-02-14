@@ -51,6 +51,7 @@ public:
 
 			Entity::GameObject * item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
 			item->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
+			item->SetIsServerOnly();
 			owner->GetZoneInstance()->objectsManager->RegisterObject(item);
 
 
@@ -85,6 +86,7 @@ public:
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Inventory Component Serialization */
+		_isDirtyFlagEquippedItems = true;
 		factory->Write(_isDirtyFlagEquippedItems);
 		if (_isDirtyFlagEquippedItems) {
 			std::vector<InventoryItemStack> equippedItems{};
@@ -97,7 +99,7 @@ public:
 
 			factory->Write<std::uint32_t>(equippedItems.size());
 			for (int i = 0; i < equippedItems.size(); ++i) {
-				factory->Write<std::int64_t>(equippedItems.at(i).objectID);
+				factory->Write<std::uint64_t>(equippedItems.at(i).objectID);
 				factory->Write<std::int32_t>(equippedItems.at(i).LOT);
 				factory->Write(false);
 				factory->Write(true);
@@ -106,7 +108,7 @@ public:
 				/**/factory->Write<std::uint16_t>(i);
 				factory->Write(false);
 				factory->Write(false);
-				factory->Write(false);
+				factory->Write(true);
 			}
 		}
 		factory->Write(false);

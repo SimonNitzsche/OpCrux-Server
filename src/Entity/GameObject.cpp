@@ -63,11 +63,13 @@
 #include "Entity/Components/RebuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/RigidBodyPhantomPhysics.hpp"
+#include "Entity/Components/RocketLandingComponent.hpp"
 #include "Entity/Components/RocketLaunchComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 #include "Entity/Components/ScriptedActivityComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
+#include "Entity/Components/SoundAmbient2DComponent.hpp"
 #include "Entity/Components/SoundAmbient3DComponent.hpp"
 #include "Entity/Components/SoundTriggerComponent.hpp"
 #include "Entity/Components/SpawnerComponent.hpp"
@@ -78,11 +80,15 @@
 #include "Entity/Components/VendorComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
+	if (this->serverOnly) return REPLICA_PROCESSING_DONE;
+	
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::CONSTRUCTION);
 	Instance->replicaManager->SetScope(this, true, UNASSIGNED_SYSTEM_ADDRESS, true);
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::SendDestruction(RakNet::BitStream *outBitStream, SystemAddress systemAddress, bool *includeTimestamp) {
+	if (this->serverOnly) return REPLICA_PROCESSING_DONE;
+
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::DESTRUCTION);
 	return REPLICA_PROCESSING_DONE;
 }
@@ -97,6 +103,8 @@ ReplicaReturnResult Entity::GameObject::ReceiveScopeChange(RakNet::BitStream *in
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::Serialize(bool *sendTimestamp, RakNet::BitStream *outBitStream, RakNetTime lastSendTime, PacketPriority *priority, PacketReliability *reliability, RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags) {
+	if (this->serverOnly) return REPLICA_PROCESSING_DONE;
+
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::SERIALIZATION);
 	return REPLICA_PROCESSING_DONE;
 }
@@ -225,12 +233,14 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(PropertyVendorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(ProximityMonitorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RacingStatsComponent);
+		COMPONENT_ONADD_SWITCH_CASE(RocketLandingComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RocketLaunchComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PlatformBoundaryComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RebuildComponent);
+		COMPONENT_ONADD_SWITCH_CASE(SoundAmbient2DComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SoundAmbient3DComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SoundTriggerComponent);
 
