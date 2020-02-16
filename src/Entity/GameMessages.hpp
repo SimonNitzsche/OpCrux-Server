@@ -88,7 +88,7 @@ public:
 				if (exclude != session.actorID) {
 #define quote(x) #x
 					if (Instance->objectsManager->GetObjectByID(session.actorID) == nullptr) continue;
-					Logger::log(typeid(T).name(), "Broadcasting to " + Instance->objectsManager->GetObjectByID(session.actorID)->GetNameStr());
+					// Logger::log(typeid(T).name(), "Broadcasting to " + Instance->objectsManager->GetObjectByID(session.actorID)->GetNameStr());
 					Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
 				}
 			}

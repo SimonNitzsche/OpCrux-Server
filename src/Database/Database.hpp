@@ -286,7 +286,7 @@ public:
 		}
 		{
 			if (SQLFetch(sqlStmtHandle) != SQL_SUCCESS) {
-				std::cout << "Database Exception on Fetch!\n";
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return false;
@@ -387,7 +387,7 @@ public:
 			}
 
 			{
-				std::cout << "Database Exception on Fetch!\n";
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return -1;
@@ -439,7 +439,7 @@ public:
 			}
 
 			{
-				std::cout << "Database Exception on Fetch!\n";
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return -1;
@@ -543,7 +543,7 @@ public:
 			return charStyle;
 		}
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		return {};
@@ -688,7 +688,7 @@ public:
 		}
 
 		if(charsInfo.size() != GetCharCount(accountID)){
-			std::cout << "Database Exception on Fetch!\n";
+			std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 			extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
@@ -809,7 +809,7 @@ public:
 			return charInfo;
 		}
 
-			std::cout << "Database Exception on Fetch!\n";
+			std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 			extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
@@ -1098,7 +1098,7 @@ public:
 		}
 		{
 			if (SQLFetch(sqlStmtHandle) != SQL_SUCCESS) {
-				std::cout << "Database Exception on Fetch!\n";
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return -1;
@@ -1206,7 +1206,7 @@ public:
 			}
 
 			{
-				std::cout << "Database Exception on Fetch!\n";
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				throw std::exception("Unable to query DB");
@@ -1345,7 +1345,7 @@ public:
 			
 		}
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
@@ -1418,7 +1418,7 @@ public:
 
 		return retVal;
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
@@ -1492,7 +1492,7 @@ public:
 
 		return retVal;
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
@@ -1579,7 +1579,7 @@ public:
 
 		return retVal;
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
@@ -1666,7 +1666,7 @@ public:
 
 		return retVal;
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
@@ -1754,7 +1754,7 @@ public:
 
 		return retVal;
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
@@ -1852,7 +1852,7 @@ public:
 
 		return retVal;
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
@@ -1991,7 +1991,7 @@ public:
 
 		return retVal;
 
-		std::cout << "Database Exception on Fetch!\n";
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");

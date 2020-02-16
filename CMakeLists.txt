@@ -56,10 +56,13 @@ add_executable(OpCrux_Server
 	src/Entity/Components/SkillComponent/BehaviorAlterChainDelay.hpp
 	src/Entity/Components/SkillComponent/BehaviorAnd.hpp
 	src/Entity/Components/SkillComponent/BehaviorAttackDelay.hpp
+	src/Entity/Components/SkillComponent/BehaviorBasicAttack.hpp
 	src/Entity/Components/SkillComponent/BehaviorChain.hpp
 	src/Entity/Components/SkillComponent/BehaviorChangeOrientation.hpp
 	src/Entity/Components/SkillComponent/BehaviorDuration.hpp
 	src/Entity/Components/SkillComponent/BehaviorForceMovement.hpp
+	src/Entity/Components/SkillComponent/BehaviorInterrupt.hpp
+	src/Entity/Components/SkillComponent/BehaviorKnockback.hpp
 	src/Entity/Components/SkillComponent/BehaviorMovementSwitch.hpp
 	src/Entity/Components/SkillComponent/BehaviorStun.hpp
 	src/Entity/Components/SkillComponent/BehaviorTacArc.hpp

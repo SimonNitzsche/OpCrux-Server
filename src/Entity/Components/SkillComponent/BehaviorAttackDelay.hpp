@@ -8,7 +8,7 @@ struct BehaviorAttackDelay : AbstractAggregateBehavior {
 
 		std::int32_t num_intervals = CacheBehaviorParameter::GetParameterValue(behaviorID, "num_intervals");
 
-		if (num_intervals <= 0) num_intervals = true;
+		if (num_intervals <= 0) num_intervals = 1;
 
 		// num interval seems to affect the count, if it's false comment out following line
 		// num_intervals = 1;

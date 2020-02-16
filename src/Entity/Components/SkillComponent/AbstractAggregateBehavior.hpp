@@ -15,10 +15,13 @@ struct AbstractAggregateBehavior {
 #include "Entity/Components/SkillComponent/BehaviorAlterCooldown.hpp"
 #include "Entity/Components/SkillComponent/BehaviorAnd.hpp"
 #include "Entity/Components/SkillComponent/BehaviorAttackDelay.hpp"
+#include "Entity/Components/SkillComponent/BehaviorBasicAttack.hpp"
 #include "Entity/Components/SkillComponent/BehaviorChain.hpp"
 #include "Entity/Components/SkillComponent/BehaviorChangeOrientation.hpp"
 #include "Entity/Components/SkillComponent/BehaviorDuration.hpp"
 #include "Entity/Components/SkillComponent/BehaviorForceMovement.hpp"
+#include "Entity/Components/SkillComponent/BehaviorInterrupt.hpp"
+#include "Entity/Components/SkillComponent/BehaviorKnockback.hpp"
 #include "Entity/Components/SkillComponent/BehaviorMovementSwitch.hpp"
 #include "Entity/Components/SkillComponent/BehaviorStun.hpp"
 #include "Entity/Components/SkillComponent/BehaviorTacArc.hpp"
@@ -94,8 +97,18 @@ enum class eBehaviorTemplate : std::uint32_t {
 
 void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBehavior, RakNet::BitStream* bs) {
 	if (nextBehavior <= 0) return;
+
 	long templateID = CacheBehaviorTemplate::GetTemplateID(nextBehavior);
+	
+	Logger::log("WRLD", "behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)) + " " + std::to_string(nextBehavior), LogType::UNEXPECTED);
+
 	switch (eBehaviorTemplate(templateID)) {
+	case eBehaviorTemplate::BASIC_ATTACK: {
+		// Basic Attack
+		BehaviorBasicAttack basicAttack = BehaviorBasicAttack();
+		basicAttack.UnCast(comp, nextBehavior, bs);
+		break;
+	}
 	case eBehaviorTemplate::TAC_ARC: {
 		// Tac Arc
 		BehaviorTacArc tacArc = BehaviorTacArc();
@@ -148,11 +161,24 @@ void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBeha
 		// Force Movement
 		BehaviorForceMovement bForceMovement = BehaviorForceMovement();
 		bForceMovement.UnCast(comp, nextBehavior, bs);
+		break;
+	}
+	case eBehaviorTemplate::INTERRUPT: {
+		// Interrupt
+		BehaviorInterrupt bInterrupt = BehaviorInterrupt();
+		bInterrupt.UnCast(comp, nextBehavior, bs);
+		break;
 	}
 	case eBehaviorTemplate::ALTER_COOLDOWN: {
 		// Alter Cooldown
 		BehaviorAlterCooldown alterCooldown = BehaviorAlterCooldown();
 		alterCooldown.UnCast(comp, nextBehavior, bs);
+		break;
+	}
+	case eBehaviorTemplate::KNOCKBACK: {
+		// Knockback
+		BehaviorKnockback knockback = BehaviorKnockback();
+		knockback.UnCast(comp, nextBehavior, bs);
 		break;
 	}
 	case eBehaviorTemplate::ALTER_CHAIN_DELAY: {

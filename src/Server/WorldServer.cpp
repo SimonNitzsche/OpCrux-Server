@@ -83,7 +83,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	SocketDescriptor socketDescriptor((unsigned short)2001, 0);
 	Logger::log("WRLD", "Starting World...");
 
-	rakServer->SetMaximumIncomingConnections((unsigned short)2);
+	short maxPlayers = 120;
+
+	rakServer->SetMaximumIncomingConnections(maxPlayers);
 
 	replicaManager = new ReplicaManager();
 	rakServer->AttachPlugin(replicaManager);
@@ -105,7 +107,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	}
 
 	// Check startup
-	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
+	if (!rakServer->Startup(maxPlayers, 30, &socketDescriptor, 1)) {
 		std::cin.get();
 		return;
 	}

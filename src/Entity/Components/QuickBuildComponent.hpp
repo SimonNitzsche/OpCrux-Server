@@ -75,10 +75,10 @@ public:
 		if (qbState == 5) {
 			// When build time is up
 			if ((buildStartTime - ::time(0) + completionTime) <= .0f) {
-				{GM::RebuildNotifyState msg; msg.player = buildingPlayer->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 2); GameMessages::Broadcast(buildingPlayer->GetZoneInstance(), this->owner, msg); }
-				{GM::PlayFXEffect msg; msg.effectID = 507; msg.effectType = u"create"; msg.fScale = 1.0f; msg.name = "BrickFadeUpVisCompleteEffect"; msg.priority = 0.4000000059604645f; msg.serialize = true; GameMessages::Broadcast(buildingPlayer->GetZoneInstance(), this->owner, msg); }
-				{GM::EnableRebuild msg; msg.user = buildingPlayer->GetObjectID(); msg.bSuccess; msg.fDuration = completionTime; GameMessages::Broadcast(buildingPlayer->GetZoneInstance(), this->owner, msg); }
-				{GM::ServerTerminateInteraction msg; msg.ObjIDTerminator = buildingPlayer->GetObjectID(); msg.type = Enums::ETerminateType::FROM_INTERACTION; GameMessages::Broadcast(buildingPlayer->GetZoneInstance(), this->owner, msg); }
+				{GM::RebuildNotifyState msg; msg.player = buildingPlayer->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 2); GameMessages::Broadcast(this->owner, msg); }
+				{GM::PlayFXEffect msg; msg.effectID = 507; msg.effectType = u"create"; msg.fScale = 1.0f; msg.name = "BrickFadeUpVisCompleteEffect"; msg.priority = 0.4000000059604645f; msg.serialize = true; GameMessages::Broadcast(this->owner, msg); }
+				{GM::EnableRebuild msg; msg.user = buildingPlayer->GetObjectID(); msg.bSuccess; msg.fDuration = completionTime; GameMessages::Broadcast(this->owner, msg); }
+				{GM::ServerTerminateInteraction msg; msg.ObjIDTerminator = buildingPlayer->GetObjectID(); msg.type = Enums::ETerminateType::FROM_INTERACTION; GameMessages::Broadcast(this->owner, msg); }
 
 				this->_isDirtyFlag = true;
 				this->owner->SetDirty();
@@ -86,7 +86,7 @@ public:
 		}
 		// When completed
 		else if (qbState == 2) {
-			if (false) {
+			if (true) {
 				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
 			}
 
@@ -176,8 +176,8 @@ public:
 			buildStartTime = ::time(0);
 			buildingPlayer = sender;
 			playerStartImagination = sender->GetImagination();
-			{GM::RebuildNotifyState msg; msg.player = sender->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 5); GameMessages::Broadcast(sender->GetZoneInstance(), this->owner, msg); }
-			{GM::EnableRebuild msg; msg.user = sender->GetObjectID(); msg.bEnable = true; GameMessages::Broadcast(sender->GetZoneInstance(), this->owner, msg); }
+			{GM::EnableRebuild msg; msg.user = sender->GetObjectID(); msg.bEnable = true; msg.fDuration = completionTime; GameMessages::Broadcast(this->owner, msg); }
+			{GM::RebuildNotifyState msg; msg.player = sender->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 5); GameMessages::Broadcast(this->owner, msg); }
 		}
 
 		this->_isDirtyFlag = true;
