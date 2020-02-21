@@ -422,6 +422,13 @@ void Entity::GameObject::AddChild(GameObject * child) {
 	objectDirty = true;
 }
 
+void Entity::GameObject::RemoveChild(Entity::GameObject* child) {
+	children.erase(std::remove(children.begin(), children.end(), child));
+	child->SetParent(nullptr);
+	baseDataDirty = true;
+	objectDirty = true;
+}
+
 void Entity::GameObject::SetParent(GameObject * parent) {
 	this->parent = parent;
 	baseDataDirty = true;
@@ -434,11 +441,34 @@ void Entity::GameObject::SetSpawner(GameObject * spawner, std::uint32_t spawnerN
 }
 
 bool Entity::GameObject::IsWithinGroup(std::u16string groupName) {
-	for (auto g : this->groups) {
+	for (const auto g : this->groups) {
 		if (g == groupName)
 			return true;
 	}
 	return false;
+}
+
+void Entity::GameObject::Remove() {
+	// Destruct and remove from list
+	this->GetZoneInstance()->objectsManager->Destruct(this);
+
+	// Notify spawner of deletion
+	if (spawner != nullptr) {
+		spawner->GetComponent<SpawnerComponent>()->NotifyOfObjectRemoval(this);
+	}
+
+	// Detach parent/child
+	if (this->parent != nullptr) {
+		this->parent->RemoveChild(this);
+	}
+
+	// Delete children
+	for (Entity::GameObject* child : children) {
+		child->Remove();
+	}
+
+	// Remove me
+	delete[] this;
 }
 
 void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {

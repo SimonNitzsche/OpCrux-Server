@@ -248,6 +248,11 @@ namespace Entity {
 			void AddChild(GameObject * child);
 
 			/*
+				Removes a child
+			*/
+			void RemoveChild(Entity::GameObject* child);
+
+			/*
 				Sets the parent object
 			*/
 			void SetParent(GameObject * parent);
@@ -261,6 +266,11 @@ namespace Entity {
 				Returns if object is within group
 			*/
 			bool IsWithinGroup(std::u16string groupName);
+
+			/*
+				Completely remove object
+			*/
+			void Remove();
 
 			/*
 				Only use this on a player.

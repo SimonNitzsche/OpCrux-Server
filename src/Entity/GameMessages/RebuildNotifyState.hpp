@@ -13,7 +13,7 @@ namespace GM {
 		std::int32_t iState;
 		DataTypes::LWOOBJID player;
 
-		RebuildNotifyState() {}
+		RebuildNotifyState() : GMBase() {}
 
 		void Serialize(RakNet::BitStream* bs) {
 			GM_VAR_SERIALIZE(bs, iPrevState);

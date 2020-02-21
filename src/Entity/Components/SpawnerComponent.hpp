@@ -1,6 +1,8 @@
 #ifndef __REPLICA__COMPONENTS__SPAWNER_COMPONENT_HPP__
 #define __REPLICA__COMPONENTS__SPAWNER_COMPONENT_HPP__
 
+#include <deque>
+
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "Entity/GameObject.hpp"
 
@@ -50,6 +52,7 @@ private:
 	bool spawnerActiveOnLoad=false;
 	std::int32_t spawnTemplate;
 	bool networkSpawner=false;
+	std::deque<std::uint64_t> respawnTasks = {};
 public:
 	DataTypes::Vector3 originPos;
 	DataTypes::Quaternion originRot;
@@ -70,7 +73,35 @@ public:
 	}
 
 	void Update() {
+		std::uint64_t currentTime = ::time(0);
+		std::uint32_t taskNumToRespawn = 0;
+		// Look how many tasks to respawn
+		for (auto it = this->respawnTasks.begin(); it != this->respawnTasks.end(); ++it) {
+			if (*it <= currentTime) ++taskNumToRespawn;
+			else break;
+		}
 
+		if (taskNumToRespawn == 0) return;
+
+		// Respawn them
+		for (int i = 0; i < taskNumToRespawn; ++i) {
+			Spawn();
+		}
+		// Remove tasks
+		respawnTasks.erase(respawnTasks.begin(), respawnTasks.begin() + taskNumToRespawn);
+	}
+
+	// When an object is deleted, this function is getting called before
+	void NotifyOfObjectRemoval(Entity::GameObject* spawnedObject) {
+
+		// Tell the spawner to automatically respawn object
+		AddRespawnTask();
+	}
+
+	void AddRespawnTask() {
+		__int64 x = __int64(::time(0)) + __int64(respawnTime);
+		this->respawnTasks.push_back(x);
+		//this->respawnTasks.push_back(::time(0));
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {
@@ -100,6 +131,7 @@ public:
 		LDF_GET_VAL_FROM_COLLECTION(noAutoSpawn, collection, u"no_auto_spawn", false);
 		LDF_GET_VAL_FROM_COLLECTION(noTimedSpawn, collection, u"no_timed_spawn", true);
 		LDF_GET_VAL_FROM_COLLECTION(respawnTime, collection, u"respawn", CacheWorldConfig::GetDefaultRespawnTime());
+		if (respawnTime == 0.0f) respawnTime = CacheWorldConfig::GetDefaultRespawnTime();
 		LDF_GET_VAL_FROM_COLLECTION(respawnVolume, collection, u"respawnVol", false);
 		LDF_GET_VAL_FROM_COLLECTION(respawnVolumeName, collection, u"respawnVolName", u"");
 

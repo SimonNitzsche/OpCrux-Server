@@ -16,6 +16,26 @@ using namespace DataTypes;
 namespace FileTypes::LUZ {
 
 	/*
+		Used for checksum calculation
+	*/
+	class Checksum {
+		std::uint32_t v = 0xFFFFU;
+		std::uint32_t t = 0xFFFFU;
+
+	public:
+		Checksum& operator +=(std::uint32_t r)
+		{
+			v += (r >> 16); t += v; v += (r & 0xFFFFU); t += v;
+			return *this;
+		}
+
+		std::uint32_t result()
+		{
+			return ((((t & 0xFFFFU) + (t >> 16)) << 16) | ((v & 0xFFFFU) + (v >> 16)));
+		}
+	};
+
+	/*
 		Define the a string in a zone with easy reading from the file.
 	*/
 	struct ZoneString {

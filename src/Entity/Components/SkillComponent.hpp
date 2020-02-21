@@ -26,6 +26,7 @@ struct SkillStackParameters {
 	DataTypes::Quaternion originatorRot = DataTypes::Quaternion();
 	std::uint32_t uiBehvaiorHandle = 0;
 	std::uint32_t uiSkillHandle = 0;
+	DataTypes::LWOOBJID currentTarget = 0ULL;
 	bool bDone = false;
 };
 
@@ -49,6 +50,12 @@ public:
 		return parameters;
 	}
 
+	void SetTarget(DataTypes::LWOOBJID target) {
+		parameters.currentTarget = target;
+	}
+
+	void DoDamageOnTarget(std::uint32_t damage);
+
 	SkillComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 9; }
@@ -65,6 +72,8 @@ public:
 	}
 
 	inline void OnStartSkill(GM::StartSkill msg) {
+		parameters = SkillStackParameters();
+
 		currentSkill = msg.skillID;
 		currentHandle = msg.uiSkillHandle;
 
@@ -136,4 +145,35 @@ void SkillComponent::UnCast(const std::string sBitStream, long behaviorID) {
 	if(behaviorID <= 0) behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
 	AbstractAggregateBehavior::StartUnCast(this, behaviorID, &bs);
 }
+
+#include "Entity/Components/DestructibleComponent.hpp"
+void SkillComponent::DoDamageOnTarget(std::uint32_t damage) {
+	// Make sure objectID is not empty
+	if (parameters.currentTarget == 0ULL) {
+		Logger::log("WRLD", "Unable to do damage on empty objectID", LogType::WARN);
+		return;
+	}
+
+	// Get object
+	Entity::GameObject* target = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(parameters.currentTarget);
+
+	// Make sure object exists
+	if (target == nullptr) {
+		Logger::log("WRLD", "Unable to do damage on missing object", LogType::ERR);
+		return;
+	}
+
+	// Get destructible component
+	DestructibleComponent* targetDestComp = target->GetComponent<DestructibleComponent>();
+
+	// make sure target has component
+	if (targetDestComp == nullptr) {
+		Logger::log("WRLD", "Unable to do damage on object without Destructible Component!", LogType::ERR);
+		return;
+	}
+
+	// Do damage
+	targetDestComp->PerformDamageRequest(this->owner, damage);
+}
+
 #endif

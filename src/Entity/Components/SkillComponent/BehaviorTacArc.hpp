@@ -36,6 +36,7 @@ struct BehaviorTacArc : AbstractAggregateBehavior {
 
 				for (int i = 0; i < tmpNumberOfTargets; ++i) {
 					std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "action");
+					comp->SetTarget(targets.at(i));
 					StartUnCast(comp, nextID, bs);
 				}
 			}

@@ -7,15 +7,15 @@
 namespace GM {
 	struct EnableRebuild : GMBase {
 
-		inline constexpr static Enums::EGameMessageID GetID() {
-			return Enums::EGameMessageID::SERVER_ENABLE_REBUILD;
+		inline constexpr static ::Enums::EGameMessageID GetID() {
+			return ::Enums::EGameMessageID::SERVER_ENABLE_REBUILD;
 		}
 
 		bool bEnable = false;
 		bool bFail = false;
 		bool bSuccess = false;
-		Enums::EFailReason eFailReason = Enums::EFailReason::REASON_NOT_GIVEN;
-		std::float_t fDuration;
+		::Enums::EFailReason eFailReason = ::Enums::EFailReason::REASON_NOT_GIVEN;
+		::std::float_t fDuration;
 		DataTypes::LWOOBJID user;
 
 		EnableRebuild() {}
@@ -24,7 +24,7 @@ namespace GM {
 			GM_VAR_SERIALIZE(bs, bEnable);
 			GM_VAR_SERIALIZE(bs, bFail);
 			GM_VAR_SERIALIZE(bs, bSuccess);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, eFailReason, Enums::EFailReason::REASON_NOT_GIVEN);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, eFailReason, ::Enums::EFailReason::REASON_NOT_GIVEN);
 			GM_VAR_SERIALIZE(bs, fDuration);
 			GM_VAR_SERIALIZE(bs, user);
 		}

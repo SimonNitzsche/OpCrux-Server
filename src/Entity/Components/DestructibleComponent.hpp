@@ -20,6 +20,8 @@ private:
 
 	StatsComponent * statsComponent;
 
+	bool isDead = false;
+
 public:
 
 	DestructibleComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
@@ -93,6 +95,67 @@ public:
 
 		LDF_GET_VAL_FROM_COLLECTION(statsComponent->attributes.isSmashable, collection, u"is_smashable", true);
 		
+	}
+
+	void PerformDamageRequest(Entity::GameObject* caster, std::uint32_t damage) {
+		// Cancle if no damage
+		if (damage == 0) return;
+
+		// Cancle if dead
+		if (isDead) return;
+
+		// TODO: Check for buffs
+
+
+		// If armor < damage -> 0 or below
+		if (statsComponent->attributes.currentArmor <= damage) {
+			// Set remaining damage
+			damage -= statsComponent->attributes.currentArmor;
+			// Set armor to 0
+			statsComponent->attributes.currentArmor = 0;
+
+			// check if damage is remaining
+			if (damage != 0) {
+				// If health < remaining damage -> 0 or below
+				if (statsComponent->attributes.currentHealth <= damage) {
+					// Set health to 0
+					statsComponent->attributes.currentHealth = 0;
+					// Since health is 0 now we are dead
+					isDead = true;
+				}
+				else {
+					// Substract damage from health
+					statsComponent->attributes.currentHealth -= damage;
+				}
+			}
+		}
+		else {
+			// Substract damage
+			statsComponent->attributes.currentArmor -= damage;
+		}
+
+		// Checkout changes
+		this->statsComponent->SetDirty();
+		// Force push
+		this->owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
+
+		if (isDead) {
+			{
+				GM::Die msg;
+				msg.killerID = caster->GetObjectID();
+				GameMessages::Broadcast(owner, msg);
+			}
+
+			{
+				// TODO: DropLoot
+			}
+
+			// Remove
+			owner->Remove();
+
+			// Cancle anything else
+			return;
+		}
 	}
 
 	void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg) {

@@ -88,7 +88,7 @@ public:
 				if (exclude != session.actorID) {
 #define quote(x) #x
 					if (Instance->objectsManager->GetObjectByID(session.actorID) == nullptr) continue;
-					// Logger::log(typeid(T).name(), "Broadcasting to " + Instance->objectsManager->GetObjectByID(session.actorID)->GetNameStr());
+					Logger::log(typeid(T).name(), "Broadcasting to " + Instance->objectsManager->GetObjectByID(session.actorID)->GetNameStr());
 					Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
 				}
 			}
@@ -116,7 +116,7 @@ public:
 
 	template<typename T = GM::GMBase>
 	static inline void Broadcast(Entity::GameObject* target, T gm, bool excludeSelf = false) {
-		Send(target->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm, excludeSelf?target->GetObjectID():0Ui64);
+		Send(target->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm, excludeSelf?target->GetObjectID():0ULL);
 	}
 };
 

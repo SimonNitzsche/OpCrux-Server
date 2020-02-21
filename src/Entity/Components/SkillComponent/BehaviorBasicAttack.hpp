@@ -5,7 +5,7 @@
 struct BehaviorBasicAttack : AbstractAggregateBehavior {
 
 	void UnCast(SkillComponent* comp, std::int32_t behaviorID, RakNet::BitStream* bs) {
-		bs->IgnoreBits(bs->GetReadOffset() % 8);
+		bs->AlignReadToByteBoundary();
 		bs->IgnoreBits(16);
 
 		bool unknown1, unknown2, unknown3;
@@ -23,6 +23,7 @@ struct BehaviorBasicAttack : AbstractAggregateBehavior {
 		bs->Read(success);
 
 		if (success) {
+			comp->DoDamageOnTarget(damage);
 			std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "on_success");
 			StartUnCast(comp, nextID, bs);
 		}

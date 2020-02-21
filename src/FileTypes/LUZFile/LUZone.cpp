@@ -19,21 +19,22 @@ bool LUZone::_isFileLoaded() {
 	return data != nullptr;
 }
 
+/*
+	Calculate checksum
+*/
 std::uint32_t FileTypes::LUZ::LUZone::calculateRevisionChecksum() {
-#define CRUX_LUZ_CALC_CHECKSUM(v,r,t) {v+=r>>0x10;t+=v;v+=r&0xFFFF;t+=v;}
-	std::uint32_t v = 0xFFFF, t = 0xFFFF;
-	CRUX_LUZ_CALC_CHECKSUM(v, 0xFFFF, t);
-	CRUX_LUZ_CALC_CHECKSUM(v, 0, t);
-	CRUX_LUZ_CALC_CHECKSUM(v, this->revision, t);
+	Checksum cs;
+	cs += 0xFFFFU;
+	cs += 0;
+	cs += revision;
 
-	for (int i = 0; i < this->scenes.size(); ++i) {
-		LUScene scene = this->scenes.at(i).scene;
-		CRUX_LUZ_CALC_CHECKSUM(v, *this->scenes.at(i).sceneID, t);
-		CRUX_LUZ_CALC_CHECKSUM(v, *this->scenes.at(i).layerID, t);
-		CRUX_LUZ_CALC_CHECKSUM(v, *scene.infoChunk.revision, t);
+	for (const auto& scene : scenes) {
+		cs += *scene.sceneID;
+		cs += *scene.layerID;
+		cs += *scene.scene.infoChunk.revision;
 	}
-#undef CRUX_LUZ_CALC_CHECKSUM
-	return ((((t & 0xFFFF) + (t >> 0x10)) << 0x10) | ((v & 0xFFFF) + (v >> 0x10)));
+
+	return cs.result();
 }
 
 LUZonePathBase * FileTypes::LUZ::LUZone::AllocatePath(const LUZonePathType pathType) {
