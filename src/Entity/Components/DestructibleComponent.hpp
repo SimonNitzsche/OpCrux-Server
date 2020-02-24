@@ -4,10 +4,12 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
 #include "Entity/Components/StatsComponent.hpp"
+#include "Entity/Components/CharacterComponent.hpp"
 
 #include "Entity/GameObject.hpp"
 
 #include "GameCache/ComponentsRegistry.hpp"
+#include "GameCache/CurrencyTable.hpp"
 #include "GameCache/DestructibleComponent.hpp"
 
 #include "Entity/GameMessages/RequestDie.hpp"
@@ -96,6 +98,38 @@ public:
 		LDF_GET_VAL_FROM_COLLECTION(statsComponent->attributes.isSmashable, collection, u"is_smashable", true);
 		
 	}
+	
+	std::int32_t GetCurrencyDrop(std::uint32_t npcLevel) {
+
+		// Get Row with highest min npc level, that is not exceeding npcLevel
+		std::int32_t currencyIndex = CacheDestructibleComponent::GetCurrencyIndex(GetComponentID());
+		auto mainRow = CacheCurrencyTable::getRow(currencyIndex);
+		auto rows = mainRow.flatIt();
+		auto usingRow = mainRow;
+		for (auto it = rows.begin(); it != rows.end(); ++it) {
+			if (CacheCurrencyTable::GetNPCMinLevel(*it) <= npcLevel && CacheCurrencyTable::GetNPCMinLevel(*it) >= CacheCurrencyTable::GetNPCMinLevel(usingRow)) {
+				usingRow = *it;
+			}
+		}
+
+		// init random and return in range
+		srand(std::uint32_t(::time(0)));
+		return (rand() % CacheCurrencyTable::GetMaxValue(usingRow)) + CacheCurrencyTable::GetMinValue(usingRow);
+	}
+
+	void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg) {
+		GM::Die msgDie;
+		msgDie.bSpawnLoot = true;
+		msgDie.deathType = msg->deathType;
+		msgDie.directionRelative_AngleXZ = msg->directionRelative_AngleXZ;
+		msgDie.directionRelative_AngleY = msg->directionRelative_AngleY;
+		msgDie.directionRelative_Force = msg->directionRelative_Force;
+		msgDie.killType = msg->killType;
+		msgDie.killerID = msg->killerID;
+		msgDie.lootOwnerID = msg->lootOwnerID;
+		GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, msgDie);
+		this->owner->OnDie(this->owner, &msgDie);
+	}
 
 	void PerformDamageRequest(Entity::GameObject* caster, std::uint32_t damage) {
 		// Cancle if no damage
@@ -146,8 +180,25 @@ public:
 				GameMessages::Broadcast(owner, msg);
 			}
 
+			// Figure out who of the two receives the loot.
+			Entity::GameObject* lootOwner = caster;
+			// To do so, check if the caster is a player, if so he receives it, otherwise we receive it.
+			if (lootOwner->GetComponent<CharacterComponent>() == nullptr) {
+				lootOwner = this->owner;
+
+				// TODO: We need to extend the logic in the future: teams & player spawned turrets need to be handled aswell.
+			}
+
 			{
 				// TODO: DropLoot
+				GM::DropClientLoot msg;
+				msg.iCurrency = GetCurrencyDrop(lootOwner->GetComponent<CharacterComponent>()->GetLevel());
+				msg.owner = lootOwner->GetObjectID();
+				msg.sourceObj = owner->GetObjectID();
+				msg.spawnPosition = owner->GetPosition();
+				msg.finalPosition = owner->GetPosition();
+
+				GameMessages::Send(lootOwner, msg.sourceObj, msg);
 			}
 
 			// Remove
@@ -157,20 +208,8 @@ public:
 			return;
 		}
 	}
-
-	void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg) {
-		GM::Die msgDie;
-		msgDie.bSpawnLoot = true;
-		msgDie.deathType = msg->deathType;
-		msgDie.directionRelative_AngleXZ = msg->directionRelative_AngleXZ;
-		msgDie.directionRelative_AngleY = msg->directionRelative_AngleY;
-		msgDie.directionRelative_Force = msg->directionRelative_Force;
-		msgDie.killType = msg->killType;
-		msgDie.killerID = msg->killerID;
-		msgDie.lootOwnerID = msg->lootOwnerID;
-		GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, msgDie);
-		this->owner->OnDie(this->owner, &msgDie);
-	}
 };
+
+
 
 #endif

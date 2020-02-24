@@ -154,6 +154,7 @@ public:
 			factory->Write<std::uint32_t>(qbState);
 			factory->Write(qbSuccess);
 			factory->Write(qbEnabled);
+			timeSinceStartOfBuild = ::time(0) - buildStartTime;
 			factory->Write<std::float_t>(timeSinceStartOfBuild);
 			factory->Write<std::float_t>(timeOfPausedRebuilds);
 			if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
@@ -173,6 +174,8 @@ public:
 		// When active
 		if (qbState == 0) {
 			AddPlayerToActivity(sender->GetObjectID());
+			this->_isDirtyFlag = true;
+			owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
 			buildStartTime = ::time(0);
 			buildingPlayer = sender;
 			playerStartImagination = sender->GetImagination();

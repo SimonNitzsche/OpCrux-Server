@@ -117,6 +117,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/ActivityStart.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
+	src/Entity/GameMessages/DropClientLoot.hpp
 	src/Entity/GameMessages/EchoStartSkill.hpp
 	src/Entity/GameMessages/EchoSyncSkill.hpp
 	src/Entity/GameMessages/EmotePlayed.hpp
@@ -222,6 +223,7 @@ add_executable(OpCrux_Server
 	src/GameCache/BehaviorParameter.hpp
 	src/GameCache/BehaviorTemplate.hpp
 	src/GameCache/BehaviorTemplateName.hpp
+	src/GameCache/CurrencyTable.hpp
 	src/GameCache/DestructibleComponent.hpp
 	src/GameCache/ComponentsRegistry.hpp
 	src/GameCache/Emotes.hpp

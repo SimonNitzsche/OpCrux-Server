@@ -4,7 +4,6 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "Database/Database.hpp"
 
-#include "Entity/Components/DestructibleComponent.hpp"
 
 #include "Entity/GameMessages/SetFlag.hpp"
 
@@ -41,6 +40,10 @@ public:
 
 	void SetLevel(std::uint32_t newLevel) {
 		charInfo.uLevel = newLevel;
+	}
+
+	std::uint32_t GetLevel() {
+		return charInfo.uLevel;
 	}
 
 	CharacterComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
@@ -102,12 +105,6 @@ public:
 
 
 		Database::SetFlag(this->owner->GetObjectID(), chunkID, chunkData);
-	}
-
-	void Awake() {
-		auto destComp = owner->GetComponent<DestructibleComponent>();
-		destComp->SetImagination(GetImagination());
-		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
 	}
 
 	void OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg) {
@@ -184,6 +181,14 @@ public:
 
 		// TODO: Guilds
 		factory->Write(false);
+	}
+
+	void Awake() {
+		StatsComponent * statsComp = this->owner->GetComponent<StatsComponent>();
+		if (statsComp != nullptr) {
+			statsComp->attributes.maxImagination = statsComp->attributes.currentImagination = GetImagination();
+		}
+		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
 	}
 };
 

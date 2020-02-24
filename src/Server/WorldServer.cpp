@@ -36,6 +36,7 @@
 #include "Entity/Components/CharacterComponent.hpp"
 #include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
+#include "Entity/Components/DestructibleComponent.hpp"
 
 #include "Entity/GameObject.hpp"
 

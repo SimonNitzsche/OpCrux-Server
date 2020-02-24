@@ -99,7 +99,9 @@ public:
 
 	template<typename T = GM::GMBase>
 	static void Send(Entity::GameObject * receiver, DataTypes::LWOOBJID sender, T gm, DataTypes::LWOOBJID exclude = 0ULL) {
-		Send(receiver->GetZoneInstance(), receiver->GetZoneInstance()->sessionManager.GetSession(receiver->GetObjectID())->systemAddress, sender, gm);
+		ClientSession * session = receiver->GetZoneInstance()->sessionManager.GetSession(receiver->GetObjectID());
+		if (session == nullptr) return;
+		Send(receiver->GetZoneInstance(), session->systemAddress, sender, gm);
 	}
 
 	
@@ -126,6 +128,7 @@ public:
 #include "Entity/GameMessages/ActivityStart.hpp"
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
 #include "Entity/GameMessages/Die.hpp"
+#include "Entity/GameMessages/DropClientLoot.hpp"
 #include "Entity/GameMessages/EchoStartSkill.hpp"
 #include "Entity/GameMessages/EchoSyncSkill.hpp"
 #include "Entity/GameMessages/EmotePlayed.hpp"
