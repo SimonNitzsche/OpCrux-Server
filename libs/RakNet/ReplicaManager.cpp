@@ -669,7 +669,7 @@ void ReplicaManager::Update(RakPeerInterface *peer)
 
 	// Check for recursive calls, which is not supported and should not happen
 #ifdef _DEBUG
-	RakAssert(inUpdate == false);
+	//RakAssert(inUpdate == false);
 	inUpdate = true;
 #endif
 
