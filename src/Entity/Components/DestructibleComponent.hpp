@@ -114,7 +114,9 @@ public:
 
 		// init random and return in range
 		srand(std::uint32_t(::time(0)));
-		return (rand() % CacheCurrencyTable::GetMaxValue(usingRow)) + CacheCurrencyTable::GetMinValue(usingRow);
+		std::int32_t randMax = CacheCurrencyTable::GetMaxValue(usingRow);
+		if (randMax == 0) return 0;
+		return (rand() % randMax) + CacheCurrencyTable::GetMinValue(usingRow);
 	}
 
 	void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg) {
@@ -185,6 +187,7 @@ public:
 				GM::Die msg;
 				msg.killerID = caster->GetObjectID();
 				GameMessages::Broadcast(owner, msg);
+				this->owner->OnDie(this->owner, &msg);
 			}
 
 			// Figure out who of the two receives the loot.

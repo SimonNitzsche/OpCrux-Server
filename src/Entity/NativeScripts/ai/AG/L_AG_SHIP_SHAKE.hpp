@@ -19,7 +19,7 @@ public:
 	float newTime() {
 		float time = rand() % randTime;
 		if (time < randTime * .5f) time = time + randTime * .5f;
-		print("newTime(): " + std::to_string(repTime + time));
+		//print("newTime(): " + std::to_string(repTime + time));
 		return repTime + time;
 	}
 
@@ -59,7 +59,7 @@ public:
 
 			//shipFXObj : PlayFXEffect{ name = "FX", effectType = 'shipboom' ..randFX, effectID = 559 }
 			{GM::PlayFXEffect nmsg; nmsg.name = "FX"; nmsg.effectType = StringUtils::to_u16string("shipboom" + std::to_string(randFX)); nmsg.effectID = 559; GameMessages::Broadcast(self->GetZoneInstance(), shipFXObj, nmsg); }
-			print("playFX **** " + std::to_string(randFX));
+			//print("playFX **** " + std::to_string(randFX));
 			//local animTime = shipFXObj : GetAnimationTime{ animationID = 'explosion' ..randFX }.time
 			//GAMEOBJ : GetTimer() : AddTimerWithCancel(animTime, "ExplodeIdle", self)
 
@@ -73,7 +73,7 @@ public:
 			{GM::PlayAnimation nmsg; nmsg.animationID = u"idle"; GameMessages::Broadcast(self->GetZoneInstance(), shipFXObj, nmsg); }
 			// shipFX2Obj:PlayAnimation{ animationID = 'idle' }
 			{GM::PlayAnimation nmsg; nmsg.animationID = u"idle"; GameMessages::Broadcast(self->GetZoneInstance(), shipFX2Obj, nmsg); }
-			print("reset FX idle ****");
+			//print("reset FX idle ****");
 		}
 	}
 

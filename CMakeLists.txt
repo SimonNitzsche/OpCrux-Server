@@ -162,12 +162,14 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/VehicleUnlockInput.hpp
 	src/Entity/GameMessages/VendorOpenWindow.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
+	src/Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp
 	src/Entity/NativeScripts/ai/NP/L_NPC_NP_SPACEMAN_BOB.hpp
 	src/Entity/NativeScripts/ai/RACING/TRACK_GF/GF_RACE_SERVER.hpp
 	src/Entity/NativeScripts/ai/RACING/RACE_IMAGINATION_SPAWNER.hpp
+	src/Entity/NativeScripts/ai/WILD/L_ALL_CRATE_CHICKEN.hpp
 	src/Entity/NativeScripts/OMIS.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp

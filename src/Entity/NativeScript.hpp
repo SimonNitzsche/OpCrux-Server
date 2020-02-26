@@ -24,6 +24,7 @@ public:
 	virtual void onUse(Entity::GameObject * self, GM::RequestUse msg) {};
 	virtual void onTimerDone(Entity::GameObject * self, TimerDone msg) {};
 	virtual void onFireEventServerSide(Entity::GameObject * self, GM::FireEventServerSide msg) {}
+	virtual void onDie(Entity::GameObject* self, GM::Die msg) {}
 
 	// Helper functions
 	void print(std::string text) {
