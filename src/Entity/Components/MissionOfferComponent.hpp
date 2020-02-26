@@ -36,8 +36,9 @@ public:
 		if (msg->bIsMultiInteractUse && msg->multiInteractType != 0) { Logger::log("WRLD", "Unknown multiInteractType found: " + std::to_string(msg->multiInteractType), LogType::UNEXPECTED); return; }
 
 		GM::OfferMission missionOffer = GM::OfferMission();
+		GM::OfferMission missionOfferGiver = GM::OfferMission();
 
-		missionOffer.missionID = -1;
+		missionOffer.missionID = missionOfferGiver.missionID = -1;
 
 		// pick first that meets requirements
 		// get missions of npc
@@ -58,10 +59,11 @@ public:
 				if (Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
 					auto dbMission = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
 					if (dbMission.state == 4 || dbMission.state == 12) {
-						missionOffer.missionID = missionID;
+						missionOffer.missionID = missionOfferGiver.missionID = missionID;
 
-						missionOffer.offerer = msg->objectID;
+						missionOffer.offerer = missionOfferGiver.offerer = msg->objectID;
 
+						GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, msg->objectID, missionOfferGiver);
 						GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
 						return;
 					}
@@ -115,8 +117,9 @@ public:
 
 
 				if (missionRequirementsPassed) {
-					missionOffer.offerer = msg->objectID;
-					missionOffer.missionID = missionID;
+					missionOffer.offerer = missionOfferGiver.offerer = msg->objectID;
+					missionOffer.missionID = missionOfferGiver.missionID = missionID;
+					GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, msg->objectID, missionOfferGiver);
 					GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
 					return;
 				}
@@ -125,8 +128,9 @@ public:
 		
 		if (missionOffer.missionID != -1) {
 
-			missionOffer.offerer = owner->GetObjectID();
+			missionOffer.offerer = missionOfferGiver.offerer = owner->GetObjectID();
 
+			GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, msg->objectID, missionOfferGiver);
 			GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
 		}
 	}
