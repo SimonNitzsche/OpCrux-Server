@@ -56,15 +56,15 @@ public:
 				bool missionRepeatable = CacheMissions::GetRepeatable(cacheMission);
 
 				// If mission added
-				if (Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
-					auto dbMission = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
+				if (Database::HasMission(sender->GetObjectID().getPureID(), missionID)) {
+					auto dbMission = Database::GetMission(sender->GetObjectID().getPureID(), missionID);
 					if (dbMission.state == 4 || dbMission.state == 12) {
 						missionOffer.missionID = missionOfferGiver.missionID = missionID;
 
 						missionOffer.offerer = missionOfferGiver.offerer = msg->objectID;
 
-						GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, msg->objectID, missionOfferGiver);
-						GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
+						GameMessages::Send(sender, owner->GetObjectID(), missionOffer);
+						GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
 						return;
 					}
 				}
@@ -82,9 +82,9 @@ public:
 				bool isMissionActive = false;
 
 				// If mission added
-				if (Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, missionID)) {
+				if (Database::HasMission(sender->GetObjectID().getPureID(), missionID)) {
 					// or available / repeatable available
-					auto dbMission = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, missionID);
+					auto dbMission = Database::GetMission(sender->GetObjectID().getPureID(), missionID);
 					if (!(dbMission.state == 1 || (missionRepeatable && dbMission.state == 9))) {
 						// Skip
 						continue;
@@ -103,7 +103,7 @@ public:
 					if (prereqMissionID != "") {
 						auto missionSweep = MissionRequirementParser::sweepMissionListNumerical(prereqMissionID);
 
-						auto missionSweepDB = Database::GetAllMissionsByIDs(sender->GetObjectID() & 0xFFFFFFFF, missionSweep);
+						auto missionSweepDB = Database::GetAllMissionsByIDs(sender->GetObjectID().getPureID(), missionSweep);
 
 						missionRequirementsPassed = MissionRequirementParser(prereqMissionID, missionSweepDB).result;
 					}
@@ -119,8 +119,9 @@ public:
 				if (missionRequirementsPassed) {
 					missionOffer.offerer = missionOfferGiver.offerer = msg->objectID;
 					missionOffer.missionID = missionOfferGiver.missionID = missionID;
-					GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, msg->objectID, missionOfferGiver);
-					GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
+					
+					GameMessages::Send(sender, owner->GetObjectID(), missionOffer);
+					GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
 					return;
 				}
 			}
@@ -130,8 +131,8 @@ public:
 
 			missionOffer.offerer = missionOfferGiver.offerer = owner->GetObjectID();
 
-			GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, msg->objectID, missionOfferGiver);
-			GameMessages::Send(owner->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), missionOffer);
+			GameMessages::Send(sender, owner->GetObjectID(), missionOffer);
+			GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
 		}
 	}
 
