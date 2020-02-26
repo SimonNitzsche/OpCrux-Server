@@ -133,13 +133,17 @@ public:
 
 	void PerformDamageRequest(Entity::GameObject* caster, std::uint32_t damage) {
 		// Cancle if no damage
-		if (damage == 0) return;
+		if (damage == 0) { Logger::log("WRLD", "Object received 0 damage", LogType::WARN); return; }
 
 		// Cancle if dead
-		if (isDead) return;
+		if (isDead) { Logger::log("WRLD", "Object is already dead", LogType::WARN); return; }
 
 		// TODO: Check for buffs
 
+		/*Logger::log("WRLD", "Object taking " + std::to_string(damage) + " damage.");
+		std::uint32_t oldArmor = statsComponent->attributes.currentArmor;
+		std::uint32_t oldHealth = statsComponent->attributes.currentHealth;
+		*/
 
 		// If armor < damage -> 0 or below
 		if (statsComponent->attributes.currentArmor <= damage) {
@@ -167,6 +171,9 @@ public:
 			// Substract damage
 			statsComponent->attributes.currentArmor -= damage;
 		}
+
+		//Logger::log("WRLD", "Object armor " + std::to_string(oldArmor) + " -> " + std::to_string(statsComponent->attributes.currentArmor));
+		//Logger::log("WRLD", "Object health " + std::to_string(oldHealth) + " -> " + std::to_string(statsComponent->attributes.currentHealth));
 
 		// Checkout changes
 		this->statsComponent->SetDirty();

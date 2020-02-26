@@ -19,11 +19,12 @@ struct BehaviorBasicAttack : AbstractAggregateBehavior {
 		std::uint32_t damage;
 		bs->Read(damage);
 
+		comp->DoDamageOnTarget(damage);
+
 		bool success;
 		bs->Read(success);
 
 		if (success) {
-			comp->DoDamageOnTarget(damage);
 			std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "on_success");
 			StartUnCast(comp, nextID, bs);
 		}
