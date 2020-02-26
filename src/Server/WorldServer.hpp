@@ -1,6 +1,6 @@
 #ifndef __SERVER__WORLDSERVER_HPP__
 #define __SERVER__WORLDSERVER_HPP__
-
+#include <mutex>
 #include "Interfaces/ILUServer.hpp"
 #include "Sessions/SessionManager.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
@@ -37,6 +37,7 @@ public:
 	Entity::GameObject * zoneControlObject = nullptr;
 	unsigned long long spawnedObjectIDCounter=0;
 	LWOTimer timer;
+	std::mutex m_lock;
 public:
 	WorldServer(int zone, int instanceID, int port);
 	void GameLoopThread();

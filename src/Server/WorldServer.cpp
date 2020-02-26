@@ -254,7 +254,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		}
 		while (packet = rakServer->Receive()) {
 			try {
+				m_lock.lock();
 				handlePacket(rakServer, reinterpret_cast<LUPacket*>(packet));
+				m_lock.unlock();
 			}
 			catch (NetException::CorruptPacket e) {
 				Logger::log("WRLD", "Received corrupt packet.", LogType::ERR);
@@ -276,9 +278,10 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 void WorldServer::GameLoopThread() {
 	while (true) {
+		m_lock.lock();
 		objectsManager->OnUpdate();
 		timer.Update();
-		
+		m_lock.unlock();
 		RakSleep(300);
 	}
 }
@@ -292,8 +295,10 @@ void WorldServer::DebugRendererThread() {
 
 void WorldServer::GamePhysicsThread() {
 	while (ServerInfo::bRunning) {
+		m_lock.lock();
 		dynamicsWorld->stepSimulation(0.0166667f, 10);
 		objectsManager->OnPhysicsUpdate();
+		m_lock.unlock();
 		RakSleep(300);
 	}
 }
