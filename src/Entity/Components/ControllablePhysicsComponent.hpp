@@ -47,7 +47,7 @@ public:
 		btDefaultMotionState* motionState = new btDefaultMotionState(*transform);
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collisionShape, btVector3(0, 0, 0));
 		rigidBody = new btRigidBody(rbInfo);
-		owner->GetZoneInstance()->dynamicsWorld->addRigidBody(rigidBody);
+		//owner->GetZoneInstance()->dynamicsWorld->addRigidBody(rigidBody);
 	}
 
 	~ControllablePhysicsComponent() {
