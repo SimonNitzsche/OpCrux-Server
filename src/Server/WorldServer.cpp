@@ -327,7 +327,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				}
 			}
 
-			switch (static_cast<EWorldPacketID>(packetHeader.packetID)) {
+			switch (EWorldPacketID(packetHeader.packetID)) {
 			case EWorldPacketID::CLIENT_VALIDATION: {
 				std::u16string wClientName = StringUtils::readBufferedWStringFromBitStream(data);
 				std::u16string wClientKey = StringUtils::readBufferedWStringFromBitStream(data);
@@ -536,6 +536,44 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				else {
 					throw new std::runtime_error("Invalid objectID; TODO: Kick Player -> Cheating");
 				}
+				break;
+			}
+
+			case Enums::EWorldPacketID::CLIENT_STRING_CHECK: {
+				std::uint8_t chatMode, chatChannel;
+				data->Read(chatMode);
+				data->Read(chatChannel);
+
+				// TODO: Make it nice
+				LUPacketHeader responseHead;
+				responseHead.protocolID = 0x53;
+				responseHead.remoteType = 0x05;
+				responseHead.packetID = 0x3b;
+				RakNet::BitStream response;
+				response.Write(responseHead);
+				
+				response.Write<std::uint8_t>(1);
+				response.Write<std::uint16_t>(0);
+				response.Write(chatChannel);
+				response.Write(chatMode);
+
+				rakServer->Send(&response, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
+				break;
+			}
+
+			case Enums::EWorldPacketID::CLIENT_GENERAL_CHAT_MESSAGE: {
+				std::uint8_t unk1, unk2, unk3;
+				data->Read(unk1);
+				data->Read(unk2);
+				data->Read(unk3);
+
+				std::u16string chatMessage = StringUtils::readWStringFromBitStream<std::uint32_t>(data);
+
+				Entity::GameObject* playerObject = objectsManager->GetObjectByID(clientSession->actorID);
+				if (playerObject != nullptr) {
+					PacketFactory::World::SendChatMessage(playerObject, 0x04, chatMessage);
+				}
+
 				break;
 			}
 
