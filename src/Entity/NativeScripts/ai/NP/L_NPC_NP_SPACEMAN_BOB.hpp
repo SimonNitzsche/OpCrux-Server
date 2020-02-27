@@ -13,7 +13,8 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 			// TODO SetImagination(6)
 			// TODO UpdateMissionTask{taskType = "complete", value = 664, value2 = 1, target = self}
 
-			self->GetZoneInstance()->objectsManager->GetObjectByID(msg.responder)->SetImagination(6);
+			Entity::GameObject* player = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.responder);
+			player->SetImagination(6);
 
 			Database::MissionModel model;
 			if (!Database::HasMission(msg.responder.getPureID(), 664)) {
@@ -22,9 +23,28 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 			else {
 				model = Database::GetMission(msg.responder.getPureID(), 664);
 			}
+
+			model.state = 2;
+
+			GM::NotifyMissionTask taskNotify;
+			taskNotify.missionID = 664;
+			taskNotify.taskMask = 2;
+			taskNotify.updates = {1.0f};
+			GameMessages::Send(player, player->GetObjectID(), taskNotify);
+
+			GM::NotifyMission misNotify;
+			misNotify.missionID = model.missionID;
+			misNotify.sendingRewards = true;
+			misNotify.missionState = 0;
+			GameMessages::Send(player, player->GetObjectID(), misNotify);
+
 			model.state = 8;
 			model.progress = "1";
+			misNotify.missionState = model.state;
 			Database::UpdateMission(model);
+
+			misNotify.sendingRewards = true;
+			GameMessages::Send(player, player->GetObjectID(), misNotify);
 		}
 	}
 };
