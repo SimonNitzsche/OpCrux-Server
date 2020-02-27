@@ -98,6 +98,10 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
                 for (int i = 0; i < missionTasksProgress.size(); ++i) {
 
                     auto subTaskProgStr = StringUtils::splitString(missionTasksProgress.at(i), ':');
+
+                    // Make sure to remove placeholder 0
+                    if (subTaskProgStr.size() == 1 && subTaskProgStr.at(0) == "0") subTaskProgStr.clear();
+                    
                     auto subTaskProg = StringUtils::StringVectorToIntList(subTaskProgStr);
 
                     if (std::find(subTaskProg.begin(), subTaskProg.end(), subTaskValue) == subTaskProg.end()) {
