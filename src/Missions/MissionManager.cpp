@@ -55,6 +55,31 @@ void MissionManager::UpdateMissionTask(Entity::GameObject * sender, Entity::Game
     GameMessages::Send(player, player->GetObjectID(), msgNotifyMissionTask);
 }
 
+void MissionManager::GetAllNonMissionsThatAreMissingByTaskType(DataTypes::LWOOBJID player, std::map<int32_t, std::map<std::int32_t, std::int32_t>> *  selection, std::list<DatabaseModels::MissionModel> * currentMissions) {
+    std::list<std::int32_t> missionFixups = {};
+
+    for (auto it1 = selection->begin(); it1 != selection->end(); ++it1) {
+        bool ignore = false;
+        for (auto it2 = currentMissions->begin(); it2 != currentMissions->end(); ++it2) {
+            if (it1->first == it2->missionID) {
+                ignore = true;
+                break;
+            }
+        }
+        if (!ignore) {
+            // Check that it's not a non-mission
+            if (!CacheMissions::GetIsMission(it1->first)) {
+                missionFixups.push_back(it1->first);
+            }
+        }
+    }
+
+    for (auto it = missionFixups.begin(); it != missionFixups.end(); ++it) {
+        Logger::log("WRLD", "Adding mission " + std::to_string(*it));
+        currentMissions->push_back(Database::AddMission(player.getPureID(), *it));
+    }
+}
+
 void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameObject * caster, DataTypes::LWOOBJID player, std::int32_t updateVal) {
     WorldServer* Instance = caster->GetZoneInstance();
     std::int64_t dbPlayerID = player.getPureID();
@@ -77,6 +102,8 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
         auto currentMissions = Database::GetAllMissionsByIDsAndStates(dbPlayerID, possibleMissionsOM, { 2, 10 });
     
+        GetAllNonMissionsThatAreMissingByTaskType(player, &possibleMissions, &currentMissions);
+
         switch (taskType)
         {
         case Enums::EMissionTask::KILL:
