@@ -105,6 +105,10 @@ public:
 
 
 		Database::SetFlag(this->owner->GetObjectID(), chunkID, chunkData);
+		GM::NotifyClientFlagChange clientResponse;
+		clientResponse.bFlag = value;
+		clientResponse.iFlagID = flagIndex;
+		GameMessages::Send(this->owner, this->owner->GetObjectID(), clientResponse);
 	}
 
 	void OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg) {
