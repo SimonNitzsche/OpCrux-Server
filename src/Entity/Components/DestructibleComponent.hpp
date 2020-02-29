@@ -101,6 +101,9 @@ public:
 	
 	std::int32_t GetCurrencyDrop(std::uint32_t npcLevel) {
 
+		// if npcLevel is 0, don't drop coins
+		if (npcLevel == 0) return 0;
+
 		// Get Row with highest min npc level, that is not exceeding npcLevel
 		std::int32_t currencyIndex = CacheDestructibleComponent::GetCurrencyIndex(GetComponentID());
 		auto mainRow = CacheCurrencyTable::getRow(currencyIndex);
