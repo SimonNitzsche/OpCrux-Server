@@ -172,6 +172,7 @@ add_executable(OpCrux_Server
 	src/Entity/NativeScripts/ai/RACING/RACE_IMAGINATION_SPAWNER.hpp
 	src/Entity/NativeScripts/ai/WILD/L_ALL_CRATE_CHICKEN.hpp
 	src/Entity/NativeScripts/OMIS.hpp
+	src/Entity/NativeScripts/ScriptComponent_1021_script_name__removed.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp
 	src/Entity/GameObject.cpp

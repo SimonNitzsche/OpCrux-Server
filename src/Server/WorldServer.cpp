@@ -622,6 +622,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	rakServer->DeallocatePacket(packet->getPacket());
 }
 
+std::uint16_t WorldServer::GetZoneID() {
+	return luZone->zoneID;
+}
+
 WorldServer::~WorldServer() {
 	if (replicaManager) delete[] replicaManager;
 	if (networkIdManager) delete[] networkIdManager;

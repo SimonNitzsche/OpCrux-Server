@@ -53,6 +53,7 @@ private:
 #include "Entity/NativeScripts/ai/NP/L_NPC_NP_SPACEMAN_BOB.hpp"
 #include "Entity/NativeScripts/ai/RACING/TRACK_GF/GF_RACE_SERVER.hpp"
 #include "Entity/NativeScripts/ai/WILD/L_ALL_CRATE_CHICKEN.hpp"
+#include "Entity/NativeScripts/ScriptComponent_1021_script_name__removed.hpp"
 	const std::unordered_map<std::string, script_factory> factories{
 		{"TestScript", []() -> script_ptr {return std::make_shared<TestScript>(); }},
 		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }},
@@ -62,7 +63,8 @@ private:
 		{"scripts\\ai\\AG\\L_AG_SPACE_STUFF.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SPACE_STUFF>();  }},
 		{"scripts\\ai\\NP\\L_NPC_NP_SPACEMAN_BOB.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB>();  }},
 		{"scripts\\ai\\RACING\\TRACK_GF\\GF_RACE_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__RACING__TRACK_GF__GF_RACE_SERVER>(); }},
-		{"scripts\\ai\\WILD\\L_ALL_CRATE_CHICKEN.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__WILD__L_ALL_CRATE_CHICKEN>(); }}
+		{"scripts\\ai\\WILD\\L_ALL_CRATE_CHICKEN.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__WILD__L_ALL_CRATE_CHICKEN>(); }},
+		{"ScriptComponent_1021_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1021_script_name__removed>(); }}
 	};
 
 private:
@@ -78,7 +80,7 @@ public:
 		std::uint32_t compID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 5);
 		scriptName = CacheScriptComponent::GetScriptName(compID);
 
-		if (scriptName == ("ScriptComponent_" + std::to_string(compID) + "_script_name__removed")) {
+		if (scriptName == ("ScriptComponent_" + std::to_string(compID) + "_script_name__removed") && factories.find(scriptName) == factories.end()) {
 			scriptName = "";
 		}
 	}

@@ -44,6 +44,7 @@ public:
 	void DebugRendererThread();
 	void GamePhysicsThread();
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
+	std::uint16_t GetZoneID();
 	~WorldServer();
 };
 
