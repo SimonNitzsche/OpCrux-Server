@@ -30,7 +30,7 @@ public:
 		LDF_GET_VAL_FROM_COLLECTION(renderDisabled, collection, u"renderDisabled", false);
 		
 		std::uint32_t lot = owner->GetLOT();
-		renderDisabled |= (lot == 5937 || lot == 5938 || lot == 9741 || lot == 9742 || lot == 9862 || lot == 9863 || lot == 6368);
+		renderDisabled |= (lot == 5937 || lot == 5938 || lot == 9741 || lot == 9742 || lot == 9862 || lot == 9863 /*|| lot == 6368*/);
 	}
 
 };

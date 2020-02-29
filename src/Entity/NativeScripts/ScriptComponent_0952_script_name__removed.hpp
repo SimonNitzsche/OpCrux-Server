@@ -1,0 +1,8 @@
+#ifndef __ENTITY__NATIVESCRIPTS__ScriptComponent_0952_script_name__removed_HPP__
+#define __ENTITY__NATIVESCRIPTS__ScriptComponent_0952_script_name__removed_HPP__
+#include "Entity/NativeScript.hpp"
+
+#include "Entity/NativeScripts/ScriptComponent_1021_script_name__removed.hpp"
+typedef NATIVESCRIPT__ScriptComponent_1021_script_name__removed NATIVESCRIPT__ScriptComponent_0952_script_name__removed;
+
+#endif

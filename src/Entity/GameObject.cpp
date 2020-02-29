@@ -8,6 +8,8 @@
 #include <string>
 #include <codecvt>
 
+#include <rapidxml/rapidxml.hpp>
+
 //using namespace Entity::Components::Interface;
 #define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T) {COMP_T * comp = this->GetComponent<COMP_T>(); if(comp != nullptr) { /*Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"...");*/ comp->Serialize(factory, packetType);}}
 #define COMPONENT_ONADD_SWITCH_CASE(COMP_T) {\
@@ -779,7 +781,10 @@ std::string Entity::GameObject::GenerateXML() {
 		{
 			ss << "<bag>";
 			{
-				// TODO
+				ss << "<b t=\"0\" m=\"200\"/>" ;
+				ss << "<b t=\"1\" m=\"240\"/>" ;
+				ss << "<b t=\"14\" m=\"240\"/>";
+				ss << "<b t=\"15\" m=\"240\"/>";
 			}
 			ss << "</bag>";
 			ss << "<grps/>";
@@ -809,12 +814,12 @@ std::string Entity::GameObject::GenerateXML() {
 		}
 		{
 			ss << "<char ";
-				ss << "cm=\"" << std::to_string(0x7FFFFFFFFFFFFFFF) << "\" ";
+				//ss << "cm=\"" << std::to_string(0x7FFFFFFFFFFFFFFF) << "\" ";
 				ss << "cc=\"" << charInfo.currency << "\" ";
-				ss << "gm=\"" << 0 << "\" ";
-				ss << "edit=\"" << 0 << "\" ";
-				ss << "acct=\"" << charInfo.accountID << "\" ";
-				ss << "llog=\"" << 1327707052 << "\" ";
+				// ss << "gm=\"" << 9 << "\" ";
+				// ss << "edit=\"" << 0 << "\" ";
+				// ss << "acct=\"" << charInfo.accountID << "\" ";
+				//ss << "llog=\"" << 1327707052 << "\"";
 				//ss << "ttip=\"" << Instance->sessionManager.GetSession(objectID)->systemAddress.binaryAddress << "\" ";
 				//ss << "ttip=\"16777216\"";
 				// ss << "mldt=\"0\ ";
@@ -858,12 +863,11 @@ std::string Entity::GameObject::GenerateXML() {
 		{
 			ss << "<flag>";
 			{
-				// TODO
 				auto charComp = GetComponent<CharacterComponent>();
 				auto flagChunks = charComp->GetFlagChunks();
 				for (auto it = flagChunks.begin(); it != flagChunks.end(); ++it) {
 					if (it->second != 0) {
-						ss << "<f id=\"" << it->first << "\" v=\"" << it->second << "\"/>";
+						//ss << "<f id=\"" << it->first << "\" v=\"" << it->second << "\"/>";
 					}
 				}
 			}

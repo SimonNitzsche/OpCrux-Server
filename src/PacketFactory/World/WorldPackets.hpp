@@ -127,6 +127,10 @@ namespace PacketFactory {
 			ldfEntries.push_back(LDFEntry(u"objid", clientSession->actorID));
 			ldfEntries.push_back(LDFEntry(u"xmlData", go->GenerateXML()));
 			ldfEntries.push_back(LDFEntry(u"name", go->GetName()));
+			ldfEntries.push_back(LDFEntry(u"accountID", std::int64_t(clientSession->accountID)));
+
+			std::int64_t levelid = clientSession->currentZone.zoneID | (clientSession->currentZone.zoneInstance << 16) | (clientSession->currentZone.zoneClone << 32);
+			ldfEntries.push_back(LDFEntry(u"levelid", levelid));
 
 			contentWrapperBS.Write(std::uint32_t(ldfEntries.size()));
 			for (int i = 0; i < ldfEntries.size(); ++i) {

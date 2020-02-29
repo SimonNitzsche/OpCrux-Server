@@ -123,6 +123,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/EchoSyncSkill.hpp
 	src/Entity/GameMessages/EmotePlayed.hpp
 	src/Entity/GameMessages/EnableRebuild.hpp
+	src/Entity/GameMessages/FireEventClientSide.hpp
 	src/Entity/GameMessages/FireEventServerSide.hpp
 	src/Entity/GameMessages/HasBeenCollected.hpp
 	src/Entity/GameMessages/Knockback.hpp
@@ -172,6 +173,7 @@ add_executable(OpCrux_Server
 	src/Entity/NativeScripts/ai/RACING/RACE_IMAGINATION_SPAWNER.hpp
 	src/Entity/NativeScripts/ai/WILD/L_ALL_CRATE_CHICKEN.hpp
 	src/Entity/NativeScripts/OMIS.hpp
+	src/Entity/NativeScripts/ScriptComponent_0952_script_name__removed.hpp
 	src/Entity/NativeScripts/ScriptComponent_1021_script_name__removed.hpp
 	src/Entity/GameMessages.cpp
 	src/Entity/GameMessages.hpp
