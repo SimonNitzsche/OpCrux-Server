@@ -11,7 +11,7 @@ private:
 	std::uint32_t openBrackets = 0;
 	static const std::uint32_t openBracketsLimit = 12;
 	bool isOperatorOR = true; // 0 = AND, 1 = OR
-	std::list<Database::MissionModel> m_availableMissions;
+	std::list<DatabaseModels::MissionModel> m_availableMissions;
 public:
 	bool result = false;
 	bool parseSucceeded = false;
@@ -228,7 +228,7 @@ public:
 		return result;
 	}
 
-	MissionRequirementParser(std::string_view statement, std::list<Database::MissionModel> availableMissions) : m_availableMissions(availableMissions) {
+	MissionRequirementParser(std::string_view statement, std::list<DatabaseModels::MissionModel> availableMissions) : m_availableMissions(availableMissions) {
 		parseSucceeded = true;
 
 		result = parse(statement);

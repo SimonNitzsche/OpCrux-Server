@@ -20,10 +20,13 @@
 #include "Configuration/ConfigurationManager.hpp"
 #include "DataTypes/LDF.hpp"
 
+#include "Database/DatabaseModels.hpp"
+
 #define SQL_RESULT_LEN 240
 #define SQL_RETURN_CODE_LEN 1000
 
 using namespace GameCache::Interface;
+using namespace DatabaseModels;
 extern FDB::Connection Cache;
 class Database {
 public:
@@ -450,22 +453,6 @@ public:
 		return false;
 	}
 
-	struct Str_DB_CharStyle {
-	public:
-		int headColor;
-		int head;
-		int chestColor;
-		int chest;
-		int legs;
-		int hairStyle;
-		int hairColor;
-		int leftHand;
-		int rightHand;
-		int eyebrowStyle;
-		int eyesStyle;
-		int mouthStyle;
-	};
-
 	static Str_DB_CharStyle GetCharStyle(unsigned long styleID) {
 		SetupStatementHandle();
 
@@ -548,35 +535,6 @@ public:
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		return {};
 	}
-
-	struct Str_DB_CharInfo {
-	public:
-		unsigned long accountID;
-		unsigned long long objectID;
-		unsigned char charIndex;
-		std::string name="";
-		std::string pendingName="";
-		unsigned int styleID;
-		unsigned int statsID;
-		unsigned short lastWorld;
-		unsigned short lastInstance;
-		unsigned int lastClone;
-		unsigned long long lastLog;
-		DataTypes::Vector3 position;
-		unsigned int shirtObjectID;
-		unsigned int pantsObjectID;
-		unsigned int uScore;
-		unsigned int uLevel;
-		unsigned int currency;
-		unsigned int reputation;
-		unsigned int health;
-		unsigned int imagination;
-		unsigned int armor;
-		Str_DB_CharInfo() {
-			name = "";
-			pendingName = "";
-		}
-	};
 
 	static std::vector<Str_DB_CharInfo> GetChars(unsigned long accountID) {
 		SetupStatementHandle();
@@ -1148,21 +1106,6 @@ public:
 		std::string statsName = lookup[statsID];
 		return 0;
 	}
-
-	struct MissionModel {
-		std::int64_t charID;
-		std::int32_t missionID;
-		std::int32_t state;
-		std::string progress;
-		std::int32_t repeatCount;
-		std::int64_t time;
-		std::int32_t chosenReward;
-
-		void updateTime() {
-			time = ::time(0);
-		}
-
-	};
 
 	static bool HasMission(std::int64_t charID, std::int32_t missionID) {
 		SetupStatementHandle();
@@ -1996,54 +1939,5 @@ public:
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
 	}
-
-	struct ItemModel {
-		std::uint64_t objectID;
-		std::uint64_t ownerID;
-		std::uint64_t subkey;
-		std::uint32_t tab;
-		std::uint32_t slot;
-		std::uint32_t templateID;
-		std::uint32_t count;
-		struct ItemAttributes {
-		private:
-			std::uint8_t data;
-		public:
-			inline std::uint8_t GetAttributes() {
-				return data;
-			}
-
-			inline void SetAttributes(std::uint8_t attributes) {
-				data = attributes;
-			}
-
-			inline bool GetAttribute(std::uint8_t index) {
-				if (index > 0x08) throw std::out_of_range("Index higher than 8");
-				return data & (std::uint8_t(1) << index);
-			}
-
-			inline void SetAttribute(std::uint8_t index, bool flag) {
-				if (index > 0x08) throw std::out_of_range("Index higher than 8");
-				data ^= (-flag ^ data) & (std::uint8_t(1) << index);
-			}
-
-			inline bool GetBound() {
-				return GetAttribute(0x01);
-			}
-
-			inline void SetBound(bool flag) {
-				SetAttribute(0x01, flag);
-			}
-
-			inline bool GetEquipped() {
-				return GetAttribute(0x02);
-			}
-
-			inline bool SetEquipped(bool flag) {
-				SetAttribute(0x02, flag);
-			}
-		} attributes;
-		LDFCollection metadata;
-	};
 };
 #endif // !__DATABASE_HPP__

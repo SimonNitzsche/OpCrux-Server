@@ -465,7 +465,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				playerObject->SetObjectID(clientSession->actorID);
 				CharacterComponent * charComp = playerObject->GetComponent<CharacterComponent>();
 				charComp->clientAddress = clientSession->systemAddress;
-				Database::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
+				DatabaseModels::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
 				playerObject->SetPosition(luZone->spawnPos.pos);
 				playerObject->SetRotation(luZone->spawnPos.rot);
 

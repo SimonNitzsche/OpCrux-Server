@@ -766,8 +766,8 @@ std::string Entity::GameObject::GenerateXML() {
 	std::stringstream ss;
 
 	CharacterComponent * charComponent = this->GetComponent<CharacterComponent>();
-	Database::Str_DB_CharInfo charInfo = charComponent->GetCharInfo();
-	Database::Str_DB_CharStyle charStyle = charComponent->GetCharStyle();
+	DatabaseModels::Str_DB_CharInfo charInfo = charComponent->GetCharInfo();
+	DatabaseModels::Str_DB_CharStyle charStyle = charComponent->GetCharStyle();
 
 	ss << "<?xml version=\"1.0\"?>";
 

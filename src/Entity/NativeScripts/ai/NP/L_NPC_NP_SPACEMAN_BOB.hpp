@@ -16,7 +16,7 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 			Entity::GameObject* player = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.responder);
 			player->SetImagination(6);
 
-			Database::MissionModel model;
+			DatabaseModels::MissionModel model;
 			if (!Database::HasMission(msg.responder.getPureID(), 664)) {
 				model = Database::AddMission(msg.responder.getPureID(), 664);
 			}

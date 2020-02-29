@@ -9,6 +9,7 @@
 #include "DataTypes/LWOOBJID.hpp"
 #include "Enums/EMissionTask.hpp"
 #include "Entity/GameObject.hpp"
+#include "Database/DatabaseModels.hpp"
 
 static class MissionManager {
 	

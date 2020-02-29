@@ -9,8 +9,8 @@
 
 class CharacterComponent : public IEntityComponent {
 private:
-	Database::Str_DB_CharInfo charInfo = Database::Str_DB_CharInfo();
-	Database::Str_DB_CharStyle charStyle = Database::Str_DB_CharStyle();
+	DatabaseModels::Str_DB_CharInfo charInfo = DatabaseModels::Str_DB_CharInfo();
+	DatabaseModels::Str_DB_CharStyle charStyle = DatabaseModels::Str_DB_CharStyle();
 
 	std::map<std::uint32_t, std::uint64_t> flags;
 
@@ -50,19 +50,19 @@ public:
 
 	static constexpr int GetTypeID() { return 4; }
 
-	void InitCharInfo(Database::Str_DB_CharInfo info) {
+	void InitCharInfo(DatabaseModels::Str_DB_CharInfo info) {
 		charInfo = info;
 	}
 
-	void InitCharStyle(Database::Str_DB_CharStyle style) {
+	void InitCharStyle(DatabaseModels::Str_DB_CharStyle style) {
 		charStyle = style;
 	}
 
-	Database::Str_DB_CharInfo GetCharInfo() {
+	DatabaseModels::Str_DB_CharInfo GetCharInfo() {
 		return charInfo;
 	}
 
-	Database::Str_DB_CharStyle GetCharStyle() {
+	DatabaseModels::Str_DB_CharStyle GetCharStyle() {
 		return charStyle;
 	}
 

@@ -36,14 +36,14 @@ namespace PacketFactory {
 			returnBS.Write(returnBSHead);
 			//Data
 
-			std::vector<Database::Str_DB_CharInfo> charsInfo = Database::GetChars(client->accountID);
+			std::vector<DatabaseModels::Str_DB_CharInfo> charsInfo = Database::GetChars(client->accountID);
 			size_t count = charsInfo.size();
 			returnBS.Write(static_cast<std::uint8_t>(count & 0xFF));
 			returnBS.Write(static_cast<std::uint8_t>(0)); // front char index
 
 			for (int i = 0; i < charsInfo.size(); ++i) {
-				Database::Str_DB_CharInfo charInfo = charsInfo[i];
-				Database::Str_DB_CharStyle charStyle = Database::GetCharStyle(charInfo.styleID);
+				DatabaseModels::Str_DB_CharInfo charInfo = charsInfo[i];
+				DatabaseModels::Str_DB_CharStyle charStyle = Database::GetCharStyle(charInfo.styleID);
 				DataTypes::LWOOBJID objectID = DataTypes::LWOOBJID::makePlayerObjectID(charInfo.objectID);
 				returnBS.Write(objectID);
 				returnBS.Write(static_cast<std::uint32_t>(charInfo.charIndex));

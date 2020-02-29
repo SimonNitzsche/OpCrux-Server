@@ -40,6 +40,7 @@ add_executable(OpCrux_Server
 	src/Database/Models/OPCRUX_AD/AccountsModel.hpp
 	src/Database/Models/DBModel.hpp
 	src/Database/Database.hpp
+	src/Database/DatabaseModels.hpp
 	src/DataTypes/AMF3.hpp
 	src/DataTypes/LDF.hpp
 	src/DataTypes/LEGO_GUID.hpp

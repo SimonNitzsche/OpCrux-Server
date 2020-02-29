@@ -64,7 +64,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
     if (playerObject->GetComponent<CharacterComponent>() == nullptr) return;
 
 
-    std::list<Database::MissionModel> updateMissions = {};
+    std::list<DatabaseModels::MissionModel> updateMissions = {};
 
 
     auto possibleMissions = GetMissionTasksByTaskTypeAndTarget(taskType, caster->GetLOT());
@@ -272,7 +272,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 }
 
 bool MissionManager::CheckIfMissionIsReadyToComplete(std::int32_t missionID, std::string &progress) {
-    Database::MissionModel mm; mm.missionID; mm.progress = progress;
+    DatabaseModels::MissionModel mm; mm.missionID; mm.progress = progress;
     auto mp = StringUtils::splitString(mm.progress, '|');
 
     std::int32_t rowIndex = 0;
