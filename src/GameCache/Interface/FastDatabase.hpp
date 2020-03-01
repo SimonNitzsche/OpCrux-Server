@@ -293,5 +293,7 @@ namespace GameCache::Interface::FDB {
 
 #define CRUX_CACHE_ADD_COLUMN_GETTER(index, type, name) inline type Get##name(FDB::RowInfo row) {return row[index];}inline type Get##name(std::int32_t id) {return Get##name(getRow(id));}\
 
+#define CRUX_CACHE_ADD_COLUMN_GETTER_MR(index, type, name) inline type Get##name(FDB::RowInfo row) {return row[index];}\
+
 
 #endif // !__GAMECACHE__INTERFACE__FASTDATABASE_HPP__

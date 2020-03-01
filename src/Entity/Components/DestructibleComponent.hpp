@@ -58,7 +58,7 @@ public:
 
 			std::int32_t lootTableIndex = CacheLootMatrix::GetLootTableIndex(*it);
 
-			auto lootTableRows = CacheLootTable::getRow(lootTableIndex).flatIt();
+			auto lootTableRows = CacheLootTable::getRows(lootTableIndex);
 			lootTableRows.sort([](GameCache::Interface::FDB::RowInfo a, GameCache::Interface::FDB::RowInfo b)
 				{return CacheLootTable::GetSortPriority(a) > CacheLootTable::GetSortPriority(b); });
 

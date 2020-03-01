@@ -41,7 +41,7 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH, UGCOP } MODE_
 GameCache::Interface::FDB::Connection Cache;
 BridgeMasterServer* masterServerBridge;
 
-int givenWorldID = 1000;
+int givenWorldID = 1200;
 
 
 // Following Includes are for testing

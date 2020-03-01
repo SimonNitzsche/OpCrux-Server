@@ -9,7 +9,7 @@ class NATIVESCRIPT__AI__WILD__L_ALL_CRATE_CHICKEN : public NativeScript {
 public:
 
 	void onStartup(Entity::GameObject* self) {
-		self->GetZoneInstance()->timer.AddTimerWithCancelMs(3900, u"KillRooster", self);
+		self->GetZoneInstance()->timer.AddTimerWithCancelMs(4200, u"KillRooster", self);
 	}
 
 	void onTimerDone(Entity::GameObject* self, TimerDone msg) {
