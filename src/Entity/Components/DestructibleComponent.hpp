@@ -11,6 +11,8 @@
 #include "GameCache/ComponentsRegistry.hpp"
 #include "GameCache/CurrencyTable.hpp"
 #include "GameCache/DestructibleComponent.hpp"
+#include "GameCache/LootMatrix.hpp"
+#include "GameCache/LootTable.hpp"
 
 #include "Entity/GameMessages/RequestDie.hpp"
 
@@ -29,6 +31,62 @@ public:
 	DestructibleComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 	static constexpr int GetTypeID() { return 7; }
+
+	std::list<ItemModel> GetLootDrop(Entity::GameObject * lootOwner) {
+		std::list<ItemModel> dropList = {};
+
+		std::int32_t lootMatrixIndex = CacheDestructibleComponent::GetLootMatrixIndex(GetComponentID());
+		auto lootRowMain = CacheLootMatrix::getRow(lootMatrixIndex);
+		auto lootRows = lootRowMain.flatIt();
+		for (auto it = lootRows.begin(); it != lootRows.end(); ++it) {
+			// Check if we have flag
+			std::int32_t flag = CacheLootMatrix::GetFlagID(*it);
+			if(flag != 0 && !lootOwner->GetFlag(flag)) continue;
+
+			std::float_t chance = CacheLootMatrix::GetPercent(*it);
+
+			// Check if drop?
+			srand(::time(0));
+			if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) > chance) continue;
+
+			std::int32_t minToDrop = CacheLootMatrix::GetMinToDrop(*it);
+			std::int32_t maxToDrop = CacheLootMatrix::GetMaxToDrop(*it);
+			maxToDrop = minToDrop > maxToDrop ? minToDrop : maxToDrop;
+
+			srand(::time(0));
+			std::int32_t dropCount = rand() % maxToDrop + minToDrop;
+
+			std::int32_t lootTableIndex = CacheLootMatrix::GetLootTableIndex(*it);
+
+			auto lootTableRows = CacheLootTable::getRow(lootTableIndex).flatIt();
+			lootTableRows.sort([](GameCache::Interface::FDB::RowInfo a, GameCache::Interface::FDB::RowInfo b)
+				{return CacheLootTable::GetSortPriority(a) > CacheLootTable::GetSortPriority(b); });
+
+			for (int i = 0; i < dropCount; ++i) {
+				auto it2 = std::next(lootTableRows.begin(), (i % lootTableRows.size()));
+
+				std::int32_t itemID = CacheLootTable::GetItemID(*it2);
+				bool isMisssionDrop = CacheLootTable::GetMissionDrop(*it2);
+
+				// Check if we have mission
+				if (isMisssionDrop) {
+					continue; // TODO!
+					/*if (!Database::HasMission(lootOwner->GetObjectID().getPureID(), misID)) {
+						continue;
+					}*/
+				}
+
+				ItemModel item;
+				item.templateID = itemID;
+				item.count = 1;
+				item.objectID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++);
+				item.ownerID = lootOwner->GetObjectID();
+
+				dropList.push_back(item);
+			}
+		}
+		return dropList;
+	}
 
 	void OnEnable() {
 		if (owner->GetComponent<StatsComponent>() == nullptr) {
@@ -203,15 +261,29 @@ public:
 			}
 
 			{
-				// TODO: DropLoot
-				GM::DropClientLoot msg;
-				msg.iCurrency = GetCurrencyDrop(lootOwner->GetComponent<CharacterComponent>()->GetLevel());
-				msg.owner = lootOwner->GetObjectID();
-				msg.sourceObj = owner->GetObjectID();
-				msg.spawnPosition = owner->GetPosition();
-				msg.finalPosition = owner->GetPosition();
+				{
+					GM::DropClientLoot msg;
+					msg.iCurrency = GetCurrencyDrop(lootOwner->GetComponent<CharacterComponent>()->GetLevel());
+					msg.owner = lootOwner->GetObjectID();
+					msg.sourceObj = owner->GetObjectID();
+					msg.spawnPosition = owner->GetPosition();
+					msg.finalPosition = owner->GetPosition();
 
-				GameMessages::Send(lootOwner, msg.sourceObj, msg);
+					GameMessages::Send(lootOwner, msg.sourceObj, msg);
+				}
+
+				auto itemLoot = GetLootDrop(lootOwner);
+				for (auto it = itemLoot.begin(); it != itemLoot.end(); ++it) {
+					GM::DropClientLoot msg;
+					msg.iCurrency = 0;
+					msg.owner = lootOwner->GetObjectID();
+					msg.sourceObj = owner->GetObjectID();
+					msg.spawnPosition = owner->GetPosition();
+					msg.finalPosition = owner->GetPosition();
+					msg.itemTemplate = it->templateID;
+					msg.lootID = it->objectID;
+					GameMessages::Send(lootOwner, msg.sourceObj, msg);
+				}
 			}
 
 			// Remove

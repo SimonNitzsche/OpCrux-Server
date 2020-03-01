@@ -9,13 +9,16 @@ extern FDB::Connection Cache;
 namespace CacheLootMatrix {
 	inline FDB::RowInfo getRow(int32_t lootMatrixIndex) {
 		FDB::RowTopHeader rth = Cache.getRows("LootMatrix");
-		for(int  i = 0; i < rth.getRowCount(); ++i) {
+		for (int i = 0; i < rth.getRowCount(); ++i) {
 			try {
-				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == lootMatrixIndex)
-					return rth[i];
+				if (!rth.isValid(i)) continue;
+				FDB::RowInfo rowInfo = rth[i];
+				if (rowInfo.isValid())
+					if (*reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation()) == lootMatrixIndex)
+						return rth[i];
 			}
 			catch (std::runtime_error e) {
-				Logger::log("Cache:LootMatrix", e.what(), ERR);
+				Logger::log("Cache:LootMatrix", e.what(), LogType::ERR);
 			}
 		}
 		return FDB::RowInfo();

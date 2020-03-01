@@ -278,6 +278,11 @@ namespace Entity {
 			std::string GenerateXML();
 
 			/*
+				Gets flag if player
+			*/
+			bool GetFlag(int iFlagID);
+
+			/*
 				Sets the object dirty.
 			*/
 			void SetDirty() {

@@ -932,3 +932,9 @@ std::string Entity::GameObject::GenerateXML() {
 	ss << "</obj>";
 	return ss.str();
 }
+
+bool Entity::GameObject::GetFlag(int iFlagID) {
+	auto cc = GetComponent<CharacterComponent>();
+	if (!cc) return false;
+	return cc->GetFlag(iFlagID);
+}
