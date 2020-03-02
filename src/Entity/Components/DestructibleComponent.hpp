@@ -5,6 +5,7 @@
 
 #include "Entity/Components/StatsComponent.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
+#include "Entity/Components/ItemComponent.hpp"
 
 #include "Entity/GameObject.hpp"
 
@@ -26,6 +27,8 @@ private:
 
 	bool isDead = false;
 
+	std::int32_t lootMatrixIndex;
+
 public:
 
 	DestructibleComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
@@ -35,7 +38,6 @@ public:
 	std::list<ItemModel> GetLootDrop(Entity::GameObject * lootOwner) {
 		std::list<ItemModel> dropList = {};
 
-		std::int32_t lootMatrixIndex = CacheDestructibleComponent::GetLootMatrixIndex(GetComponentID());
 		auto lootRowMain = CacheLootMatrix::getRow(lootMatrixIndex);
 		auto lootRows = lootRowMain.flatIt();
 		for (auto it = lootRows.begin(); it != lootRows.end(); ++it) {
@@ -121,6 +123,8 @@ public:
 			attributes->factions.push_back(faction);
 
 		attributes->damageAbsorptionPoints = 0;
+
+		lootMatrixIndex = CacheDestructibleComponent::GetLootMatrixIndex(GetComponentID());
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
@@ -154,6 +158,11 @@ public:
 	void PopulateFromLDF(LDFCollection * collection) {
 
 		LDF_GET_VAL_FROM_COLLECTION(statsComponent->attributes.isSmashable, collection, u"is_smashable", true);
+		bool smashable_loot_matrix_set = false;
+		LDF_GET_VAL_FROM_COLLECTION(smashable_loot_matrix_set, collection, u"smashable_loot_matrix_set", false);
+		if (smashable_loot_matrix_set) {
+			LDF_GET_VAL_FROM_COLLECTION(lootMatrixIndex, collection, u"smashable_loot_matrix", lootMatrixIndex);
+		}
 		
 	}
 	
@@ -283,6 +292,18 @@ public:
 					msg.itemTemplate = it->templateID;
 					msg.lootID = it->objectID;
 					GameMessages::Send(lootOwner, msg.sourceObj, msg);
+
+					Entity::GameObject * droppedLoot = new Entity::GameObject(owner->GetZoneInstance(), msg.itemTemplate);
+					droppedLoot->SetObjectID(msg.lootID);
+					ItemComponent * lootItemComp = droppedLoot->GetComponent<ItemComponent>();
+					if (lootItemComp == nullptr) {
+						droppedLoot->Remove();
+					}
+					else {
+						lootItemComp->isDroppedLoot = true;
+						owner->GetZoneInstance()->objectsManager->RegisterObject(droppedLoot);
+						droppedLoot->Finish();
+					}
 				}
 			}
 

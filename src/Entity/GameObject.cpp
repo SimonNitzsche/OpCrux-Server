@@ -790,8 +790,18 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<grps/>";
 			ss << "<items nn=\"1\">";
 			{
-				// TODO
-				ss << "<in t=0><i l=\"6086\" id=\"1152921507005357158\" s=\"6\" b=\"1\"/></in>";
+				auto playerInventory = Database::GetFullInventory(GetObjectID().getPureID());
+
+				for (auto it = playerInventory.begin(); it != playerInventory.end(); ++it) {
+
+					ss << "<in t=" << it->first << ">";
+
+					//"<i l=\"6086\" id=\"1152921507005357158\" s=\"6\" b=\"1\"/>";
+					for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+						ss << "<i l=\"" << it2->templateID << "\" id=\"" << it2->objectID << "\" s=\"" << it2->slot << "\" b=\"" << (it2->attributes.GetBound() ? 1 : 0) << "\"/>";
+					}
+					ss << "</in>";
+				}
 			}
 			ss << "</items>";
 		}

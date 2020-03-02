@@ -61,6 +61,11 @@ public:
 				spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
 				//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
 
+				LDFCollection config = {
+					LDF_COLLECTION_INIT_ENTRY(u"is_smashable", false)
+				};
+				spawnedObject->PopulateFromLDF(&config);
+
 				// Set Position/Rotation
 				spawnedObject->SetPosition(mypos);
 				

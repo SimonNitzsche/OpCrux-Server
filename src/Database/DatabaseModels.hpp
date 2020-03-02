@@ -71,25 +71,29 @@ struct ItemModel {
 	std::uint32_t templateID;
 	std::uint32_t count;
 	struct ItemAttributes {
+		/*
+			0x01 = bound
+			0x02 = equipped
+		*/
 	private:
-		std::uint8_t data;
+		std::uint16_t data;
 	public:
-		inline std::uint8_t GetAttributes() {
+		inline std::uint16_t GetAttributes() {
 			return data;
 		}
 
-		inline void SetAttributes(std::uint8_t attributes) {
+		inline void SetAttributes(std::uint16_t attributes) {
 			data = attributes;
 		}
 
-		inline bool GetAttribute(std::uint8_t index) {
+		inline bool GetAttribute(std::uint16_t index) {
 			if (index > 0x08) throw std::out_of_range("Index higher than 8");
-			return data & (std::uint8_t(1) << index);
+			return data & (std::uint16_t(1) << index);
 		}
 
-		inline void SetAttribute(std::uint8_t index, bool flag) {
+		inline void SetAttribute(std::uint16_t index, bool flag) {
 			if (index > 0x08) throw std::out_of_range("Index higher than 8");
-			data ^= (-flag ^ data) & (std::uint8_t(1) << index);
+			data ^= (-flag ^ data) & (std::uint16_t(1) << index);
 		}
 
 		inline bool GetBound() {

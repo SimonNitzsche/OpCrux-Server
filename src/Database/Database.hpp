@@ -19,6 +19,7 @@
 #include "Configuration/ConfDatabase.hpp"
 #include "Configuration/ConfigurationManager.hpp"
 #include "DataTypes/LDF.hpp"
+#include "Utils/LDFUtils.hpp"
 
 #include "Database/DatabaseModels.hpp"
 
@@ -1929,6 +1930,93 @@ public:
 			SQLGetData(sqlStmtHandle, 6, SQL_C_SBIGINT, &chunkData, 0, &ptrSqlAnswer);
 
 			retVal.insert({chunkID, chunkData});
+
+		}
+
+		return retVal;
+
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		throw std::exception("Unable to fetch DB.");
+	}
+
+	static std::map<std::int32_t, std::list<ItemModel>> GetFullInventory(std::int64_t charID) {
+		const std::list<std::int32_t> tabs = { 0,1,2,4,5,6,7,8,12,14 };
+		std::map<std::int32_t, std::list<ItemModel>> result;
+		for (auto it = tabs.begin(); it != tabs.end(); ++it) {
+			result.insert({ *it, GetInventoryItemsOfTab(charID, *it) });
+		}
+		return result;
+	}
+
+	static std::list<ItemModel> GetInventoryItemsOfTab(std::int64_t charID, std::int32_t _tab) {
+		SetupStatementHandle();
+
+		std::list<ItemModel> retVal = {};
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT objectID, ownerID, subkey, tab, slot, template, count, attributes, metadata FROM OPCRUX_GD.dbo.Inventory WHERE ownerID=? AND tab=?", SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SLONG, SQL_INTEGER, 0, 0, &_tab, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		while (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLBIGINT objectID;
+			SQLBIGINT ownerID;
+			SQLBIGINT subkey;
+			SQLINTEGER tab;
+			SQLINTEGER slot;
+			SQLINTEGER templateID;
+			SQLINTEGER count;
+			SQLSMALLINT attributes;
+			SQLCHAR sqlMetaData[SQL_RESULT_LEN];
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SBIGINT, &objectID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SBIGINT, &ownerID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SBIGINT, &subkey, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_SLONG, &tab, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &slot, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SLONG, &templateID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SHORT, &attributes, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 8, SQL_C_TCHAR, &sqlMetaData, SQL_RESULT_LEN, &ptrSqlAnswer);
+			std::string metadata((char*)&sqlMetaData, ptrSqlAnswer);
+
+			ItemModel model;
+			model.objectID = objectID;
+			model.ownerID = ownerID;
+			model.subkey = subkey;
+			model.tab = tab;
+			model.slot = slot;
+			model.templateID = templateID;
+			model.attributes.SetAttributes(attributes);
+			model.metadata = LDFUtils::ParseCollectionFromWString(std::u16string(metadata.begin(), metadata.end()));
+
+			retVal.push_back(model);
 
 		}
 

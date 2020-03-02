@@ -11,12 +11,9 @@ using namespace DataTypes;
 class ItemComponent : public IEntityComponent {
 private:
 
-	
-
 public:
 
 	ItemComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
-
 
 	static constexpr int GetTypeID() { return 11; }
 

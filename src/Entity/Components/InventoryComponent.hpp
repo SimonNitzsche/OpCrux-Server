@@ -72,12 +72,23 @@ public:
 		}
 
 		if (owner->GetLOT() == 1) {
-			InventoryItemStack itemStack = InventoryItemStack();
+			auto playerItems = Database::GetInventoryItemsOfTab(owner->GetObjectID().getPureID(), 0);
+
+			for (auto it = playerItems.begin(); it != playerItems.end(); ++it) {
+				InventoryItemStack itemStack = InventoryItemStack();
+				itemStack.LOT = it->templateID;
+				itemStack.objectID = it->objectID;
+				itemStack.quantity = it->count;
+				itemStack.equip = it->attributes.GetEquipped();
+				inventory.insert({ it->slot, itemStack });
+			}
+
+			/*InventoryItemStack itemStack = InventoryItemStack();
 			itemStack.LOT = 6086;
 			itemStack.objectID = 1152921507005357158;
 			itemStack.quantity = 1;
 			itemStack.equip = true;
-			inventory.insert({ slotID++, itemStack });
+			inventory.insert({ slotID++, itemStack });*/
 		}
 		
 		_isDirtyFlagEquippedItems = slotID != 0;
