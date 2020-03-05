@@ -125,6 +125,18 @@ public:
 		factory->Write(false);
 	}
 
+
+	void AddItem(Entity::GameObject* item) {
+		// TODO: Check for the item in here and changes
+		// TODO: Implement Skill Casting
+		// TODO: Implement ObjectSkills auto add component SkillComponent.
+		// TODO: Add item to DB.
+		//DatabaseModels::ItemModel itemModel;
+		//itemModel.count = 1;
+		//itemModel.
+		//Database::AddItemToInventory(itemModel);
+		// TODO: GM::AddItemToClientSync
+	}
 };
 
 #endif

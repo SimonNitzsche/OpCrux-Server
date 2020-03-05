@@ -76,7 +76,7 @@ void ObjectsManager::Serialize() {
 
 void ObjectsManager::Serialize(DataTypes::LWOOBJID objID) {
 	Entity::GameObject * gameObject = GetObjectByID(objID);
-	if (gameObject != nullptr && !gameObject->GetIsServerOnly())
+	if (gameObject && gameObject != nullptr && !gameObject->GetIsServerOnly())
 		Serialize(gameObject);
 }
 
@@ -94,20 +94,29 @@ void ObjectsManager::Destruct(DataTypes::LWOOBJID objID) {
 void ObjectsManager::Destruct(Entity::GameObject * object) {
 	if(!object->GetIsServerOnly())
 		RM->Destruct(object, UNASSIGNED_SYSTEM_ADDRESS, true);
-	object_list.erase(object->GetObjectID());
+	object_garbage.push_back(object->GetObjectID());
 }
 
 void ObjectsManager::OnUpdate() {
 	// Call update
-	for (auto oPair : object_list)
-		oPair.second->Update();
+	for (auto it = object_list.begin(); it != object_list.end(); ++it) {
+		if (it->second->GetObjectID() == it->first && it->second != nullptr)
+			it->second->Update();
+	}
+
+	// Check for garbage
+	for (auto it = object_garbage.begin(); it != object_garbage.end(); ++it) {
+		object_list.erase(*it);
+	}
+	object_garbage.clear();
 
 	// Check dirty
 	for (auto oPair : object_list)
-		if (oPair.second->IsObjectDirty())
-			if(oPair.second)
-				if (!oPair.second->GetIsServerOnly())
-					Serialize(oPair.second);
+		if(oPair.second != nullptr)
+			if (oPair.second->IsObjectDirty())
+				if(oPair.second)
+					if (!oPair.second->GetIsServerOnly())
+						Serialize(oPair.second);
 }
 
 void ObjectsManager::OnPhysicsUpdate() {

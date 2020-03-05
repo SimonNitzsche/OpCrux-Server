@@ -296,14 +296,9 @@ public:
 					Entity::GameObject * droppedLoot = new Entity::GameObject(owner->GetZoneInstance(), msg.itemTemplate);
 					droppedLoot->SetObjectID(msg.lootID);
 					ItemComponent * lootItemComp = droppedLoot->GetComponent<ItemComponent>();
-					if (lootItemComp == nullptr) {
-						droppedLoot->Remove();
-					}
-					else {
-						lootItemComp->isDroppedLoot = true;
-						owner->GetZoneInstance()->objectsManager->RegisterObject(droppedLoot);
-						droppedLoot->Finish();
-					}
+					owner->GetZoneInstance()->objectsManager->RegisterObject(droppedLoot);
+					droppedLoot->SetMaxAge(2);
+					droppedLoot->Finish();
 				}
 			}
 

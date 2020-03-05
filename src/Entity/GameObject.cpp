@@ -166,6 +166,10 @@ DataTypes::LWOOBJID Entity::GameObject::GetObjectID() {
 void Entity::GameObject::Update() {
 	for (auto oPair : components)
 		oPair.second->Update();
+
+	if (maxAge != 0LL && __int64(::time(0)) >= __int64(maxAge)) {
+		this->Remove();
+	}
 }
 
 void Entity::GameObject::PhysicUpdate() {
@@ -742,6 +746,13 @@ void Entity::GameObject::OnSyncSkill(const GM::SyncSkill msg) {
 	}
 }
 
+void Entity::GameObject::PickupLoot(Entity::GameObject* loot) {
+	auto invComp = GetComponent<InventoryComponent>();
+	if (invComp == nullptr) return;
+
+	invComp->AddItem(loot);
+}
+
 void Entity::GameObject::SetProximityRadius(std::string name, float radius) {
 	ScriptComponent * scriptComp = this->GetComponent<ScriptComponent>();
 	if (scriptComp) {
@@ -877,7 +888,7 @@ std::string Entity::GameObject::GenerateXML() {
 				auto flagChunks = charComp->GetFlagChunks();
 				for (auto it = flagChunks.begin(); it != flagChunks.end(); ++it) {
 					if (it->second != 0) {
-						//ss << "<f id=\"" << it->first << "\" v=\"" << it->second << "\"/>";
+						ss << "<f id=\"" << it->first << "\" v=\"" << it->second << "\"/>";
 					}
 				}
 			}

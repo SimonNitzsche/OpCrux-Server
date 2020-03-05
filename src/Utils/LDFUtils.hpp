@@ -87,6 +87,29 @@ public:
 		}
 		return output;
 	}
+	static std::u16string PackCollectionToWString(LDFCollection& collection) {
+		std::u16string output = u"";
+		for (auto it = collection.begin(); it != collection.end(); ++it) {
+			if (it != collection.begin()) {
+				output += char16_t(0x000a); // \n
+			}
+			LDFEntry * entry = &it->second;
+			output += entry->key;
+			output += char16_t(0x003d); // =
+			std::string typeStr = std::to_string(int(entry->type));
+			output += std::u16string(typeStr.begin(), typeStr.end());
+			output += char16_t(0x003a); // :
+			output += entry->GetValueAsWString();
+		}
+		return output;
+	}
+	static LDFCollection MakeCollectionFromLDFVector(std::vector<LDFEntry> & vec) {
+		LDFCollection output;
+		for (auto it = vec.begin(); it != vec.end(); ++it) {
+			output.insert({ it->key, *it });
+		}
+		return output;
+	}
 	static LDFEntry ReadEntryFromLUZWString(std::u16string key, std::u16string val) {
 		std::vector<std::u16string> type_val = StringUtils::splitWString(val, 0x003a);
 		bool typeDefined = val.find(0x003a) != std::u16string::npos;

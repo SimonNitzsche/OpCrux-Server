@@ -12,6 +12,7 @@ private:
 	WorldServer * Instance = nullptr;
 	ReplicaManager * RM = nullptr;
 	std::unordered_map<std::uint64_t, Entity::GameObject *> object_list;
+	std::list<std::uint64_t> object_garbage;
 public:
 	ObjectsManager();
 	ObjectsManager(WorldServer * Instance);

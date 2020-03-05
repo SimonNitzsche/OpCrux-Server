@@ -237,6 +237,55 @@ public:
 		return 0;
 	}
 
+	std::u16string GetValueAsWString() {
+		switch (this->type) {
+		case Enums::LDFType::BOOLEAN: {
+			auto tmpVal = this->operator bool();
+			std::string tmpValStr = std::to_string(int(tmpVal));
+			return std::u16string(tmpValStr.begin(), tmpValStr.end());
+		}
+		case Enums::LDFType::U32: {
+			auto tmpVal = this->operator std::uint32_t();
+			std::string tmpValStr = std::to_string(tmpVal);
+			return std::u16string(tmpValStr.begin(), tmpValStr.end());
+		}
+		case Enums::LDFType::S32: {
+			auto tmpVal = this->operator std::int32_t();
+			std::string tmpValStr = std::to_string(tmpVal);
+			return std::u16string(tmpValStr.begin(), tmpValStr.end());
+		}
+		case Enums::LDFType::FLOAT: {
+			auto tmpVal = this->operator std::float_t();
+			std::string tmpValStr = std::to_string(tmpVal);
+			return std::u16string(tmpValStr.begin(), tmpValStr.end());
+		}
+		case Enums::LDFType::S64: {
+			auto tmpVal = this->operator std::int64_t();
+			std::string tmpValStr = std::to_string(tmpVal);
+			return std::u16string(tmpValStr.begin(), tmpValStr.end());
+		}
+		case Enums::LDFType::LWOOBJID: {
+			auto tmpVal = this->operator DataTypes::LWOOBJID();
+			std::string tmpValStr = std::to_string(tmpVal);
+			return std::u16string(tmpValStr.begin(), tmpValStr.end());
+		}
+		case Enums::LDFType::DOUBLE: {
+			std::double_t tmpVal = this->operator double();
+			std::string tmpValStr = std::to_string(tmpVal);
+			return std::u16string(tmpValStr.begin(), tmpValStr.end());
+		}
+		case Enums::LDFType::STRING: {
+			std::string tmpVal = this->operator std::string();
+			return std::u16string(tmpVal.begin(), tmpVal.end());
+		}
+		case Enums::LDFType::WSTRING: {
+			return this->operator std::u16string();
+		}
+		}
+
+		throw new std::runtime_error("Unknown LDF Type.");
+	}
+
 	~LDFEntry() {
 	}
 };

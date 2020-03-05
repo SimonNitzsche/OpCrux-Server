@@ -2001,9 +2001,10 @@ public:
 			SQLGetData(sqlStmtHandle, 3, SQL_C_SBIGINT, &subkey, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 4, SQL_C_SLONG, &tab, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &slot, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 6, SQL_C_SLONG, &templateID, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 7, SQL_C_SHORT, &attributes, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 8, SQL_C_TCHAR, &sqlMetaData, SQL_RESULT_LEN, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SLONG, &count, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &templateID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 8, SQL_C_SHORT, &attributes, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 9, SQL_C_TCHAR, &sqlMetaData, SQL_RESULT_LEN, &ptrSqlAnswer);
 			std::string metadata((char*)&sqlMetaData, ptrSqlAnswer);
 
 			ItemModel model;
@@ -2027,5 +2028,46 @@ public:
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::exception("Unable to fetch DB.");
 	}
+
+	static void AddItemToInventory(ItemModel item) {
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"INSERT INTO OPCRUX_GD.dbo.Inventory (objectID, ownerID, subkey, tab, slot, template, count, attributes, metadata) VALUES (?,?,?,?,?,?,?,?,?)", SQL_NTS);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &item.objectID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &item.ownerID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 3, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &item.subkey, 0);
+		ret = SQLBindParam(sqlStmtHandle, 4, SQL_C_SLONG, SQL_INTEGER, 0, 0, &item.tab, 0);
+		ret = SQLBindParam(sqlStmtHandle, 5, SQL_C_SLONG, SQL_INTEGER, 0, 0, &item.slot, 0);
+		ret = SQLBindParam(sqlStmtHandle, 6, SQL_C_SHORT, SQL_SMALLINT, 0, 0, &item.templateID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 7, SQL_C_SHORT, SQL_SMALLINT, 0, 0, &item.count, 0);
+
+		std::u16string u16metadata = LDFUtils::PackCollectionToWString(item.metadata);
+		std::string metadata = std::string(u16metadata.begin(), u16metadata.end());
+		SQLLEN lenMetadata = metadata.size();
+
+		ret = SQLBindParameter(sqlStmtHandle, 8, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(item.metadata.size(), 1), 0, (SQLPOINTER)metadata.c_str(), 0, &lenMetadata);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			throw std::exception("Unable to fetch DB.");
+		}
+	}
+
 };
 #endif // !__DATABASE_HPP__

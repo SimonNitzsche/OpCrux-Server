@@ -52,6 +52,8 @@ namespace Entity {
 			// The Timestamp this object was created on the server.
 			int64_t creationTimestamp;
 
+			int64_t maxAge = 0LL;
+
 			// The Spawner GameObject.
 			GameObject * spawner = nullptr;
 
@@ -339,6 +341,10 @@ namespace Entity {
 			*/
 			std::int32_t GetImagination();
 
+			void SetMaxAge(std::int64_t age) {
+				maxAge = __int64(::time(0)) + __int64(age);
+			}
+
 			/*
 				Quick function to create the test object.
 			*/
@@ -363,6 +369,8 @@ namespace Entity {
 			virtual void OnStartSkill(const GM::StartSkill msg);
 			virtual void OnSyncSkill(const GM::SyncSkill msg);
 
+
+			void PickupLoot(Entity::GameObject* loot);
 		public:
 			// Script Stuff
 			LDFEntry GetVarEntry(std::u16string key) {
