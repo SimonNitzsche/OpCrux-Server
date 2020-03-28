@@ -6,6 +6,7 @@
 #include <map>
 
 #include "GameCache/InventoryComponent.hpp"
+#include "GameCache/ItemComponent.hpp"
 
 /*
 	TODO: This component is currently only implemented for static inventory, change this in future.
@@ -26,7 +27,23 @@ private:
 
 
 public:
-	std::map<std::uint32_t, InventoryItemStack> inventory = {};
+	typedef 
+	std::map<std::uint32_t, InventoryItemStack> InventoryTab;
+
+	std::map<std::uint32_t, InventoryTab> inventory;
+
+	enum class EInventoryTab {
+		ITEMS = 0,
+		VAULT_ITEMS = 1,
+		BRICKS = 2,
+		TEMPORARY_ITEMS = 4,
+		MODELS = 5,
+		TEMPORARY_MODELS= 6,
+		BEHAVIORS = 7,
+		PROPERTY_DEEDS = 8,
+		HIDDEN = 12,
+		VAULT_MODELS = 14
+	};
 
 	InventoryComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
@@ -61,9 +78,27 @@ public:
 			itemStack.quantity = count;
 			itemStack.equip = equip;
 
+			// Get item type
+			auto itemCompID = CacheComponentsRegistry::GetComponentID(itemID, 11);
+			std::int32_t itemType = 0;
+			if (itemCompID != -1) {
+				itemType = CacheItemComponent::GetItemType(itemCompID);
+			}
+
 			// Add item to list
-			inventory.insert({ slotID++, itemStack });
+			//inventory.insert({ slotID++, itemStack });
+
+			//inventory.insert(std::pair<std::uint32_t, std::pair<std::uint32_t, InventoryItemStack>>(itemType, { slotID++, itemStack }));
 		
+			auto tabIt = inventory.find(itemType);
+			if (tabIt != inventory.end()) {
+				tabIt->second.insert({ slotID++, itemStack });
+			}
+			else {
+				InventoryTab _tab; _tab.insert({ slotID++, itemStack });
+				inventory.insert({ itemType, _tab });
+			}
+
 			// Continue
 			if (rowInfo.isLinkedRowInfoValid())
 				rowInfo = rowInfo.getLinkedRowInfo();
@@ -80,7 +115,15 @@ public:
 				itemStack.objectID = it->objectID;
 				itemStack.quantity = it->count;
 				itemStack.equip = it->attributes.GetEquipped();
-				inventory.insert({ it->slot, itemStack });
+				
+				auto tabIt = inventory.find(it->tab);
+				if (tabIt != inventory.end()) {
+					tabIt->second.insert({ it->slot, itemStack });
+				}
+				else {
+					InventoryTab _tab; _tab.insert({ it->slot, itemStack });
+					inventory.insert({ it->tab, _tab });
+				}
 			}
 
 			/*InventoryItemStack itemStack = InventoryItemStack();
@@ -101,10 +144,12 @@ public:
 		factory->Write(_isDirtyFlagEquippedItems);
 		if (_isDirtyFlagEquippedItems) {
 			std::vector<InventoryItemStack> equippedItems{};
-			for (auto itemStack : inventory) {
-				if (itemStack.second.equip) {
-					InventoryItemStack iis = itemStack.second;
-					equippedItems.push_back(iis);
+			for (auto itemTab : inventory) {
+				for (auto itemStack : itemTab.second) {
+					if (itemStack.second.equip) {
+						InventoryItemStack iis = itemStack.second;
+						equippedItems.push_back(iis);
+					}
 				}
 			}
 
@@ -128,6 +173,9 @@ public:
 
 	void AddItem(Entity::GameObject* item) {
 		// TODO: Check for the item in here and changes
+
+		
+
 		// TODO: Implement Skill Casting
 		// TODO: Implement ObjectSkills auto add component SkillComponent.
 		// TODO: Add item to DB.

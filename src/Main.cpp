@@ -51,6 +51,7 @@ int givenWorldID = 1200;
 #include "Entity/Components/StatsComponent.hpp"
 #include "DataTypes/LDF.hpp"
 #include "FileTypes/HKXFile/hkxFile.hpp"
+#include "Database/CacheImporter.hpp"
 
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();
@@ -80,6 +81,8 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	Logger::log("MAIN", "Booting up server instances...");
+
+	//CacheImporter::Import();
 
 	//std::uintptr_t * c = CreateCOPScene();
 

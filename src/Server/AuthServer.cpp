@@ -37,13 +37,15 @@ AuthServer::AuthServer() : ILUServer() {
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
 	// Initializes SocketDescriptor
-	SocketDescriptor socketDescriptor((unsigned short)1001, 0);
+	SocketDescriptor socketDescriptor(1001, 0);
 	Logger::log("AUTH", "Starting Auth...");
 
-	rakServer->SetMaximumIncomingConnections((unsigned short)2);
+	// Max Connections
+	std::int32_t maxConnections = 128;
+	rakServer->SetMaximumIncomingConnections(maxConnections);
 
 	// Check startup
-	if (!rakServer->Startup(2, 30, &socketDescriptor, 1)) {
+	if (!rakServer->Startup(maxConnections, 30, &socketDescriptor, 1)) {
 		std::cin.get();
 		return;
 	}

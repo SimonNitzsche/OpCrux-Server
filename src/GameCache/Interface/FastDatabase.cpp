@@ -180,6 +180,11 @@ namespace GameCache::Interface::FDB {
 		return RowInfo(conn, conn->getFileData() + offset, columnHeaderAddr);
 	}
 
+	RowInfo RowInfo::getLinkedRowInfoUnsafe() {
+		int32_t offset = *reinterpret_cast<int32_t*>(memlocation + 4);
+		return RowInfo(conn, conn->getFileData() + offset, columnHeaderAddr);
+	}
+
 	/*
 		Class: RowHeader
 	*/

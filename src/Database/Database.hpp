@@ -118,6 +118,10 @@ private:
 	inline static SQLCHAR retconstring[SQL_RETURN_CODE_LEN];
 	inline static SQLHANDLE sqlStmtHandle = NULL;
 public:
+	static SQLHANDLE GetSqlStmtHandle() {
+		return sqlStmtHandle;
+	}
+
 	static void Connect() {
 		//initializations
 		sqlConnHandle = NULL;
@@ -2001,8 +2005,8 @@ public:
 			SQLGetData(sqlStmtHandle, 3, SQL_C_SBIGINT, &subkey, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 4, SQL_C_SLONG, &tab, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &slot, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 6, SQL_C_SLONG, &count, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &templateID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SLONG, &templateID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &count, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 8, SQL_C_SHORT, &attributes, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 9, SQL_C_TCHAR, &sqlMetaData, SQL_RESULT_LEN, &ptrSqlAnswer);
 			std::string metadata((char*)&sqlMetaData, ptrSqlAnswer);
@@ -2014,6 +2018,7 @@ public:
 			model.tab = tab;
 			model.slot = slot;
 			model.templateID = templateID;
+			model.count = count;
 			model.attributes.SetAttributes(attributes);
 			model.metadata = LDFUtils::ParseCollectionFromWString(std::u16string(metadata.begin(), metadata.end()));
 

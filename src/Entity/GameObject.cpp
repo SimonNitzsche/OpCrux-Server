@@ -809,7 +809,11 @@ std::string Entity::GameObject::GenerateXML() {
 
 					//"<i l=\"6086\" id=\"1152921507005357158\" s=\"6\" b=\"1\"/>";
 					for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-						ss << "<i l=\"" << it2->templateID << "\" id=\"" << it2->objectID << "\" s=\"" << it2->slot << "\" b=\"" << (it2->attributes.GetBound() ? 1 : 0) << "\"/>";
+						ss << "<i l=\"" << it2->templateID << "\" id=\"" << it2->objectID << "\" s=\"" << it2->slot << "\" b=\"" << (it2->attributes.GetBound() ? 1 : 0) << "\"";
+						if (it2->subkey != 0) {
+							ss << " sk=\"" << it2->subkey << "\"";
+						}
+						ss << "/>";
 					}
 					ss << "</in>";
 				}

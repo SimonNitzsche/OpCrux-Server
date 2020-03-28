@@ -39,6 +39,7 @@ add_executable(OpCrux_Server
 	src/Configuration/ConfPorts.hpp
 	src/Database/Models/OPCRUX_AD/AccountsModel.hpp
 	src/Database/Models/DBModel.hpp
+	src/Database/CacheImporter.hpp
 	src/Database/Database.hpp
 	src/Database/DatabaseModels.hpp
 	src/DataTypes/AMF3.hpp

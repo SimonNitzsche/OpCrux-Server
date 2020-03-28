@@ -176,6 +176,7 @@ namespace GameCache::Interface::FDB {
 
 		RowDataHeader getRowDataHeader();
 		RowInfo	getLinkedRowInfo();
+		RowInfo getLinkedRowInfoUnsafe();
 
 		RowData getRowData() { return getRowDataHeader().getRowData(); }
 			DATA_TYPE getColumnDataType(uint32_t indexOfColumn) { return getRowData().getColumnDataType(indexOfColumn); }

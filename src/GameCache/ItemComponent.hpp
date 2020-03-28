@@ -9,181 +9,67 @@ extern FDB::Connection Cache;
 namespace CacheItemComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
 		FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
-		for(int  i = 0; i < rth.getRowCount(); ++i) {
+		for (int i = 0; i < rth.getRowCount(); ++i) {
+			if (!rth.isValid(i)) continue;
 			try {
-				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
-					return rth[i];
+				FDB::RowInfo rowInfo = rth[i];
+				while (rowInfo.isValid()) {
+					if (*reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation()) == id)
+						return rth[i];
+					if (rowInfo.isLinkedRowInfoValid()) {
+						rowInfo = rowInfo.getLinkedRowInfo();
+					}
+					else {
+						rowInfo = FDB::RowInfo();
+					}
+				}
 			}
-			catch (std::runtime_error e) {
-				Logger::log("Cache:ItemComponent", e.what(), ERR);
-			}
+			catch (...) {}
 		}
 		return FDB::RowInfo();
 	}
 
-	inline FDB::PointerString GetEquipLocation(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[1]/**/.getMemoryLocation());
-	}
-	
-	inline int32_t GetBaseValue(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[2]/**/.getMemoryLocation());
-	}
-
-	inline bool GetIsKitPiece(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[3]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline int32_t GetRarity(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[4]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetItemType(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[5]/**/.getMemoryLocation());
-	}
-
-	inline int64_t GetItemInfo(int32_t id) {
-		return *reinterpret_cast<int64_t*>(Cache.getFileData()+*reinterpret_cast<int32_t*>(getRow(id)/**/[6]/**/.getMemoryLocation()));
-	}
-
-	inline bool GetInLootTable(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[7]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline bool GetInVendor(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[8]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline bool GetIsUnique(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[9]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline bool GetIsBOP(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[10]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline bool GetIsBOE(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[11]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline int32_t GetReqFlagID(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[12]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetReqSpecialtyID(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[13]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetReqSpecRank(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[14]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetAchievementID(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[15]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetStackSize(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[16]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetColor1(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[17]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetDecal(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[18]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetOffsetGroupID(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[19]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetBuildTypes(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[20]/**/.getMemoryLocation());
-	}
-
-	inline FDB::PointerString GetReqPrecondition(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[21]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetAnimationFlag(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[22]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetEquipEffects(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[23]/**/.getMemoryLocation());
-	}
-
-	inline bool GetReadyForQA(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[24]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline int32_t GetItemRating(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[25]/**/.getMemoryLocation());
-	}
-
-	inline bool GetIsTwoHanded(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[26]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline int32_t GetMinNumRequired(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[27]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetDelResIndex(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[28]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetCurrencyLOT(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[29]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetAltCurrencyCost(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[30]/**/.getMemoryLocation());
-	}
-
-	inline FDB::PointerString GetSubItems(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[31]/**/.getMemoryLocation());
-	}
-
-	inline FDB::PointerString GetAudioEventUse(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[32]/**/.getMemoryLocation());
-	}
-
-	inline bool GetNoEquipAnimation(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[33]/**/.getMemoryLocation()) == 1;
-	}
-
-	inline int32_t GetCommendationLOT(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[34]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetCommendationCost(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[35]/**/.getMemoryLocation());
-	}
-
-	inline FDB::PointerString GetAudioEquipMetaEventSet(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[36]/**/.getMemoryLocation());
-	}
-
-	inline FDB::PointerString GetCurrencyCosts(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[37]/**/.getMemoryLocation());
-	}
-
-	inline FDB::PointerString GetIngredientInfo(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[38]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetLocaleStatus(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[39]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetForgeType(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[40]/**/.getMemoryLocation());
-	}
-
-	inline float GetSellMultiplier(int32_t id) {
-		return *reinterpret_cast<float*>(getRow(id)/**/[41]/**/.getMemoryLocation());
-	}
+	CRUX_CACHE_ADD_COLUMN_GETTER(1, FDB::PointerString, EquipLocation);
+	CRUX_CACHE_ADD_COLUMN_GETTER(2, std::int32_t, BaseValue);
+	CRUX_CACHE_ADD_COLUMN_GETTER(3, bool, IsKitPiece);
+	CRUX_CACHE_ADD_COLUMN_GETTER(4, std::int32_t, Rarity);
+	CRUX_CACHE_ADD_COLUMN_GETTER(5, std::int32_t, ItemType);
+	CRUX_CACHE_ADD_COLUMN_GETTER(6, std::int64_t, ItemInfo);
+	CRUX_CACHE_ADD_COLUMN_GETTER(7, bool, InLootTable);
+	CRUX_CACHE_ADD_COLUMN_GETTER(8, bool, InVendor);
+	CRUX_CACHE_ADD_COLUMN_GETTER(9, bool, IsUnique);
+	CRUX_CACHE_ADD_COLUMN_GETTER(10, bool, IsBOP);
+	CRUX_CACHE_ADD_COLUMN_GETTER(11, bool, IsBOE);
+	CRUX_CACHE_ADD_COLUMN_GETTER(12, std::int32_t, ReqFlagID);
+	CRUX_CACHE_ADD_COLUMN_GETTER(13, std::int32_t, ReqSpecialtyID);
+	CRUX_CACHE_ADD_COLUMN_GETTER(14, std::int32_t, ReqSpecRank);
+	CRUX_CACHE_ADD_COLUMN_GETTER(15, std::int32_t, AchievementID);
+	CRUX_CACHE_ADD_COLUMN_GETTER(16, std::int32_t, StackSize);
+	CRUX_CACHE_ADD_COLUMN_GETTER(17, std::int32_t, Color1);
+	CRUX_CACHE_ADD_COLUMN_GETTER(18, std::int32_t, Decal);
+	CRUX_CACHE_ADD_COLUMN_GETTER(19, std::int32_t, OffsetGroupID);
+	CRUX_CACHE_ADD_COLUMN_GETTER(20, std::int32_t, BuildTypes);
+	CRUX_CACHE_ADD_COLUMN_GETTER(21, FDB::PointerString, ReqPrecondition);
+	CRUX_CACHE_ADD_COLUMN_GETTER(22, std::int32_t, AnimationFlag);
+	CRUX_CACHE_ADD_COLUMN_GETTER(23, std::int32_t, EquipEffects);
+	CRUX_CACHE_ADD_COLUMN_GETTER(24, bool, ReadyForQA);
+	CRUX_CACHE_ADD_COLUMN_GETTER(25, std::int32_t, ItemRating);
+	CRUX_CACHE_ADD_COLUMN_GETTER(26, bool, IsTwoHanded);
+	CRUX_CACHE_ADD_COLUMN_GETTER(27, std::int32_t, MinNumRequired);
+	CRUX_CACHE_ADD_COLUMN_GETTER(28, std::int32_t, DelResIndex);
+	CRUX_CACHE_ADD_COLUMN_GETTER(29, std::int32_t, CurrencyLOT);
+	CRUX_CACHE_ADD_COLUMN_GETTER(30, std::int32_t, AltCurrencyCost);
+	CRUX_CACHE_ADD_COLUMN_GETTER(31, FDB::PointerString, SubItems);
+	CRUX_CACHE_ADD_COLUMN_GETTER(32, FDB::PointerString, AudioEventUse);
+	CRUX_CACHE_ADD_COLUMN_GETTER(33, bool, NoEquipAnimation);
+	CRUX_CACHE_ADD_COLUMN_GETTER(34, std::int32_t, CommendationLOT);
+	CRUX_CACHE_ADD_COLUMN_GETTER(35, std::int32_t, CommendationCost);
+	CRUX_CACHE_ADD_COLUMN_GETTER(36, FDB::PointerString, AudioEquipMetaEventSet);
+	CRUX_CACHE_ADD_COLUMN_GETTER(37, FDB::PointerString, CurrencyCosts);
+	CRUX_CACHE_ADD_COLUMN_GETTER(38, FDB::PointerString, IngredientInfo);
+	CRUX_CACHE_ADD_COLUMN_GETTER(39, std::int32_t, LocaleStatus);
+	CRUX_CACHE_ADD_COLUMN_GETTER(40, std::int32_t, ForgeType);
+	CRUX_CACHE_ADD_COLUMN_GETTER(41, std::float_t, SellMultiplier);
 };
 
 #endif // !__GAMECACHE__ITEMCOMPONENT_HPP__
