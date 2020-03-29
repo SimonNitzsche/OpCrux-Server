@@ -121,7 +121,7 @@ public:
 		factory->Write(mountedObject != nullptr);
 		if (mountedObject != nullptr) {
 			factory->Write(true);
-			factory->Write(mountedObject->GetObjectID());
+			factory->Write<std::int64_t>(mountedObject->GetObjectID());
 			factory->Write<std::uint8_t>(1);
 		}
 
@@ -144,16 +144,17 @@ public:
 			factory->Write(false); // Unknown
 		
 			// Char Style
+			auto beginSec = factory->GetWriteOffset();
 			factory->Write<std::uint32_t>(charStyle.hairColor);
 			factory->Write<std::uint32_t>(charStyle.hairStyle);
 			factory->Write<std::uint32_t>(0); // TODO: ???, could be "hd" or "hdc" from xml data
 			factory->Write<std::uint32_t>(charStyle.chestColor);
 			factory->Write<std::uint32_t>(charStyle.legs);
-			factory->Write<std::uint32_t>(0); // TODO: ???, could be "cd" from xml data
-			factory->Write<std::uint32_t>(0); // TODO: ???, could be "hdc" or "hd" from xml data
+			factory->Write<std::uint32_t>(1); // TODO: ???, could be "cd" from xml data
+			factory->Write<std::uint32_t>(2); // TODO: ???, could be "hdc" or "hd" from xml data
 			factory->Write<std::uint32_t>(charStyle.eyebrowStyle);
 			factory->Write<std::uint32_t>(charStyle.eyesStyle);
-			factory->Write(std::uint32_t(charStyle.mouthStyle));
+			factory->Write<std::uint32_t>(charStyle.mouthStyle);
 
 			// Char Info
 			factory->Write<std::uint64_t>(charInfo.accountID);
@@ -165,6 +166,10 @@ public:
 			// TODO: Char Stats
 			for (int i = 0; i < 27; ++i)
 				factory->Write<std::uint64_t>(i);
+
+			auto endSec = factory->GetWriteOffset();
+
+			auto sizeSec = endSec - beginSec;
 
 			// World transition state
 			factory->Write<bool>(static_cast<std::uint8_t>(worldTransitionState) == 2);

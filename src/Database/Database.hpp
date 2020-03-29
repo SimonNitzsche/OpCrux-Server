@@ -981,11 +981,11 @@ public:
 			shirtObject.count = 1;
 			shirtObject.subkey = 0;
 			shirtObject.ownerID = objectID;
-			shirtObject.objectID = (1ULL << 60) + reserveCountedID(DBCOUNTERID::STATIC) ;
+			shirtObject.objectID = (1ULL << 60) + reserveCountedID(DBCOUNTERID::PLAYER) ;
 
 			DatabaseModels::ItemModel pantsObject = shirtObject;
 			pantsObject.templateID = pantsObjectLOT;
-			pantsObject.objectID = (1ULL << 60) + reserveCountedID(DBCOUNTERID::STATIC);
+			pantsObject.objectID = (1ULL << 60) + reserveCountedID(DBCOUNTERID::PLAYER);
 			pantsObject.slot = 1;
 
 			AddItemToInventory(shirtObject);

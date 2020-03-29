@@ -128,14 +128,7 @@ public:
 				}
 			}
 
-			/*InventoryItemStack itemStack = InventoryItemStack();
-			itemStack.LOT = 6086;
-			itemStack.objectID = 1152921507005357158;
-			itemStack.quantity = 1;
-			itemStack.equip = true;
-			inventory.insert({ slotID++, itemStack });*/
-
-			_isDirtyFlagEquippedItems = _isDirtyFlagEquippedItems | playerItems.size() != 0;
+			//_isDirtyFlagEquippedItems = _isDirtyFlagEquippedItems | playerItems.size() != 0;
 		}
 	}
 
@@ -154,6 +147,10 @@ public:
 				}
 			}
 
+			if (owner->GetLOT() == 1) {
+				int bp = 4;
+			}
+
 			factory->Write<std::uint32_t>(equippedItems.size());
 			for (int i = 0; i < equippedItems.size(); ++i) {
 				factory->Write<std::uint64_t>(equippedItems.at(i).objectID);
@@ -163,7 +160,8 @@ public:
 				/**/factory->Write<std::uint32_t>(equippedItems.at(i).quantity);
 				factory->Write(true);
 				/**/factory->Write<std::uint16_t>(i);
-				factory->Write(false);
+				factory->Write(true);
+				/**/factory->Write<std::uint16_t>(0);
 				factory->Write(false);
 				factory->Write(true);
 			}

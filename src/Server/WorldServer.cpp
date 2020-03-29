@@ -37,6 +37,7 @@
 #include "Entity/Components/SpawnerComponent.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/DestructibleComponent.hpp"
+#include "Entity/Components/InventoryComponent.hpp"
 
 #include "Entity/GameObject.hpp"
 
@@ -477,7 +478,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				charDestComp->SetImagination(info.imagination);
 
 				playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
-				playerObject->Finish();
+				//playerObject->Finish();
+				auto invComp = playerObject->GetComponent<InventoryComponent>();
 				
 				// Bypass disabling of player construction
 				// by missing components
@@ -524,6 +526,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					}
 				}
 
+				invComp->Awake();
 				objectsManager->Construct(playerObject);
 
 				Logger::log("WRLD", "Server done loading");

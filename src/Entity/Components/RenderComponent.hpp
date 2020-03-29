@@ -31,6 +31,9 @@ public:
 		
 		std::uint32_t lot = owner->GetLOT();
 		renderDisabled |= (lot == 5937 || lot == 5938 || lot == 9741 || lot == 9742 || lot == 9862 || lot == 9863 /*|| lot == 6368*/);
+		if (lot == 1) {
+			renderDisabled = true;
+		}
 	}
 
 };
