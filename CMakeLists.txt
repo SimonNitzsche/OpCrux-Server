@@ -68,15 +68,19 @@ add_executable(OpCrux_Server
 	src/Entity/Components/SkillComponent/BehaviorMovementSwitch.hpp
 	src/Entity/Components/SkillComponent/BehaviorStun.hpp
 	src/Entity/Components/SkillComponent/BehaviorTacArc.hpp
+	src/Entity/Components/B3BehaviorsComponent.hpp
 	src/Entity/Components/BaseCombatAIComponent.hpp
 	src/Entity/Components/BouncerComponent.hpp
+	src/Entity/Components/BrickDonationComponent.hpp
 	src/Entity/Components/BuildBorderComponent.hpp
 	src/Entity/Components/CharacterComponent.hpp
 	src/Entity/Components/CollectibleComponent.hpp
 	src/Entity/Components/Component107.hpp
 	src/Entity/Components/ControllablePhysicsComponent.hpp
 	src/Entity/Components/DestructibleComponent.hpp
+	src/Entity/Components/ExhibitComponent.hpp
 	src/Entity/Components/GenericActivatorComponent.hpp
+	src/Entity/Components/HFLightDirectionGadgetComponent.hpp
 	src/Entity/Components/InventoryComponent.hpp
 	src/Entity/Components/ItemComponent.hpp
 	src/Entity/Components/LUPExhibitComponent.hpp

@@ -164,8 +164,7 @@ public:
 		
 		if (!spawnedObject->isSerializable) {
 			// Spawn Error Object
-			//delete[] spawnedObject;
-			spawnedObject->Remove();
+			delete[] spawnedObject;
 			spawnedObject = new Entity::GameObject(Instance, 1845);
 
 		}

@@ -32,15 +32,20 @@
 #include "Utils/StringUtils.hpp"
 
 // Components
+#include "Entity/Components/B3BehaviorsComponent.hpp"
 #include "Entity/Components/BaseCombatAIComponent.hpp"
 #include "Entity/Components/BouncerComponent.hpp"
+#include "Entity/Components/BrickDonationComponent.hpp"
 #include "Entity/Components/BuildBorderComponent.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
 #include "Entity/Components/CollectibleComponent.hpp"
 #include "Entity/Components/Component107.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/DestructibleComponent.hpp"
+#include "Entity/Components/ExhibitComponent.hpp"
+#include "Entity/Components/FactionTriggerComponent.hpp"
 #include "Entity/Components/GenericActivatorComponent.hpp"
+#include "Entity/Components/HFLightDirectionGadgetComponent.hpp"
 #include "Entity/Components/InventoryComponent.hpp"
 #include "Entity/Components/ItemComponent.hpp"
 #include "Entity/Components/LUPExhibitComponent.hpp"
@@ -229,8 +234,13 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(Component107);
 		COMPONENT_ONADD_SWITCH_CASE(TriggerComponent);
 		/* ========== NON-SERIALIZED ========== */
+		COMPONENT_ONADD_SWITCH_CASE(B3BehaviorsComponent);
+		COMPONENT_ONADD_SWITCH_CASE(BrickDonationComponent);
 		COMPONENT_ONADD_SWITCH_CASE(BuildBorderComponent);
+		COMPONENT_ONADD_SWITCH_CASE(ExhibitComponent);
+		COMPONENT_ONADD_SWITCH_CASE(FactionTriggerComponent);
 		COMPONENT_ONADD_SWITCH_CASE(GenericActivatorComponent);
+		COMPONENT_ONADD_SWITCH_CASE(HFLightDirectionGadgetComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PropertyComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PropertyEntranceComponent);
