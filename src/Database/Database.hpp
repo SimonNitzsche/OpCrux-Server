@@ -936,7 +936,7 @@ public:
 					try {
 						if (
 							*reinterpret_cast<uint32_t*>(rth[i]["itemType"].getMemoryLocation()) == 7 &&
-							*reinterpret_cast<uint32_t*>(rth[i]["color1"].getMemoryLocation()) == pantsObjectLOT &&
+							*reinterpret_cast<uint32_t*>(rth[i]["color1"].getMemoryLocation()) == legs &&
 							*reinterpret_cast<uint32_t*>(rth[i]["isBOE"].getMemoryLocation()) == 1
 							) {
 							int componentID = *reinterpret_cast<uint32_t*>(rth[i][0].getMemoryLocation());
