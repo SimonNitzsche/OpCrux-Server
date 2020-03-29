@@ -423,7 +423,7 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 
 void Entity::GameObject::AddChild(GameObject * child) {
 	children.push_back(child);
-	child->SetParent(child);
+	child->SetParent(this);
 	baseDataDirty = true;
 	objectDirty = true;
 }
