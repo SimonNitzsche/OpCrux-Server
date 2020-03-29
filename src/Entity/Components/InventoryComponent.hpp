@@ -62,11 +62,11 @@ public:
 			std::int32_t itemID = CacheInventoryComponent::GetItemID(rowInfo);
 			std::int32_t count = CacheInventoryComponent::GetCount(rowInfo);
 			bool equip = CacheInventoryComponent::GetEquip(rowInfo);
-			
+
 			if (itemID >= 17000)
 				throw new std::runtime_error("Invalid LOT: " + std::to_string(itemID));
 
-			Entity::GameObject * item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
+			Entity::GameObject* item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
 			item->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
 			item->SetIsServerOnly();
 			owner->GetZoneInstance()->objectsManager->RegisterObject(item);
@@ -89,7 +89,7 @@ public:
 			//inventory.insert({ slotID++, itemStack });
 
 			//inventory.insert(std::pair<std::uint32_t, std::pair<std::uint32_t, InventoryItemStack>>(itemType, { slotID++, itemStack }));
-		
+
 			auto tabIt = inventory.find(itemType);
 			if (tabIt != inventory.end()) {
 				tabIt->second.insert({ slotID++, itemStack });
@@ -105,7 +105,9 @@ public:
 			else
 				break;
 		}
+	}
 
+	void Awake() {
 		if (owner->GetLOT() == 1) {
 			auto playerItems = Database::GetInventoryItemsOfTab(owner->GetObjectID().getPureID(), 0);
 
@@ -115,7 +117,7 @@ public:
 				itemStack.objectID = it->objectID;
 				itemStack.quantity = it->count;
 				itemStack.equip = it->attributes.GetEquipped();
-				
+
 				auto tabIt = inventory.find(it->tab);
 				if (tabIt != inventory.end()) {
 					tabIt->second.insert({ it->slot, itemStack });
@@ -132,10 +134,9 @@ public:
 			itemStack.quantity = 1;
 			itemStack.equip = true;
 			inventory.insert({ slotID++, itemStack });*/
-		}
-		
-		_isDirtyFlagEquippedItems = slotID != 0;
 
+			_isDirtyFlagEquippedItems = _isDirtyFlagEquippedItems | playerItems.size() != 0;
+		}
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {

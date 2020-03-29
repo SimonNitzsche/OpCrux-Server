@@ -70,7 +70,24 @@ namespace PacketFactory {
 				returnBS.Write(charInfo.lastLog);
 
 				// TODO: Inventory (Equipped Items)
-				returnBS.Write(static_cast<std::uint16_t>(0));
+
+				auto inventory = Database::GetFullInventory(charInfo.objectID);
+
+				std::list<std::int32_t> equippedLOTs = {};
+
+				for (auto it = inventory.begin(); it != inventory.end(); ++it) {
+					for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+						if (it2->attributes.GetEquipped()) {
+							equippedLOTs.push_back(it2->templateID);
+						}
+					}
+				}
+
+				returnBS.Write<std::uint16_t>(equippedLOTs.size());
+				for (auto it = equippedLOTs.begin(); it != equippedLOTs.end(); ++it) {
+					returnBS.Write<std::uint32_t>(*it);
+				}
+
 				Logger::log("WRLD", "Sent character " + charInfo.name);
 			}
 

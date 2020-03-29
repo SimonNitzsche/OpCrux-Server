@@ -477,6 +477,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				charDestComp->SetImagination(info.imagination);
 
 				playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
+				playerObject->Finish();
 				
 				// Bypass disabling of player construction
 				// by missing components
@@ -489,6 +490,11 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				PacketFactory::World::CreateCharacter(rakServer, clientSession, playerObject);
 
 				
+				// Tell what world you are
+				auto charInfo = charComp->GetCharInfo();
+				charInfo.lastWorld = luZone->zoneID;
+				Database::UpdateChar(charInfo);
+
 				
 				if (zoneID == 1203) {
 					// Racing tests, remove in future!

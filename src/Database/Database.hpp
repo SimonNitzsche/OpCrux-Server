@@ -900,7 +900,7 @@ public:
 			unsigned long long lastLog = 0;
 			DataTypes::Vector3 position = DataTypes::Vector3::zero();
 
-			int shirtObjectID = 0;
+			int shirtObjectLOT = 0;
 			{
 				FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
 				if (!rth.isRowHeaderValid()) throw new std::runtime_error("Invalid Row Header");
@@ -915,7 +915,7 @@ public:
 							) {
 
 							int componentID = *reinterpret_cast<uint32_t*>(rth[i][0].getMemoryLocation());
-							shirtObjectID = CacheComponentsRegistry::FindID(componentID, 11);
+							shirtObjectLOT = CacheComponentsRegistry::FindID(componentID, 11);
 							break;
 						}
 					}
@@ -923,24 +923,24 @@ public:
 						Logger::log("Cache:ItemComponent", e.what(), LogType::ERR);
 					}
 				}
-				if(shirtObjectID == 0) {
+				if(shirtObjectLOT == 0) {
 					Logger::log("DB-CreateNewChar", "Unable to find componentID for shirt.");
 					return -1; // Fail
 				}
 			}
 
-			int pantsObjectID = 0; {
+			int pantsObjectLOT = 0; {
 				FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
 				for (int i = 0; i < rth.getRowCount(); ++i) {
 					if (!rth.isValid(i)) continue;
 					try {
 						if (
 							*reinterpret_cast<uint32_t*>(rth[i]["itemType"].getMemoryLocation()) == 7 &&
-							*reinterpret_cast<uint32_t*>(rth[i]["color1"].getMemoryLocation()) == pantsObjectID &&
+							*reinterpret_cast<uint32_t*>(rth[i]["color1"].getMemoryLocation()) == pantsObjectLOT &&
 							*reinterpret_cast<uint32_t*>(rth[i]["isBOE"].getMemoryLocation()) == 1
 							) {
 							int componentID = *reinterpret_cast<uint32_t*>(rth[i][0].getMemoryLocation());
-							pantsObjectID = CacheComponentsRegistry::FindID(componentID, 11);
+							pantsObjectLOT = CacheComponentsRegistry::FindID(componentID, 11);
 							break;
 						}
 					}
@@ -948,7 +948,7 @@ public:
 						Logger::log("Cache:ItemComponent", e.what(), LogType::ERR);
 					}
 				}
-				if (pantsObjectID == 0) {
+				if (pantsObjectLOT == 0) {
 					Logger::log("DB-CreateNewChar", "Unable to find componentID for pants.");
 					return -1; // Fail
 				}
@@ -970,6 +970,26 @@ public:
 
 			// Reserve objectID
 			unsigned long long objectID = reserveCountedID(DBCOUNTERID::PLAYER);
+
+			// Create default shirt/pants objects
+			DatabaseModels::ItemModel shirtObject;
+			shirtObject.attributes.SetBound(true);
+			shirtObject.attributes.SetEquipped(true);
+			shirtObject.templateID = shirtObjectLOT;
+			shirtObject.slot = 0;
+			shirtObject.tab = 0;
+			shirtObject.count = 1;
+			shirtObject.subkey = 0;
+			shirtObject.ownerID = objectID;
+			shirtObject.objectID = (1ULL << 60) + reserveCountedID(DBCOUNTERID::STATIC) ;
+
+			DatabaseModels::ItemModel pantsObject = shirtObject;
+			pantsObject.templateID = pantsObjectLOT;
+			pantsObject.objectID = (1ULL << 60) + reserveCountedID(DBCOUNTERID::STATIC);
+			pantsObject.slot = 1;
+
+			AddItemToInventory(shirtObject);
+			AddItemToInventory(pantsObject);
 
 			// Create player
 
@@ -1003,8 +1023,8 @@ public:
 			ret = SQLBindParameter(sqlStmtHandle, 12, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.x), 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 13, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.y), 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 14, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.z), 0, &lenZero);
-			ret = SQLBindParameter(sqlStmtHandle, 15, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &shirtObjectID, 0, &lenZero);
-			ret = SQLBindParameter(sqlStmtHandle, 16, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &pantsObjectID, 0, &lenZero);
+			ret = SQLBindParameter(sqlStmtHandle, 15, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &shirtObject.objectID, 0, &lenZero);
+			ret = SQLBindParameter(sqlStmtHandle, 16, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &pantsObject.objectID, 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 17, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &uScore, 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 18, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &uLevel, 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 19, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &currency, 0, &lenZero);
@@ -2050,14 +2070,15 @@ public:
 		ret = SQLBindParam(sqlStmtHandle, 3, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &item.subkey, 0);
 		ret = SQLBindParam(sqlStmtHandle, 4, SQL_C_SLONG, SQL_INTEGER, 0, 0, &item.tab, 0);
 		ret = SQLBindParam(sqlStmtHandle, 5, SQL_C_SLONG, SQL_INTEGER, 0, 0, &item.slot, 0);
-		ret = SQLBindParam(sqlStmtHandle, 6, SQL_C_SHORT, SQL_SMALLINT, 0, 0, &item.templateID, 0);
-		ret = SQLBindParam(sqlStmtHandle, 7, SQL_C_SHORT, SQL_SMALLINT, 0, 0, &item.count, 0);
+		ret = SQLBindParam(sqlStmtHandle, 6, SQL_C_SLONG, SQL_INTEGER, 0, 0, &item.templateID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 7, SQL_C_SLONG, SQL_INTEGER, 0, 0, &item.count, 0);
+		ret = SQLBindParam(sqlStmtHandle, 8, SQL_C_SHORT, SQL_SMALLINT, 0, 0, &item.attributes, 0);
 
 		std::u16string u16metadata = LDFUtils::PackCollectionToWString(item.metadata);
 		std::string metadata = std::string(u16metadata.begin(), u16metadata.end());
 		SQLLEN lenMetadata = metadata.size();
 
-		ret = SQLBindParameter(sqlStmtHandle, 8, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(item.metadata.size(), 1), 0, (SQLPOINTER)metadata.c_str(), 0, &lenMetadata);
+		ret = SQLBindParameter(sqlStmtHandle, 9, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(item.metadata.size(), 1), 0, (SQLPOINTER)metadata.c_str(), 0, &lenMetadata);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);

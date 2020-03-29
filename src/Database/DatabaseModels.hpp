@@ -78,6 +78,10 @@ struct ItemModel {
 	private:
 		std::uint16_t data;
 	public:
+		ItemAttributes() {
+			data = 0;
+		}
+
 		inline std::uint16_t GetAttributes() {
 			return data;
 		}
@@ -97,22 +101,27 @@ struct ItemModel {
 		}
 
 		inline bool GetBound() {
-			return GetAttribute(0x01);
+			return GetAttribute(0x00);
 		}
 
 		inline void SetBound(bool flag) {
-			SetAttribute(0x01, flag);
+			SetAttribute(0x00, flag);
 		}
 
 		inline bool GetEquipped() {
-			return GetAttribute(0x02);
+			return GetAttribute(0x01);
 		}
 
-		inline bool SetEquipped(bool flag) {
-			SetAttribute(0x02, flag);
+		inline void SetEquipped(bool flag) {
+			SetAttribute(0x01, flag);
 		}
 	} attributes;
 	LDFCollection metadata;
+
+	ItemModel() {
+		subkey = 0;
+		count = 1;
+	}
 };
 }
 
