@@ -18,6 +18,7 @@ struct InventoryItemStack {
 	DataTypes::LWOOBJID objectID;
 	DataTypes::LWOOBJID subkey;
 	std::uint32_t quantity=1;
+	std::uint32_t tab=0;
 	bool equip=false;
 	bool bound=false;
 	LDFCollection metadata;
@@ -80,6 +81,7 @@ public:
 			itemStack.objectID = item->GetObjectID();
 			itemStack.quantity = count;
 			itemStack.equip = equip;
+			itemStack.tab = 0;
 
 			// Get item type
 			auto itemCompID = CacheComponentsRegistry::GetComponentID(itemID, 11);
@@ -124,6 +126,7 @@ public:
 					itemStack.bound = it->attributes.GetBound();
 					itemStack.metadata = it->metadata;
 					itemStack.subkey = it->subkey;
+					itemStack.tab = it->tab;
 
 					auto tabIt = inventory.find(it->tab);
 					if (tabIt != inventory.end()) {
@@ -159,14 +162,16 @@ public:
 			for (int i = 0; i < equippedItems.size(); ++i) {
 				factory->Write<std::uint64_t>(equippedItems.at(i).objectID);
 				factory->Write<std::int32_t>(equippedItems.at(i).LOT);
-				factory->Write(false);
+				factory->Write(equippedItems.at(i).subkey != 0ULL);
+				if(equippedItems.at(i).subkey != 0ULL)
+				/**/factory->Write<std::int64_t>(equippedItems.at(i).subkey);
 				factory->Write(true);
 				/**/factory->Write<std::uint32_t>(equippedItems.at(i).quantity);
 				factory->Write(true);
 				/**/factory->Write<std::uint16_t>(i);
 				factory->Write(true);
-				/**/factory->Write<std::uint16_t>(0);
-				factory->Write(false);
+				/**/factory->Write<std::uint32_t>(equippedItems.at(i).tab);
+				factory->Write(false); // TODO: Compression!
 				factory->Write(true);
 			}
 		}
@@ -373,6 +378,7 @@ public:
 			itemStack.bound = false;
 			itemStack.subkey = 0ULL;
 			itemStack.quantity = 1;
+			itemStack.tab = tab;
 			if (owner->GetLOT() == 1) {
 				itemStack.objectID = (1ULL << 60) | Database::reserveCountedID(Database::DBCOUNTERID::PLAYER);
 			}
