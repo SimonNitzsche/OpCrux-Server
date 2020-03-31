@@ -121,6 +121,9 @@ void ObjectsManager::OnUpdate() {
 
 void ObjectsManager::OnPhysicsUpdate() {
 	// Call update
-	for (auto oPair : object_list)
-		oPair.second->PhysicUpdate();
+	for (auto oPair : object_list) {
+			if (oPair.second != nullptr && oPair.second) {
+				oPair.second->PhysicUpdate();
+			}
+	}
 }

@@ -981,7 +981,7 @@ public:
 			shirtObject.count = 1;
 			shirtObject.subkey = 0;
 			shirtObject.ownerID = objectID;
-			shirtObject.objectID = (1ULL << 60) + reserveCountedID(DBCOUNTERID::PLAYER) ;
+			shirtObject.objectID = (1ULL << 60) + reserveCountedID(DBCOUNTERID::PLAYER);
 
 			DatabaseModels::ItemModel pantsObject = shirtObject;
 			pantsObject.templateID = pantsObjectLOT;

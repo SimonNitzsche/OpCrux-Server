@@ -121,6 +121,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/VehiclePhysicsComponent.hpp
 	src/Entity/Components/VendorComponent.hpp
 	src/Entity/GameMessages/ActivityStart.hpp
+	src/Entity/GameMessages/AddItemToInventoryClientSync.hpp
 	src/Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp
 	src/Entity/GameMessages/Die.hpp
 	src/Entity/GameMessages/DropClientLoot.hpp

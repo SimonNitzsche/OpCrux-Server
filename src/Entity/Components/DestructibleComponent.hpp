@@ -72,7 +72,7 @@ public:
 
 				// Check if we have mission
 				if (isMisssionDrop) {
-					continue; // TODO!
+					//continue; // TODO!
 					/*if (!Database::HasMission(lootOwner->GetObjectID().getPureID(), misID)) {
 						continue;
 					}*/
