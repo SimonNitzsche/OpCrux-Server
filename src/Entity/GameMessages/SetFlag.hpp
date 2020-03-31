@@ -20,6 +20,7 @@ namespace GM {
 		}
 
 		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
+			if (target == nullptr) target = sender;
 			target->OnSetFlag(sender, this);
 		}
 	};
