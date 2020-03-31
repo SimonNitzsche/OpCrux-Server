@@ -136,6 +136,9 @@ public:
 		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_DBC, sqlEnvHandle, &sqlConnHandle))
 			Disconnect();
 
+		if (SQL_SUCCESS != SQLSetConnectAttr(sqlConnHandle, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0))
+			Disconnect();
+
 		//output
 		std::cout << "Attempting connection to SQL Server...";
 		std::cout << "\n";
