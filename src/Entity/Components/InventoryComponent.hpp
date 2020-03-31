@@ -112,25 +112,27 @@ public:
 
 	void Awake() {
 		if (owner->GetLOT() == 1) {
-			auto playerItems = Database::GetInventoryItemsOfTab(owner->GetObjectID().getPureID(), 0);
+			auto playerBags = Database::GetFullInventory(owner->GetObjectID().getPureID());
+			for (auto playerInv : playerBags) {
+				auto playerItems = playerInv.second;
+				for (auto it = playerItems.begin(); it != playerItems.end(); ++it) {
+					InventoryItemStack itemStack = InventoryItemStack();
+					itemStack.LOT = it->templateID;
+					itemStack.objectID = it->objectID;
+					itemStack.quantity = it->count;
+					itemStack.equip = it->attributes.GetEquipped();
+					itemStack.bound = it->attributes.GetBound();
+					itemStack.metadata = it->metadata;
+					itemStack.subkey = it->subkey;
 
-			for (auto it = playerItems.begin(); it != playerItems.end(); ++it) {
-				InventoryItemStack itemStack = InventoryItemStack();
-				itemStack.LOT = it->templateID;
-				itemStack.objectID = it->objectID;
-				itemStack.quantity = it->count;
-				itemStack.equip = it->attributes.GetEquipped();
-				itemStack.bound = it->attributes.GetBound();
-				itemStack.metadata = it->metadata;
-				itemStack.subkey = it->subkey;
-
-				auto tabIt = inventory.find(it->tab);
-				if (tabIt != inventory.end()) {
-					tabIt->second.insert({ it->slot, itemStack });
-				}
-				else {
-					InventoryTab _tab; _tab.insert({ it->slot, itemStack });
-					inventory.insert({ it->tab, _tab });
+					auto tabIt = inventory.find(it->tab);
+					if (tabIt != inventory.end()) {
+						tabIt->second.insert({ it->slot, itemStack });
+					}
+					else {
+						InventoryTab _tab; _tab.insert({ it->slot, itemStack });
+						inventory.insert({ it->tab, _tab });
+					}
 				}
 			}
 
@@ -286,7 +288,7 @@ public:
 		if (stackSize < 1) stackSize = 999;
 
 		// Check if tab in inventory exists, otherwise use slot 0
-		bool isFull = false;
+		bool isFull = true;
 		if (itTab != inventory.end()) {
 			// Check for free spot
 			// The max of the biggest slot is 240
@@ -297,11 +299,8 @@ public:
 				// Check if item exists at slot, if then check if same LOT and stackable, or if not, set slot and break
 				if (itSlot == itTab->second.end() || (itSlot->second.LOT == LOT && itSlot->second.quantity < stackSize)) {
 					slot = i;
+					isFull = false;
 					break;
-				}
-				
-				if (i == 239) {
-					isFull = true;
 				}
 			}
 
@@ -335,6 +334,8 @@ public:
 			return;
 		}
 
+		//Logger::log("WRLD", "Slot #" + std::to_string(slot));
+
 		// Get stack size.
 		std::int32_t stackSize = GetStackSizeForLOT(item->GetLOT());
 		if (stackSize < 1) stackSize = 999;
@@ -362,6 +363,8 @@ public:
 				itemStack = slotIt->second;
 			}
 		}
+
+		//Logger::log("WRLD", "Stack item? "+std::string(useStacking?"true":"false"));
 
 		// We don't have a stack, make a new one.
 		if (!useStacking) {
@@ -407,10 +410,12 @@ public:
 
 			// Sync with db
 			if (useStacking) {
-				// TODO: Update DB
+				Database::UpdateItemFromInventory(itemModel);
+				//Logger::log("WRLD", "Update item DB");
 			}
 			else {
-				// TODO: Insert DB
+				Database::AddItemToInventory(itemModel);
+				//Logger::log("WRLD", "Add item DB");
 			}
 
 			// Sync with client
