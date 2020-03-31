@@ -122,8 +122,10 @@ void ObjectsManager::OnUpdate() {
 void ObjectsManager::OnPhysicsUpdate() {
 	// Call update
 	for (auto oPair : object_list) {
-			if (oPair.second != nullptr && oPair.second) {
+		if (oPair.second != nullptr && oPair.second) {
+			if (std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end()) {
 				oPair.second->PhysicUpdate();
 			}
+		}
 	}
 }
