@@ -19,6 +19,8 @@ private:
 
 	Entity::GameObject* mountedObject = nullptr;
 
+	std::uint32_t gameActivity = 0;
+
 	
 	enum class WorldTransitionState : std::uint8_t {IN_WORLD, ENTERING_WORLD, LEAVING_WORLD} worldTransitionState = WorldTransitionState::ENTERING_WORLD;
 
@@ -44,6 +46,10 @@ public:
 
 	std::uint32_t GetLevel() {
 		return charInfo.uLevel;
+	}
+
+	void SetActivity(std::uint32_t activity) {
+		gameActivity = activity;
 	}
 
 	CharacterComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
@@ -186,7 +192,8 @@ public:
 		factory->Write(false);
 		
 		// TODO: Activity
-		factory->Write(false);
+		factory->Write(true);
+		factory->Write<std::uint32_t>(gameActivity);
 
 		// TODO: Guilds
 		factory->Write(false);

@@ -285,14 +285,14 @@ void WorldServer::GameLoopThread() {
 		dynamicsWorld->stepSimulation(0.0166667f, 10);
 		objectsManager->OnPhysicsUpdate();
 		m_lock.unlock();
-		RakSleep(300);
+		RakSleep(30);
 	}
 }
 
 void WorldServer::DebugRendererThread() {
 	while (ServerInfo::bRunning) {
 		
-		RakSleep(300);
+		RakSleep(30);
 	}
 }
 

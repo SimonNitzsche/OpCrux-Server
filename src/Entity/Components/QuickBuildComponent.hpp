@@ -26,6 +26,8 @@ private:
 
 	DataTypes::Vector3 rebuild_activators;
 
+	Entity::GameObject* activator = nullptr;
+
 	/*
 		0 = Open
 		2 = Completed
@@ -80,14 +82,22 @@ public:
 				{GM::EnableRebuild msg; msg.user = buildingPlayer->GetObjectID(); msg.bSuccess; msg.fDuration = completionTime; GameMessages::Broadcast(this->owner, msg); }
 				{GM::ServerTerminateInteraction msg; msg.ObjIDTerminator = buildingPlayer->GetObjectID(); msg.type = Enums::ETerminateType::FROM_INTERACTION; GameMessages::Broadcast(this->owner, msg); }
 
+
+				activator->Remove();
+				activator = nullptr;
+				owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
+
 				this->_isDirtyFlag = true;
 				this->owner->SetDirty();
+
+				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
+
+				buildingPlayer->SetPlayerActivity(0);
 			}
 		}
 		// When completed
 		else if (qbState == 2) {
 			if (true) {
-				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
 			}
 
 		}
@@ -132,7 +142,7 @@ public:
 
 
 		// Make Activator
-		Entity::GameObject * activator = new Entity::GameObject(ScriptedActivityComponent::owner->GetZoneInstance(), 6604);
+		activator = new Entity::GameObject(ScriptedActivityComponent::owner->GetZoneInstance(), 6604);
 		activator->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + ScriptedActivityComponent::owner->GetZoneInstance()->spawnedObjectIDCounter++));
 		ScriptedActivityComponent::owner->AddChild(activator);
 		//activator->isSerializable = true;
@@ -148,7 +158,12 @@ public:
 
 		ScriptedActivityComponent::Serialize(factory, packetType);
 
-		ENABLE_FLAG_ON_CONSTRUCTION(_isDirtyFlag);
+		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION)
+			_isDirtyFlag = true;
+
+		if (qbState == 5)
+			_isDirtyFlag = true;
+
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
 			factory->Write<std::uint32_t>(qbState);
@@ -181,10 +196,12 @@ public:
 			playerStartImagination = sender->GetImagination();
 			{GM::EnableRebuild msg; msg.user = sender->GetObjectID(); msg.bEnable = true; msg.fDuration = completionTime; GameMessages::Broadcast(this->owner, msg); }
 			{GM::RebuildNotifyState msg; msg.player = sender->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 5); GameMessages::Broadcast(this->owner, msg); }
+
+			this->_isDirtyFlag = true;
+			this->owner->SetDirty();
+			buildingPlayer->SetPlayerActivity(1);
 		}
 
-		this->_isDirtyFlag = true;
-		this->owner->SetDirty();
 	}
 
 };
