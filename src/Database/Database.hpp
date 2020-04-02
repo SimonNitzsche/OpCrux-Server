@@ -327,8 +327,18 @@ public:
 	static void SetupStatementHandle() {
 
 		if (sqlStmtHandle != NULL) {
-			SQLCloseCursor(sqlStmtHandle);
-			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			if (SQL_SUCCESS != SQLCloseCursor(sqlStmtHandle)) {
+				extract_error("SQLCloseCursor", sqlConnHandle, SQL_HANDLE_DBC);
+				extract_error("SQLCloseCursor", sqlStmtHandle, SQL_HANDLE_STMT);
+				Disconnect();
+				return;
+			}
+			if (SQL_SUCCESS != SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle)) {
+				extract_error("SQLFreeHandle", sqlConnHandle, SQL_HANDLE_DBC);
+				extract_error("SQLFreeHandle", sqlStmtHandle, SQL_HANDLE_STMT);
+				Disconnect();
+				return;
+			}
 		}
 		sqlStmtHandle = NULL;
 		//if there is a problem connecting then exit application
