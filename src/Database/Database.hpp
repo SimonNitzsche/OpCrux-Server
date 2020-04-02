@@ -327,17 +327,10 @@ public:
 	static void SetupStatementHandle() {
 
 		if (sqlStmtHandle != NULL) {
-			if (SQL_SUCCESS != SQLCloseCursor(sqlStmtHandle)) {
-				extract_error("SQLCloseCursor", sqlConnHandle, SQL_HANDLE_DBC);
-				extract_error("SQLCloseCursor", sqlStmtHandle, SQL_HANDLE_STMT);
-				Disconnect();
-				return;
-			}
-			if (SQL_SUCCESS != SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle)) {
+			SQLCloseCursor(sqlStmtHandle);
+			if (SQL_NO_DATA != SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle)) {
 				extract_error("SQLFreeHandle", sqlConnHandle, SQL_HANDLE_DBC);
 				extract_error("SQLFreeHandle", sqlStmtHandle, SQL_HANDLE_STMT);
-				Disconnect();
-				return;
 			}
 		}
 		sqlStmtHandle = NULL;

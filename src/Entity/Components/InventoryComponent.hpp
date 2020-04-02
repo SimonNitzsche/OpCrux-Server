@@ -7,6 +7,7 @@
 
 #include "GameCache/InventoryComponent.hpp"
 #include "GameCache/ItemComponent.hpp"
+#include "Missions/MissionManager.hpp"
 
 /*
 	TODO: This component is currently only implemented for static inventory, change this in future.
@@ -138,6 +139,9 @@ public:
 					}
 				}
 			}
+
+			// Check for missions
+			MissionManager::LaunchTaskEvent(Enums::EMissionTask::GATHER, owner, owner->GetObjectID());
 
 			//_isDirtyFlagEquippedItems = _isDirtyFlagEquippedItems | playerItems.size() != 0;
 		}
@@ -423,6 +427,7 @@ public:
 				Database::AddItemToInventory(itemModel);
 				//Logger::log("WRLD", "Add item DB");
 			}
+			MissionManager::LaunchTaskEvent(Enums::EMissionTask::GATHER, owner, owner->GetObjectID());
 
 			// Sync with client
 			GM::AddItemToInventoryClientSync addItemGM;

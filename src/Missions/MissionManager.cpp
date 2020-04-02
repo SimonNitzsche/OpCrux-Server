@@ -7,6 +7,7 @@
 #include "Server/WorldServer.hpp"
 #include "Entity/Components/CharacterComponent.hpp"
 #include "Entity/GameMessages.hpp"
+#include "Entity/Components/InventoryComponent.hpp"
 
 std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> MissionManager::GetMissionTasksByTaskTypeAndTarget(Enums::EMissionTask taskType, std::int32_t target) {
     std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> missionsFound;
@@ -22,6 +23,11 @@ std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> MissionManager::Get
 
 			// Check for target first, then for taskType -> better performance
 			std::int32_t c_target = CacheMissionTasks::GetTarget(rowInfo);
+
+            if (taskType == Enums::EMissionTask::GATHER) {
+                c_target = 0;
+            }
+
 			if (c_target == target || c_target <= 0) {
 				std::int32_t c_taskType = CacheMissionTasks::GetTaskType(rowInfo);
 				if (c_taskType == static_cast<std::int32_t>(taskType)) {
@@ -122,22 +128,26 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
                 std::int32_t subTaskValue = (caster->GetZoneInstance()->luZone->zoneID << 8) + (updateVal & 0xFF);
 
+                auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
+
                 for (int i = 0; i < missionTasksProgress.size(); ++i) {
 
                     auto subTaskProgStr = StringUtils::splitString(missionTasksProgress.at(i), ':');
+                    auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
+                    if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
+                        // Make sure to remove placeholder 0
+                        if (subTaskProgStr.size() == 1 && subTaskProgStr.at(0) == "0") subTaskProgStr.clear();
 
-                    // Make sure to remove placeholder 0
-                    if (subTaskProgStr.size() == 1 && subTaskProgStr.at(0) == "0") subTaskProgStr.clear();
-                    
-                    auto subTaskProg = StringUtils::StringVectorToIntList(subTaskProgStr);
+                        auto subTaskProg = StringUtils::StringVectorToIntList(subTaskProgStr);
 
-                    if (std::find(subTaskProg.begin(), subTaskProg.end(), subTaskValue) == subTaskProg.end()) {
-                        subTaskProg.push_back(subTaskValue);
+                        if (std::find(subTaskProg.begin(), subTaskProg.end(), subTaskValue) == subTaskProg.end()) {
+                            subTaskProg.push_back(subTaskValue);
 
-                        UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), subTaskValue);
+                            UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), subTaskValue);
+                        }
+
+                        missionTasksProgress.at(i) = StringUtils::IntListToString(subTaskProg, ':');
                     }
-
-                    missionTasksProgress.at(i) = StringUtils::IntListToString(subTaskProg, ':');
                 }
 
                 missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
@@ -146,18 +156,22 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
             break;
         }
         case Enums::EMissionTask::TALK_TO_NPC: {
-            auto currentMissions = Database::GetAllMissionsByIDsAndStates(dbPlayerID, possibleMissionsOM, { 2, 10 });
             for (auto it = currentMissions.begin(); it != currentMissions.end(); ++it) {
                 auto missionModel = *it;
 
 
                 auto missionTasksProgress = StringUtils::splitString(it->progress, '|');
                 auto updateTasks = possibleMissions.at(it->missionID);
+                auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
 
                 for (int i = 0; i < missionTasksProgress.size(); ++i) {
-                    missionTasksProgress.at(i) = std::to_string(std::stoi(missionTasksProgress.at(i)) + updateVal);
 
-                    UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
+                    auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
+                    if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
+                        missionTasksProgress.at(i) = std::to_string(std::stoi(missionTasksProgress.at(i)) + updateVal);
+
+                        UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
+                    }
                 }
 
                 missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
@@ -177,7 +191,57 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
             break;
         case Enums::EMissionTask::USE_SKILL:
             break;
-        case Enums::EMissionTask::GATHER:
+        case Enums::EMissionTask::GATHER: {
+            auto invComp = playerObject->GetComponent<InventoryComponent>();
+            for (auto it = currentMissions.begin(); it != currentMissions.end(); ++it) {
+                auto missionModel = *it;
+
+                auto missionTasksProgress = StringUtils::splitString(it->progress, '|');
+                auto updateTasks = possibleMissions.at(it->missionID);
+
+                auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
+
+                for (int i = 0; i < missionTasksProgress.size(); ++i) {
+                    auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
+
+                    if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
+
+                        std::string taskParam1 = CacheMissionTasks::GetTaskParam1(cacheMissionTasksRow);
+                        if (taskParam1 == "") taskParam1 = "0";
+
+                        auto targetGroup = StringUtils::StringVectorToIntList(StringUtils::splitString(CacheMissionTasks::GetTargetGroup(cacheMissionTasksRow), ','));
+
+                        if (targetGroup.size() == 0) {
+                            targetGroup.push_back(CacheMissionTasks::GetTarget(cacheMissionTasksRow));
+                        }
+
+                        auto selectedBag = invComp->inventory.find(std::stoi(taskParam1));
+
+                        bool targetGroupResult = 0;
+
+                        // If we don't have the bag, we don't have the item
+                        if (selectedBag != invComp->inventory.end()) {
+
+                            // Go through inventory to check for item
+                            for (auto targetGroupIterator = targetGroup.begin(); targetGroupIterator != targetGroup.end(); ++targetGroupIterator) {
+                                for (auto slotIt = selectedBag->second.begin(); slotIt != selectedBag->second.end(); ++slotIt) {
+                                    if (slotIt->second.LOT == *targetGroupIterator) {
+                                        targetGroupResult += slotIt->second.quantity;
+                                    }
+                                }
+                            }
+                        }
+
+                        missionTasksProgress.at(i) = std::to_string(targetGroupResult);
+
+                        UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
+                    }
+                }
+
+                missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
+                updateMissions.push_back(missionModel);
+            }
+        }
             break;
         case Enums::EMissionTask::EXPLORE:
             break;
@@ -204,7 +268,6 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
         case Enums::EMissionTask::RACING:
             break;
         case Enums::EMissionTask::FLAG: {
-            auto currentMissions = Database::GetAllMissionsByIDsAndStates(dbPlayerID, possibleMissionsOM, { 2, 10 });
             for (auto it = currentMissions.begin(); it != currentMissions.end(); ++it) {
                 auto missionModel = *it;
 
@@ -215,17 +278,18 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
                 for (int i = 0; i < missionTasksProgress.size(); ++i) {
                     auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
+                    if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
+                        auto targetGroup = StringUtils::StringVectorToIntList(StringUtils::splitString(CacheMissionTasks::GetTargetGroup(cacheMissionTasksRow), ','));
 
-                    auto targetGroup = StringUtils::StringVectorToIntList(StringUtils::splitString(CacheMissionTasks::GetTargetGroup(cacheMissionTasksRow), ','));
+                        bool targetGroupResult = false;
+                        for (auto targetGroupIterator = targetGroup.begin(); targetGroupIterator != targetGroup.end(); ++targetGroupIterator) {
+                            targetGroupResult |= playerObject->GetComponent<CharacterComponent>()->GetFlag(*targetGroupIterator);
+                        }
 
-                    bool targetGroupResult = false;
-                    for (auto targetGroupIterator = targetGroup.begin(); targetGroupIterator != targetGroup.end(); ++targetGroupIterator) {
-                        targetGroupResult |= playerObject->GetComponent<CharacterComponent>()->GetFlag(*targetGroupIterator);
+                        missionTasksProgress.at(i) = targetGroupResult ? "1" : "0";
+
+                        UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
                     }
-
-                    missionTasksProgress.at(i) = targetGroupResult ? "1" : "0";
-
-                    UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
                 }
 
                 missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
@@ -264,9 +328,6 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
     }
 
     for (auto it = updateMissions.begin(); it != updateMissions.end(); ++it) {
-
-
-
         // Check if mission is done
         if (CheckIfMissionIsReadyToComplete(it->missionID, it->progress)) {
             if (it->state == 2 || it->state == 10) {
