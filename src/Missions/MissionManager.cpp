@@ -106,7 +106,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
             possibleMissionsOM.push_back(it->first);
         }
 
-        auto currentMissions = Database::GetAllMissionsByIDsAndStates(dbPlayerID, possibleMissionsOM, { 2, 10 });
+        auto currentMissions = Database::GetAllMissionsByIDsAndStates(dbPlayerID, possibleMissionsOM, { 2, 4, 10 });
     
         GetAllNonMissionsThatAreMissingByTaskType(player, &possibleMissions, &currentMissions);
 
@@ -383,4 +383,70 @@ bool MissionManager::CheckIfMissionIsReadyToComplete(std::int32_t missionID, std
         ++rowIndex;
     }
     return true;
+}
+
+void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseModels::MissionModel mission) {
+
+    // Get mission info
+    auto missionRow = CacheMissions::getRow(mission.missionID);
+
+    // Stop if mission not valid
+    if (!missionRow.isValid()) return;
+
+    CharacterComponent* charComp = player->GetComponent<CharacterComponent>();
+    if (charComp == nullptr) return;
+
+    InventoryComponent* invComp = player->GetComponent<InventoryComponent>();
+    if (invComp == nullptr) return;
+
+    auto charInfo = charComp->GetCharInfo();
+
+    /*
+        TODO: Repeatable Missions
+    */
+
+    std::int32_t tmpVal;
+
+    // Reward: Currency
+    tmpVal = CacheMissions::GetRewardCurrency(missionRow);;
+    charInfo.currency += (tmpVal > 0 ? tmpVal : 0);
+    // Reward: LEGO Score
+    tmpVal = CacheMissions::GetLegoScore(missionRow);
+    charInfo.uScore += (tmpVal > 0 ? tmpVal : 0);
+    // TODO: Level Update
+    // Reward: Reputation
+    tmpVal = CacheMissions::GetRewardReputation(missionRow);
+    charInfo.reputation += (tmpVal > 0 ? tmpVal : 0);
+    // Reward: MaxImagination
+    tmpVal = CacheMissions::GetRewardMaxImagination(missionRow);
+    charInfo.imagination += (tmpVal > 0 ? tmpVal : 0);
+    // Reward: MaxHealth
+    tmpVal = CacheMissions::GetRewardMaxHealth(missionRow);
+    charInfo.health += (tmpVal > 0 ? tmpVal : 0);
+    // TODO: Reward: MaxInventory
+    // TODO: Reward: MaxModel
+    
+    charComp->InitCharInfo(charInfo);
+    Database::UpdateChar(charInfo);
+    player->GetZoneInstance()->objectsManager->Serialize(player);
+
+    // TODO: Reward: Items
+
+    // List <LOT, count>
+    std::list<std::pair<std::int32_t, std::int32_t>> rewardItems = {
+        {CacheMissions::GetRewardItem1(missionRow), CacheMissions::GetRewardItem1Count(missionRow)},
+        {CacheMissions::GetRewardItem2(missionRow), CacheMissions::GetRewardItem2Count(missionRow)},
+        {CacheMissions::GetRewardItem3(missionRow), CacheMissions::GetRewardItem3Count(missionRow)},
+        {CacheMissions::GetRewardItem4(missionRow), CacheMissions::GetRewardItem4Count(missionRow)}
+    };
+
+    bool isChoiceReward = CacheMissions::GetIsChoiceReward(missionRow);
+    for (auto rewItmIt = rewardItems.begin(); rewItmIt != rewardItems.end(); ++rewItmIt) {
+        if (rewItmIt->first == -1 || rewItmIt->second <= 0) continue;
+        if (isChoiceReward && (mission.chosenReward == -1 || mission.chosenReward != rewItmIt->first)) continue;
+
+        invComp->AddItem(rewItmIt->first, rewItmIt->second);
+    }
+
+    // TODO: Reward: Emotes
 }

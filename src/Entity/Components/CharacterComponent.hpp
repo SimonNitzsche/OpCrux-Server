@@ -58,6 +58,11 @@ public:
 
 	void InitCharInfo(DatabaseModels::Str_DB_CharInfo info) {
 		charInfo = info;
+
+		StatsComponent* statsComp = this->owner->GetComponent<StatsComponent>();
+		if (statsComp != nullptr) {
+			statsComp->SetDirty();
+		}
 	}
 
 	void InitCharStyle(DatabaseModels::Str_DB_CharStyle style) {

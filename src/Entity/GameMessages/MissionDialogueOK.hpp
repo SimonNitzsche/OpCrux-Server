@@ -46,8 +46,12 @@ namespace GM {
 					GM::NotifyMission gm;
 					gm.missionID = mis.missionID;
 					gm.missionState = mis.state;
+					gm.sendingRewards = true;
 					GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
-				
+					MissionManager::SendMissionRewards(sender, mis);
+					gm.sendingRewards = false;
+					GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
+
 					// Try to offer next mission.
 					auto responderObj = sender->GetZoneInstance()->objectsManager->GetObjectByID(responder);
 					if (responderObj != nullptr) {

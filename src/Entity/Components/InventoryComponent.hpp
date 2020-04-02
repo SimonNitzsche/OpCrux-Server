@@ -324,29 +324,34 @@ public:
 		return (tab << 16) | slot;
 	}
 
-	void AddItem(Entity::GameObject* item) {
-		
+	void AddItem(Entity::GameObject* item, std::uint32_t incCount = 1) {
+
 		// Check if item
 		if (!IsItem(item)) {
 			Logger::log("WRLD", "Can't add item with LOT " + std::to_string(item->GetLOT()) + ", because there is no ItemComponent attached.", LogType::ERR);
 			return;
 		}
 
-		std::uint32_t nextTabAndSlot = GetNextFreeSlot(item->GetLOT());
+		AddItem(item->GetLOT(), incCount, item->GetPosition());
+	}
+	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3()) {
+		std::uint32_t nextTabAndSlot = GetNextFreeSlot(itemLOT);
 
 		std::uint32_t tab  = (nextTabAndSlot & 0xFFFF0000) >> 16;
 		std::uint32_t slot = (nextTabAndSlot & 0x0000FFFF);
 
+		std::uint32_t overflowCount = 0;
+
 		// Check if next slot has been determined
 		if (nextTabAndSlot == 0xFFFFFFFF || slot > 240) {
-			Logger::log("WRLD", "Can't add item with LOT " + std::to_string(item->GetLOT()) + ", because we couldn't find an empty place.", LogType::ERR);
+			Logger::log("WRLD", "Can't add item with LOT " + std::to_string(itemLOT) + ", because we couldn't find an empty place.", LogType::ERR);
 			return;
 		}
 
 		//Logger::log("WRLD", "Slot #" + std::to_string(slot));
 
 		// Get stack size.
-		std::int32_t stackSize = GetStackSizeForLOT(item->GetLOT());
+		std::int32_t stackSize = GetStackSizeForLOT(itemLOT);
 		if (stackSize < 1) stackSize = 999;
 
 		// TODO: Check if inventory is full.
@@ -366,7 +371,13 @@ public:
 				useStacking = true;
 				
 				// inc stack
-				++(slotIt->second.quantity);
+				slotIt->second.quantity += incCount;
+
+				if (slotIt->second.quantity > stackSize) {
+					overflowCount = slotIt->second.quantity - stackSize;
+					slotIt->second.quantity = stackSize;
+					incCount = incCount - overflowCount;
+				}
 
 				// use stack
 				itemStack = slotIt->second;
@@ -377,7 +388,7 @@ public:
 
 		// We don't have a stack, make a new one.
 		if (!useStacking) {
-			itemStack.LOT = item->GetLOT();
+			itemStack.LOT = itemLOT;
 			itemStack.equip = false;
 			itemStack.bound = false;
 			itemStack.subkey = 0ULL;
@@ -436,16 +447,18 @@ public:
 			addItemGM.invType = itemModel.tab;
 			addItemGM.iObjTemplate = itemModel.templateID;
 			addItemGM.iSubkey = itemModel.subkey;
-			addItemGM.itemCount = 1;
+			addItemGM.itemCount = incCount;
 			addItemGM.itemsTotal = itemModel.count;
 			addItemGM.newObjID = itemModel.objectID;
 			addItemGM.slotID = itemModel.slot;
 			addItemGM.eLootTypeSource = 0;
 			addItemGM.showFlyingLoot = true;
-			addItemGM.ni3FlyingLootPosit = item->GetPosition();
+			addItemGM.ni3FlyingLootPosit = sourcePos;
 			GameMessages::Send(owner, owner->GetObjectID(), addItemGM);
 		}
 
+		if(overflowCount > 0)
+			AddItem(itemLOT, overflowCount, sourcePos);
 
 		// TODO: Implement Skill Casting
 		// TODO: Implement ObjectSkills auto add component SkillComponent.
