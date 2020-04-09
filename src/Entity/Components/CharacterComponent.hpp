@@ -211,6 +211,16 @@ public:
 		}
 		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
 	}
+
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg) {
+		Entity::GameObject * objectToUse = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(msg.objectID);
+
+
+		// OnRequestUse is always received by the player and then redirected to the object internally
+		if (objectToUse != nullptr && objectToUse != this->owner) {
+			objectToUse->OnRequestUse(this->owner, msg);
+		}
+	}
 };
 
 #endif

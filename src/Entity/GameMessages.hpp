@@ -18,39 +18,7 @@
 #include "Entity/GameObject.hpp"
 #include "Utils/LDFUtils.hpp"
 
-#define GM_DESERIALIZE_SWITCH_CASE(name)\
-	case name::GetID(): {name msg = name(); msg.Deserialize(bs); msg.TriggerEvent(senderObject, targetObject); break;}
-
-#define GM_VAR_DESERIALIZE_STRING(bs, parameter)  {parameter = StringUtils::readStringFromBitStream<std::uint32_t>(bs);}
-#define GM_VAR_DESERIALIZE_WSTRING(bs, parameter) {parameter = StringUtils::readWStringFromBitStream<std::uint32_t>(bs);}
-#define GM_VAR_DESERIALIZE(bs, parameter) {bs->Read(parameter);}
-#define GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, parameter, defaultVal) {\
-	/*Check if bool, because those don't need extra bit*/\
-	if(typeid(parameter) == typeid(bool)){\
-		GM_VAR_DESERIALIZE(bs,parameter);\
-	}\
-	else {\
-		bool notDefault; bs->Read(notDefault);\
-		if(!notDefault) parameter = defaultVal;\
-		else GM_VAR_DESERIALIZE(bs, parameter);\
-	}\
-}
-
-#define GM_VAR_SERIALIZE_STRING(bs, parameter) {bs->Write<std::uint32_t>(parameter.size()); bs->Write(reinterpret_cast<const char*>(parameter.c_str()), parameter.size());}
-#define GM_VAR_SERIALIZE_WSTRING(bs, parameter) {bs->Write<std::uint32_t>(parameter.size()); bs->Write(reinterpret_cast<const char*>(parameter.c_str()), parameter.size() * 2);}
-#define GM_VAR_SERIALIZE(bs, parameter) {bs->Write(parameter);}
-#define GM_VAR_SERIALIZE_LDF(bs, parameter) { auto u16stringval = LDFUtils::PackCollectionToWString(parameter); GM_VAR_SERIALIZE_STRING(bs, u16stringval); if(u16stringval.size() != 0) {bs->Write<std::uint16_t>(0);}}
-#define GM_VAR_SERIALIZE_WITH_DEFAULT(bs, parameter, defaultVal) {\
-	/*Check if bool, because those don't need extra bit*/\
-	if(typeid(parameter) == typeid(bool)){\
-		GM_VAR_SERIALIZE(bs,parameter);\
-	}\
-	else {\
-		bool notDefault = !(parameter == defaultVal); bs->Write(notDefault);\
-		if(notDefault)\
-			GM_VAR_SERIALIZE(bs, parameter);\
-	}\
-}
+#include "Entity/GMUtils.hpp"
 
 namespace GM {
 	struct GMBase {

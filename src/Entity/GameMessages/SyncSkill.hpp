@@ -23,7 +23,7 @@ namespace GM {
 
 		inline void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
 			Logger::log("WRLD", "Triggered SyncSkill handle " + std::to_string(uiSkillHandle) + " with behaviorID " + std::to_string(uiBehaviorHandle));
-			sender->OnSyncSkill(*this);
+			sender->OnSyncSkill(sender, *this);
 		}
 	};
 }

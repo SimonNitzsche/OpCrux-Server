@@ -185,7 +185,7 @@ public:
 		
 	}
 
-	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse & msg) {
 		// When active
 		if (qbState == 0) {
 			AddPlayerToActivity(sender->GetObjectID());

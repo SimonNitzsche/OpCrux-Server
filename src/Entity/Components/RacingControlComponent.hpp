@@ -128,7 +128,7 @@ public:
 		{ GM::NotifyVehicleOfRacingObject msg; msg.racingObjectID = this->owner->GetObjectID(); GameMessages::Broadcast(this->owner->GetZoneInstance(), myCar, msg); }
 	}
 
-	void onAcknowledgePossession(Entity::GameObject* player, Entity::GameObject* car) {
+	void OnAcknowledgePossession(Entity::GameObject* player, Entity::GameObject* car) {
 		//{ GM::RacingPlayerLoaded msg; msg.playerID = playerID; msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
 
 		//DataTypes::Vector3 pos = playerObject->GetPosition();

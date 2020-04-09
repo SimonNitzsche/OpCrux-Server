@@ -15,7 +15,7 @@ class NATIVESCRIPT__ScriptComponent_1021_script_name__removed : public NativeScr
 		GM::SetFlag msgSetFlag;
 		msgSetFlag.bFlag = true;
 		msgSetFlag.iFlagID = std::stoi(flagID);
-		msg.user->OnSetFlag(self, &msgSetFlag);
+		msg.user->OnSetFlag(self, msgSetFlag);
 
 		// Also notify client to remove effect
 		GM::FireEventClientSide msgFireEvent;

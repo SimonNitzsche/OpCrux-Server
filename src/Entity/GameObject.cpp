@@ -700,67 +700,12 @@ void Entity::GameObject::SetPlayerActivity(std::uint32_t activity) {
 
 #include "GameCache/MissionTasks.hpp"
 
+GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DEFINE);
+
 void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
 	for (auto i : components) i.second->OnDie(sender, msg);
 }
 
-void Entity::GameObject::OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg) {
-	for (auto i : components) i.second->OnHasBeenCollected(sender, msg);
-}
-
-void Entity::GameObject::OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg) {
-	for (auto i : components) i.second->OnMissionDialogueOK(sender, msg);
-
-	// Make sure next mission gets offered on completion.
-	auto misOfferComp = GetComponent<MissionOfferComponent>();
-	if (misOfferComp != nullptr) {
-		if (Database::HasMission(sender->GetObjectID().getPureID(), msg->missionID)) {
-			std::int32_t missionState = Database::GetMission(sender->GetObjectID().getPureID(), msg->missionID).state;
-			if (missionState == 8 || missionState == 9) {
-				GM::RequestUse requestUseMSG;
-				requestUseMSG.bIsMultiInteractUse = false;
-				requestUseMSG.objectID = objectID;
-				misOfferComp->OnRequestUse(sender, &requestUseMSG);
-			}
-		}
-	}
-}
-
-void Entity::GameObject::OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg) {
-	for (auto i : components) i.second->OnRequestDie(sender, msg);
-}
-
-void Entity::GameObject::OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
-
-	// Handle Interact task
-	MissionManager::LaunchTaskEvent(Enums::EMissionTask::TALK_TO_NPC, this, sender->GetObjectID());
-	MissionManager::LaunchTaskEvent(Enums::EMissionTask::INTERACT, this, sender->GetObjectID());
-
-	/* Mailbox (Script got removed) */
-	if(this->LOT == 3964) {
-		Logger::log("WRLD", "GameObject::OnRequestUse TODO: Implement Mailbox", LogType::INFO);
-	}
-
-	for (auto i : components) i.second->OnRequestUse(sender, msg);
-}
-
-void Entity::GameObject::OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg) {
-	for (auto i : components) i.second->OnSetFlag(sender, msg);
-}
-
-void Entity::GameObject::OnStartSkill(const GM::StartSkill msg) {
-	SkillComponent * skillComponent = this->GetComponent<SkillComponent>();
-	if (skillComponent != nullptr) {
-		skillComponent->OnStartSkill(msg);
-	}
-}
-
-void Entity::GameObject::OnSyncSkill(const GM::SyncSkill msg) {
-	SkillComponent * skillComponent = this->GetComponent<SkillComponent>();
-	if (skillComponent != nullptr) {
-		skillComponent->OnSyncSkill(msg);
-	}
-}
 
 void Entity::GameObject::PickupLoot(Entity::GameObject* loot) {
 	auto invComp = GetComponent<InventoryComponent>();

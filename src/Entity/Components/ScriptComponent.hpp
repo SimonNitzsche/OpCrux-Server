@@ -116,14 +116,14 @@ public:
 		}
 	}
 
-	void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg) {
+	void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK & msg) {
 		if (instance)
-			instance->onMissionDialogueOK(owner, *msg);
+			instance->onMissionDialogueOK(owner, msg);
 	}
 
-	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
+	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse & msg) {
 		if (instance)
-			instance->onUse(owner, *msg);
+			instance->onUse(owner, msg);
 	}
 
 	void OnTimerDone(std::pair<std::u16string, long long> timer) {
@@ -131,9 +131,9 @@ public:
 			instance->onTimerDone(owner, TimerDone(timer.first));
 	}
 
-	void OnFireEventServerSide(Entity::GameObject * sender, GM::FireEventServerSide * msg) {
+	void OnFireEventServerSide(Entity::GameObject * sender, GM::FireEventServerSide & msg) {
 		if (instance)
-			instance->onFireEventServerSide(owner, *msg);
+			instance->onFireEventServerSide(owner, msg);
 	}
 
 	void OnDie(Entity::GameObject* sender, GM::Die* msg) {

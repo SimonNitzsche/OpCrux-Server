@@ -186,6 +186,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages.hpp
 	src/Entity/GameObject.cpp
 	src/Entity/GameObject.hpp
+	src/Entity/GMUtils.hpp
 	src/Entity/NativeScript.hpp
 	src/Entity/ObjectsManager.cpp
 	src/Entity/ObjectsManager.hpp

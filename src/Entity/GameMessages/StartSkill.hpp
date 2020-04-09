@@ -76,7 +76,7 @@ namespace GM {
 			sender->GetZoneInstance()->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 			*/
 			Logger::log("WRLD", "Triggered StartSkill handle " + std::to_string(uiSkillHandle) + " with skillID " + std::to_string(skillID));
-			sender->OnStartSkill(*this);
+			target->OnStartSkill(sender, *this);
 		}
 	};
 }

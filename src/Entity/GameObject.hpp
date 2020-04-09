@@ -14,13 +14,12 @@
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
+#include "Entity/GMUtils.hpp"
+
+#define GAMEOBJECT_GM_PREDECLARE(name) class name
+
 namespace GM {
-	class HasBeenCollected;
-	class MissionDialogueOK;
-	class RequestDie;
-	class SetFlag;
-	class StartSkill;
-	class SyncSkill;
+	GM_MAKE_LIST_CLIENT(GAMEOBJECT_GM_PREDECLARE);
 }
 
 //#include "Server/WorldServer.hpp"
@@ -362,14 +361,18 @@ namespace Entity {
 			/* Game Messages */
 			//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }
 
+
+			GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DECLARE);
+
 			virtual void OnDie(Entity::GameObject* sender, GM::Die* msg);
-			virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg);
+			/*virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg);
 			virtual void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg);
 			virtual void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg);
 			virtual void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg);
 			virtual void OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg);
 			virtual void OnStartSkill(const GM::StartSkill msg);
-			virtual void OnSyncSkill(const GM::SyncSkill msg);
+			virtual void OnSyncSkill(const GM::SyncSkill msg);*/
+
 
 
 			void PickupLoot(Entity::GameObject* loot);

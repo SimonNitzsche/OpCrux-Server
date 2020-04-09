@@ -20,7 +20,7 @@ namespace GM {
 
 		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
 			if (sender->GetObjectID() != playerID) return;
-			target->OnHasBeenCollected(sender, this);
+			target->OnHasBeenCollected(sender, *this);
 		}
 	};
 }

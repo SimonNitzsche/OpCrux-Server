@@ -33,7 +33,7 @@ namespace GM {
 		}
 
 		inline void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-			target->OnRequestDie(sender, this);
+			target->OnRequestDie(sender, *this);
 		}
 	};
 }

@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	inline void OnStartSkill(GM::StartSkill msg) {
+	inline void OnStartSkill(Entity::GameObject * sender, GM::StartSkill & msg) {
 		parameters = SkillStackParameters();
 
 		currentSkill = msg.skillID;
@@ -106,7 +106,7 @@ public:
 		UnCast(msg.sBitStream);
 	}
 
-	inline void OnSyncSkill(GM::SyncSkill msg) {
+	inline void OnSyncSkill(Entity::GameObject* sender, GM::SyncSkill & msg) {
 		parameters.bDone = msg.bDone;
 		parameters.uiBehvaiorHandle = msg.uiBehaviorHandle;
 		parameters.uiSkillHandle = msg.uiSkillHandle;
