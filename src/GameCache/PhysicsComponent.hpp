@@ -9,14 +9,22 @@ extern FDB::Connection Cache;
 namespace CachePhysicsComponent {
 	inline FDB::RowInfo getRow(int32_t id) {
 		FDB::RowTopHeader rth = Cache.getRows("PhysicsComponent");
-		for(int  i = 0; i < rth.getRowCount(); ++i) {
+		for (int i = 0; i < rth.getRowCount(); ++i) {
+			if (!rth.isValid(i)) continue;
 			try {
-				if (*reinterpret_cast<int32_t*>(rth[i][0].getMemoryLocation()) == id)
-					return rth[i];
+				FDB::RowInfo rowInfo = rth[i];
+				while (rowInfo.isValid()) {
+					if (*reinterpret_cast<int32_t*>(rowInfo[0].getMemoryLocation()) == id)
+						return rth[i];
+					if (rowInfo.isLinkedRowInfoValid()) {
+						rowInfo = rowInfo.getLinkedRowInfo();
+					}
+					else {
+						rowInfo = FDB::RowInfo();
+					}
+				}
 			}
-			catch (std::runtime_error e) {
-				Logger::log("Cache:PhysicsComponent", e.what(), ERR);
-			}
+			catch (...) {}
 		}
 		return FDB::RowInfo();
 	}
@@ -26,7 +34,7 @@ namespace CachePhysicsComponent {
 	}
 
 	inline FDB::PointerString GetPhysicsAsset(int32_t id) {
-		return FDB::PointerString(&Cache, getRow(id)/**/[2]/**/.getMemoryLocation());
+		return getRow(id)/**/[2]/**/;
 	}
 
 	inline float GetJump(int32_t id) {

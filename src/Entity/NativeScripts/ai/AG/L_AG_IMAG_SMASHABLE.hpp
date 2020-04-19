@@ -1,6 +1,9 @@
 #ifndef __ENTITY__NATIVESCRIPTS__AI__AG__L_AG_IMAG_SMASHABLE_HPP__
 #define __ENTITY__NATIVESCRIPTS__AI__AG__L_AG_IMAG_SMASHABLE_HPP__
 
+//#include "random/include/effolkronium/random.hpp"
+//using Random = effolkronium::random_static;
+
 #include <string>
 #include "Entity/GameObject.hpp"
 #include "Entity/NativeScript.hpp"
@@ -35,7 +38,7 @@ public:
 
 		// How often do we spawn weird creatures
 		srand(::time(0));
-		std::int32_t funnychance = rand() % 25 + 0;
+		std::int32_t funnychance = rand() % 25 + 0;// Random::get<std::int32_t>(0, 25);
 
 		// What kind of creatures do we want? Will be expanded in the future.
 		std::int32_t animaltype = 1;

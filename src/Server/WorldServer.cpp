@@ -47,8 +47,6 @@
 #include "Utils/LDFUtils.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
 
-#include "bullet3-2.89/src/LinearMath/btIDebugDraw.h"
-
 
 #include "Entity/GameMessages.hpp"
 #include <Entity\Components\ModuleAssemblyComponent.hpp>
@@ -58,6 +56,7 @@
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
+extern std::vector<ILUServer*> virtualServerInstances;
 
 WorldServer::WorldServer(int zone, int instanceID, int port) {
 	// Preload
@@ -104,8 +103,8 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	bool useDebugRenderer = false;
 	if (useDebugRenderer) {
-		debugRenderer = new DebugRenderer();
-		debugRenderer->AssignZoneInstance(this);
+		//debugRenderer = new DebugRenderer();
+		//debugRenderer->AssignZoneInstance(this);
 	}
 
 	// Check startup
@@ -237,6 +236,8 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		}
 	}
 
+	virtualServerInstances.push_back(this);
+
 	Packet* packet;
 	initDone = true;
 
@@ -250,9 +251,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	while (ServerInfo::bRunning) {
 		RakSleep(30);
-		if (debugRenderer != nullptr) {
+		/*if (debugRenderer != nullptr) {
 			debugRenderer->Paint();
-		}
+		}*/
 		while (packet = rakServer->Receive()) {
 			try {
 				m_lock.lock();
@@ -282,7 +283,7 @@ void WorldServer::GameLoopThread() {
 		m_lock.lock();
 		objectsManager->OnUpdate();
 		timer.Update();
-		dynamicsWorld->stepSimulation(0.0166667f, 10);
+		//dynamicsWorld->stepSimulation(0.0166667f, 10);
 		objectsManager->OnPhysicsUpdate();
 		m_lock.unlock();
 		RakSleep(30);

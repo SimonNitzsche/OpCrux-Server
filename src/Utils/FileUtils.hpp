@@ -32,8 +32,13 @@ namespace fs = std::filesystem;
 namespace FileUtils {
 	inline std::unique_ptr<unsigned char[]> ReadFileCompletely(std::string filename, uint32_t * fsize = 0) {
 		// Open
-		FILE * file;
+		
 		StringUtils::ToLowerSelf(filename);
+	/*	auto fhash = std::hash<std::string>()(filename);
+		auto itfhe = std::find(FileUtilsSingleton::filepool.begin(), FileUtilsSingleton::filepool.end(), fhash);
+		if (itfhe != FileUtilsSingleton::filepool.end()) return itfhe->second;*/
+
+		FILE * file;
 		fopen_s(&file, filename.c_str(), "rb");
 		
 		// Check

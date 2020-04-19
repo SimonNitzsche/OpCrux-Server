@@ -11,6 +11,8 @@
 
 #include "Utils/FileUtils.hpp"
 
+class hkRootLevelContainer;
+
 /// Packfiles are composed of several sections.
 /// A section contains several areas
 /// | data | local | global | finish | exports | imports |
@@ -25,7 +27,7 @@ namespace HKX {
 	class HKXFile {
 	private:
 		std::unique_ptr<unsigned char[]> file;
-	private:
+	public:
 		hkxHeader * m_header;
 		std::list<hkxSectionHeader*> m_sectionHeaders;
 
@@ -37,12 +39,16 @@ namespace HKX {
 		std::list<hkLink> data_links;
 		std::list<hkPointer> data_pointers;
 		std::list<hkPointer> data_global_pointers;
+		std::uint32_t offsetRootLevelContainer = -1;
+		hkRootLevelContainer * rootLevelContainer;
 	private:
 		void LoadStructure(std::uint32_t & currentOffset, std::string_view type_name);
 		void LoadElement(std::uint32_t & currentOffset, std::string_view main_type);
+
 	public:
 		HKXFile() {}
-		void Load(std::string& filename);
+		bool Load(std::string& filename);
+		std::uint32_t GetDataPointerTarget(std::uint32_t off);
 	};
 }
 

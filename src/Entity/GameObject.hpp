@@ -324,6 +324,11 @@ namespace Entity {
 			DataTypes::Quaternion GetRotation();
 
 			/*
+				Returns the rigid body, used for physics
+			*/
+			btRigidBody* GetRigidBody();
+
+			/*
 				Returns the instance
 			*/
 			WorldServer * GetZoneInstance() {

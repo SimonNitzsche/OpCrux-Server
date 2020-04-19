@@ -640,6 +640,30 @@ DataTypes::Quaternion Entity::GameObject::GetRotation() {
 	return DataTypes::Quaternion();
 }
 
+btRigidBody* Entity::GameObject::GetRigidBody() {
+	auto controllablePhysicsComponent = this->GetComponent<ControllablePhysicsComponent>();
+	if (controllablePhysicsComponent != nullptr) {
+		return controllablePhysicsComponent->GetRigidBody();
+	}
+	/*auto simplePhysicsComponent = this->GetComponent<SimplePhysicsComponent>();
+	if (simplePhysicsComponent != nullptr) {
+		return simplePhysicsComponent->GetRigidBody();
+	}
+	auto rigidBodyPhantomPhysicsComponent = this->GetComponent<RigidBodyPhantomPhysicsComponent>();
+	if (rigidBodyPhantomPhysicsComponent != nullptr) {
+		return rigidBodyPhantomPhysicsComponent->GetRigidBody();
+	}
+	auto vehiclePhysicsComponent = this->GetComponent<VehiclePhysicsComponent>();
+	if (vehiclePhysicsComponent != nullptr) {
+		return vehiclePhysicsComponent->GetRigidBody();
+	}
+	auto phantomPhysicsComponent = this->GetComponent<PhantomPhysicsComponent>();
+	if (phantomPhysicsComponent != nullptr) {
+		return phantomPhysicsComponent->GetRigidBody();
+	}*/
+	return nullptr;
+}
+
 void Entity::GameObject::SetImagination(std::int32_t imag) {
 	auto charComp = GetComponent<CharacterComponent>();
 	if (charComp != nullptr) {

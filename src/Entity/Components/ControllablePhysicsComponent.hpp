@@ -6,15 +6,20 @@
 
 #include "bullet3-2.89/src/btBulletDynamicsCommon.h"
 
+#include "FileTypes/HKXFile/HKXCacheManager.hpp"
+#include "FileTypes/HKXFile/hkxFile.hpp"
+
+#include "GameCache/PhysicsComponent.hpp"
+
 using namespace DataTypes;
 
 class ControllablePhysicsComponent : public IEntityComponent {
 private:
 	bool _isDirtyPositionAndStuff = true;
 
-	btTransform * transform;
-	btRigidBody * rigidBody;
-	btCollisionShape* collisionShape;
+	btRigidBody * rigidBody = nullptr;
+	btCollisionShape* collisionShape = nullptr;
+	HKX::HKXFile* physicsAsset = nullptr;
 
 	Vector3 position { 0, 0, 0 };
 	Quaternion rotation;
@@ -37,21 +42,43 @@ public:
 
 	ControllablePhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
+	btRigidBody* GetRigidBody() {
+		return rigidBody;
+	}
+
 	void OnEnable() {
-		collisionShape = new btBoxShape(btVector3(5, 5, 5));
-		transform = new btTransform();
-		transform->setIdentity();
-		btScalar mass(0.0f);
+		//collisionShape = new btBoxShape(btVector3(5, 5, 5));
+		if(owner->GetLOT() != 1) {
+			std::string cPhysicsAsset = CachePhysicsComponent::GetPhysicsAsset(GetComponentID());
+			if (cPhysicsAsset.size() != 0) {
+				std::string physResPath = "res/physics/" + cPhysicsAsset;
+				this->physicsAsset = HKXCacheManager::GetHKXFile(physResPath);
+			}
+
+			collisionShape = new btSphereShape(5);
+			btTransform transform;
+			transform.setOrigin(btVector3(3, 2, 5));
+			transform.setIdentity();
+			btScalar mass(0.0f);
+			btVector3 inertia(0, 0, 0);	//inertia is 0,0,0 for static object, else
+			if (mass != 0.0)
+				collisionShape->calculateLocalInertia(mass, inertia);	//it can be determined by this function (for all kind of shapes)
+			btDefaultMotionState* motionState = new btDefaultMotionState(transform);
+			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collisionShape, btVector3(0, 0, 0));
+			rigidBody = new btRigidBody(rbInfo);
+
+
+			
+		}
 		SetPosition(position);
 		SetRotation(rotation);
-		btDefaultMotionState* motionState = new btDefaultMotionState(*transform);
-		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collisionShape, btVector3(0, 0, 0));
-		rigidBody = new btRigidBody(rbInfo);
-		//owner->GetZoneInstance()->dynamicsWorld->addRigidBody(rigidBody);
+	}
+
+	void Awake() {
+		owner->GetZoneInstance()->dynamicsWorld->addRigidBody(rigidBody);
 	}
 
 	~ControllablePhysicsComponent() {
-		delete transform;
 		delete rigidBody;
 		delete collisionShape;
 	}
@@ -62,7 +89,18 @@ public:
 		position = pos;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
-		transform->setOrigin(pos.getBt());
+		UpdatePhysicsPosition();
+	}
+
+	void UpdatePhysicsPosition() {
+		if (rigidBody == nullptr) return;
+		btTransform transform;
+		transform.setIdentity();
+		transform.setOrigin(position.getBt());
+		transform.setRotation(rotation.getBt());
+		rigidBody->setWorldTransform(transform);
+		rigidBody->getMotionState()->setWorldTransform(transform);
+		//owner->GetZoneInstance()->dynamicsWorld->updateSingleAabb(rigidBody);
 	}
 
 	Vector3 GetPosition() {
@@ -73,7 +111,7 @@ public:
 		rotation = rot;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
-		transform->setRotation(rotation.getBt());
+		UpdatePhysicsPosition();
 	}
 
 	Quaternion GetRotation() {

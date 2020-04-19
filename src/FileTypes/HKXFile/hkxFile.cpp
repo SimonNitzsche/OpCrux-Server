@@ -1,6 +1,8 @@
 #include "FileTypes/HKXFile/hkxFile.hpp"
-
+#include <string_view>
 using namespace HKX;
+#include "FileTypes/HKXFile/Classes/hkRootLevelContainer.hpp"
+
 
 void HKX::HKXFile::LoadStructure(std::uint32_t & currentOffset, std::string_view type_name) {
 	std::uint32_t startOffset = currentOffset;
@@ -11,7 +13,9 @@ void HKX::HKXFile::LoadStructure(std::uint32_t & currentOffset, std::string_view
 		std::uint32_t arrayOffset = startOffset + it->object_size;
 		found = true;
 
-		if (it->parent != nullptr) LoadStructure(currentOffset, it->parent->name);
+		if (it->parent != nullptr) {
+			LoadStructure(currentOffset, it->parent->name);
+		}
 
 		for (int i = 0; i < it->members.size(); ++i) {
 			std::string_view main_type = hkTypeMember::ToStringView(it->members.at(i).tag[0]);
@@ -109,16 +113,16 @@ void HKX::HKXFile::LoadElement(std::uint32_t & currentOffset, std::string_view m
 	// TODO: Implement others
 }
 
-void HKXFile::Load(std::string& file) {
+bool HKXFile::Load(std::string& file) {
 	this->file = FileUtils::ReadFileCompletely(file);
 
-	if (this->file == nullptr) return;
+	if (this->file == nullptr) return false;
 
 	// Header
 	this->m_header = reinterpret_cast<hkxHeader*>(this->file.get());
 
-	if (this->m_header->m_magic[0] != 0x57e0e057) return;
-	if (this->m_header->m_magic[1] != 0x10c0c010) return;
+	if (this->m_header->m_magic[0] != 0x57e0e057) return false;
+	if (this->m_header->m_magic[1] != 0x10c0c010) return false;
 
 	// Flags need to be set to 1 on load
 	this->m_header->m_flags = 1;
@@ -464,10 +468,30 @@ void HKXFile::Load(std::string& file) {
 
 				currentOffset = sectionHeader->m_absoluteDataStart + address;
 
-				LoadStructure(currentOffset, type_name);
+				if (type_name == "hkRootLevelContainer") {
+					offsetRootLevelContainer = currentOffset;
+
+					rootLevelContainer = new hkRootLevelContainer();
+					rootLevelContainer->Read(this, this->file.get(), currentOffset);
+
+					//LoadStructure(currentOffset, type_name);
+				}
 
 				currentOffset = currentOffsetReferencePoint;
 			}
 		}
 	}
+
+	return true;
+}
+
+std::uint32_t HKX::HKXFile::GetDataPointerTarget(std::uint32_t off) {
+	for (auto it2 = data_pointers.begin(); it2 != data_pointers.end(); ++it2) {
+		if (off == it2->abs_address) {
+			// Move pointer
+			return it2->target_address;
+		}
+	}
+
+	throw;
 }

@@ -33,7 +33,7 @@ void ObjectsManager::UnRegisterObject(Entity::GameObject * object) {
 
 Entity::GameObject * ObjectsManager::GetObjectByID(DataTypes::LWOOBJID objID) {
 	auto it = object_list.find(objID);
-	if (it != object_list.end() && std::find(object_garbage.begin(), object_garbage.end(), objID) == object_garbage.end())
+	if (it != object_list.end() && (object_garbage.size() == 0 || std::find(object_garbage.begin(), object_garbage.end(), objID) == object_garbage.end()))
 		return it->second;
 	return nullptr;
 }
@@ -41,7 +41,7 @@ Entity::GameObject * ObjectsManager::GetObjectByID(DataTypes::LWOOBJID objID) {
 std::vector<Entity::GameObject*> ObjectsManager::GetObjects() {
 	std::vector<Entity::GameObject*> out;
 	for (auto oPair : object_list)
-		if (std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end())
+		if (object_garbage.size() == 0 || std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end())
 			out.push_back(oPair.second);
 	return out;
 }
@@ -49,7 +49,7 @@ std::vector<Entity::GameObject*> ObjectsManager::GetObjects() {
 std::vector<Entity::GameObject*> ObjectsManager::GetObjectsInGroup(std::u16string groupName) {
 	std::vector<Entity::GameObject*> out;
 	for (auto oPair : object_list) {
-		if (std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end()) {
+		if (object_garbage.size() == 0 || std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end()) {
 			if (oPair.second->IsWithinGroup(groupName)) {
 				out.push_back(oPair.second);
 			}

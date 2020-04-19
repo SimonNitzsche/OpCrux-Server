@@ -32,6 +32,7 @@ find_package(ODBC REQUIRED)
 
 add_executable(OpCrux_Server
 	libs/glad/src/glad.c
+	libs/random/include/effolkronium/random
 	src/Common/CrossPlatform.hpp
 	src/Configuration/ConfDatabase.hpp
 	src/Configuration/ConfigurationManager.cpp
@@ -211,6 +212,8 @@ add_executable(OpCrux_Server
 	src/Exceptions/ExNetException.hpp
 	src/FileTypes/GFile/GeometryFile.cpp
 	src/FileTypes/GFile/GeometryFile.hpp
+	src/FileTypes/HKXFile/Classes/hkClass.hpp
+	src/FileTypes/HKXFile/Classes/hkRootLevelContainer.hpp
 	src/FileTypes/HKXFile/hkClassEnum.hpp
 	src/FileTypes/HKXFile/hkClassMember.hpp
 	src/FileTypes/HKXFile/hkClassName.hpp
@@ -220,6 +223,8 @@ add_executable(OpCrux_Server
 	src/FileTypes/HKXFile/hkPointer.hpp
 	src/FileTypes/HKXFile/hkType.hpp
 	src/FileTypes/HKXFile/hkTypeMember.hpp
+	src/FileTypes/HKXFile/HKXCacheManager.cpp
+	src/FileTypes/HKXFile/HKXCacheManager.hpp
 	src/FileTypes/HKXFile/hkxFile.cpp
 	src/FileTypes/HKXFile/hkxFile.hpp
 	src/FileTypes/HKXFile/hkxHeader.hpp
@@ -308,6 +313,9 @@ add_executable(OpCrux_Server
 	src/WebInterface/DashboardTools.hpp
 	src/WebInterface/WebInterface.hpp
 	src/Main.cpp
+	src/camera.h
+	src/camera.cpp
+	${SDL_INCLUDE}
 )
 
 
@@ -356,6 +364,12 @@ if(UNIX)
 endif()
 
 target_link_libraries(OpCrux_Server
+	opengl32
+	glu32
+	../../../libs/SDL/lib/x64/SDL
+	../../../libs/SDL/lib/x64/SDLmain
+	OpenGLWindow
+	gwen
 	glad
 	BulletDynamics
 	BulletCollision
