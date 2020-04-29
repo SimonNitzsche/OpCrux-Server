@@ -48,7 +48,9 @@ namespace HKX {
 	public:
 		HKXFile() {}
 		bool Load(std::string& filename);
+		void TestStuff();
 		std::uint32_t GetDataPointerTarget(std::uint32_t off);
+		std::uint32_t GetGlobalDataPointerTarget(std::uint32_t off);
 	};
 }
 

@@ -477,16 +477,37 @@ bool HKXFile::Load(std::string& file) {
 					//LoadStructure(currentOffset, type_name);
 				}
 
+				if (type_name == "hkpPhysicsSystem") {
+					int c = 3;
+				}
+
 				currentOffset = currentOffsetReferencePoint;
 			}
 		}
 	}
 
+	TestStuff();
+
 	return true;
+}
+
+void HKX::HKXFile::TestStuff() {
+	hkRootLevelContainer* rlc = this->rootLevelContainer;
+	rlc->GetPhysicsData();
 }
 
 std::uint32_t HKX::HKXFile::GetDataPointerTarget(std::uint32_t off) {
 	for (auto it2 = data_pointers.begin(); it2 != data_pointers.end(); ++it2) {
+		if (off == it2->abs_address) {
+			// Move pointer
+			return it2->target_address;
+		}
+	}
+
+	throw;
+}
+std::uint32_t HKX::HKXFile::GetGlobalDataPointerTarget(std::uint32_t off) {
+	for (auto it2 = data_global_pointers.begin(); it2 != data_global_pointers.end(); ++it2) {
 		if (off == it2->abs_address) {
 			// Move pointer
 			return it2->target_address;

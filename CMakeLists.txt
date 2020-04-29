@@ -212,7 +212,14 @@ add_executable(OpCrux_Server
 	src/Exceptions/ExNetException.hpp
 	src/FileTypes/GFile/GeometryFile.cpp
 	src/FileTypes/GFile/GeometryFile.hpp
+	src/FileTypes/HKXFile/Classes/hkBaseObject.hpp
 	src/FileTypes/HKXFile/Classes/hkClass.hpp
+	src/FileTypes/HKXFile/Classes/hkpEntity.hpp
+	src/FileTypes/HKXFile/Classes/hkpPhysicsData.hpp
+	src/FileTypes/HKXFile/Classes/hkpPhysicsSystem.hpp
+	src/FileTypes/HKXFile/Classes/hkpRigidBody.hpp
+	src/FileTypes/HKXFile/Classes/hkpWorldObject.hpp
+	src/FileTypes/HKXFile/Classes/hkReferencedObject.hpp
 	src/FileTypes/HKXFile/Classes/hkRootLevelContainer.hpp
 	src/FileTypes/HKXFile/hkClassEnum.hpp
 	src/FileTypes/HKXFile/hkClassMember.hpp
@@ -223,6 +230,7 @@ add_executable(OpCrux_Server
 	src/FileTypes/HKXFile/hkPointer.hpp
 	src/FileTypes/HKXFile/hkType.hpp
 	src/FileTypes/HKXFile/hkTypeMember.hpp
+	src/FileTypes/HKXFile/hkVariant.hpp
 	src/FileTypes/HKXFile/HKXCacheManager.cpp
 	src/FileTypes/HKXFile/HKXCacheManager.hpp
 	src/FileTypes/HKXFile/hkxFile.cpp

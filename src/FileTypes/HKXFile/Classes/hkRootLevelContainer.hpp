@@ -6,6 +6,8 @@
 #include <iostream>
 #include "FileTypes/HKXFile/hkxFile.hpp"
 #include "FileTypes/HKXFile/hkTypeMember.hpp"
+#include "FileTypes/HKXFile/Classes/hkpPhysicsData.hpp"
+
 class hkRootLevelContainer {
 public:
 
@@ -18,7 +20,17 @@ public:
 
 	std::list<class NamedVariant> m_namedVariants;
 
+	HKX::HKXFile* hkfile; unsigned char* fd;
+
+	hkpPhysicsData GetPhysicsData() {
+		hkpPhysicsData physData;
+		physData.Read(hkfile, fd, std::next(m_namedVariants.begin(), 2)->m_variant);
+		return physData;
+	}
+
 	void Read(HKX::HKXFile * hkfile, unsigned char* fd, std::uint32_t off) {
+		this->hkfile = hkfile; this->fd = fd;
+
 		unsigned char* doff = fd + off;
 		std::uint32_t arrsize = *reinterpret_cast<std::uint32_t*>(doff + 4);
 		
@@ -55,7 +67,8 @@ public:
 					
 					auto memb_variant = itType2->members.at(2);
 					pmaoff = paoff + memb_variant.offset;
-					//pmaoff = fd + hkfile->GetDataPointerTarget(pmaoff - fd + 4);
+					pmaoff = fd + hkfile->GetGlobalDataPointerTarget(pmaoff - fd);
+					eyNamedVariant.m_variant = pmaoff - fd;
 					m_namedVariants.push_back(eyNamedVariant);
 				}
 
