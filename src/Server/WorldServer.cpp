@@ -53,6 +53,7 @@
 #include <Entity\Components\PossessableComponent.hpp>
 #include <Entity\GameMessages\NotifyRacingClient.hpp>
 #include <Entity\Components\RacingControlComponent.hpp>
+#include <Entity\Components\MinigameComponent.hpp>
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
@@ -532,6 +533,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Server done loading");
 				PacketFactory::World::TestLoad(rakServer, clientSession);
+
+				this->zoneControlObject->GetComponent<MinigameComponent>()->AddPlayerToActivity(playerObject->GetObjectID());
 
 				if (zoneID == 1303) {
 					WorldServer* Instance = this;
