@@ -47,12 +47,12 @@ public:
 			std::string_view sub_type = hkTypeMember::ToStringView(itType->members.at(0).tag[1]);
 
 			doff = fd + off + itType->members[0].offset;
-
+			auto doffpt = fd + hkfile->GetDataPointerTarget(doff - fd);
 			for (auto itType2 = hkfile->hkTypes.begin(); itType2 != hkfile->hkTypes.end(); ++itType2) {
 				if (itType2->name != itType->members[0].structure) continue;
 
 				for (std::uint32_t i = 0; i < arrsize; ++i) {
-					unsigned char* paoff = doff + 8 + itType->object_size + i * itType2->object_size;
+					unsigned char* paoff = doffpt + i * itType2->object_size;
 
 					NamedVariant eyNamedVariant{};
 					auto memb_name = itType2->members.at(0);

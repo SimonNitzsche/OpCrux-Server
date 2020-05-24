@@ -64,6 +64,7 @@ int givenWorldID = 1100;
 camera cam;
 GLUquadricObj* quad;
 std::vector<btRigidBody*> bodies;
+WorldServer* viewWs;
 
 
 btRigidBody* addSphere(WorldServer* ws, float rad, float x, float y, float z, float mass)
@@ -282,8 +283,9 @@ void TestPhysics() {
 
 	while (virtualServerInstances.size() == 0) { Sleep(30); }
 	testWs = static_cast<WorldServer*>(virtualServerInstances.at(0));
+	viewWs = testWs;
 
-	SDL_Init(SDL_INIT_EVERYTHING);
+	/*SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_SetVideoMode(1600, 900, 32, SDL_OPENGL);
 	Uint32 start;
 	SDL_Event event;
@@ -346,7 +348,7 @@ void TestPhysics() {
 		delete motionState;
 	}
 	SDL_Quit();
-	gluDeleteQuadric(quad);
+	gluDeleteQuadric(quad);*/
 
 }
 
@@ -371,7 +373,7 @@ int main(int argc, char* argv[]) {
 
 	MODE_SERVER = SERVERMODE::STANDALONE;
 
-	TestPhysics(); return 0;
+	//TestPhysics(); return 0;
 
 	Logger::log("MAIN", "Setting up GLFW in case a renderer is being active.");
 	/*glfwInit();

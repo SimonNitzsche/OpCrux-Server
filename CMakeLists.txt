@@ -32,7 +32,6 @@ find_package(ODBC REQUIRED)
 
 add_executable(OpCrux_Server
 	libs/glad/src/glad.c
-	libs/random/include/effolkronium/random
 	src/Common/CrossPlatform.hpp
 	src/Configuration/ConfDatabase.hpp
 	src/Configuration/ConfigurationManager.cpp
@@ -91,6 +90,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/ModuleAssemblyComponent.hpp
 	src/Entity/Components/MovementAIComponent.hpp
 	src/Entity/Components/MovingPlatformComponent.hpp
+	src/Entity/Components/PetComponent.hpp
 	src/Entity/Components/PhantomPhysicsComponent.hpp
 	src/Entity/Components/PlatformBoundaryComponent.hpp
 	src/Entity/Components/PossessableComponent.hpp
@@ -271,6 +271,7 @@ add_executable(OpCrux_Server
 	src/GameCache/Preconditions.hpp
 	src/GameCache/PropertyEntranceComponent.hpp
 	src/GameCache/RebuildComponent.hpp
+	src/GameCache/RenderComponent.hpp
 	src/GameCache/ScriptComponent.hpp
 	src/GameCache/SkillBehavior.hpp
 	src/GameCache/VendorComponent.hpp
@@ -306,6 +307,7 @@ add_executable(OpCrux_Server
 	src/Sessions/ClientSession.hpp
 	src/Sessions/SessionManager.hpp
 	src/Structs/Networking/General/StructPacketHeader.hpp
+	src/Utils/base64.hpp
 	src/Utils/FileUtils.hpp
 	src/Utils/IPUtils.hpp
 	src/Utils/LDFUtils.hpp

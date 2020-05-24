@@ -2,6 +2,8 @@
 #define __REPLICA__COMPONENTS__RENDER_COMPONENT_HPP__
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
+#include <Utils/LDFUtils.hpp>
+#include "GameCache/RenderComponent.hpp"
 
 using namespace DataTypes;
 
@@ -24,6 +26,10 @@ public:
 			factory->Write<std::uint32_t>(0);
 			
 		}
+	}
+
+	FDB::PointerString GetRenderAsset() {
+		return CacheRenderComponent::GetRenderAsset(IEntityComponent::GetComponentID());
 	}
 
 	void PopulateFromLDF(LDFCollection* collection) {

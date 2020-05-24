@@ -55,6 +55,7 @@
 #include "Entity/Components/ModuleAssemblyComponent.hpp"
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/MovingPlatformComponent.hpp"
+#include "Entity/Components/PetComponent.hpp"
 #include "Entity/Components/PropertyComponent.hpp"
 #include "Entity/Components/PropertyEntranceComponent.hpp"
 #include "Entity/Components/PropertyManagementComponent.hpp"
@@ -212,7 +213,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(PhantomPhysicsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(DestructibleComponent);
 		COMPONENT_ONADD_SWITCH_CASE(CollectibleComponent);
-		//COMPONENT_ONADD_SWITCH_CASE(PetComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PetComponent);
 		COMPONENT_ONADD_SWITCH_CASE(CharacterComponent);
 		//COMPONENT_ONADD_SWITCH_CASE(ShootingGalleryComponent);
 		COMPONENT_ONADD_SWITCH_CASE(InventoryComponent);
@@ -316,7 +317,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	SERIALIZE_COMPONENT_IF_ATTACHED(PhantomPhysicsComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(DestructibleComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(CollectibleComponent);
-	//SERIALIZE_COMPONENT_IF_ATTACHED(PetComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(PetComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(CharacterComponent);
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ShootingGalleryComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(InventoryComponent);
