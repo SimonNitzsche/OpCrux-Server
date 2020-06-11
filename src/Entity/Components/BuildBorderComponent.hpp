@@ -11,6 +11,8 @@ public:
 
 	static constexpr int GetTypeID() { return 114; }
 
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg);
+
 };
 
 #endif

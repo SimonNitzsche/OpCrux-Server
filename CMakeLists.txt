@@ -72,6 +72,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/BaseCombatAIComponent.hpp
 	src/Entity/Components/BouncerComponent.hpp
 	src/Entity/Components/BrickDonationComponent.hpp
+	src/Entity/Components/BuildBorderComponent.cpp
 	src/Entity/Components/BuildBorderComponent.hpp
 	src/Entity/Components/CharacterComponent.hpp
 	src/Entity/Components/CollectibleComponent.hpp
@@ -326,7 +327,7 @@ add_executable(OpCrux_Server
 	src/camera.h
 	src/camera.cpp
 	${SDL_INCLUDE}
-)
+ )
 
 
 set_property(TARGET glad PROPERTY CXX_STANDARD 98)

@@ -152,15 +152,7 @@ public:
 		_isDirtyFlagEquippedItems = true;
 		factory->Write(_isDirtyFlagEquippedItems);
 		if (_isDirtyFlagEquippedItems) {
-			std::vector<InventoryItemStack> equippedItems{};
-			for (auto itemTab : inventory) {
-				for (auto itemStack : itemTab.second) {
-					if (itemStack.second.equip) {
-						InventoryItemStack iis = itemStack.second;
-						equippedItems.push_back(iis);
-					}
-				}
-			}
+			std::vector<InventoryItemStack> equippedItems = GetEquippedItems();
 
 			factory->Write<std::uint32_t>(equippedItems.size());
 			for (int i = 0; i < equippedItems.size(); ++i) {
@@ -180,6 +172,19 @@ public:
 			}
 		}
 		factory->Write(false);
+	}
+
+	inline std::vector<InventoryItemStack> GetEquippedItems() {
+		std::vector<InventoryItemStack> equippedItems{};
+		for (auto itemTab : inventory) {
+			for (auto itemStack : itemTab.second) {
+				if (itemStack.second.equip) {
+					InventoryItemStack iis = itemStack.second;
+					equippedItems.push_back(iis);
+				}
+			}
+		}
+		return equippedItems;
 	}
 
 	inline bool IsItem(Entity::GameObject* item) {
@@ -234,6 +239,69 @@ public:
 				return 0;
 			}
 		}
+	}
+
+	inline bool hasEquipped(std::uint32_t LOT) {
+		auto equippedItems = GetEquippedItems();
+		for (auto it = equippedItems.begin(); it != equippedItems.end(); ++it) {
+			if (it->LOT == LOT) return true;
+		}
+		return false;
+	}
+
+	inline bool hasEquipped(DataTypes::LWOOBJID objID) {
+		auto equippedItems = GetEquippedItems();
+		for (auto it = equippedItems.begin(); it != equippedItems.end(); ++it) {
+			if (it->objectID == objID) return true;
+		}
+		return false;
+	}
+
+	inline bool EquipItem(std::uint32_t LOT) {
+		auto targetTab = GetTabForLOT(LOT);
+
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
+		if (itemCompID == -1) return false;
+
+		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		if (static_cast<std::string>(equipLocation) == "") return false;
+
+		auto tabIt = inventory.find(targetTab);
+		
+		// We do not have tab, unable to equip
+		if (tabIt == inventory.end()) return false;
+	
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.LOT == LOT) {
+				// We found it!
+
+				// We're already equipped!
+				if (it->second.equip) return false;
+
+				// Equip it.
+				it->second.equip = true;
+
+				// Save equip
+				this->SaveStack(it->second);
+
+				// Sync equip.
+				this->_isDirtyFlagEquippedItems = true;
+				this->owner->SetDirty();
+
+				// We're done
+				return true;
+			}
+		}
+
+		// We couldn't find the item
+		return false;
+	}
+
+	inline void SaveStack(InventoryItemStack stack) {
+		// Dont save thinking hat!
+		if (stack.LOT == 6068) return;
+
+		// TODO
 	}
 
 	inline std::int32_t GetTabForLOT(std::uint32_t LOT) {
