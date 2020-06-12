@@ -35,6 +35,7 @@ namespace GM {
 	class RequestResurrect;
 	class RequestSmashPlayer;
 	class RequestUse;
+	class StartBuildingWithItem;
 	class StartSkill;
 	class SyncSkill;
 	class SetFlag;

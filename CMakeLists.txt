@@ -166,6 +166,8 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/SetFlag.hpp
 	src/Entity/GameMessages/SetGravityScale.hpp
 	src/Entity/GameMessages/SetTooltipFlag.hpp
+	src/Entity/GameMessages/StartArrangingWithItem.hpp
+	src/Entity/GameMessages/StartBuildingWithItem.hpp
 	src/Entity/GameMessages/StartSkill.hpp
 	src/Entity/GameMessages/StopFXEffect.hpp
 	src/Entity/GameMessages/SyncSkill.hpp

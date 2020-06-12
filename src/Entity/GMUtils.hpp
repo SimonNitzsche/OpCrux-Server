@@ -55,6 +55,7 @@
 	mfun(RequestResurrect);\
 	mfun(RequestSmashPlayer);\
 	mfun(RequestUse);\
+	mfun(StartBuildingWithItem);\
 	mfun(StartSkill);\
 	mfun(SyncSkill);\
 	mfun(SetFlag);\
