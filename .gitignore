@@ -347,3 +347,8 @@ bin/conf/*.ini
 
 # Bullet Data
 libs/bullet3-*/data/*
+bin.zip
+
+services/CruxAuthService/CruxAuthService/openssl/
+
+services/CruxAuthService/CruxAuthService/res/
