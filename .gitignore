@@ -352,3 +352,5 @@ bin.zip
 services/CruxAuthService/CruxAuthService/openssl/
 
 services/CruxAuthService/CruxAuthService/res/
+
+services/CruxAuthService/CruxAuthService/libbcrypt/

@@ -105,15 +105,15 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>MG_ENABLE_SSL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAVE_CONFIG_H;MG_ENABLE_SSL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>openssl/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>openssl/include;libbcrypt/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>openssl/lib/libcrypto.lib;openssl/lib/libssl.lib;openssl/lib/openssl.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;openssl/lib/libcrypto.lib;openssl/lib/libssl.lib;openssl/lib/openssl.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,7 +144,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>MG_ENABLE_SSL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>openssl/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>openssl/include;libbcrypt/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,9 +157,15 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\libs\Mongoose\mongoose.c" />
     <ClCompile Include="CruxAuthService.cpp" />
+    <ClCompile Include="DBInterface.cpp" />
+    <ClCompile Include="libbcrypt\src\bcrypt.c" />
+    <ClCompile Include="libbcrypt\src\crypt_blowfish.c" />
+    <ClCompile Include="libbcrypt\src\crypt_gensalt.c" />
+    <ClCompile Include="libbcrypt\src\wrapper.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\libs\Mongoose\mongoose.h" />
+    <ClInclude Include="DBInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

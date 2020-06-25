@@ -13,6 +13,8 @@
 #define SSL_CA "res/ssl/ca.pem"
 #define REQUEST_KEYS "res/appkeys.txt"
 
+#include "DBInterface.h"
+
 static const char* s_http_port = "8443";
 
 static struct mg_serve_http_opts s_http_server_opts;
@@ -89,7 +91,12 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 				return;
 			}
 
-			// TODO: Check login and give back result
+			bool isLoginCorrect = DBInterface::IsLoginCorrect(it_username->second, it_password->second);
+
+			std::string msg = isLoginCorrect ? "PASS" : "FAIL";
+			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", msg.length(), msg.c_str());
+			return;
 		}
 
 		
@@ -140,6 +147,8 @@ int main() {
 		printf("Unable to load application keys.");
 		return klr;
 	}
+
+	DBInterface::Connect();
 
 #ifndef _DEBUG
 	memset(&bind_opts, 0, sizeof(bind_opts));

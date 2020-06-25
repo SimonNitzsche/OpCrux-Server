@@ -21,9 +21,30 @@
     <ClCompile Include="..\..\..\libs\Mongoose\mongoose.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="DBInterface.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="scrypt\lib-platform\crypto\crypto_scrypt.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="libbcrypt\src\crypt_blowfish.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="libbcrypt\src\crypt_gensalt.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="libbcrypt\src\wrapper.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="libbcrypt\src\bcrypt.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\libs\Mongoose\mongoose.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="DBInterface.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
