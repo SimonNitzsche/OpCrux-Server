@@ -56,6 +56,48 @@ void mg_parse_form_data(http_message* hm, std::unordered_map<std::string, std::s
 	}
 }
 
+std::string HelperGetConf(std::unordered_map<std::string, std::string>& conf, std::string key) {
+	auto it = conf.find(key);
+	if (it == conf.end())
+		return "";
+	return it->second;
+}
+
+int LoadDBConf() {
+	std::fstream file;
+	std::unordered_map<std::string, std::string> conf;
+
+	file.open("res/conf.txt", std::ios::in);
+
+	if (!file.is_open()) {
+		return -1;
+	}
+
+	std::string entry;
+	while (getline(file, entry)) {
+		if (entry.length() == 0)
+			continue;
+		if (entry[0] == ' ')
+			continue;
+		if (entry[0] == '\t')
+			continue;
+		if (entry[0] == '\r')
+			continue;
+
+		for (int i = 0; i < entry.length(); ++i) {
+			if (entry.at(i) == '=') {
+				if (i + 1 == entry.length()) conf.insert({ std::string(entry.c_str(), i), "" });
+				else conf.insert({std::string(entry.c_str(), i), std::string(entry.c_str() + i + 1, entry.length() - i - 1)});
+				break;
+			}
+		}
+	}
+
+	DBInterface::Setup(HelperGetConf(conf, "DBDRIVER"), HelperGetConf(conf, "DBHOST"), HelperGetConf(conf, "DBUSER"), HelperGetConf(conf, "DBPASS"));
+
+	return 0;
+}
+
 static void ev_handler(struct mg_connection* c, int ev, void* p) {
 	//std::cout << "ev: " << ev << std::endl;
 	if (ev == MG_EV_HTTP_REQUEST) {
@@ -151,6 +193,12 @@ int main() {
 	if (klr == -1) {
 		printf("Unable to load application keys.");
 		return klr;
+	}
+
+	int dlr = LoadDBConf();
+	if (dlr == -1) {
+		printf("Unable to load configuration.");
+		return dlr;
 	}
 
 	DBInterface::Connect();

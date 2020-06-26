@@ -103,9 +103,21 @@ private:
 	inline static SQLHANDLE sqlEnvHandle;
 	inline static SQLWCHAR retconstring[SQL_RETURN_CODE_LEN];
 	inline static SQLHANDLE sqlStmtHandle = NULL;
+
+	inline static std::string DB_dbDriver = "SQL Server";
+	inline static std::string DB_dbHost = "LAPTOP-E4UQM49G\\SQLEXPRESS";
+	inline static std::string DB_dbUser = "dev_opcrux";
+	inline static std::string DB_dbPass = "dev_test";
 public:
 	static SQLHANDLE GetSqlStmtHandle() {
 		return sqlStmtHandle;
+	}
+
+	static void Setup(std::string a, std::string b, std::string c, std::string d) {
+		DB_dbDriver = a;
+		DB_dbHost = b;
+		DB_dbUser = c;
+		DB_dbPass = d;
 	}
 
 	static void Connect() {
@@ -136,20 +148,15 @@ public:
 		//You have the option to use a username/password instead of a trusted connection
 		//but is more secure to use a trusted connection
 
-		std::string _dbDriver = "SQL Server";
-		std::string _dbHost = "LAPTOP-E4UQM49G\\SQLEXPRESS";
-		std::string _dbUser = "dev_opcrux";
-		std::string _dbPass = "dev_test";
-
 		std::string connStrBuilder = \
 			"DRIVER={"\
-			+ _dbDriver\
+			+ DB_dbDriver\
 			+ "};SERVER="\
-			+ _dbHost\
+			+ DB_dbHost\
 			+ ";UID="\
-			+ _dbUser\
+			+ DB_dbUser\
 			+ ";PWD="\
-			+ _dbPass\
+			+ DB_dbPass\
 			+ ";";
 
 

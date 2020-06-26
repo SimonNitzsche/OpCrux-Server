@@ -24,9 +24,6 @@
     <ClCompile Include="DBInterface.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="scrypt\lib-platform\crypto\crypto_scrypt.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="libbcrypt\src\crypt_blowfish.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
