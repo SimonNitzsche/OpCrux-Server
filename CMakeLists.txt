@@ -379,8 +379,8 @@ endif()
 target_link_libraries(OpCrux_Server
 	opengl32
 	glu32
-	../../../libs/SDL/lib/x64/SDL
-	../../../libs/SDL/lib/x64/SDLmain
+	../../../libs/SDL/lib/x64/SDL2
+	../../../libs/SDL/lib/x64/SDL2main
 	OpenGLWindow
 	gwen
 	glad

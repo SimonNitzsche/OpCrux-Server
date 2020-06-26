@@ -80,8 +80,8 @@ void camera::Control()
 		camYaw += mousevel * (MidX - tmpx);
 		camPitch += mousevel * (MidY - tmpy);
 		lockCamera();
-		SDL_WarpMouse(MidX, MidY);
-		Uint8* state = SDL_GetKeyState(NULL);
+		SDL_WarpMouseGlobal(MidX, MidY);
+		const Uint8* state = SDL_GetKeyboardState(nullptr);
 		ismoved = false;
 		if (state[SDLK_w])
 		{

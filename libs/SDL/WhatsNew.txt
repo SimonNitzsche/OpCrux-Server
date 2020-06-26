@@ -1,727 +1,529 @@
 
-This is a list of API changes in SDL's version history.
-
-Version 1.0:
-
-1.2.14:
-	Added cast macros for correct usage with C++:
-		SDL_reinterpret_cast(type, expression)
-		SDL_static_cast(type, expression)
-
-	Added SDL_VIDEO_FULLSCREEN_DISPLAY as a preferred synonym for 
-	SDL_VIDEO_FULLSCREEN_HEAD on X11.
-
-	Added SDL_DISABLE_LOCK_KEYS environment variable to enable normal
-	up/down events for Caps-Lock and Num-Lock keys.
-
-1.2.13:
-	Added SDL_BUTTON_X1 and SDL_BUTTON_X2 constants.
-
-1.2.12:
-	Added SDL_VIDEO_ALLOW_SCREENSAVER to override SDL's disabling
-	of the screensaver on Mac OS X and X11.
-
-1.2.10:
-	If SDL_OpenAudio() is passed zero for the desired format
-	fields, the following environment variables will be used
-	to fill them in:
-		SDL_AUDIO_FREQUENCY
-		SDL_AUDIO_FORMAT
-		SDL_AUDIO_CHANNELS
-		SDL_AUDIO_SAMPLES
-	If an environment variable is not specified, it will be set
-	to a reasonable default value.
-
-	Added support for the SDL_VIDEO_FULLSCREEN_HEAD environment
-	variable, currently supported on X11 Xinerama configurations.
-
-	Added SDL_GL_SWAP_CONTROL to wait for vsync in OpenGL applications.
-
-	Added SDL_GL_ACCELERATED_VISUAL to guarantee hardware acceleration.
-
-	Added current_w and current_h to the SDL_VideoInfo structure,
-	which is set to the desktop resolution during video intialization,
-	and then set to the current resolution when a video mode is set.
-
-	SDL_SetVideoMode() now accepts 0 for width or height and will use
-	the current video mode (or the desktop mode if no mode has been set.)
-
-	Added SDL_GetKeyRepeat()
-
-	Added SDL_config.h, with defaults for various build environments.
-
-1.2.7:
-	Added CPU feature detection functions to SDL_cpuinfo.h:
-		SDL_HasRDTSC(), SDL_HasMMX(), SDL_Has3DNow(), SDL_HasSSE(),
-		SDL_HasAltiVec()
-	Added function to create RWops from const memory: SDL_RWFromConstMem()
-
-1.2.6:
-	Added SDL_LoadObject(), SDL_LoadFunction(), and SDL_UnloadObject()
-
-	Added SDL_GL_MULTISAMPLEBUFFERS and SDL_GL_MULTISAMPLESAMPLES for FSAA
-
-1.2.5:
-	Added SDL_BUTTON_WHEELUP (4) and SDL_BUTTON_WHEELDOWN (5)
-
-	Added SDL_GL_STEREO for stereoscopic OpenGL contexts
-
-1.2.0:
-	Added SDL_VIDEOEXPOSE event to signal that the screen needs to
-	be redrawn.  This is currently only delivered to OpenGL windows
-	on X11, though it may be delivered in the future when the video
-	memory is lost under DirectX.
-
-1.1.8:
-	You can pass SDL_NOFRAME to SDL_VideoMode() to create a window
-	that has no title bar or frame decoration.  Fullscreen video
-	modes automatically have this flag set.
-
-	Added a function to query the clipping rectangle for a surface:
-		void SDL_GetClipRect(SDL_Surface *surface, SDL_Rect *rect)
-
-	Added a function to query the current event filter:
-		SDL_EventFilter SDL_GetEventFilter(void)
-
-	If you pass -1 to SDL_ShowCursor(), it won't change the current
-	cursor visibility state, but will still return it.
-
-	SDL_LockSurface() and SDL_UnlockSurface() are recursive, meaning
-	you can nest them as deep as you want, as long as each lock call
-	has a matching unlock call.  The surface remains locked until the
-	last matching unlock call.
-
-	Note that you may not blit to or from a locked surface.
-
-1.1.7:
-	The SDL_SetGammaRamp() and SDL_GetGammaRamp() functions now take
-	arrays of Uint16 values instead of Uint8 values.  For the most part,
-	you can just take your old values and shift them up 8 bits to get
-	new correct values for your gamma ramps.
-
-	You can pass SDL_RLEACCEL in flags passed to SDL_ConvertSurface()
-        and SDL will try to RLE accelerate colorkey and alpha blits in the
-	resulting surface.
-
-1.1.6:
-	Added a function to return the thread ID of a specific thread:
-		Uint32 SDL_GetThreadID(SDL_Thread *thread)
-	If 'thread' is NULL, this function returns the id for this thread.
-
-1.1.5:
-	The YUV overlay structure has been changed to use an array of
-	pitches and pixels representing the planes of a YUV image, to
-	better enable hardware acceleration.  The YV12 and IYUV formats
-	each have three planes, corresponding to the Y, U, and V portions
-	of the image, while packed pixel YUV formats just have one plane.
-
-	For palettized mode (8bpp), the screen colormap is now split in
-	a physical and a logical palette. The physical palette determines
-	what colours the screen pixels will get when displayed, and the
-	logical palette controls the mapping from blits to/from the screen.
-	A new function, SDL_SetPalette() has been added to change
-	logical and physical palettes separately. SDL_SetColors() works
-	just as before, and is equivalent to calling SDL_SetPalette() with
-	a flag argument of (SDL_LOGPAL|SDL_PHYSPAL).
-
-	SDL_BlitSurface() no longer modifies the source rectangle, only the
-	destination rectangle. The width/height members of the destination
-	rectangle are ignored, only the position is used.
-
-	The old source clipping function SDL_SetClipping() has been replaced
-	with a more useful function to set the destination clipping rectangle:
-		SDL_bool SDL_SetClipRect(SDL_Surface *surface, SDL_Rect *rect)
-		
-	Added a function to see what subsystems have been initialized:
-		Uint32 SDL_WasInit(Uint32 flags)
-
-	The Big Alpha Flip: SDL now treats alpha as opacity like everybody
-	else, and not as transparency:
-
-	A new cpp symbol: SDL_ALPHA_OPAQUE is defined as 255
-	A new cpp symbol: SDL_ALPHA_TRANSPARENT is defined as 0
-	Values between 0 and 255 vary from fully transparent to fully opaque.
-
-	New functions:
-	SDL_DisplayFormatAlpha()
-	    Returns a surface converted to a format with alpha-channel
-	    that can be blit efficiently to the screen. (In other words,
-	    like SDL_DisplayFormat() but the resulting surface has
-	    an alpha channel.)  This is useful for surfaces with alpha.
-	SDL_MapRGBA()
-	    Works as SDL_MapRGB() but takes an additional alpha parameter.
-	SDL_GetRGBA()
-	    Works as SDL_GetRGB() but also returns the alpha value
-	    (SDL_ALPHA_OPAQUE for formats without an alpha channel)
-
-	Both SDL_GetRGB() and SDL_GetRGBA() now always return values in
-	the [0..255] interval. Previously, SDL_GetRGB() would return
-	(0xf8, 0xfc, 0xf8) for a completely white pixel in RGB565 format.
-	(N.B.: This is broken for bit fields < 3 bits.)
-
-	SDL_MapRGB() returns pixels in which the alpha channel is set opaque.
-
-	SDL_SetAlpha() can now be used for both setting the per-surface
-	alpha, using the new way of thinking of alpha, and also to enable
-	and disable per-pixel alpha blending for surfaces with an alpha
-	channel:
-		To disable alpha blending:
-			SDL_SetAlpha(surface, 0, 0);
-		To re-enable alpha blending:
-			SDL_SetAlpha(surface, SDL_SRCALPHA, 0);
-	Surfaces with an alpha channel have blending enabled by default.
-
-	SDL_SetAlpha() now accepts SDL_RLEACCEL as a flag, which requests
-	RLE acceleration of blits, just as like with SDL_SetColorKey().
-	This flag can be set for both surfaces with an alpha channel
-	and surfaces with an alpha value set by SDL_SetAlpha().
-	As always, RLE surfaces must be locked before pixel access is
-	allowed, and unlocked before any other SDL operations are done
-	on it.
-
-	The blit semantics for surfaces with and without alpha and colorkey
-	have now been defined:
-
-	RGBA->RGB:
-	    SDL_SRCALPHA set:
-		alpha-blend (using alpha-channel).
-		SDL_SRCCOLORKEY ignored.
-	    SDL_SRCALPHA not set:
-		copy RGB.
-		if SDL_SRCCOLORKEY set, only copy the pixels matching the
-		RGB values of the source colour key, ignoring alpha in the
-		comparison.
-
-	RGB->RGBA:
-	    SDL_SRCALPHA set:
-		alpha-blend (using the source per-surface alpha value);
-		set destination alpha to opaque.
-	    SDL_SRCALPHA not set:
-		copy RGB, set destination alpha to opaque.
-	    both:
-		if SDL_SRCCOLORKEY set, only copy the pixels matching the
-		source colour key.
-
-	RGBA->RGBA:
-	    SDL_SRCALPHA set:
-		alpha-blend (using the source alpha channel) the RGB values;
-		leave destination alpha untouched. [Note: is this correct?]
-		SDL_SRCCOLORKEY ignored.
-	    SDL_SRCALPHA not set:
-		copy all of RGBA to the destination.
-		if SDL_SRCCOLORKEY set, only copy the pixels matching the
-		RGB values of the source colour key, ignoring alpha in the
-		comparison.
-
-	RGB->RGB: 
-	    SDL_SRCALPHA set:
-		alpha-blend (using the source per-surface alpha value).
-	    SDL_SRCALPHA not set:
-		copy RGB.
-	    both:
-		if SDL_SRCCOLORKEY set, only copy the pixels matching the
-		source colour key.
-
-	As a special case, blits from surfaces with per-surface alpha
-	value of 128 (50% transparency) are optimised and much faster
-	than other alpha values. This does not apply to surfaces with
-	alpha channels (per-pixel alpha).
-
-	New functions for manipulating the gamma of the display have
-	been added:
-		int SDL_SetGamma(float red, float green, float blue);
-		int SDL_SetGammaRamp(Uint8 *red, Uint8 *green, Uint8 *blue);
-		int SDL_GetGammaRamp(Uint8 *red, Uint8 *green, Uint8 *blue);
-	Gamma ramps are tables with 256 entries which map the screen color
-	components into actually displayed colors.  For an example of
-	implementing gamma correction and gamma fades, see test/testgamma.c
-	Gamma control is not supported on all hardware.
-
-1.1.4:
-	The size of the SDL_CDtrack structure changed from 8 to 12 bytes
-	as the size of the length member was extended to 32 bits.
-
-        You can now use SDL for 2D blitting with a GL mode by passing the
-	SDL_OPENGLBLIT flag to SDL_SetVideoMode().  You can specify 16 or
-	32 bpp, and the data in the framebuffer is put into the GL scene
-	when you call SDL_UpdateRects(), and the scene will be visible
-	when you call SDL_GL_SwapBuffers().
-
-	Run the "testgl" test program with the -logo command line option
-	to see an example of this blending of 2D and 3D in SDL.
-
-1.1.3:
-	Added SDL_FreeRW() to the API, to complement SDL_AllocRW()
-
-	Added resizable window support - just add SDL_RESIZABLE to the
-	SDL_SetVideoMode() flags, and then wait for SDL_VIDEORESIZE events.
-	See SDL_events.h for details on the new SDL_ResizeEvent structure.
-
-	Added condition variable support, based on mutexes and semaphores.
-		SDL_CreateCond()
-		SDL_DestroyCond()
-		SDL_CondSignal()
-		SDL_CondBroadcast()
-		SDL_CondWait()
-		SDL_CondTimedWait()
-	The new function prototypes are in SDL_mutex.h
-
-	Added counting semaphore support, based on the mutex primitive.
-		SDL_CreateSemaphore()
-		SDL_DestroySemaphore()
-		SDL_SemWait()
-		SDL_SemTryWait()
-		SDL_SemWaitTimeout()
-		SDL_SemPost()
-		SDL_SemValue()
-	The new function prototypes are in SDL_mutex.h
-
-	Added support for asynchronous blitting.  To take advantage of this,
-	you must set the SDL_ASYNCBLIT flag when setting the video mode and
-	creating surfaces that you want accelerated in this way.  You must
-	lock surfaces that have this flag set, and the lock will block until
-	any queued blits have completed.
-
-	Added YUV video overlay support.
-	The supported YUV formats are: YV12, IYUV, YUY2, UYVY, and YVYU.
-	This function creates an overlay surface:
-		SDL_CreateYUVOverlay()
-	You must lock and unlock the overlay to get access to the data:
-		SDL_LockYUVOverlay() SDL_UnlockYUVOverlay()
-	You can then display the overlay:
-		SDL_DisplayYUVOverlay()
-	You must free the overlay when you are done using it:
-		SDL_FreeYUVOverlay()
-	See SDL_video.h for the full function prototypes.
-
-	The joystick hat position constants have been changed:
-	Old constant            New constant
-	------------            ------------
-	     0                  SDL_HAT_CENTERED
-	     1                  SDL_HAT_UP
-	     2                  SDL_HAT_RIGHTUP
-	     3                  SDL_HAT_RIGHT
-	     4                  SDL_HAT_RIGHTDOWN
-	     5                  SDL_HAT_DOWN
-	     6                  SDL_HAT_LEFTDOWN
-	     7                  SDL_HAT_LEFT
-	     8                  SDL_HAT_LEFTUP
-	The new constants are bitmasks, so you can check for the
-	individual axes like this:
-		if ( hat_position & SDL_HAT_UP ) {
-		}
-	and you'll catch left-up, up, and right-up.
-
-1.1.2:
-	Added multiple timer support:
-		SDL_AddTimer() and SDL_RemoveTimer()
-
-	SDL_WM_SetIcon() now respects the icon colorkey if mask is NULL.
-
-1.1.0:
-	Added initial OpenGL support.
-	First set GL attributes (such as RGB depth, alpha depth, etc.)
-		SDL_GL_SetAttribute()
-	Then call SDL_SetVideoMode() with the SDL_OPENGL flag.
-	Perform all of your normal GL drawing.
-	Finally swap the buffers with the new SDL function:
-		SDL_GL_SwapBuffers()
-	See the new 'testgl' test program for an example of using GL with SDL.
-
-	You can load GL extension functions by using the function:
-		SDL_GL_LoadProcAddress()
-
-	Added functions to initialize and cleanup specific SDL subsystems:
-		SDL_InitSubSystem() and SDL_QuitSubSystem()
-
-	Added user-defined event type:
-		typedef struct {
-        		Uint8 type;
-        		int code;
-        		void *data1;
-        		void *data2;
-		} SDL_UserEvent;
-	This structure is in the "user" member of an SDL_Event.
-
-	Added a function to push events into the event queue:
-		SDL_PushEvent()
-
-	Example of using the new SDL user-defined events:
-	{
-		SDL_Event event;
-
-		event.type = SDL_USEREVENT;
-		event.user.code = my_event_code;
-		event.user.data1 = significant_data;
-		event.user.data2 = 0;
-		SDL_PushEvent(&event);
-	}
-
-	Added a function to get mouse deltas since last query:
-		SDL_GetRelativeMouseState()
-
-	Added a boolean datatype to SDL_types.h:
-		SDL_bool = { SDL_TRUE, SDL_FALSE }
-
-	Added a function to get the current audio status:
-		SDL_GetAudioState();
-	It returns one of:
-		SDL_AUDIO_STOPPED,
-		SDL_AUDIO_PLAYING,
-		SDL_AUDIO_PAUSED
-
-	Added an AAlib driver (ASCII Art) - by Stephane Peter.
-
-1.0.6:
-	The input grab state is reset after each call to SDL_SetVideoMode().
-	The input is grabbed by default in fullscreen mode, and ungrabbed in
-	windowed mode.  If you want to set input grab to a particular value,
-	you should set it after each call to SDL_SetVideoMode().
-
-1.0.5:
-	Exposed SDL_AudioInit(), SDL_VideoInit()
-	Added SDL_AudioDriverName() and SDL_VideoDriverName()
-
-	Added new window manager function:
-		SDL_WM_ToggleFullScreen()
-	This is currently implemented only on Linux
-
-	The ALT-ENTER code has been removed - it's not appropriate for a
-	lib to bind keys when they aren't even emergency escape sequences.
-
-	ALT-ENTER functionality can be implemented with the following code:
-
-	int Handle_AltEnter(const SDL_Event *event)
-	{
-	    if ( event->type == SDL_KEYDOWN ) {
-	        if ( (event->key.keysym.sym == SDLK_RETURN) &&
-	             (event->key.keysym.mod & KMOD_ALT) ) {   
-	                SDL_WM_ToggleFullScreen(SDL_GetVideoSurface());
-	                return(0);
-	        }
-	    }
-	    return(1);
-	}
-	SDL_SetEventFilter(Handle_AltEnter);
-
-1.0.3:
-	Under X11, if you grab the input and hide the mouse cursor,
-	the mouse will go into a "relative motion" mode where you
-	will always get relative motion events no matter how far in
-	each direction you move the mouse - relative motion is not
-	bounded by the edges of the window (though the absolute values
-	of the mouse positions are clamped by the size of the window).
-	The SVGAlib, framebuffer console, and DirectInput drivers all
-	have this behavior naturally, and the GDI and BWindow drivers
-	never go into "relative motion" mode.
-
-1.0.2:
-	Added a function to enable keyboard repeat:
-		SDL_EnableKeyRepeat()
-
-	Added a function to grab the mouse and keyboard input
-		SDL_WM_GrabInput()
-
-	Added a function to iconify the window.
-		SDL_WM_IconifyWindow()
-	If this function succeeds, the application will receive an event
-	signaling SDL_APPACTIVE event 
-
-1.0.1:
-	Added constants to SDL_audio.h for 16-bit native byte ordering:
-		AUDIO_U16SYS, AUDIO_S16SYS
-
-1.0.0:
-	New public release
-
-Version 0.11:
-
-0.11.5:
-	A new function SDL_GetVideoSurface() has been added, and returns
-	a pointer to the current display surface.
-
-	SDL_AllocSurface() has been renamed SDL_CreateRGBSurface(), and
-	a new function SDL_CreateRGBSurfaceFrom() has been added to allow
-	creating an SDL surface from an existing pixel data buffer.
-
-	Added SDL_GetRGB() to the headers and documentation.
-
-0.11.4:
-	SDL_SetLibraryPath() is no longer meaningful, and has been removed.
-
-0.11.3:
-	A new flag for SDL_Init(), SDL_INIT_NOPARACHUTE, prevents SDL from
-	installing fatal signal handlers on operating systems that support
-	them.
-
-Version 0.9:
-
-0.9.15:
-	SDL_CreateColorCursor() has been removed.  Color cursors should
-	be implemented as sprites, blitted by the application when the
-	cursor moves.  To get smooth color cursor updates when the app
-	is busy, pass the SDL_INIT_EVENTTHREAD flag to SDL_Init().  This
-	allows you to handle the mouse motion in another thread from an
-	event filter function, but is currently only supported by Linux
-	and BeOS.  Note that you'll have to protect the display surface
-	from multi-threaded access by using mutexes if you do this.
-
-	Thread-safe surface support has been removed from SDL.
-	This makes blitting somewhat faster, by removing SDL_MiddleBlit().
-	Code that used SDL_MiddleBlit() should use SDL_LowerBlit() instead.
-	You can make your surfaces thread-safe by allocating your own
-	mutex and making lock/unlock calls around accesses to your surface.
-
-0.9.14:
-	SDL_GetMouseState() now takes pointers to int rather than Uint16.
-
-	If you set the SDL_WINDOWID environment variable under UNIX X11,
-	SDL will use that as the main window instead of creating it's own.
-	This is an unsupported extension to SDL, and not portable at all.
-
-0.9.13:
-	Added a function SDL_SetLibraryPath() which can be used to specify
-	the directory containing the SDL dynamic libraries.  This is useful
-	for commercial applications which ship with particular versions
-	of the libraries, and for security on multi-user systems.
-	If this function is not used, the default system directories are 
-	searched using the native dynamic object loading mechanism.
-
-	In order to support C linkage under Visual C++, you must declare
-	main() without any return type:
-		main(int argc, char *argv[]) {
-			/* Do the program... */
-			return(0);
-		}
-	C++ programs should also return a value if compiled under VC++.
-
-	The blit_endian member of the SDL_VideoInfo struct has been removed.
-
-	SDL_SymToASCII() has been replaced with SDL_GetKeyName(), so there
-	is now no longer any function to translate a keysym to a character.
-
-	The SDL_keysym structure has been extended with a 'scancode' and
-	'unicode' member.  The 'scancode' is a hardware specific scancode
-	for the key that was pressed, and may be 0.  The 'unicode' member
-	is a 16-bit UNICODE translation of the key that was pressed along
-	with any modifiers or compose keys that have been pressed.
-	If no UNICODE translation exists for the key, 'unicode' will be 0.
-
-	Added a function SDL_EnableUNICODE() to enable/disable UNICODE
-	translation of character keypresses.  Translation defaults off.
-
-	To convert existing code to use the new API, change code which
-	uses SDL_SymToASCII() to get the keyname to use SDL_GetKeyName(),
-	and change code which uses it to get the ASCII value of a sym to
-	use the 'unicode' member of the event keysym.
-
-0.9.12:
-	There is partial support for 64-bit datatypes.  I don't recommend 
-	you use this if you have a choice, because 64-bit datatypes are not
-	supported on many platforms.  On platforms for which it is supported,
-	the SDL_HAS_64BIT_TYPE C preprocessor define will be enabled, and
-	you can use the Uint64 and Sint64 datatypes.
-
-	Added functions to SDL_endian.h to support 64-bit datatypes:
-	    SDL_SwapLE64(), SDL_SwapBE64(),
-	    SDL_ReadLE64(), SDL_ReadBE64(), SDL_WriteLE64(), SDL_WriteBE64()
-
-	A new member "len_ratio" has been added to the SDL_AudioCVT structure,
-	and allows you to determine either the original buffer length or the
-	converted buffer length, given the other.
-
-	A new function SDL_FreeWAV() has been added to the API to free data
-	allocated by SDL_LoadWAV_RW().  This is necessary under Win32 since
-	the gcc compiled DLL uses a different heap than VC++ compiled apps.
-
-	SDL now has initial support for international keyboards using the
-	Latin character set.
-	If a particular mapping is desired, you can set the DEFAULT_KEYBOARD
-	compile-time variable, or you can set the environment variable 
-	"SDL_KEYBOARD" to a string identifying the keyboard mapping you desire.
-	The valid values for these variables can be found in SDL_keyboard.c
-
-	Full support for German and French keyboards under X11 is implemented.
-
-0.9.11:
-	The THREADED_EVENTS compile-time define has been replaced with the
-	SDL_INIT_EVENTTHREAD flag.  If this flag is passed to SDL_Init(),
-	SDL will create a separate thread to perform input event handling.
-	If this flag is passed to SDL_Init(), and the OS doesn't support 
-	event handling in a separate thread, SDL_Init() will fail.
-	Be sure to add calls to SDL_Delay() in your main thread to allow
-	the OS to schedule your event thread, or it may starve, leading
-	to slow event delivery and/or dropped events.
-	Currently MacOS and Win32 do not support this flag, while BeOS 
-	and Linux do support it.  I recommend that your application only
-	use this flag if absolutely necessary.
-
-	The SDL thread function passed to SDL_CreateThread() now returns a
-	status.  This status can be retrieved by passing a non-NULL pointer
-	as the 'status' argument to SDL_WaitThread().
-
-	The volume parameter to SDL_MixAudio() has been increased in range
-	from (0-8) to (0-128)
-
-	SDL now has a data source abstraction which can encompass a file,
-	an area of memory, or any custom object you can envision.  It uses
-	these abstractions, SDL_RWops, in the endian read/write functions,
-	and the built-in WAV and BMP file loaders.  This means you can load
-	WAV chunks from memory mapped files, compressed archives, network
-	pipes, or anything else that has a data read abstraction.
-
-	There are three built-in data source abstractions:
-	    SDL_RWFromFile(), SDL_RWFromFP(), SDL_RWFromMem()
-	along with a generic data source allocation function:
-	    SDL_AllocRW()
-	These data sources can be used like stdio file pointers with the
-	following convenience functions:
-	    SDL_RWseek(), SDL_RWread(), SDL_RWwrite(), SDL_RWclose()
-	These functions are defined in the new header file "SDL_rwops.h"
-
-	The endian swapping functions have been turned into macros for speed
-	and SDL_CalculateEndian() has been removed.  SDL_endian.h now defines
-	SDL_BYTEORDER as either SDL_BIG_ENDIAN or SDL_LIL_ENDIAN depending on
-	the endianness of the host system.
-
-	The endian read/write functions now take an SDL_RWops pointer
-	instead of a stdio FILE pointer, to support the new data source
-	abstraction.
-
-	The SDL_*LoadWAV() functions have been replaced with a single
-	SDL_LoadWAV_RW() function that takes a SDL_RWops pointer as it's
-	first parameter, and a flag whether or not to automatically 
-	free it as the second parameter.  SDL_LoadWAV() is a macro for
-	backward compatibility and convenience:
-	    SDL_LoadWAV_RW(SDL_RWFromFile("sample.wav", "rb"), 1, ...);
-
-	The SDL_*LoadBMP()/SDL_*SaveBMP() functions have each been replaced
-	with a single function that takes a SDL_RWops pointer as it's
-	first parameter, and a flag whether or not to automatically 
-	free it as the second parameter.  SDL_LoadBMP() and SDL_SaveBMP()
-	are macros for backward compatibility and convenience:
-	    SDL_LoadBMP_RW(SDL_RWFromFile("sample.bmp", "rb"), 1, ...);
-	    SDL_SaveBMP_RW(SDL_RWFromFile("sample.bmp", "wb"), 1, ...);
-	Note that these functions use SDL_RWseek() extensively, and should
-	not be used on pipes or other non-seekable data sources.
-
-0.9.10:
-	The Linux SDL_SysWMInfo and SDL_SysWMMsg structures have been 
-	extended to support multiple types of display drivers, as well as
-        safe access to the X11 display when THREADED_EVENTS is enabled.
-        The new structures are documented in the SDL_syswm.h header file.
-
-	Thanks to John Elliott <jce@seasip.demon.co.uk>, the UK keyboard
-	should now work properly, as well as the "Windows" keys on US
-	keyboards.
-
-	The Linux CD-ROM code now reads the CD-ROM devices from /etc/fstab
-	instead of trying to open each block device on the system.
-	The CD must be listed in /etc/fstab as using the iso9660 filesystem.
-
-	On Linux, if you define THREADED_EVENTS at compile time, a separate
-	thread will be spawned to gather X events asynchronously from the
-	graphics updates.  This hasn't been extensively tested, but it does
-	provide a means of handling keyboard and mouse input in a separate
-	thread from the graphics thread.  (This is now enabled by default.)
-
-	A special access function SDL_PeepEvents() allows you to manipulate
-	the event queue in a thread-safe manner, including peeking at events,
-	removing events of a specified type, and adding new events of arbitrary
-	type to the queue (use the new 'user' member of the SDL_Event type).
-
-	If you use SDL_PeepEvents() to gather events, then the main graphics
-	thread needs to call SDL_PumpEvents() periodically to drive the event
-	loop and generate input events.  This is not necessary if SDL has been 
-	compiled with THREADED_EVENTS defined, but doesn't hurt.
-
-	A new function SDL_ThreadID() returns the identifier associated with
-	the current thread.
-
-0.9.9:
-	The AUDIO_STEREO format flag has been replaced with a new 'channels'
-	member of the SDL_AudioSpec structure.  The channels are 1 for mono
-	audio, and 2 for stereo audio.  In the future more channels may be
-	supported for 3D surround sound.
-
-	The SDL_MixAudio() function now takes an additional volume parameter,
-	which should be set to SDL_MIX_MAXVOLUME for compatibility with the
-	original function.
-
-	The CD-ROM functions which take a 'cdrom' parameter can now be
-	passed NULL, and will act on the last successfully opened CD-ROM.
-
-0.9.8:
-	No changes, bugfixes only.
-	
-0.9.7:
-	No changes, bugfixes only.
-	
-0.9.6:
-	Added a fast rectangle fill function: SDL_FillRect()
-
-	Addition of a useful function for getting info on the video hardware:
-	    const SDL_VideoInfo *SDL_GetVideoInfo(void)
-        This function replaces SDL_GetDisplayFormat().
-
-	Initial support for double-buffering:
-	  Use the SDL_DOUBLEBUF flag in SDL_SetVideoMode()
-	  Update the screen with a new function: SDL_Flip()
-
-	SDL_AllocSurface() takes two new flags:
-	SDL_SRCCOLORKEY means that the surface will be used for colorkey blits
-	  and if the hardware supports hardware acceleration of colorkey blits
-	  between two surfaces in video memory, to place the surface in video
-	  memory if possible, otherwise it will be placed in system memory.
-	SDL_SRCALPHA means that the surface will be used for alpha blits and
-	  if the hardware supports hardware acceleration of alpha blits between
-	  two surfaces in video memory, to place the surface in video memory
-	  if possible, otherwise it will be placed in system memory.
-	SDL_HWSURFACE now means that the surface will be created with the 
-	  same format as the display surface, since having surfaces in video
-	  memory is only useful for fast blitting to the screen, and you can't
-	  blit surfaces with different surface formats in video memory.
-
-0.9.5:
-	You can now pass a NULL mask to SDL_WM_SetIcon(), and it will assume
-	that the icon consists of the entire image.
-
-	SDL_LowerBlit() is back -- but don't use it on the display surface.
-	It is exactly the same as SDL_MiddleBlit(), but doesn't check for
-	thread safety.
-
-	Added SDL_FPLoadBMP(), SDL_FPSaveBMP(), SDL_FPLoadWAV(), which take
-	a FILE pointer instead of a file name.
-
-	Added CD-ROM audio control API:
-	    SDL_CDNumDrives()
-	    SDL_CDName()
-	    SDL_CDOpen()
-	    SDL_CDStatus()
-	    SDL_CDPlayTracks()
-	    SDL_CDPlay()
-	    SDL_CDPause()
-	    SDL_CDResume()
-	    SDL_CDStop()
-	    SDL_CDEject()
-	    SDL_CDClose()
-
-0.9.4:
-	No changes, bugfixes only.
-
-0.9.3:
-	Mouse motion event now includes relative motion information:
-	    Sint16 event->motion.xrel, Sint16 event->motion.yrel
-
-	X11 keyrepeat handling can be disabled by defining IGNORE_X_KEYREPEAT
-	    (Add -DIGNORE_X_KEYREPEAT to CFLAGS line in obj/x11Makefile)
-
-0.9.2:
-	No changes, bugfixes only.
-
-0.9.1:
-	Removed SDL_MapSurface() and SDL_UnmapSurface() -- surfaces are now
-	automatically mapped on blit.
-
-0.8.0:
-	SDL stable release
+This is a list of major changes in SDL's version history.
+
+---------------------------------------------------------------------------
+2.0.12:
+---------------------------------------------------------------------------
+
+General:
+* Added SDL_GetTextureScaleMode() and SDL_SetTextureScaleMode() to get and set the scaling mode used for a texture
+* Added SDL_LockTextureToSurface(), similar to SDL_LockTexture() but the locked area is exposed as a SDL surface.
+* Added new blend mode, SDL_BLENDMODE_MUL, which does a modulate and blend operation
+* Added the hint SDL_HINT_DISPLAY_USABLE_BOUNDS to override the results of SDL_GetDisplayUsableBounds() for display index 0.
+* Added the window underneath the finger to the SDL_TouchFingerEvent
+* Added SDL_GameControllerTypeForIndex(), SDL_GameControllerGetType() to return the type of a game controller (Xbox 360, Xbox One, PS3, PS4, or Nintendo Switch Pro)
+* Added the hint SDL_HINT_GAMECONTROLLERTYPE to override the automatic game controller type detection
+* Added SDL_JoystickFromPlayerIndex() and SDL_GameControllerFromPlayerIndex() to get the device associated with a player index
+* Added SDL_JoystickSetPlayerIndex() and SDL_GameControllerSetPlayerIndex() to set the player index associated with a device
+* Added the hint SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS to specify whether Nintendo Switch Pro controllers should use the buttons as labeled or swapped to match positional layout. The default is to use the buttons as labeled.
+* Added support for Nintendo GameCube controllers to the HIDAPI driver, and a hint SDL_HINT_JOYSTICK_HIDAPI_GAMECUBE to control whether this is used.
+* Improved support for Xbox 360 and Xbox One controllers when using the HIDAPI driver
+* Added support for many game controllers, including:
+	* 8BitDo FC30 Pro
+	* 8BitDo M30 GamePad
+	* BDA PS4 Fightpad
+	* HORI Fighting Commander
+	* Hyperkin Duke
+	* Hyperkin X91
+	* MOGA XP5-A Plus
+	* NACON GC-400ES
+	* NVIDIA Controller v01.04
+	* PDP Versus Fighting Pad
+	* Razer Raion Fightpad for PS4
+	* Razer Serval
+	* Stadia Controller
+	* SteelSeries Stratus Duo
+	* Victrix Pro Fight Stick for PS4
+	* Xbox One Elite Series 2
+* Fixed blocking game controller rumble calls when using the HIDAPI driver
+* Added SDL_zeroa() macro to zero an array of elements
+* Added SDL_HasARMSIMD() which returns true if the CPU has ARM SIMD (ARMv6+) features
+
+Windows:
+* Fixed crash when using the release SDL DLL with applications built with gcc
+* Fixed performance regression in event handling introduced in 2.0.10
+* Added support for SDL_SetThreadPriority() for UWP applications
+
+Linux:
+* Added the hint SDL_HINT_VIDEO_X11_WINDOW_VISUALID to specify the visual chosen for new X11 windows
+* Added the hint SDL_HINT_VIDEO_X11_FORCE_EGL to specify whether X11 should use GLX or EGL by default
+
+iOS / tvOS / macOS:
+* Added SDL_Metal_CreateView() and SDL_Metal_DestroyView() to create CAMetalLayer-backed NSView/UIView and attach it to the specified window.
+
+iOS/ tvOS:
+* Added support for Bluetooth Steam Controllers as game controllers
+
+tvOS:
+* Fixed support for surround sound on Apple TV
+
+Android:
+* Added SDL_GetAndroidSDKVersion() to return the API level of the current device
+* Added support for audio capture using OpenSL-ES
+* Added support for Bluetooth Steam Controllers as game controllers
+* Fixed rare crashes when the app goes into the background or terminates
+
+
+---------------------------------------------------------------------------
+2.0.10:
+---------------------------------------------------------------------------
+
+General:
+* The SDL_RW* macros have been turned into functions that are available only in 2.0.10 and onward
+* Added SDL_SIMDGetAlignment(), SDL_SIMDAlloc(), and SDL_SIMDFree(), to allocate memory aligned for SIMD operations for the current CPU
+* Added SDL_RenderDrawPointF(), SDL_RenderDrawPointsF(), SDL_RenderDrawLineF(), SDL_RenderDrawLinesF(), SDL_RenderDrawRectF(), SDL_RenderDrawRectsF(), SDL_RenderFillRectF(), SDL_RenderFillRectsF(), SDL_RenderCopyF(), SDL_RenderCopyExF(), to allow floating point precision in the SDL rendering API.
+* Added SDL_GetTouchDeviceType() to get the type of a touch device, which can be a touch screen or a trackpad in relative or absolute coordinate mode.
+* The SDL rendering API now uses batched rendering by default, for improved performance
+* Added SDL_RenderFlush() to force batched render commands to execute, if you're going to mix SDL rendering with native rendering
+* Added the hint SDL_HINT_RENDER_BATCHING to control whether batching should be used for the rendering API. This defaults to "1" if you don't specify what rendering driver to use when creating the renderer.
+* Added the hint SDL_HINT_EVENT_LOGGING to enable logging of SDL events for debugging purposes
+* Added the hint SDL_HINT_GAMECONTROLLERCONFIG_FILE to specify a file that will be loaded at joystick initialization with game controller bindings
+* Added the hint SDL_HINT_MOUSE_TOUCH_EVENTS to control whether SDL will synthesize touch events from mouse events
+* Improved handling of malformed WAVE and BMP files, fixing potential security exploits
+
+Linux:
+* Removed the Mir video driver in favor of Wayland
+
+iOS / tvOS:
+* Added support for Xbox and PS4 wireless controllers in iOS 13 and tvOS 13
+* Added support for text input using Bluetooth keyboards
+
+Android:
+* Added low latency audio using OpenSL ES
+* Removed SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH (replaced by SDL_HINT_MOUSE_TOUCH_EVENTS and SDL_HINT_TOUCH_MOUSE_EVENTS)
+  SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH=1, should be replaced by setting both previous hints to 0.
+  SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH=0, should be replaced by setting both previous hints to 1.
+* Added the hint SDL_HINT_ANDROID_BLOCK_ON_PAUSE to set whether the event loop will block itself when the app is paused.
+
+
+---------------------------------------------------------------------------
+2.0.9:
+---------------------------------------------------------------------------
+
+General:
+* Added a new sensor API, initialized by passing SDL_INIT_SENSOR to SDL_Init(), and defined in SDL_sensor.h
+* Added an event SDL_SENSORUPDATE which is sent when a sensor is updated
+* Added SDL_GetDisplayOrientation() to return the current display orientation
+* Added an event SDL_DISPLAYEVENT which is sent when the display orientation changes
+* Added HIDAPI joystick drivers for more consistent support for Xbox, PS4 and Nintendo Switch Pro controller support across platforms. (Thanks to Valve for contributing the PS4 and Nintendo Switch Pro controller support)
+* Added support for many other popular game controllers
+* Added SDL_JoystickGetDevicePlayerIndex(), SDL_JoystickGetPlayerIndex(), and SDL_GameControllerGetPlayerIndex() to get the player index for a controller. For XInput controllers this returns the XInput index for the controller.
+* Added SDL_GameControllerRumble() and SDL_JoystickRumble() which allow simple rumble without using the haptics API
+* Added SDL_GameControllerMappingForDeviceIndex() to get the mapping for a controller before it's opened
+* Added the hint SDL_HINT_MOUSE_DOUBLE_CLICK_TIME to control the mouse double-click time
+* Added the hint SDL_HINT_MOUSE_DOUBLE_CLICK_RADIUS to control the mouse double-click radius, in pixels
+* Added SDL_HasColorKey() to return whether a surface has a colorkey active
+* Added SDL_HasAVX512F() to return whether the CPU has AVX-512F features
+* Added SDL_IsTablet() to return whether the application is running on a tablet
+* Added SDL_THREAD_PRIORITY_TIME_CRITICAL for threads that must run at the highest priority
+
+Mac OS X:
+* Fixed black screen at start on Mac OS X Mojave
+
+Linux:
+* Added SDL_LinuxSetThreadPriority() to allow adjusting the thread priority of native threads using RealtimeKit if available.
+
+iOS:
+* Fixed Asian IME input
+
+Android:
+* Updated required Android SDK to API 26, to match Google's new App Store requirements
+* Added support for wired USB Xbox, PS4, and Nintendo Switch Pro controllers
+* Added support for relative mouse mode on Android 7.0 and newer (except where it's broken, on Chromebooks and when in DeX mode with Samsung Experience 9.0)
+* Added support for custom mouse cursors on Android 7.0 and newer
+* Added the hint SDL_HINT_ANDROID_TRAP_BACK_BUTTON to control whether the back button will back out of the app (the default) or be passed to the application as SDL_SCANCODE_AC_BACK
+* Added SDL_AndroidBackButton() to trigger the Android system back button behavior when handling the back button in the application
+* Added SDL_IsChromebook() to return whether the app is running in the Chromebook Android runtime
+* Added SDL_IsDeXMode() to return whether the app is running while docked in the Samsung DeX
+
+
+---------------------------------------------------------------------------
+2.0.8:
+---------------------------------------------------------------------------
+
+General:
+* Added SDL_fmod() and SDL_log10()
+* Each of the SDL math functions now has the corresponding float version
+* Added SDL_SetYUVConversionMode() and SDL_GetYUVConversionMode() to control the formula used when converting to and from YUV colorspace. The options are JPEG, BT.601, and BT.709
+
+Windows:
+* Implemented WASAPI support on Windows UWP and removed the deprecated XAudio2 implementation
+* Added resampling support on WASAPI on Windows 7 and above
+
+Windows UWP:
+* Added SDL_WinRTGetDeviceFamily() to find out what type of device your application is running on
+
+Mac OS X:
+* Added support for the Vulkan SDK for Mac:
+  https://www.lunarg.com/lunarg-releases-vulkan-sdk-1-0-69-0-for-mac/
+* Added support for OpenGL ES using ANGLE when it's available
+
+Mac OS X / iOS / tvOS:
+* Added a Metal 2D render implementation
+* Added SDL_RenderGetMetalLayer() and SDL_RenderGetMetalCommandEncoder() to insert your own drawing into SDL rendering when using the Metal implementation
+
+iOS:
+* Added the hint SDL_HINT_IOS_HIDE_HOME_INDICATOR to control whether the home indicator bar on iPhone X should be hidden. This defaults to dimming the indicator for fullscreen applications and showing the indicator for windowed applications.
+
+iOS / Android:
+* Added the hint SDL_HINT_RETURN_KEY_HIDES_IME to control whether the return key on the software keyboard should hide the keyboard or send a key event (the default)
+
+Android:
+* SDL now supports building with Android Studio and Gradle by default, and the old Ant project is available in android-project-ant
+* SDL now requires the API 19 SDK to build, but can still target devices down to API 14 (Android 4.0.1)
+* Added SDL_IsAndroidTV() to tell whether the application is running on Android TV
+
+Android / tvOS:
+* Added the hint SDL_HINT_TV_REMOTE_AS_JOYSTICK to control whether TV remotes should be listed as joystick devices (the default) or send keyboard events.
+
+Linux:
+* Added the hint SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR to control whether the X server should skip the compositor for the SDL application. This defaults to "1"
+* Added the hint SDL_HINT_VIDEO_DOUBLE_BUFFER to control whether the Raspberry Pi and KMSDRM video drivers should use double or triple buffering (the default)
+
+
+---------------------------------------------------------------------------
+2.0.7:
+---------------------------------------------------------------------------
+
+General:
+* Added audio stream conversion functions:
+	SDL_NewAudioStream
+	SDL_AudioStreamPut
+	SDL_AudioStreamGet
+	SDL_AudioStreamAvailable
+	SDL_AudioStreamFlush
+	SDL_AudioStreamClear
+	SDL_FreeAudioStream
+* Added functions to query and set the SDL memory allocation functions:
+	SDL_GetMemoryFunctions()
+	SDL_SetMemoryFunctions()
+	SDL_GetNumAllocations()
+* Added locking functions for multi-threaded access to the joystick and game controller APIs:
+	SDL_LockJoysticks()
+	SDL_UnlockJoysticks()
+* The following functions are now thread-safe:
+	SDL_SetEventFilter()
+	SDL_GetEventFilter()
+	SDL_AddEventWatch()
+	SDL_DelEventWatch()
+
+
+General:
+---------------------------------------------------------------------------
+2.0.6:
+---------------------------------------------------------------------------
+
+General:
+* Added cross-platform Vulkan graphics support in SDL_vulkan.h
+	SDL_Vulkan_LoadLibrary()
+	SDL_Vulkan_GetVkGetInstanceProcAddr()
+	SDL_Vulkan_GetInstanceExtensions()
+	SDL_Vulkan_CreateSurface()
+	SDL_Vulkan_GetDrawableSize()
+	SDL_Vulkan_UnloadLibrary()
+  This is all the platform-specific code you need to bring up Vulkan on all SDL platforms. You can look at an example in test/testvulkan.c
+* Added SDL_ComposeCustomBlendMode() to create custom blend modes for 2D rendering
+* Added SDL_HasNEON() which returns whether the CPU has NEON instruction support
+* Added support for many game controllers, including the Nintendo Switch Pro Controller
+* Added support for inverted axes and separate axis directions in game controller mappings
+* Added functions to return information about a joystick before it's opened:
+	SDL_JoystickGetDeviceVendor()
+	SDL_JoystickGetDeviceProduct()
+	SDL_JoystickGetDeviceProductVersion()
+	SDL_JoystickGetDeviceType()
+	SDL_JoystickGetDeviceInstanceID()
+* Added functions to return information about an open joystick:
+	SDL_JoystickGetVendor()
+	SDL_JoystickGetProduct()
+	SDL_JoystickGetProductVersion()
+	SDL_JoystickGetType()
+	SDL_JoystickGetAxisInitialState()
+* Added functions to return information about an open game controller:
+	SDL_GameControllerGetVendor()
+	SDL_GameControllerGetProduct()
+	SDL_GameControllerGetProductVersion()
+* Added SDL_GameControllerNumMappings() and SDL_GameControllerMappingForIndex() to be able to enumerate the built-in game controller mappings
+* Added SDL_LoadFile() and SDL_LoadFile_RW() to load a file into memory
+* Added SDL_DuplicateSurface() to make a copy of a surface
+* Added an experimental JACK audio driver
+* Implemented non-power-of-two audio resampling, optionally using libsamplerate to perform the resampling
+* Added the hint SDL_HINT_AUDIO_RESAMPLING_MODE to control the quality of resampling
+* Added the hint SDL_HINT_RENDER_LOGICAL_SIZE_MODE to control the scaling policy for SDL_RenderSetLogicalSize():
+	"0" or "letterbox" - Uses letterbox/sidebars to fit the entire rendering on screen (the default)
+	"1" or "overscan"  - Will zoom the rendering so it fills the entire screen, allowing edges to be drawn offscreen
+* Added the hints SDL_HINT_MOUSE_NORMAL_SPEED_SCALE and SDL_HINT_MOUSE_RELATIVE_SPEED_SCALE to scale the mouse speed when being read from raw mouse input
+* Added the hint SDL_HINT_TOUCH_MOUSE_EVENTS to control whether SDL will synthesize mouse events from touch events
+
+Windows:
+* The new default audio driver on Windows is WASAPI and supports hot-plugging devices and changing the default audio device
+* The old XAudio2 audio driver is deprecated and will be removed in the next release
+* Added hints SDL_HINT_WINDOWS_INTRESOURCE_ICON and SDL_HINT_WINDOWS_INTRESOURCE_ICON_SMALL to specify a custom icon resource ID for SDL windows
+* The hint SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING is now on by default for compatibility with .NET languages and various Windows debuggers
+* Updated the GUID format for game controller mappings, older mappings will be automatically converted on load
+* Implemented the SDL_WINDOW_ALWAYS_ON_TOP flag on Windows
+
+Linux:
+* Added an experimental KMS/DRM video driver for embedded development
+
+iOS:
+* Added a hint SDL_HINT_AUDIO_CATEGORY to control the audio category, determining whether the phone mute switch affects the audio
+
+---------------------------------------------------------------------------
+2.0.5:
+---------------------------------------------------------------------------
+
+General:
+* Implemented audio capture support for some platforms
+* Added SDL_DequeueAudio() to retrieve audio when buffer queuing is turned on for audio capture
+* Added events for dragging and dropping text
+* Added events for dragging and dropping multiple items
+* By default the click raising a window will not be delivered to the SDL application. You can set the hint SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH to "1" to allow that click through to the window.
+* Saving a surface with an alpha channel as a BMP will use a newer BMP format that supports alpha information. You can set the hint SDL_HINT_BMP_SAVE_LEGACY_FORMAT to "1" to use the old format.
+* Added SDL_GetHintBoolean() to get the boolean value of a hint
+* Added SDL_RenderSetIntegerScale() to set whether to smoothly scale or use integral multiples of the viewport size when scaling the rendering output
+* Added SDL_CreateRGBSurfaceWithFormat() and SDL_CreateRGBSurfaceWithFormatFrom() to create an SDL surface with a specific pixel format
+* Added SDL_GetDisplayUsableBounds() which returns the area usable for windows. For example, on Mac OS X, this subtracts the area occupied by the menu bar and dock.
+* Added SDL_GetWindowBordersSize() which returns the size of the window's borders around the client area
+* Added a window event SDL_WINDOWEVENT_HIT_TEST when a window had a hit test that wasn't SDL_HITTEST_NORMAL (e.g. in the title bar or window frame)
+* Added SDL_SetWindowResizable() to change whether a window is resizable
+* Added SDL_SetWindowOpacity() and SDL_GetWindowOpacity() to affect the window transparency
+* Added SDL_SetWindowModalFor() to set a window as modal for another window
+* Added support for AUDIO_U16LSB and AUDIO_U16MSB to SDL_MixAudioFormat()
+* Fixed flipped images when reading back from target textures when using the OpenGL renderer
+* Fixed texture color modulation with SDL_BLENDMODE_NONE when using the OpenGL renderer
+* Fixed bug where the alpha value of colorkeys was ignored when blitting in some cases
+
+Windows:
+* Added a hint SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING to prevent SDL from raising a debugger exception to name threads. This exception can cause problems with .NET applications when running under a debugger.
+* The hint SDL_HINT_THREAD_STACK_SIZE is now supported on Windows
+* Fixed XBox controller triggers automatically being pulled at startup
+* The first icon from the executable is used as the default window icon at runtime
+* Fixed SDL log messages being printed twice if SDL was built with C library support
+* Reset dead keys when the SDL window loses focus, so dead keys pressed in SDL applications don't affect text input into other applications.
+
+Mac OS X:
+* Fixed selecting the dummy video driver
+* The caps lock key now generates a pressed event when pressed and a released event when released, instead of a press/release event pair when pressed.
+* Fixed mouse wheel events on Mac OS X 10.12
+* The audio driver has been updated to use AVFoundation for better compatibility with newer versions of Mac OS X
+
+Linux:
+* Added support for the Fcitx IME
+* Added a window event SDL_WINDOWEVENT_TAKE_FOCUS when a window manager asks the SDL window whether it wants to take focus.
+* Refresh rates are now rounded instead of truncated, e.g. 59.94 Hz is rounded up to 60 Hz instead of 59.
+* Added initial support for touchscreens on Raspberry Pi
+
+OpenBSD:
+* SDL_GetBasePath() is now implemented on OpenBSD
+
+iOS:
+* Added support for dynamically loaded objects on iOS 8 and newer
+
+tvOS:
+* Added support for Apple TV
+* Added a hint SDL_HINT_APPLE_TV_REMOTE_ALLOW_ROTATION to control whether he Apple TV remote's joystick axes will automatically match the rotation of the remote.  
+
+Android:
+* Fixed SDL not resizing window when Android screen resolution changes
+* Corrected the joystick Z axis reporting for the accelerometer
+
+Emscripten (running in a web browser):
+* Many bug fixes and improvements
+
+
+---------------------------------------------------------------------------
+2.0.4:
+---------------------------------------------------------------------------
+
+General:
+* Added support for web applications using Emscripten, see docs/README-emscripten.md for more information
+* Added support for web applications using Native Client (NaCl), see docs/README-nacl.md for more information
+* Added an API to queue audio instead of using the audio callback:
+    SDL_QueueAudio(), SDL_GetQueuedAudioSize(), SDL_ClearQueuedAudio()
+* Added events for audio device hot plug support:
+    SDL_AUDIODEVICEADDED, SDL_AUDIODEVICEREMOVED
+* Added SDL_PointInRect()
+* Added SDL_HasAVX2() to detect CPUs with AVX2 support
+* Added SDL_SetWindowHitTest() to let apps treat parts of their SDL window like traditional window decorations (drag areas, resize areas)
+* Added SDL_GetGrabbedWindow() to get the window that currently has input grab, if any
+* Added SDL_RenderIsClipEnabled() to tell whether clipping is currently enabled in a renderer
+* Added SDL_CaptureMouse() to capture the mouse to get events while the mouse is not in your window
+* Added SDL_WarpMouseGlobal() to warp the mouse cursor in global screen space
+* Added SDL_GetGlobalMouseState() to get the current mouse state outside of an SDL window
+* Added a direction field to mouse wheel events to tell whether they are flipped (natural) or not
+* Added GL_CONTEXT_RELEASE_BEHAVIOR GL attribute (maps to [WGL|GLX]_ARB_context_flush_control extension)
+* Added EGL_KHR_create_context support to allow OpenGL ES version selection on some platforms
+* Added NV12 and NV21 YUV texture support for OpenGL and OpenGL ES 2.0 renderers
+* Added a Vivante video driver that is used on various SoC platforms
+* Added an event SDL_RENDER_DEVICE_RESET that is sent from the D3D renderers when the D3D device is lost, and from Android's event loop when the GLES context had to be recreated
+* Added a hint SDL_HINT_NO_SIGNAL_HANDLERS to disable SDL's built in signal handling
+* Added a hint SDL_HINT_THREAD_STACK_SIZE to set the stack size of SDL's threads
+* Added SDL_sqrtf(), SDL_tan(), and SDL_tanf() to the stdlib routines
+* Improved support for WAV and BMP files with unusual chunks in them
+* Renamed SDL_assert_data to SDL_AssertData and SDL_assert_state to SDL_AssertState
+* Added a hint SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN to prevent window interaction while cursor is hidden
+* Added SDL_GetDisplayDPI() to get the DPI information for a display
+* Added SDL_JoystickCurrentPowerLevel() to get the battery level of a joystick
+* Added SDL_JoystickFromInstanceID(), as a helper function, to get the SDL_Joystick* that an event is referring to.
+* Added SDL_GameControllerFromInstanceID(), as a helper function, to get the SDL_GameController* that an event is referring to.
+
+Windows:
+* Added support for Windows Phone 8.1 and Windows 10/UWP (Universal Windows Platform)
+* Timer resolution is now 1 ms by default, adjustable with the SDL_HINT_TIMER_RESOLUTION hint
+* SDLmain no longer depends on the C runtime, so you can use the same .lib in both Debug and Release builds
+* Added SDL_SetWindowsMessageHook() to set a function to be called for every windows message before TranslateMessage()
+* Added a hint SDL_HINT_WINDOWS_ENABLE_MESSAGELOOP to control whether SDL_PumpEvents() processes the Windows message loop
+* You can distinguish between real mouse and touch events by looking for SDL_TOUCH_MOUSEID in the mouse event "which" field
+* SDL_SysWMinfo now contains the window HDC
+* Added support for Unicode command line options
+* Prevent beeping when Alt-key combos are pressed
+* SDL_SetTextInputRect() re-positions the OS-rendered IME
+* Added a hint SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4 to prevent generating SDL_WINDOWEVENT_CLOSE events when Alt-F4 is pressed
+* Added a hint SDL_HINT_XINPUT_USE_OLD_JOYSTICK_MAPPING to use the old axis and button mapping for XInput devices (deprecated)
+
+Mac OS X:
+* Implemented drag-and-drop support
+* Improved joystick hot-plug detection
+* The SDL_WINDOWEVENT_EXPOSED window event is triggered in the appropriate situations
+* Fixed relative mouse mode when the application loses/regains focus
+* Fixed bugs related to transitioning to and from Spaces-aware fullscreen-desktop mode
+* Fixed the refresh rate of display modes
+* SDL_SysWMInfo is now ARC-compatible
+* Added a hint SDL_HINT_MAC_BACKGROUND_APP to prevent forcing the application to become a foreground process
+
+Linux:
+* Enabled building with Mir and Wayland support by default.
+* Added IBus IME support
+* Added a hint SDL_HINT_IME_INTERNAL_EDITING to control whether IBus should handle text editing internally instead of sending SDL_TEXTEDITING events
+* Added a hint SDL_HINT_VIDEO_X11_NET_WM_PING to allow disabling _NET_WM_PING protocol handling in SDL_CreateWindow()
+* Added support for multiple audio devices when using Pulseaudio
+* Fixed duplicate mouse events when using relative mouse motion
+
+iOS:
+* Added support for iOS 8
+* The SDL_WINDOW_ALLOW_HIGHDPI window flag now enables high-dpi support, and SDL_GL_GetDrawableSize() or SDL_GetRendererOutputSize() gets the window resolution in pixels
+* SDL_GetWindowSize() and display mode sizes are in the "DPI-independent points" / "screen coordinates" coordinate space rather than pixels (matches OS X behavior)
+* Added native resolution support for the iPhone 6 Plus
+* Added support for MFi game controllers
+* Added support for the hint SDL_HINT_ACCELEROMETER_AS_JOYSTICK
+* Added sRGB OpenGL ES context support on iOS 7+
+* Added support for SDL_DisableScreenSaver(), SDL_EnableScreenSaver() and the hint SDL_HINT_VIDEO_ALLOW_SCREENSAVER
+* SDL_SysWMinfo now contains the OpenGL ES framebuffer and color renderbuffer objects used by the window's active GLES view
+* Fixed various rotation and orientation issues
+* Fixed memory leaks
+
+Android:
+* Added a hint SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH to prevent mouse events from being registered as touch events
+* Added hints SDL_HINT_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION and SDL_HINT_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION
+* Added support for SDL_DisableScreenSaver(), SDL_EnableScreenSaver() and the hint SDL_HINT_VIDEO_ALLOW_SCREENSAVER
+* Added support for SDL_ShowMessageBox() and SDL_ShowSimpleMessageBox()
+
+Raspberry Pi:
+* Added support for the Raspberry Pi 2
+
+
+---------------------------------------------------------------------------
+2.0.3:
+---------------------------------------------------------------------------
+
+Mac OS X:
+* Fixed creating an OpenGL context by default on Mac OS X 10.6
+
+
+---------------------------------------------------------------------------
+2.0.2:
+---------------------------------------------------------------------------
+General:
+* Added SDL_GL_ResetAttributes() to reset OpenGL attributes to default values
+* Added an API to load a database of game controller mappings from a file:
+    SDL_GameControllerAddMappingsFromFile(), SDL_GameControllerAddMappingsFromRW()
+* Added game controller mappings for the PS4 and OUYA controllers
+* Added SDL_GetDefaultAssertionHandler() and SDL_GetAssertionHandler()
+* Added SDL_DetachThread()
+* Added SDL_HasAVX() to determine if the CPU has AVX features
+* Added SDL_vsscanf(), SDL_acos(), and SDL_asin() to the stdlib routines
+* EGL can now create/manage OpenGL and OpenGL ES 1.x/2.x contexts, and share
+  them using SDL_GL_SHARE_WITH_CURRENT_CONTEXT
+* Added a field "clicks" to the mouse button event which records whether the event is a single click, double click, etc.
+* The screensaver is now disabled by default, and there is a hint SDL_HINT_VIDEO_ALLOW_SCREENSAVER that can change that behavior.
+* Added a hint SDL_HINT_MOUSE_RELATIVE_MODE_WARP to specify whether mouse relative mode should be emulated using mouse warping.
+* testgl2 does not need to link with libGL anymore
+* Added testgles2 test program to demonstrate working with OpenGL ES 2.0
+* Added controllermap test program to visually map a game controller
+
+Windows:
+* Support for OpenGL ES 2.x contexts using either WGL or EGL (natively via
+  the driver or emulated through ANGLE)
+* Added a hint SDL_HINT_VIDEO_WIN_D3DCOMPILER to specify which D3D shader compiler to use for OpenGL ES 2 support through ANGLE
+* Added a hint SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT that is useful when creating multiple windows that should share the same OpenGL context.
+* Added an event SDL_RENDER_TARGETS_RESET that is sent when D3D9 render targets are reset after the device has been restored.
+
+Mac OS X:
+* Added a hint SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK to control whether Ctrl+click should be treated as a right click on Mac OS X. This is off by default.
+
+Linux:
+* Fixed fullscreen and focused behavior when receiving NotifyGrab events
+* Added experimental Wayland and Mir support, disabled by default
+
+Android:
+* Joystick support (minimum SDK version required to build SDL is now 12, 
+  the required runtime version remains at 10, but on such devices joystick 
+  support won't be available).
+* Hotplugging support for joysticks
+* Added a hint SDL_HINT_ACCELEROMETER_AS_JOYSTICK to control whether the accelerometer should be listed as a 3 axis joystick, which it will by default.
+
+
+---------------------------------------------------------------------------
+2.0.1:
+---------------------------------------------------------------------------
+
+General:
+* Added an API to get common filesystem paths in SDL_filesystem.h:
+    SDL_GetBasePath(), SDL_GetPrefPath()
+* Added an API to do optimized YV12 and IYUV texture updates:
+    SDL_UpdateYUVTexture()
+* Added an API to get the amount of RAM on the system:
+    SDL_GetSystemRAM()
+* Added a macro to perform timestamp comparisons with SDL_GetTicks():
+    SDL_TICKS_PASSED()
+* Dramatically improved OpenGL ES 2.0 rendering performance
+* Added OpenGL attribute SDL_GL_FRAMEBUFFER_SRGB_CAPABLE
+
+Windows:
+* Created a static library configuration for the Visual Studio 2010 project
+* Added a hint to create the Direct3D device with support for multi-threading:
+    SDL_HINT_RENDER_DIRECT3D_THREADSAFE
+* Added a function to get the D3D9 adapter index for a display:
+    SDL_Direct3D9GetAdapterIndex()
+* Added a function to get the D3D9 device for a D3D9 renderer:
+    SDL_RenderGetD3D9Device()
+* Fixed building SDL with the mingw32 toolchain (mingw-w64 is preferred)
+* Fixed crash when using two XInput controllers at the same time
+* Fixed detecting a mixture of XInput and DirectInput controllers
+* Fixed clearing a D3D render target larger than the window
+* Improved support for format specifiers in SDL_snprintf()
+
+Mac OS X:
+* Added support for retina displays:
+  Create your window with the SDL_WINDOW_ALLOW_HIGHDPI flag, and then use SDL_GL_GetDrawableSize() to find the actual drawable size. You are responsible for scaling mouse and drawing coordinates appropriately.
+* Fixed mouse warping in fullscreen mode
+* Right mouse click is emulated by holding the Ctrl key while left clicking
+
+Linux:
+* Fixed float audio support with the PulseAudio driver
+* Fixed missing line endpoints in the OpenGL renderer on some drivers
+* X11 symbols are no longer defined to avoid collisions when linking statically
+
+iOS:
+* Fixed status bar visibility on iOS 7
+* Flipped the accelerometer Y axis to match expected values
+
+Android:
+IMPORTANT: You MUST get the updated SDLActivity.java to match C code
+* Moved EGL initialization to native code 
+* Fixed the accelerometer axis rotation relative to the device rotation
+* Fixed race conditions when handling the EGL context on pause/resume
+* Touch devices are available for enumeration immediately after init
+
+Raspberry Pi:
+* Added support for the Raspberry Pi, see README-raspberrypi.txt for details
