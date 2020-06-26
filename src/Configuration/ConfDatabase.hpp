@@ -49,6 +49,14 @@ namespace Configuration {
 			{"DBKeyDB", {
 				// DBNAME
 				{"DBNAME", "OPCRUX_KD"}
+			}},
+
+			// [ExtAccountService]
+			{"ExtAccountService", {
+				// HOSTURL
+				{"HOSTURL", "https://localhost:8443"},
+				// APPKEY
+				{"APPKEY", "THIS_IS_A_DUMMY_KEY"}
 			}}
 		};}
 	};

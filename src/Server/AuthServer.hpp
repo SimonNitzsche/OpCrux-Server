@@ -9,7 +9,8 @@ public:
 	~AuthServer();
 private:
 	void RequestMasterUserAuthConfirmation(SystemAddress systemAddress, std::uint64_t accountID);
-	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
+    std::string MakeAccountAPICall(std::string scope, std::unordered_map<std::string, std::string> args);
+    void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 };
 
 #endif // !__SERVER__AUTHSERVER_HPP__

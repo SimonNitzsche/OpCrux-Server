@@ -9,6 +9,16 @@
 #include <RakNet/RakNetworkFactory.h>
 #include <RakNet/RakSleep.h>
 
+#include <array>
+#include <stdexcept>
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <memory>
+#ifdef OPCRUX_PLATFORM_WIN32
+#define popen _popen
+#define pclose _pclose
+#endif
 
 #include "Enums/EPackets.hpp"
 #include "Enums/ERemoteConnection.hpp"
@@ -79,6 +89,34 @@ void AuthServer::RequestMasterUserAuthConfirmation(SystemAddress systemAddress, 
 	masterServerBridge->ClientLoginAuth(systemAddress, accountID);
 }
 
+std::string AuthServer::MakeAccountAPICall(std::string scope, std::unordered_map<std::string, std::string> args) {
+	std::pair<int, std::string> response;
+
+	std::string cmd = "curl -X POST -F \"application-key=";
+	cmd += Configuration::ConfigurationManager::dbConf.GetStringVal("ExtAccountService", "APPKEY");
+	cmd += "\"";
+	for (auto it = args.begin(); it != args.end(); ++it) {
+		cmd += " -F \"";
+		cmd += it->first;
+		cmd += "=";
+		cmd += it->second;
+		cmd += "\"";
+	}
+	cmd += " \"" + Configuration::ConfigurationManager::dbConf.GetStringVal("ExtAccountService", "HOSTURL");
+	cmd += "/auth\"";
+
+	std::array<char, 128> buffer;
+	std::string result;
+	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
+	if (!pipe) {
+		throw std::runtime_error("popen() failed!");
+	}
+	while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+		result += buffer.data();
+	}
+	return result;
+}
+
 void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	RakNet::BitStream *data = new RakNet::BitStream(packet->getData(), packet->getLength(), false);
 	LUPacketHeader packetHeader = packet->getHeader();
@@ -113,7 +151,9 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("AUTH", "Requesting Login: " + std::string(name.begin(), name.end()) + " <-> " + std::string(pswd.length(), "*"[0]));
 
-				bool authSuccess = Database::IsLoginCorrect((char16_t*)name.c_str(), (char16_t*)pswd.c_str());
+				//bool authSuccess = Database::IsLoginCorrect((char16_t*)name.c_str(), (char16_t*)pswd.c_str());
+
+				bool authSuccess = MakeAccountAPICall("/auth", { {"username", std::string(name.begin(), name.end())}, {"password", std::string(pswd.begin(), pswd.end())} }) == "PASS";
 
 				if (authSuccess) {
 					std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
