@@ -151,17 +151,31 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("AUTH", "Requesting Login: " + std::string(name.begin(), name.end()) + " <-> " + std::string(pswd.length(), "*"[0]));
 
-				//bool authSuccess = Database::IsLoginCorrect((char16_t*)name.c_str(), (char16_t*)pswd.c_str());
+				bool authSuccess = 0;
 
-				bool authSuccess = MakeAccountAPICall("/auth", { {"username", std::string(name.begin(), name.end())}, {"password", std::string(pswd.begin(), pswd.end())} }) == "PASS";
+				
 
-				if (authSuccess) {
-					std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
-					RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
-					PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+				if (Configuration::ConfigurationManager::dbConf.GetStringVal("ExtAccountService", "ExtAccountService") == "FALSE") {
+					bool authSuccess = Database::IsLoginCorrect((char16_t*)name.c_str(), (char16_t*)pswd.c_str());
+					if (authSuccess) {
+						std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
+						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
+						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+					}
+					else
+						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
 				}
-				else
-					PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
+				else {
+					bool authSuccess = MakeAccountAPICall("/auth", { {"username", std::string(name.begin(), name.end())}, {"password", std::string(pswd.begin(), pswd.end())} }) == "PASS";
+					if (authSuccess) {
+						std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
+						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
+						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+					}
+					else
+						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
+				}
+				
 			}
 		} break;
 		default: {

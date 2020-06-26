@@ -43,11 +43,7 @@ public:
 		SQLSMALLINT  len;
 		SQLRETURN    ret;
 
-		fprintf(stderr,
-			"\n"
-			"The driver reported the following diagnostics whilst running "
-			"%s\n\n",
-			fn);
+		fprintf(stderr, "[DATABASE] While running %s the driver reported:\n", fn);
 
 		do
 		{
@@ -75,10 +71,10 @@ public:
 				str = "Unknkown " + ret;
 			}
 
-			printf(str.c_str());
+			std::cout << "[DATABASE] " <<str.c_str() << std::endl;
 
 			if (SQL_SUCCEEDED(ret)||ret==SQL_ERROR)
-				printf("%s:%ld:%ld:%s\n", state, i, native, text);
+				printf("[DATABASE] %s\n", text);
 		} while (ret == SQL_SUCCESS||ret==SQL_ERROR);
 	}
 
@@ -140,8 +136,7 @@ public:
 			Disconnect();
 
 		//output
-		std::cout << "Attempting connection to SQL Server...";
-		std::cout << "\n";
+		Logger::log("DATABASE", "Attempting connection to SQL Server...");
 
 		//connect to SQL Server
 		//I am using a trusted connection and port 14808
@@ -175,25 +170,21 @@ public:
 			SQL_DRIVER_COMPLETE)) {
 
 		case SQL_SUCCESS:
-			std::cout << "Successfully connected to SQL Server";
-			std::cout << "\n";
+			Logger::log("DATABASE", "Successfully connected to SQL Server");
 			break;
 
 		case SQL_SUCCESS_WITH_INFO:
-			std::cout << "Successfully connected to SQL Server";
-			std::cout << "\n";
-			printf("Driver reported the following diagnostics\n");
+			Logger::log("DATABASE", "Successfully connected to SQL Server");
+			Logger::log("DATABASE", "Driver reported the following diagnostics");
 			extract_error("SQLDriverConnect", sqlConnHandle, SQL_HANDLE_DBC);
 			break;
 
 		case SQL_INVALID_HANDLE:
-			std::cout << "Could not connect to SQL Server (SQL_INVALID_HANDLE)";
-			std::cout << "\n";
+			Logger::log("DATABASE", "Could not connect to SQL Server (SQL_INVALID_HANDLE)");
 			Disconnect();
 
 		case SQL_ERROR:
-			std::cout << "Could not connect to SQL Server (SQL_ERROR)";
-			std::cout << "\n";
+			Logger::log("DATABASE", "Could not connect to SQL Server (SQL_ERROR)");
 			Disconnect();
 
 		default:
@@ -206,15 +197,12 @@ public:
 		SetupStatementHandle();
 
 		//output
-		std::cout << "\n";
-		std::cout << "Executing T-SQL query...";
-		std::cout << "\n";
+		Logger::log("DATABASE", "Executing T-SQL query...");
 
 		//if there is a problem executing the query then exit application
 		//else display query result
 		if (SQL_SUCCESS != SQLExecDirect(sqlStmtHandle, (SQLCHAR*)"SELECT @@VERSION", SQL_NTS)) {
-			std::cout << "Error querying SQL Server";
-			std::cout << "\n";
+			Logger::log("DATABASE", "Error querying SQL Server");
 
 			extract_error("SQLExecDirect", sqlStmtHandle, SQL_HANDLE_DBC);
 
@@ -231,13 +219,13 @@ public:
 				SQLGetData(sqlStmtHandle, 1, SQL_CHAR, sqlVersion, SQL_RESULT_LEN, &ptrSqlVersion);
 
 				//display query result
-				std::cout << "\nQuery Result:\n\n";
+				Logger::log("DATABASE", "Query Result:");
 				std::cout << sqlVersion << std::endl;
 			}
 		}
 	}
 	static void Disconnect() {
-		std::cout << "\nWARNING!!!! DATABASE HAS BEEN UNLOADED!\n";
+		Logger::log("DATABASE", "WARNING!!!! DATABASE HAS BEEN UNLOADED!", LogType::ERR);
 
 		//close connection and free resources
 		//SetupStatementHandle();
@@ -308,7 +296,10 @@ public:
 				SQLGetData(sqlStmtHandle, 1, SQL_CHAR, sqlAnswer, SQL_RESULT_LEN, &ptrSqlAnswer);
 
 				std::string db_hash = std::string((char*)&sqlAnswer, ptrSqlAnswer);
-				std::cout << "DB_HASH: " << db_hash << "\nPK_HASH: " << h_password << "\n";
+				std::string dbhash = "DB_HASH: " + db_hash;
+				std::string pkhash = "PK_HASH: " + h_password;
+				Logger::log("DATABASE", dbhash);
+				Logger::log("DATABASE", pkhash);
 
 				if (db_hash == h_password) {
 					SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);

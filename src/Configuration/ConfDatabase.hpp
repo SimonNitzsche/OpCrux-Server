@@ -53,6 +53,8 @@ namespace Configuration {
 
 			// [ExtAccountService]
 			{"ExtAccountService", {
+				// EXTAUTH
+				{"ExtAccountService", "FALSE"},
 				// HOSTURL
 				{"HOSTURL", "https://localhost:8443"},
 				// APPKEY
