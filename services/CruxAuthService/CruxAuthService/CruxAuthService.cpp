@@ -82,18 +82,23 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 			}
 
 			auto it_username = form_data.find("username");
+			auto it_email = form_data.find("email");
 			auto it_password = form_data.find("password");
 
-			if (it_username == form_data.end() || it_password == form_data.end()) {
+			if ((it_username == form_data.end() && it_email == form_data.end()) || it_password == form_data.end()) {
 				const char* msg = "400 Bad Request";
 				mg_send_head(c, 400, strlen(msg), "Content-Type: text/plain");
 				mg_printf(c, "%.*s", strlen(msg), msg);
 				return;
 			}
 
-			bool isLoginCorrect = DBInterface::IsLoginCorrect(it_username->second, it_password->second);
+			bool isLoginCorrect = (it_username == form_data.end())
+				? DBInterface::IsLoginCorrectEmail(it_email->second, it_password->second)
+				: DBInterface::IsLoginCorrect(it_username->second, it_password->second);
 
 			std::string msg = isLoginCorrect ? "PASS" : "FAIL";
+			if ((it_username == form_data.end())) it_username = it_email;
+			std::cout <<"\nAuth for user " << std::string(it_username->second.data(), it_username->second.size()) << " " << (isLoginCorrect ? "passed" : "failed") << "." << std::endl;
 			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
 			mg_printf(c, "%.*s", msg.length(), msg.c_str());
 			return;

@@ -1,0 +1,1 @@
+ALTER TABLE OPCRUX_AD.dbo.Accounts ADD [email] varchar(128);
