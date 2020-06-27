@@ -41,6 +41,8 @@ namespace GM {
 	class SetFlag;
 	class TerminateInteraction;
 	class SetTooltipFlag;
+	class SetGhostReferencePosition;
+	class ReadyForUpdates;
 };
 
 /* set x true if x or construction */

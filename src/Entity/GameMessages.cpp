@@ -10,8 +10,6 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 	Entity::GameObject * senderObject = Instance->objectsManager->GetObjectByID(session->actorID);
 	Entity::GameObject * targetObject = Instance->objectsManager->GetObjectByID(targetObjectID);
 
-	// Only put GMs sent by the client below
-	// Please keep it sorted by Name:
 	switch (msgID) {
 		GM_MAKE_LIST_CLIENT(GM_DESERIALIZE_SWITCH_CASE);
 	default: {

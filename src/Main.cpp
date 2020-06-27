@@ -364,7 +364,9 @@ int main(int argc, char* argv[]) {
 
 	Logger::log("MAIN", "Connecting to database...");
 	Database::Connect();
-	//Database::DoATestQuery();
+	if (Database::DoATestQuery() == 1) {
+		Database::CreateTables();
+	}
 
 	Logger::log("MAIN", "Connecting game cache...");
 	Cache.Connect("./res/cdclient.fdb");
@@ -459,9 +461,7 @@ int main(int argc, char* argv[]) {
 		//ugcT.detach();
 	}
 
-	while (ServerInfo::bRunning) RakSleep(30);
-
-	std::cin.get();
-
+	while (ServerInfo::bRunning) {RakSleep(30);}
+	
 	return 0;
 }

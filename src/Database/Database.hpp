@@ -118,7 +118,7 @@ public:
 		return sqlStmtHandle;
 	}
 
-	static void Connect() {
+	static int Connect() {
 		//initializations
 		sqlConnHandle = NULL;
 
@@ -171,29 +171,34 @@ public:
 
 		case SQL_SUCCESS:
 			Logger::log("DATABASE", "Successfully connected to SQL Server");
+			return 1;
 			break;
 
 		case SQL_SUCCESS_WITH_INFO:
 			Logger::log("DATABASE", "Successfully connected to SQL Server");
 			Logger::log("DATABASE", "Driver reported the following diagnostics");
 			extract_error("SQLDriverConnect", sqlConnHandle, SQL_HANDLE_DBC);
+			return 1;
 			break;
 
 		case SQL_INVALID_HANDLE:
 			Logger::log("DATABASE", "Could not connect to SQL Server (SQL_INVALID_HANDLE)");
+			return 2;
 			Disconnect();
 
 		case SQL_ERROR:
 			Logger::log("DATABASE", "Could not connect to SQL Server (SQL_ERROR)");
+			return 2;
 			Disconnect();
 
 		default:
+			return 0;
 			break;
 		}
 
 		SetupStatementHandle();
 	}
-	static void DoATestQuery() {
+	static int DoATestQuery() {
 		SetupStatementHandle();
 
 		//output
@@ -207,6 +212,7 @@ public:
 			extract_error("SQLExecDirect", sqlStmtHandle, SQL_HANDLE_DBC);
 
 			Disconnect();
+			return -1;
 		}
 		else {
 
@@ -219,11 +225,141 @@ public:
 				SQLGetData(sqlStmtHandle, 1, SQL_CHAR, sqlVersion, SQL_RESULT_LEN, &ptrSqlVersion);
 
 				//display query result
-				Logger::log("DATABASE", "Query Result:");
-				std::cout << sqlVersion << std::endl;
+				Logger::log("DATABASE", "Query Success");
+				return 1;
 			}
 		}
 	}
+	static int checkIfTablesExist(int table) {
+		SQLCHAR* query{};
+		switch (table) {
+		case 1:
+			query = (SQLCHAR*)("SELECT COUNT(*) FROM OPCRUX_AD.dbo.Accounts");
+			break;
+		case 2:
+			query = (SQLCHAR*)("SELECT COUNT(*) FROM OPCRUX_CD.dbo.IDCounter");
+			break;
+		case 3:
+			query = (SQLCHAR*)("SELECT COUNT(*) FROM OPCRUX_GD.dbo.Characters");
+			break;
+		case 4:
+			query = (SQLCHAR*)("SELECT COUNT(*) FROM OPCRUX_GD.dbo.CharacterStyles");
+			break;
+		case 5:
+			query = (SQLCHAR*)("SELECT COUNT(*) FROM OPCRUX_GD.dbo.Inventory");
+			break;
+		case 6:
+			query = (SQLCHAR*)("SELECT COUNT(*) FROM OPCRUX_GD.dbo.Missions");
+			break;
+		default:
+			break;
+		}
+		
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, query, SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		{
+			if (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+				SQLUBIGINT id;
+				SQLLEN ptrSqlAnswer;
+				SQLGetData(sqlStmtHandle, 1, SQL_C_UBIGINT, &id, 0, &ptrSqlAnswer);
+				return true;
+			}
+
+			{
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				return false;
+			}
+		}
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+	}
+
+	static void runQuery(SQLCHAR* query) {
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, query, SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		{
+			if (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+				SQLUBIGINT id;
+				SQLLEN ptrSqlAnswer;
+				SQLGetData(sqlStmtHandle, 1, SQL_C_UBIGINT, &id, 0, &ptrSqlAnswer);
+			}
+
+			{
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
+				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			}
+		}
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+	}
+
+	static void CreateTables() {
+		SQLCHAR* query{};
+		if (checkIfTablesExist(1) == false) {
+			Logger::log("DATABASE", "OPCRUX_AD.dbo.Accounts Table generated");
+			query = (SQLCHAR*)"CREATE TABLE OPCRUX_AD.dbo.Accounts (id int NOT NULL, username varchar(33) NOT NULL, password varchar(128) NOT NULL, rank int NOT NULL, email varchar(128) NOT NULL);";
+			runQuery(query);
+		} if (checkIfTablesExist(2) == false) {
+			Logger::log("DATABASE", "OPCRUX_CD.dbo.IDCounter Table generated");
+			query = (SQLCHAR*)"CREATE TABLE OPCRUX_CD.dbo.IDCounter (type varchar(50), counter bigint);";
+			runQuery(query);
+			query = (SQLCHAR*)"INSERT INTO OPCRUX_CD.dbo.IDCounter VALUES('STATIC', 0);";
+			runQuery(query);
+			query = (SQLCHAR*)"INSERT INTO OPCRUX_CD.dbo.IDCounter VALUES('PLAYER', 0);";
+			runQuery(query);
+			query = (SQLCHAR*)"INSERT INTO OPCRUX_CD.dbo.IDCounter VALUES('P_STYLE', 0);";
+			runQuery(query);
+			query = (SQLCHAR*)"INSERT INTO OPCRUX_CD.dbo.IDCounter VALUES('P_STATS', 0);";
+			runQuery(query);
+		} if (checkIfTablesExist(3) == false) {
+			Logger::log("DATABASE", "OPCRUX_GD.dbo.Characters Table generated");
+			query = (SQLCHAR*)"CREATE TABLE OPCRUX_GD.dbo.Characters(objectID bigint NOT NULL,accountID int NOT NULL,charIndex tinyint NOT NULL,name varchar(50) NOT NULL,pendingName varchar(50) NULL,styleID int NOT NULL,statsID int NOT NULL,lastWorld smallint NOT NULL,lastInstance smallint NOT NULL,lastClone int NOT NULL,lastLog bigint NOT NULL,positionX float NOT NULL,positionY float NOT NULL,positionZ float NOT NULL,shirtObjectID int NOT NULL,pantsObjectID int NOT NULL,uScore int NOT NULL,uLevel int NOT NULL,currency int NOT NULL,reputation int NOT NULL,health int NOT NULL,imagination int NOT NULL,armor int NOT NULL);";
+			runQuery(query);
+		} if (checkIfTablesExist(4) == false) {
+			Logger::log("DATABASE", "OPCRUX_GD.dbo.CharactersStyles Table generated");
+			query = (SQLCHAR*)"CREATE TABLE OPCRUX_GD.dbo.CharacterStyles(id int, headColor int, head int, chestColor int, chest int, legs int, hairStyle int, hairColor int, leftHand int, rightHand int, eyebrowStyle int, eyesStyle int, mouthStyle int);";
+			runQuery(query);
+		} if (checkIfTablesExist(5) == false) {
+			Logger::log("DATABASE", "OPCRUX_GD.dbo.Inventory Table generated");
+			query = (SQLCHAR*)"CREATE TABLE dbo.Inventory(objectID bigint NOT NULL,ownerID bigint NOT NULL,subkey bigint NULL,tab int NOT NULL,slot int NOT NULL,template int NOT NULL,count int NOT NULL,attributes smallint,metadata text);";
+			runQuery(query);
+		} if (checkIfTablesExist(6) == false) {
+			Logger::log("DATABASE", "OPCRUX_GD.dbo.Missions Table generated");
+			query = (SQLCHAR*)"CREATE TABLE OPCRUX_GD.dbo.Missions (charID bigint, missionID int, state int, progress varchar(128), repeatcount int, time bigint, chosenReward int);";
+			runQuery(query);
+		}
+	}
+
 	static void Disconnect() {
 		Logger::log("DATABASE", "WARNING!!!! DATABASE HAS BEEN UNLOADED!", LogType::ERR);
 

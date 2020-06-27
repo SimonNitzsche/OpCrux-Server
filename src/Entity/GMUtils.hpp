@@ -60,5 +60,7 @@
 	mfun(SyncSkill);\
 	mfun(SetFlag);\
 	mfun(TerminateInteraction);\
-	mfun(SetTooltipFlag);
+	mfun(SetTooltipFlag);\
+	mfun(SetGhostReferencePosition);\
+	mfun(ReadyForUpdates);
 #endif

@@ -153,6 +153,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
 	src/Entity/GameMessages/RacingPlayerLoaded.hpp
+	src/Entity/GameMessages/ReadyForUpdates.hpp
 	src/Entity/GameMessages/RebuildCancel.hpp
 	src/Entity/GameMessages/RebuildNotifyState.hpp
 	src/Entity/GameMessages/RequestDie.hpp
@@ -163,6 +164,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RestoreToPostLoadStats.hpp
 	src/Entity/GameMessages/Resurrect.hpp
 	src/Entity/GameMessages/ServerTerminateInteraction.hpp
+	src/Entity/GameMessages/SetGhostReferencePosition.hpp
 	src/Entity/GameMessages/SetFlag.hpp
 	src/Entity/GameMessages/SetGravityScale.hpp
 	src/Entity/GameMessages/SetTooltipFlag.hpp
@@ -328,8 +330,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}
- )
+	${SDL_INCLUDE})
 
 
 set_property(TARGET glad PROPERTY CXX_STANDARD 98)
