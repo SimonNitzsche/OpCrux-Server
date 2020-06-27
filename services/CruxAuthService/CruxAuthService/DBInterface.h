@@ -379,6 +379,60 @@ public:
 		return false;
 	}
 
+	static bool UserExists(std::string_view& s_username, std::string_view& s_email) {
+
+		//std::string h_password = BCrypt::generateHash(std::string(s_password.data(), s_password.length()));
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepareA(sqlStmtHandle, (SQLCHAR*)"SELECT password FROM OPCRUX_AD.dbo.Accounts WHERE username=? OR email=?", SQL_NTS);
+		//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_AD.dbo.Accounts SET username = ? WHERE id = 0", SQL_NTS);
+		//ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"PRINT '?'", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error(L"SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		SQLLEN __L__ = 32;
+		int __1__ = SQL_C_CHAR;
+		SQLSMALLINT* pfSqlType;
+		SQLULEN* pcbParamDef;
+		SQLSMALLINT* pibScale;
+		SQLSMALLINT* pfNullable;
+		size_t len = s_username.size();
+		size_t len2 = s_email.size();
+		SQLDescribeParam(sqlStmtHandle, 1, (SQLSMALLINT*)&__1__, (SQLULEN*)&__L__, 0, 0);
+		SQLDescribeParam(sqlStmtHandle, 2, (SQLSMALLINT*)&__1__, (SQLULEN*)&__L__, 0, 0);
+		int wat = SQL_NTS;
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, s_username.size(), 0, (SQLPOINTER)s_username.data(), s_username.size(), (SQLLEN*)&len);
+		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, s_email.size(), 0, (SQLPOINTER)s_email.data(), s_email.size(), (SQLLEN*)&len2);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error(L"SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error(L"SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+		{
+			SQLLEN rowCount;
+			auto hm = SQLRowCount(sqlStmtHandle, &rowCount);
+
+			return rowCount != 0;
+
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		return false;
+	}
+
 	static void SetupStatementHandle() {
 
 		if (sqlStmtHandle != NULL) {

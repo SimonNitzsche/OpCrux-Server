@@ -110,19 +110,18 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 			return;
 		}
 
+		std::unordered_map<std::string, std::string_view> form_data = {};
+		mg_parse_form_data(hm, form_data);
+
+		auto it_appkey = form_data.find("application-key");
+		if (it_appkey == form_data.end() || !keyvalid(it_appkey->second.data(), it_appkey->second.size())) {
+			const char* msg = "401 Unauthorized";
+			mg_send_head(c, 401, strlen(msg), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", strlen(msg), msg);
+			return;
+		}
+
 		if (sw_pcmp(hm->uri, "/auth")) {
-			
-			std::unordered_map<std::string, std::string_view> form_data = {};
-			mg_parse_form_data(hm, form_data);
-
-			auto it_appkey = form_data.find("application-key");
-			if (it_appkey == form_data.end() || !keyvalid(it_appkey->second.data(), it_appkey->second.size())) {
-				const char* msg = "401 Unauthorized";
-				mg_send_head(c, 401, strlen(msg), "Content-Type: text/plain");
-				mg_printf(c, "%.*s", strlen(msg), msg);
-				return;
-			}
-
 			auto it_username = form_data.find("username");
 			auto it_email = form_data.find("email");
 			auto it_password = form_data.find("password");
@@ -146,6 +145,30 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 			return;
 		}
 
+		if (sw_pcmp(hm->uri, "/userExists")) {
+			auto it_username = form_data.find("username");
+			auto it_email = form_data.find("email");
+
+			/*
+				Requires:
+					username
+					email
+			*/
+
+			if (it_username == form_data.end() || it_email == form_data.end()) {
+				const char* msg = "400 Bad Request";
+				mg_send_head(c, 400, strlen(msg), "Content-Type: text/plain");
+				mg_printf(c, "%.*s", strlen(msg), msg);
+				return;
+			}
+
+			bool userExists = DBInterface::UserExists(it_username->second, it_email->second);
+
+			std::string msg = userExists ? "true" : "false";
+			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", msg.length(), msg.c_str());
+			return;
+		}
 		
 
 		const char* msg = "421 Misdirected Request";
