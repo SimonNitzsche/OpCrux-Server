@@ -10,10 +10,7 @@ Configuration::ConfPorts Configuration::ConfigurationManager::portsConf;
 void Configuration::ConfigurationManager::Load() {
 	const std::string& path = "conf";
 	struct stat buffer;
-	if ((stat(path.c_str(), &buffer) == 0) == 1) {
-		;
-	}
-	else {
+	if ((stat(path.c_str(), &buffer) == 0) == 0) {
 		mkdir("conf");
 		dbConf.Load();
 		portsConf.Load();
