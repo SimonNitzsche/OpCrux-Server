@@ -15,6 +15,7 @@ namespace Entity {
 #include "Entity/GMUtils.hpp"
 
 namespace GM {
+	class BuildExitConfirmation;
 	class Die;
 	class HasBeenCollected;
 	class MissionDialogueOK;
@@ -26,9 +27,11 @@ namespace GM {
 	class MissionDialogueOK;
 	class ModuleAssemblyQueryData;
 	class NotifyClientFlagChange;
+	class NotifyServerLevelProcessingComplete;
 	class PickupItem;
 	class PlayEmote;
 	class PlayerLoaded;
+	class ReadyForUpdates;
 	class RebuildCancel;
 	class RequestDie;
 	class RequestLinkedMission;
@@ -40,9 +43,9 @@ namespace GM {
 	class SyncSkill;
 	class SetFlag;
 	class TerminateInteraction;
+	class ToggleSendingPositionUpdates;
 	class SetTooltipFlag;
 	class SetGhostReferencePosition;
-	class ReadyForUpdates;
 };
 
 /* set x true if x or construction */

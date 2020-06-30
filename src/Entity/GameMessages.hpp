@@ -98,6 +98,7 @@ public:
 #include "Entity/GameMessages/ActivityStart.hpp"
 #include "Entity/GameMessages/AddItemToInventoryClientSync.hpp"
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
+//#include "Entity/GameMessages/BuildExitConfirmation.hpp"
 #include "Entity/GameMessages/Die.hpp"
 #include "Entity/GameMessages/DropClientLoot.hpp"
 #include "Entity/GameMessages/EchoStartSkill.hpp"
@@ -114,6 +115,7 @@ public:
 #include "Entity/GameMessages/NotifyClientFlagChange.hpp"
 #include "Entity/GameMessages/NotifyMission.hpp"
 #include "Entity/GameMessages/NotifyMissionTask.hpp"
+#include "Entity/GameMessages/NotifyServerLevelProcessingComplete.hpp"
 #include "Entity/GameMessages/NotifyVehicleOfRacingObject.hpp"
 #include "Entity/GameMessages/OfferMission.hpp"
 #include "Entity/GameMessages/PickupItem.hpp"
@@ -146,6 +148,7 @@ public:
 #include "Entity/GameMessages/StopFXEffect.hpp"
 #include "Entity/GameMessages/SyncSkill.hpp"
 #include "Entity/GameMessages/TerminateInteraction.hpp"
+#include "Entity/GameMessages/ToggleSendingPositionUpdates.hpp"
 #include "Entity/GameMessages/VehicleUnlockInput.hpp"
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
 

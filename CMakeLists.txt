@@ -176,6 +176,9 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/TerminateInteraction.hpp
 	src/Entity/GameMessages/VehicleUnlockInput.hpp
 	src/Entity/GameMessages/VendorOpenWindow.hpp
+	src/Entity/GameMessages/BuildExitConfirmation.hpp
+	src/Entity/GameMessages/NotifyServerLevelProcessingComplete.hpp
+	src/Entity/GameMessages/ToggleSendingPositionUpdates.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp

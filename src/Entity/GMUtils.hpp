@@ -62,5 +62,8 @@
 	mfun(TerminateInteraction);\
 	mfun(SetTooltipFlag);\
 	mfun(SetGhostReferencePosition);\
-	mfun(ReadyForUpdates);
+	mfun(ReadyForUpdates);\
+	mfun(BuildExitConfirmation);
+	mfun(NotifyServerLevelProcessingComplete);\
+	mfun(ToggleSendingPositionUpdates);
 #endif
