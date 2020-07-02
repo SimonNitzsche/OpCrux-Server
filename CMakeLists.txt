@@ -179,6 +179,12 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/BuildExitConfirmation.hpp
 	src/Entity/GameMessages/NotifyServerLevelProcessingComplete.hpp
 	src/Entity/GameMessages/ToggleSendingPositionUpdates.hpp
+	src/Entity/GameMessages/ToggleGhostReferenceOverride.hpp
+	src/Entity/GameMessages/SetBuildMode.hpp
+	src/Entity/GameMessages/PopEquippedItemsState.hpp
+	src/Entity/GameMessages/ModularBuildFinish.hpp
+	src/Entity/GameMessages/ModularAssemblyNIFCompleted.hpp
+	src/Entity/GameMessages/RequestPlatformResync.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
@@ -333,7 +339,8 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE})
+	${SDL_INCLUDE}) 
+	
 
 
 set_property(TARGET glad PROPERTY CXX_STANDARD 98)

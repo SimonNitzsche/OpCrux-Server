@@ -41,6 +41,7 @@
 #define GM_MAKE_COMPONENT_DECLARE(name) virtual void On##name(Entity::GameObject * sender, GM::##name & msg) {}
 
 #define GM_MAKE_LIST_CLIENT(mfun) \
+	mfun(BuildModeSet);\
 	mfun(FireEventServerSide);\
 	mfun(HasBeenCollected);\
 	mfun(MissionDialogueOK);\
@@ -49,6 +50,7 @@
 	mfun(PickupItem);\
 	mfun(PlayEmote);\
 	mfun(PlayerLoaded);\
+	mfun(PopEquippedItemsState);\
 	mfun(RebuildCancel);\
 	mfun(RequestDie);\
 	mfun(RequestLinkedMission);\
@@ -58,12 +60,19 @@
 	mfun(StartBuildingWithItem);\
 	mfun(StartSkill);\
 	mfun(SyncSkill);\
+	mfun(SetBuildMode);\
 	mfun(SetFlag);\
 	mfun(TerminateInteraction);\
 	mfun(SetTooltipFlag);\
 	mfun(SetGhostReferencePosition);\
 	mfun(ReadyForUpdates);\
-	mfun(BuildExitConfirmation);
 	mfun(NotifyServerLevelProcessingComplete);\
-	mfun(ToggleSendingPositionUpdates);
+	mfun(ToggleGhostReferenceOverride);\
+	mfun(ToggleSendingPositionUpdates);\
+	mfun(ModularBuildFinish);\
+	mfun(ModularAssemblyNIFCompleted);\
+	mfun(RequestPlatformResync);
+	
+// mfun(BuildExitConfirmation);
 #endif
+
