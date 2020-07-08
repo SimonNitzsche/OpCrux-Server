@@ -77,6 +77,7 @@
 #include "Entity/Components/ScriptedActivityComponent.hpp"
 #include "Entity/Components/SimplePhysicsComponent.hpp"
 #include "Entity/Components/SkillComponent.hpp"
+#include "Entity/Components/SlashCommandComponent.hpp"
 #include "Entity/Components/SoundAmbient2DComponent.hpp"
 #include "Entity/Components/SoundAmbient3DComponent.hpp"
 #include "Entity/Components/SoundTriggerComponent.hpp"
@@ -252,6 +253,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(RacingStatsComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RocketLandingComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RocketLaunchComponent);
+		COMPONENT_ONADD_SWITCH_CASE(SlashCommandComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SpawnerComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MinifigComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MissionOfferComponent);

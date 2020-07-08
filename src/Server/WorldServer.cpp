@@ -488,6 +488,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				playerObject->isSerializable = true;
 
 				objectsManager->RegisterObject(playerObject);
+				playerObject->Finish();
 
 				Logger::log("WRLD", "Create character packet");
 

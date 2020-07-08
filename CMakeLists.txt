@@ -113,6 +113,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/ScriptedActivityComponent.hpp
 	src/Entity/Components/SimplePhysicsComponent.hpp
 	src/Entity/Components/SkillComponent.hpp
+	src/Entity/Components/SlashCommandComponent.hpp
 	src/Entity/Components/SoundAmbient2DComponent.hpp
 	src/Entity/Components/SoundAmbient3DComponent.hpp
 	src/Entity/Components/SoundTriggerComponent.hpp
@@ -293,8 +294,8 @@ add_executable(OpCrux_Server
 	src/GameCache/VendorComponent.hpp
 	src/GameCache/WorldConfig.hpp
 	src/GameCache/ZoneTable.hpp
-	src/Misc/Commands.cpp
-	src/Misc/Commands.hpp
+	
+	
 	src/Misc/LWOTimer.cpp
 	src/Misc/LWOTimer.hpp
 	src/Missions/MissionManager.cpp

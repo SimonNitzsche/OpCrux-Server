@@ -76,7 +76,8 @@ public:
 	}
 
 	void Awake() {
-		owner->GetZoneInstance()->dynamicsWorld->addRigidBody(rigidBody);
+		if(rigidBody != nullptr)
+			owner->GetZoneInstance()->dynamicsWorld->addRigidBody(rigidBody);
 	}
 
 	~ControllablePhysicsComponent() {

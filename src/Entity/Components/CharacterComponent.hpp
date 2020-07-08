@@ -4,6 +4,7 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "Database/Database.hpp"
 
+#include "Entity/Components/SlashCommandComponent.hpp"
 
 #include "Entity/GameMessages/SetFlag.hpp"
 
@@ -209,6 +210,10 @@ public:
 		if (statsComp != nullptr) {
 			statsComp->attributes.maxImagination = statsComp->attributes.currentImagination = GetImagination();
 		}
+
+		if (owner->GetComponent<SlashCommandComponent>() == nullptr)
+			owner->AddComponent<SlashCommandComponent>(0);
+
 		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
 	}
 
