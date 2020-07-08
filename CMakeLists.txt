@@ -294,8 +294,6 @@ add_executable(OpCrux_Server
 	src/GameCache/VendorComponent.hpp
 	src/GameCache/WorldConfig.hpp
 	src/GameCache/ZoneTable.hpp
-	
-	
 	src/Misc/LWOTimer.cpp
 	src/Misc/LWOTimer.hpp
 	src/Missions/MissionManager.cpp
@@ -344,7 +342,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}) 
+	${SDL_INCLUDE} "src/Utils/switch.hpp") 
 	
 
 

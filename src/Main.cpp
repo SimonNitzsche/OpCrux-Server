@@ -364,9 +364,6 @@ int main(int argc, char* argv[]) {
 
 	Logger::log("MAIN", "Connecting to database...");
 	Database::Connect();
-	if (Database::DoATestQuery() == 1) {
-		Database::CreateTables();
-	}
 
 	Logger::log("MAIN", "Connecting game cache...");
 	Cache.Connect("./res/cdclient.fdb");

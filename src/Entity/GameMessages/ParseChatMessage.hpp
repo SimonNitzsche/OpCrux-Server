@@ -1,10 +1,6 @@
 #ifndef __ENTITY__GM__ParseChatMessage_HPP__
 #define __ENTITY__GM__ParseChatMessage_HPP__
 #include "Entity/GameMessages.hpp"
-#include "Misc/Commands.hpp"
-#include <string>
-#include <bitset>
-#include <sstream>
 
 namespace GM {
 	struct ParseChatMessage : GMBase {
