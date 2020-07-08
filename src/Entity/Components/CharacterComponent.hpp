@@ -123,9 +123,9 @@ public:
 		GameMessages::Send(this->owner, this->owner->GetObjectID(), clientResponse);
 	}
 
-	void OnSetFlag(Entity::GameObject* sender, GM::SetFlag* msg) {
-		this->SetFlag(msg->iFlagID, msg->bFlag);
-		MissionManager::LaunchTaskEvent(Enums::EMissionTask::FLAG, sender, owner->GetObjectID(), msg->iFlagID);
+	void OnSetFlag(Entity::GameObject* sender, GM::SetFlag & msg) {
+		this->SetFlag(msg.iFlagID, msg.bFlag);
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::FLAG, sender, owner->GetObjectID(), msg.iFlagID);
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
