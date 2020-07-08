@@ -16,7 +16,7 @@ class btBroadphaseInterface;
 class btSequentialImpulseConstraintSolver;
 class btDiscreteDynamicsWorld;
 
-class WorldServer : ILUServer {
+class WorldServer : public ILUServer {
 private:
 	std::vector<std::string> mf_FirstNames = {};
 	std::vector<std::string> mf_MiddleNames = {};

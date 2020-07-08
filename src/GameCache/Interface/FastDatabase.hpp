@@ -55,11 +55,15 @@ namespace GameCache::Interface::FDB {
 		DATA_TYPE dataType = DATA_TYPE::INVALID_POINTER;
 		int32_t * data;
 		static const std::uint64_t NULL_DATA = 0ULL;
+
+
+		std::int64_t GetInt64();
 	public:
 		FieldValue(Connection * connection, DATA_TYPE type, int32_t * where) : conn(connection), dataType(type), data(where) {}
 		Connection * getConnection() { return conn; }
 		unsigned char* getMemoryLocation();
 		std::string ToString();
+
 
 		inline bool isNull() {
 			return dataType == DATA_TYPE::NOTHING;
@@ -98,7 +102,7 @@ namespace GameCache::Interface::FDB {
 			if (isNull()) {
 				return 0;
 			}
-			return *reinterpret_cast<std::int64_t*>(getMemoryLocation());
+			return GetInt64();
 		}
 	};
 

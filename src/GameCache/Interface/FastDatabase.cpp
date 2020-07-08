@@ -59,6 +59,10 @@ namespace GameCache::Interface::FDB {
 		}
 	}
 
+	std::int64_t FieldValue::GetInt64() {
+		return *reinterpret_cast<uint64_t*>(conn->getFileData() + *data);
+	}
+
 	/*
 		Class: PointerString
 	*/
