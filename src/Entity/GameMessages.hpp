@@ -121,6 +121,7 @@ public:
 #include "Entity/GameMessages/NotifyServerLevelProcessingComplete.hpp"
 #include "Entity/GameMessages/NotifyVehicleOfRacingObject.hpp"
 #include "Entity/GameMessages/OfferMission.hpp"
+#include "Entity/GameMessages/ParseChatMessage.hpp"
 #include "Entity/GameMessages/PickupItem.hpp"
 #include "Entity/GameMessages/PlayAnimation.hpp"
 #include "Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp"

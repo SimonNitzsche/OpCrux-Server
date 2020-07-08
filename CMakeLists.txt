@@ -185,6 +185,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/ModularBuildFinish.hpp
 	src/Entity/GameMessages/ModularAssemblyNIFCompleted.hpp
 	src/Entity/GameMessages/RequestPlatformResync.hpp
+	src/Entity/GameMessages/ParseChatMessage.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
@@ -286,11 +287,14 @@ add_executable(OpCrux_Server
 	src/GameCache/PropertyEntranceComponent.hpp
 	src/GameCache/RebuildComponent.hpp
 	src/GameCache/RenderComponent.hpp
+	src/GameCache/RocketLaunchpadControlComponent.hpp
 	src/GameCache/ScriptComponent.hpp
 	src/GameCache/SkillBehavior.hpp
 	src/GameCache/VendorComponent.hpp
 	src/GameCache/WorldConfig.hpp
 	src/GameCache/ZoneTable.hpp
+	src/Misc/Commands.cpp
+	src/Misc/Commands.hpp
 	src/Misc/LWOTimer.cpp
 	src/Misc/LWOTimer.hpp
 	src/Missions/MissionManager.cpp

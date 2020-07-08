@@ -43,7 +43,7 @@ public:
 		SQLSMALLINT  len;
 		SQLRETURN    ret;
 
-		fprintf(stderr, "[DATABASE] While running %s the driver reported:\n", fn);
+		fprintf(stderr, "[DATABASE] While running %s the driver reported:", fn);
 
 		do
 		{
@@ -71,10 +71,10 @@ public:
 				str = "Unknkown " + ret;
 			}
 
-			std::cout << "[DATABASE] " <<str.c_str() << std::endl;
+			std::cout << " " <<str.c_str() << std::endl;
 
 			if (SQL_SUCCEEDED(ret)||ret==SQL_ERROR)
-				printf("[DATABASE] %s\n", text);
+				printf("[DATABASE] %s ->", text);
 		} while (ret == SQL_SUCCESS||ret==SQL_ERROR);
 	}
 

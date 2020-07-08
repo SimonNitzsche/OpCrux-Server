@@ -71,6 +71,7 @@
 	mfun(ToggleSendingPositionUpdates);\
 	mfun(ModularBuildFinish);\
 	mfun(ModularAssemblyNIFCompleted);\
+	mfun(ParseChatMessage);\
 	mfun(RequestPlatformResync);
 	
 // mfun(BuildExitConfirmation);

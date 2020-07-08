@@ -31,6 +31,7 @@ namespace GM {
 	class ModuleAssemblyQueryData;
 	class NotifyClientFlagChange;
 	class NotifyServerLevelProcessingComplete;
+	class ParseChatMessage;
 	class PickupItem;
 	class PlayEmote;
 	class PlayerLoaded;

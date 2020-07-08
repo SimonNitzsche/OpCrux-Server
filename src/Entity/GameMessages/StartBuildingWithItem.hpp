@@ -34,6 +34,10 @@ namespace GM {
 			GM_VAR_DESERIALIZE(bs, targetPOS);
 			GM_VAR_DESERIALIZE(bs, targetTYPE);
 		}
+
+		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
+			Logger::log("WRLD", "Triggered StartBuildingWithItem");
+		}
 	};
 }
 
