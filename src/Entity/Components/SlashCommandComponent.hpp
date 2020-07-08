@@ -18,15 +18,15 @@ public:
 		// Check if we are a command, otherwise return
 		if (msg.wsString[0] != u'/') return;
 
-		LWOOBJID senderOBJID = sender->GetObjectID();
-		int accountGMLevel = Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(senderOBJID);
+		DataTypes::LWOOBJID senderOBJID = sender->GetObjectID();
+		int accountGMLevel = Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(senderOBJID));
 
 		std::u16string command = msg.wsString;
-
+		/*
 		Switch(command)
 			.Case(u"/shutdown", []() { shutdown(); })
 			.Default([]() {});
-
+		
 		std::u16string shutdown(); {
 			if (accountGMLevel == 9) {
 				exit(3);
@@ -34,7 +34,7 @@ public:
 			else {
 				std::u16string message = u"You do not have high enough permissions for that"; // TODO: Send this as a response for the command
 			}
-		}
+		}*/
 	}
 
 private:

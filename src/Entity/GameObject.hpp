@@ -90,6 +90,7 @@ namespace Entity {
 
 			LDFCollection configData;
 
+			LDFCollection customConfig;
 		public:
 
 			/*

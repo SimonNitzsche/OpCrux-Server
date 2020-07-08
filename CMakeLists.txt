@@ -150,6 +150,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp
 	src/Entity/GameMessages/PlayEmote.hpp
 	src/Entity/GameMessages/PlayerLoaded.hpp
+	src/Entity/GameMessages/PlayerReady.hpp
 	src/Entity/GameMessages/PlayFXEffect.hpp
 	src/Entity/GameMessages/PlayNDAudioEmitter.hpp
 	src/Entity/GameMessages/ProximityUpdate.hpp
@@ -296,6 +297,7 @@ add_executable(OpCrux_Server
 	src/GameCache/ZoneTable.hpp
 	src/Misc/LWOTimer.cpp
 	src/Misc/LWOTimer.hpp
+	src/Utils/switch.hpp
 	src/Missions/MissionManager.cpp
 	src/Missions/MissionManager.hpp
 	src/Missions/MissionRequirementParser.hpp
@@ -342,7 +344,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE} "src/Utils/switch.hpp") 
+	${SDL_INCLUDE}) 
 	
 
 

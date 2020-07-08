@@ -127,6 +127,7 @@ public:
 #include "Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp"
 #include "Entity/GameMessages/PlayEmote.hpp"
 #include "Entity/GameMessages/PlayerLoaded.hpp"
+#include "Entity/GameMessages/PlayerReady.hpp"
 #include "Entity/GameMessages/PlayFXEffect.hpp"
 #include "Entity/GameMessages/PlayNDAudioEmitter.hpp"
 #include "Entity/GameMessages/ProximityUpdate.hpp"
