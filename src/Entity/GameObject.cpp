@@ -832,7 +832,7 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<char ";
 				//ss << "cm=\"" << std::to_string(0x7FFFFFFFFFFFFFFF) << "\" ";
 				ss << "cc=\"" << charInfo.currency << "\" ";
-				// ss << "gm=\"" << 9 << "\" ";
+				ss << "gm=\"" << Database::GetAccountGMLevel(charInfo.accountID) << "\" ";
 				// ss << "edit=\"" << 0 << "\" ";
 				// ss << "acct=\"" << charInfo.accountID << "\" ";
 				//ss << "llog=\"" << 1327707052 << "\"";

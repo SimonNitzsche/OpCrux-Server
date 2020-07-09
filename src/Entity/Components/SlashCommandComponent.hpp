@@ -18,23 +18,34 @@ public:
 		// Check if we are a command, otherwise return
 		if (msg.wsString[0] != u'/') return;
 
-		DataTypes::LWOOBJID senderOBJID = sender->GetObjectID();
-		int accountGMLevel = Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(senderOBJID));
+		int accountGMLevel = Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(sender->GetObjectID()));
 
 		std::u16string command = msg.wsString;
-		/*
+
 		Switch(command)
-			.Case(u"/shutdown", []() { shutdown(); })
-			.Default([]() {});
-		
-		std::u16string shutdown(); {
-			if (accountGMLevel == 9) {
-				exit(3);
-			}
-			else {
-				std::u16string message = u"You do not have high enough permissions for that"; // TODO: Send this as a response for the command
-			}
-		}*/
+			.Case(u"/shutdown", [&]() {
+				if (accountGMLevel <= 9) {
+					exit(3);
+				}
+				else {
+					std::u16string message = u"You do not have high enough permissions for that"; // TODO: Send this as a response for the command
+				}
+				Logger::log("WRLD", ("Shutdown command triggered by " + sender->GetNameStr()));
+				
+			})
+			
+			.Default([&]() {
+				std::u16string message = u"That command doesn't exist"; 
+				Logger::log("WRLD", "Unknown Command triggered by " + sender->GetNameStr());
+			});
+			/*.Case(u"/<command>", [&]() {
+				if (accountGMLevel <= <targetGMLevel>) {
+				}
+				else {
+					std::u16string message = u"You do not have high enough permissions for that";
+				}
+				Logger::log("WRLD", ("<command> command triggered by " + sender->GetNameStr()));
+				})*/
 	}
 
 private:
