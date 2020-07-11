@@ -188,6 +188,8 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/ModularAssemblyNIFCompleted.hpp
 	src/Entity/GameMessages/RequestPlatformResync.hpp
 	src/Entity/GameMessages/ParseChatMessage.hpp
+	src/Entity/GameMessages/EquipInventory.hpp
+	src/Entity/GameMessages/SetJetPackMode.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp

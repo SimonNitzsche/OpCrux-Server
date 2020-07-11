@@ -58,7 +58,11 @@ public:
 				if (exclude != session.actorID) {
 #define quote(x) #x
 					if (Instance->objectsManager->GetObjectByID(session.actorID) == nullptr) continue;
-					Logger::log(typeid(T).name(), "Broadcasting to " + Instance->objectsManager->GetObjectByID(session.actorID)->GetNameStr());
+					std::string message = "Broadcasting ";
+					message += typeid(T).name();
+					message += " to ";
+					message += Instance->objectsManager->GetObjectByID(session.actorID)->GetNameStr();
+					Logger::log("WRLD", message);
 					Instance->rakServer->Send(&bs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
 				}
 			}
@@ -106,6 +110,7 @@ public:
 #include "Entity/GameMessages/EchoSyncSkill.hpp"
 #include "Entity/GameMessages/EmotePlayed.hpp"
 #include "Entity/GameMessages/EnableRebuild.hpp"
+#include "Entity/GameMessages/EquipInventory.hpp"
 #include "Entity/GameMessages/FireEventClientSide.hpp"
 #include "Entity/GameMessages/FireEventServerSide.hpp"
 #include "Entity/GameMessages/HasBeenCollected.hpp"
@@ -147,6 +152,7 @@ public:
 #include "Entity/GameMessages/ServerTerminateInteraction.hpp"
 #include "Entity/GameMessages/SetBuildMode.hpp"
 #include "Entity/GameMessages/SetGhostReferencePosition.hpp"
+#include "Entity/GameMessages/SetJetPackMode.hpp"
 #include "Entity/GameMessages/SetFlag.hpp"
 #include "Entity/GameMessages/SetGravityScale.hpp"
 #include "Entity/GameMessages/SetTooltipFlag.hpp"

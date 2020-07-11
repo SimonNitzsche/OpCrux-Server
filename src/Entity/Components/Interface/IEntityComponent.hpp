@@ -18,6 +18,7 @@ namespace GM {
 	// class BuildExitConfirmation;
 	class BuildModeSet;
 	class Die;
+	class EquipInventory;
 	class HasBeenCollected;
 	class MissionDialogueOK;
 	class RequestDie;
@@ -45,6 +46,7 @@ namespace GM {
 	class RequestUse;
 	class RequestPlatformResync;
 	class SetBuildMode;
+	class SetJetPackMode;
 	class StartBuildingWithItem;
 	class StartSkill;
 	class SyncSkill;

@@ -72,7 +72,9 @@
 	mfun(ModularBuildFinish);\
 	mfun(ModularAssemblyNIFCompleted);\
 	mfun(ParseChatMessage);\
-	mfun(RequestPlatformResync);
+	mfun(RequestPlatformResync);\
+	mfun(EquipInventory);\
+	mfun(SetJetPackMode);
 	
 // mfun(BuildExitConfirmation);
 #endif
