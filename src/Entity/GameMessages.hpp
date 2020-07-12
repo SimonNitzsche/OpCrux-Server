@@ -75,7 +75,7 @@ public:
 	static void Send(Entity::GameObject * playerReceiver, DataTypes::LWOOBJID sender, T gm, DataTypes::LWOOBJID exclude = 0ULL) {
 		ClientSession * session = playerReceiver->GetZoneInstance()->sessionManager.GetSession(playerReceiver->GetObjectID());
 		if (session == nullptr) return;
-		Send(receiver->GetZoneInstance(), session->systemAddress, sender, gm);
+		Send(playerReceiver->GetZoneInstance(), session->systemAddress, sender, gm);
 	}
 
 	
