@@ -11,15 +11,12 @@ namespace GM {
 
 		BuildExitConfirmation() : GMBase() {}
 
-		long long playerID;
+		DataTypes::LWOOBJID playerID;
 
 		void Deserialize(RakNet::BitStream* bs) {
 			GM_VAR_DESERIALIZE(bs, playerID);
 		}
 
-		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-
-		}
 	};
 }
 

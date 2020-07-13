@@ -14,7 +14,7 @@ namespace GM {
 		float directionRelative_Force=0;
 		Enums::EKillType killType = Enums::EKillType::VIOLENT;
 		DataTypes::LWOOBJID killerID;
-		DataTypes::LWOOBJID lootOwnerID;
+		DataTypes::LWOOBJID lootOwnerID = DataTypes::LWOOBJID();
 
 		inline constexpr static Enums::EGameMessageID GetID() {
 			return Enums::EGameMessageID::SERVER_DIE;
@@ -34,7 +34,7 @@ namespace GM {
 			GM_VAR_DESERIALIZE(bs, directionRelative_Force);
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, killType, Enums::EKillType::VIOLENT);
 			GM_VAR_SERIALIZE(bs, killerID);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, lootOwnerID, 0);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, lootOwnerID, DataTypes::LWOOBJID());
 		}
 
 		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {

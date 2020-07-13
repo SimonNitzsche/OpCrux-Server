@@ -74,8 +74,12 @@
 	mfun(ParseChatMessage);\
 	mfun(RequestPlatformResync);\
 	mfun(EquipInventory);\
-	mfun(SetJetPackMode);
-	
-// mfun(BuildExitConfirmation);
+	mfun(SetJetPackMode);\
+	mfun(Teleport);\
+	mfun(ModifyGhostingDistance);\
+	mfun(CancelRailMovement);\
+	mfun(ReportBug);
+
+// 	mfun(BuildExitConfirmation);
 #endif
 

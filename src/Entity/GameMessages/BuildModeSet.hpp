@@ -17,7 +17,6 @@ namespace GM {
 		int modeValue;
 		DataTypes::LWOOBJID playerID;
 		DataTypes::Vector3 startPos;
-		DataTypes::Vector3 empty;
 
 		void Deserialize(RakNet::BitStream* bs) {
 			GM_VAR_DESERIALIZE(bs, bStart);
@@ -25,13 +24,10 @@ namespace GM {
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, modePaused, false);
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, modeValue, 1);
 			GM_VAR_DESERIALIZE(bs, playerID);
-			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, startPos, empty);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, startPos, DataTypes::Vector3());
 
 		}
 
-		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-			Logger::log("WRLD", "Triggered BuildModeSet");
-		}
 	};
 }
 

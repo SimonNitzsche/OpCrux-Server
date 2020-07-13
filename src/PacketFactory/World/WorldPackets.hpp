@@ -242,6 +242,55 @@ namespace PacketFactory {
 				sender->GetZoneInstance()->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clients.at(i).systemAddress, false);
 		}
 
+		inline void SendPrivateChatMessage(Entity::GameObject* sender, Entity::GameObject* target, std::u16string message) {
+			RakNet::BitStream returnBS;
+
+			// Head
+			LUPacketHeader returnBSHead;
+			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CHAT);
+			returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EChatPacketID::PRIVATE_CHAT_MESSAGE);
+			returnBS.Write(returnBSHead);
+
+			returnBS.Write<std::uint64_t>(0ULL);
+			returnBS.Write<byte>(0x07);
+
+			returnBS.Write<std::uint32_t>(message.size());
+
+			if (sender != nullptr) {
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, target->GetName());
+				returnBS.Write<std::uint64_t>(target->GetObjectID());
+				returnBS.Write<std::uint16_t>(0ULL);
+				returnBS.Write<bool>(false);
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, sender->GetName());
+				if (Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(target->GetObjectID())) >= 5) {
+					returnBS.Write<bool>(true);
+				}
+				else {
+					returnBS.Write<bool>(false);
+				}
+				returnBS.Write<std::uint8_t>(0);
+			}
+			else {
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, u"");
+				returnBS.Write<std::uint64_t>(0ULL);
+				returnBS.Write<std::uint16_t>(0ULL);
+				returnBS.Write<bool>(false);
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, u"");
+				if (Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(target->GetObjectID())) >= 5) {
+					returnBS.Write<bool>(true);
+				}
+				else {
+					returnBS.Write<bool>(false);
+				}
+				returnBS.Write<std::uint8_t>(0);
+			}
+
+			StringUtils::writeBufferedWStringToBitStream(&returnBS, message, message.size() + 1);
+			ClientSession* targetsession = target->GetZoneInstance()->sessionManager.GetSession(target->GetObjectID());
+			
+			target->GetZoneInstance()->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, targetsession->systemAddress, false);
+		}
 	};
 
 };

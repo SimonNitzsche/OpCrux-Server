@@ -17,6 +17,7 @@ namespace Entity {
 namespace GM {
 	// class BuildExitConfirmation;
 	class BuildModeSet;
+	class CancelRailMovement;
 	class Die;
 	class EquipInventory;
 	class HasBeenCollected;
@@ -27,6 +28,7 @@ namespace GM {
 	class FireEventServerSide;
 	class HasBeenCollected;
 	class MissionDialogueOK;
+	class ModifyGhostingDistance;
 	class ModularAssemblyNIFCompleted;
 	class ModularBuildFinish;
 	class ModuleAssemblyQueryData;
@@ -39,6 +41,7 @@ namespace GM {
 	class PopEquippedItemsState;
 	class ReadyForUpdates;
 	class RebuildCancel;
+	class ReportBug;
 	class RequestDie;
 	class RequestLinkedMission;
 	class RequestResurrect;
@@ -52,6 +55,7 @@ namespace GM {
 	class SyncSkill;
 	class SetFlag;
 	class TerminateInteraction;
+	class Teleport;
 	class ToggleSendingPositionUpdates;
 	class ToggleGhostReferenceOverride;
 	class SetTooltipFlag;

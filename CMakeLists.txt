@@ -190,6 +190,10 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/ParseChatMessage.hpp
 	src/Entity/GameMessages/EquipInventory.hpp
 	src/Entity/GameMessages/SetJetPackMode.hpp
+	src/Entity/GameMessages/ModifyGhostingDistance.hpp
+	src/Entity/GameMessages/Teleport.hpp
+	src/Entity/GameMessages/CancelRailMovement.hpp 
+	src/Entity/GameMessages/ReportBug.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp

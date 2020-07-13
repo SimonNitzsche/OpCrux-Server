@@ -9,14 +9,14 @@ namespace GM {
 			return Enums::EGameMessageID::SERVER_SET_JETPACK_MODE;
 		}
 
-		bool bBypassChecks;
-		bool bDoHover;
+		bool bBypassChecks = false;
+		bool bDoHover = false;
 		bool bUse = false;
-		int effectID;
-		float fAirspeed;
-		float fMaxAirspeed;
-		float fVertVel;
-		int iWarningEffectID;
+		int effectID = -1;
+		float fAirspeed = 10;
+		float fMaxAirspeed = 15;
+		float fVertVel = 1;
+		int iWarningEffectID = -1;
 
 		SetJetPackMode() : GMBase() {}
 

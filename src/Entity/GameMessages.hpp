@@ -75,7 +75,7 @@ public:
 	static void Send(Entity::GameObject * playerReceiver, DataTypes::LWOOBJID sender, T gm, DataTypes::LWOOBJID exclude = 0ULL) {
 		ClientSession * session = playerReceiver->GetZoneInstance()->sessionManager.GetSession(playerReceiver->GetObjectID());
 		if (session == nullptr) return;
-		Send(receiver->GetZoneInstance(), session->systemAddress, sender, gm);
+		Send(playerReceiver->GetZoneInstance(), session->systemAddress, sender, gm);
 	}
 
 	
@@ -104,6 +104,7 @@ public:
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
 // #include "Entity/GameMessages/BuildExitConfirmation.hpp"
 #include "Entity/GameMessages/BuildModeSet.hpp"
+#include "Entity/GameMessages/CancelRailMovement.hpp"
 #include "Entity/GameMessages/Die.hpp"
 #include "Entity/GameMessages/DropClientLoot.hpp"
 #include "Entity/GameMessages/EchoStartSkill.hpp"
@@ -116,6 +117,7 @@ public:
 #include "Entity/GameMessages/HasBeenCollected.hpp"
 #include "Entity/GameMessages/Knockback.hpp"
 #include "Entity/GameMessages/MissionDialogueOK.hpp"
+#include "Entity/GameMessages/ModifyGhostingDistance.hpp"
 #include "Entity/GameMessages/ModularBuildFinish.hpp"
 #include "Entity/GameMessages/ModuleAssemblyDBDataForClient.hpp"
 #include "Entity/GameMessages/ModularAssemblyNIFCompleted.hpp"
@@ -141,6 +143,7 @@ public:
 #include "Entity/GameMessages/ReadyForUpdates.hpp"
 #include "Entity/GameMessages/RebuildCancel.hpp"
 #include "Entity/GameMessages/RebuildNotifyState.hpp"
+#include "Entity/GameMessages/ReportBug.hpp"
 #include "Entity/GameMessages/RequestDie.hpp"
 #include "Entity/GameMessages/RequestLinkedMission.hpp"
 #include "Entity/GameMessages/RequestResurrect.hpp"
@@ -162,6 +165,7 @@ public:
 #include "Entity/GameMessages/StopFXEffect.hpp"
 #include "Entity/GameMessages/SyncSkill.hpp"
 #include "Entity/GameMessages/TerminateInteraction.hpp"
+#include "Entity/GameMessages/Teleport.hpp"
 #include "Entity/GameMessages/ToggleGhostReferenceOverride.hpp"
 #include "Entity/GameMessages/ToggleSendingPositionUpdates.hpp"
 #include "Entity/GameMessages/VehicleUnlockInput.hpp"
