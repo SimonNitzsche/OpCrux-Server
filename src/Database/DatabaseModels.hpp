@@ -18,8 +18,40 @@ public:
 	int mouthStyle;
 };
 
-struct Str_DB_CharInfo {
+struct Str_DB_CharStats {
 public:
+	unsigned long long charIndex;
+	unsigned long TotalCurrencyCollected;
+	unsigned long TotalBricksCollected;
+	unsigned long TotalSmashablesSmashed;
+	unsigned long TotalQuickBuildsCompleted;
+	unsigned long TotalEnemiesSmashed;
+	unsigned long TotalRocketsUsed;
+	unsigned long TotalMissionsCompleted;
+	unsigned long TotalPetsTamed;
+	unsigned long TotalImaginationPowerUpsCollected;
+	unsigned long TotalLifePowerUpsCollected;
+	unsigned long TotalArmorPowerUpsCollected;
+	unsigned long TotalDistanceTraveled;
+	unsigned long TotalSuicides;
+	unsigned long TotalDamageTaken;
+	unsigned long TotalDamageHealed;
+	unsigned long TotalArmorRepaired;
+	unsigned long TotalImaginationRestored;
+	unsigned long TotalImaginationUsed;
+	unsigned long TotalDistanceDriven;
+	unsigned long TotalTimeAirborne;
+	unsigned long TotalRacingImaginationPowerUpsCollected;
+	unsigned long TotalRacingImaginationCratesSmashed;
+	unsigned long TotalRacecarBoostsActivated;
+	unsigned long TotalRacecarWrecks;
+	unsigned long TotalRacingSmashablesSmashed;
+	unsigned long TotalRacesFinished;
+	unsigned long TotalFirstPlaceFinishes;
+};
+
+struct Str_DB_CharInfo {
+public: 
 	unsigned long accountID;
 	unsigned long long objectID;
 	unsigned char charIndex;

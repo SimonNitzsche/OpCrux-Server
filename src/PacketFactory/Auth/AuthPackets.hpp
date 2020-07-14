@@ -34,7 +34,7 @@ namespace PacketFactory {
 			returnBS.Write(reason);
 
 			StringUtils::writeBufferedStringToBitStream(&returnBS, "Talk_Like_A_Pirate");
-			StringUtils::writeBufferedStringToBitStream(&returnBS, "Sneak_Like_A_Ninja");
+			StringUtils::writeBufferedStringToBitStream(&returnBS, "guilds");
 			StringUtils::writeBufferedStringToBitStream(&returnBS, "test");
 			StringUtils::FillZero(&returnBS, 5 * 33);
 			uint16_t majorVersion; uint16_t currentVersion; uint16_t minorVersion; ServerInfo::numericGameVersion(&majorVersion, &currentVersion, &minorVersion);

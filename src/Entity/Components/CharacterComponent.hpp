@@ -12,6 +12,7 @@ class CharacterComponent : public IEntityComponent {
 private:
 	DatabaseModels::Str_DB_CharInfo charInfo = DatabaseModels::Str_DB_CharInfo();
 	DatabaseModels::Str_DB_CharStyle charStyle = DatabaseModels::Str_DB_CharStyle();
+	DatabaseModels::Str_DB_CharStats charStats = Database::GetCharStats(charInfo.statsID);
 
 	std::map<std::uint32_t, std::uint64_t> flags;
 
@@ -129,12 +130,12 @@ public:
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-		/* TODO: Part 1 Serialization */
+		/* Part 1 Serialization */
 		factory->Write(mountedObject != nullptr);
 		if (mountedObject != nullptr) {
 			factory->Write(true);
 			factory->Write<std::int64_t>(mountedObject->GetObjectID());
-			factory->Write<std::uint8_t>(1);
+			factory->Write<std::uint8_t>(0);
 		}
 
 		/* Part 2 Serialization */
@@ -145,8 +146,10 @@ public:
 			_dirtyPart2 = false;
 		}
 
-		/* TODO: Part 3 Serialization */
-		factory->Write(false);
+		/* Part 3 Serialization */
+		factory->Write(true); // Unknown
+		factory->Write(false); // Unknown
+		factory->Write(true); // Unknown
 
 		/* Part 4 Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
@@ -175,9 +178,34 @@ public:
 			factory->Write<std::uint64_t>(charInfo.uScore);
 			factory->Write(false); // is player free to play
 
-			// TODO: Char Stats
-			for (int i = 0; i < 27; ++i)
-				factory->Write<std::uint64_t>(i);
+			// Char Stats
+			factory->Write<std::uint32_t>(charStats.TotalCurrencyCollected);
+			factory->Write<std::uint32_t>(charStats.TotalBricksCollected);
+			factory->Write<std::uint32_t>(charStats.TotalSmashablesSmashed);
+			factory->Write<std::uint32_t>(charStats.TotalQuickBuildsCompleted);
+			factory->Write<std::uint32_t>(charStats.TotalEnemiesSmashed);
+			factory->Write<std::uint32_t>(charStats.TotalRocketsUsed);
+			factory->Write<std::uint32_t>(charStats.TotalMissionsCompleted);
+			factory->Write<std::uint32_t>(charStats.TotalPetsTamed);
+			factory->Write<std::uint32_t>(charStats.TotalImaginationPowerUpsCollected);
+			factory->Write<std::uint32_t>(charStats.TotalLifePowerUpsCollected);
+			factory->Write<std::uint32_t>(charStats.TotalArmorPowerUpsCollected);
+			factory->Write<std::uint32_t>(charStats.TotalDistanceTraveled);
+			factory->Write<std::uint32_t>(charStats.TotalSuicides);
+			factory->Write<std::uint32_t>(charStats.TotalDamageTaken);
+			factory->Write<std::uint32_t>(charStats.TotalDamageHealed);
+			factory->Write<std::uint32_t>(charStats.TotalArmorRepaired);
+			factory->Write<std::uint32_t>(charStats.TotalImaginationRestored);
+			factory->Write<std::uint32_t>(charStats.TotalImaginationUsed);
+			factory->Write<std::uint32_t>(charStats.TotalDistanceDriven);
+			factory->Write<std::uint32_t>(charStats.TotalTimeAirborne);
+			factory->Write<std::uint32_t>(charStats.TotalRacingImaginationPowerUpsCollected);
+			factory->Write<std::uint32_t>(charStats.TotalRacingImaginationCratesSmashed);
+			factory->Write<std::uint32_t>(charStats.TotalRacecarBoostsActivated);
+			factory->Write<std::uint32_t>(charStats.TotalRacecarWrecks);
+			factory->Write<std::uint32_t>(charStats.TotalRacingSmashablesSmashed);
+			factory->Write<std::uint32_t>(charStats.TotalRacesFinished);
+			factory->Write<std::uint32_t>(charStats.TotalFirstPlaceFinishes);
 
 			auto endSec = factory->GetWriteOffset();
 
@@ -195,14 +223,50 @@ public:
 		}
 
 		// TODO: Additional flags
-		factory->Write(false);
-		
-		// TODO: Activity
 		factory->Write(true);
-		factory->Write<std::uint32_t>(gameActivity);
+
+		factory->Write(false); // PVP Enabled?
+
+		//std::uint8_t GMLevel = Database::GetAccountGMLevel(charInfo.accountID);
+		//if (GMLevel > 0) {
+		//	factory->Write(true); // Is GM?
+		//	factory->Write<std::uint8_t>(GMLevel); // GM Level
+		//}
+		//else {
+		//	factory->Write(false);
+		//	factory->Write<std::uint8_t>(GMLevel);
+		//}
+		// This is commented because it will query the DB too much
+		factory->Write(false); 
+		factory->Write<std::uint8_t>(0);
+
+		factory->Write(false); // Unknown
+		factory->Write<std::uint8_t>(0); // Unknown
+		
+		// Activity
+		if (gameActivity == 0) {
+			factory->Write(false); // Not doing activity
+		}
+		else {
+			factory->Write(true); // doing activity
+			factory->Write<std::uint32_t>(gameActivity);
+		}
+		
 
 		// TODO: Guilds
 		factory->Write(false);
+
+		/* Code to be used for guilds
+		factory->Write<bool>(charInfo.InGuild); // In Guild?
+		if (charInfo.InGuild) {
+			factory->Write<std::int64_t>(guildID); // Guild ID (In OBJID format?)
+			factory->Write<std::string>(guildName); // Guild Name
+			factory->Write<bool>(guildLeader); // Guild Owner?
+			factory->Write<std::uint32_t>(guildDate); // Guild Creation Date
+		}
+		*/
+		
+		
 	}
 
 	void Awake() {

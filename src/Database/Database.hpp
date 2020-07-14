@@ -318,9 +318,6 @@ public:
 		return false;
 	}
 
-	static void UpdateClientSession(char * key) {
-
-	}
 	static void SetupStatementHandle() {
 
 		if (sqlStmtHandle != NULL) {
@@ -338,6 +335,7 @@ public:
 			Disconnect();
 		}
 	}
+
 
 	enum class DBCOUNTERID {
 		STATIC,
@@ -968,8 +966,7 @@ public:
 			unsigned long styleID = CreateCharStyle(headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 
 			// Create statistics
-			// TODO
-			unsigned long statsID = 0;
+			unsigned long statsID = CreateCharStats(reserveCountedID(DBCOUNTERID::P_STATS));
 
 			// Reserve objectID
 			unsigned long long objectID = reserveCountedID(DBCOUNTERID::PLAYER);
@@ -2238,6 +2235,190 @@ public:
 		}
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		return false;
+	}
+
+	static Str_DB_CharStats GetCharStats(long charIndex) {
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes FROM OPCRUX_GD.dbo.CharacterStats WHERE charIndex=?", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return {};
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SLONG, SQL_INTEGER, 0, 0, &charIndex, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return {};
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return {};
+		}
+
+		SQLLEN rowCount = 0;
+		SQLRowCount(sqlStmtHandle, &rowCount);
+
+		if (SQL_SUCCEEDED(ret = SQLFetch(sqlStmtHandle))) {
+			SQLLEN ptrSqlAnswer;
+
+			SQLINTEGER statsID;
+			SQLINTEGER TotalCurrencyCollected;
+			SQLINTEGER TotalBricksCollected;
+			SQLINTEGER TotalSmashablesSmashed;
+			SQLINTEGER TotalQuickBuildsCompleted;
+			SQLINTEGER TotalEnemiesSmashed;
+			SQLINTEGER TotalRocketsUsed;
+			SQLINTEGER TotalMissionsCompleted;
+			SQLINTEGER TotalPetsTamed;
+			SQLINTEGER TotalImaginationPowerUpsCollected;
+			SQLINTEGER TotalLifePowerUpsCollected;
+			SQLINTEGER TotalArmorPowerUpsCollected;
+			SQLINTEGER TotalDistanceTraveled;
+			SQLINTEGER TotalSuicides;
+			SQLINTEGER TotalDamageTaken;
+			SQLINTEGER TotalDamageHealed;
+			SQLINTEGER TotalArmorRepaired;
+			SQLINTEGER TotalImaginationRestored;
+			SQLINTEGER TotalImaginationUsed;
+			SQLINTEGER TotalDistanceDriven;
+			SQLINTEGER TotalTimeAirborne;
+			SQLINTEGER TotalRacingImaginationPowerUpsCollected;
+			SQLINTEGER TotalRacingImaginationCratesSmashed;
+			SQLINTEGER TotalRacecarBoostsActivated;
+			SQLINTEGER TotalRacecarWrecks;
+			SQLINTEGER TotalRacingSmashablesSmashed;
+			SQLINTEGER TotalRacesFinished;
+			SQLINTEGER TotalFirstPlaceFinishes;
+
+			SQLGetData(sqlStmtHandle, 1, SQL_C_SLONG, &statsID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 2, SQL_C_SLONG, &TotalCurrencyCollected, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 3, SQL_C_SLONG, &TotalBricksCollected, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 4, SQL_C_SLONG, &TotalSmashablesSmashed, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 5, SQL_C_SLONG, &TotalQuickBuildsCompleted, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 6, SQL_C_SLONG, &TotalEnemiesSmashed, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 7, SQL_C_SLONG, &TotalRocketsUsed, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 8, SQL_C_SLONG, &TotalMissionsCompleted, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 9, SQL_C_SLONG, &TotalPetsTamed, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 10, SQL_C_SLONG, &TotalImaginationPowerUpsCollected, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 11, SQL_C_SLONG, &TotalLifePowerUpsCollected, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 12, SQL_C_SLONG, &TotalArmorPowerUpsCollected, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 13, SQL_C_SLONG, &TotalDistanceTraveled, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 14, SQL_C_SLONG, &TotalSuicides, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 15, SQL_C_SLONG, &TotalDamageTaken, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 16, SQL_C_SLONG, &TotalDamageHealed, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 17, SQL_C_SLONG, &TotalArmorRepaired, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 18, SQL_C_SLONG, &TotalImaginationRestored, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 19, SQL_C_SLONG, &TotalImaginationUsed, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 20, SQL_C_SLONG, &TotalDistanceDriven, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 21, SQL_C_SLONG, &TotalTimeAirborne, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 22, SQL_C_SLONG, &TotalRacingImaginationPowerUpsCollected, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 23, SQL_C_SLONG, &TotalRacingImaginationCratesSmashed, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 24, SQL_C_SLONG, &TotalRacecarBoostsActivated, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 25, SQL_C_SLONG, &TotalRacecarWrecks, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 26, SQL_C_SLONG, &TotalRacingSmashablesSmashed, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 27, SQL_C_SLONG, &TotalRacesFinished, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 28, SQL_C_SLONG, &TotalFirstPlaceFinishes, 0, &ptrSqlAnswer);
+
+			Str_DB_CharStats charStats;
+
+			charStats.TotalCurrencyCollected = TotalCurrencyCollected;
+			charStats.TotalBricksCollected = TotalBricksCollected;
+			charStats.TotalSmashablesSmashed = TotalSmashablesSmashed;
+			charStats.TotalQuickBuildsCompleted = TotalQuickBuildsCompleted;
+			charStats.TotalEnemiesSmashed = TotalEnemiesSmashed;
+			charStats.TotalRocketsUsed = TotalRocketsUsed;
+			charStats.TotalPetsTamed = TotalPetsTamed;
+			charStats.TotalImaginationPowerUpsCollected = TotalImaginationPowerUpsCollected;
+			charStats.TotalLifePowerUpsCollected = TotalLifePowerUpsCollected;
+			charStats.TotalArmorPowerUpsCollected = TotalArmorPowerUpsCollected;
+			charStats.TotalDistanceTraveled = TotalDistanceTraveled;
+			charStats.TotalSuicides = TotalSuicides;
+			charStats.TotalDamageTaken = TotalDamageTaken;
+			charStats.TotalDamageHealed = TotalDamageHealed;
+			charStats.TotalArmorRepaired = TotalArmorRepaired;
+			charStats.TotalImaginationRestored = TotalImaginationRestored;
+			charStats.TotalImaginationUsed = TotalImaginationUsed;
+			charStats.TotalDistanceDriven = TotalDistanceDriven;
+			charStats.TotalTimeAirborne = TotalTimeAirborne;
+			charStats.TotalRacingImaginationPowerUpsCollected = TotalRacingImaginationPowerUpsCollected;
+			charStats.TotalRacecarBoostsActivated = TotalRacecarBoostsActivated;
+			charStats.TotalRacecarWrecks = TotalRacecarWrecks;
+			charStats.TotalRacingSmashablesSmashed = TotalRacingSmashablesSmashed;
+			charStats.TotalRacesFinished = TotalRacesFinished;
+			charStats.TotalFirstPlaceFinishes = TotalFirstPlaceFinishes;
+
+			return charStats;
+		}
+
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
+		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		return {};
+
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		return {};
+	}
+
+	static unsigned long CreateCharStats(long statsID) {
+		SetupStatementHandle();
+
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStats ON;INSERT INTO OPCRUX_GD.dbo.CharacterStats (statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SLONG, SQL_INTEGER, 0, 0, &statsID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 3, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 4, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 5, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 6, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 7, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 8, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 9, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 10, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 11, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 12, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 13, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 14, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 15, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 16, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 17, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 18, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 19, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 20, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 21, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 22, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 23, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 24, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 25, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 26, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 27, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 28, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
 	}
 
 };
