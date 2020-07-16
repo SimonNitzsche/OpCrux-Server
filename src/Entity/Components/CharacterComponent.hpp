@@ -179,33 +179,33 @@ public:
 			factory->Write(false); // is player free to play
 
 			// Char Stats
-			factory->Write<std::uint32_t>(charStats.TotalCurrencyCollected);
-			factory->Write<std::uint32_t>(charStats.TotalBricksCollected);
-			factory->Write<std::uint32_t>(charStats.TotalSmashablesSmashed);
-			factory->Write<std::uint32_t>(charStats.TotalQuickBuildsCompleted);
-			factory->Write<std::uint32_t>(charStats.TotalEnemiesSmashed);
-			factory->Write<std::uint32_t>(charStats.TotalRocketsUsed);
-			factory->Write<std::uint32_t>(charStats.TotalMissionsCompleted);
-			factory->Write<std::uint32_t>(charStats.TotalPetsTamed);
-			factory->Write<std::uint32_t>(charStats.TotalImaginationPowerUpsCollected);
-			factory->Write<std::uint32_t>(charStats.TotalLifePowerUpsCollected);
-			factory->Write<std::uint32_t>(charStats.TotalArmorPowerUpsCollected);
-			factory->Write<std::uint32_t>(charStats.TotalDistanceTraveled);
-			factory->Write<std::uint32_t>(charStats.TotalSuicides);
-			factory->Write<std::uint32_t>(charStats.TotalDamageTaken);
-			factory->Write<std::uint32_t>(charStats.TotalDamageHealed);
-			factory->Write<std::uint32_t>(charStats.TotalArmorRepaired);
-			factory->Write<std::uint32_t>(charStats.TotalImaginationRestored);
-			factory->Write<std::uint32_t>(charStats.TotalImaginationUsed);
-			factory->Write<std::uint32_t>(charStats.TotalDistanceDriven);
-			factory->Write<std::uint32_t>(charStats.TotalTimeAirborne);
-			factory->Write<std::uint32_t>(charStats.TotalRacingImaginationPowerUpsCollected);
-			factory->Write<std::uint32_t>(charStats.TotalRacingImaginationCratesSmashed);
-			factory->Write<std::uint32_t>(charStats.TotalRacecarBoostsActivated);
-			factory->Write<std::uint32_t>(charStats.TotalRacecarWrecks);
-			factory->Write<std::uint32_t>(charStats.TotalRacingSmashablesSmashed);
-			factory->Write<std::uint32_t>(charStats.TotalRacesFinished);
-			factory->Write<std::uint32_t>(charStats.TotalFirstPlaceFinishes);
+			factory->Write<std::uint64_t>(charStats.TotalCurrencyCollected);
+			factory->Write<std::uint64_t>(charStats.TotalBricksCollected);
+			factory->Write<std::uint64_t>(charStats.TotalSmashablesSmashed);
+			factory->Write<std::uint64_t>(charStats.TotalQuickBuildsCompleted);
+			factory->Write<std::uint64_t>(charStats.TotalEnemiesSmashed);
+			factory->Write<std::uint64_t>(charStats.TotalRocketsUsed);
+			factory->Write<std::uint64_t>(charStats.TotalMissionsCompleted);
+			factory->Write<std::uint64_t>(charStats.TotalPetsTamed);
+			factory->Write<std::uint64_t>(charStats.TotalImaginationPowerUpsCollected);
+			factory->Write<std::uint64_t>(charStats.TotalLifePowerUpsCollected);
+			factory->Write<std::uint64_t>(charStats.TotalArmorPowerUpsCollected);
+			factory->Write<std::uint64_t>(charStats.TotalDistanceTraveled);
+			factory->Write<std::uint64_t>(charStats.TotalSuicides);
+			factory->Write<std::uint64_t>(charStats.TotalDamageTaken);
+			factory->Write<std::uint64_t>(charStats.TotalDamageHealed);
+			factory->Write<std::uint64_t>(charStats.TotalArmorRepaired);
+			factory->Write<std::uint64_t>(charStats.TotalImaginationRestored);
+			factory->Write<std::uint64_t>(charStats.TotalImaginationUsed);
+			factory->Write<std::uint64_t>(charStats.TotalDistanceDriven);
+			factory->Write<std::uint64_t>(charStats.TotalTimeAirborne);
+			factory->Write<std::uint64_t>(charStats.TotalRacingImaginationPowerUpsCollected);
+			factory->Write<std::uint64_t>(charStats.TotalRacingImaginationCratesSmashed);
+			factory->Write<std::uint64_t>(charStats.TotalRacecarBoostsActivated);
+			factory->Write<std::uint64_t>(charStats.TotalRacecarWrecks);
+			factory->Write<std::uint64_t>(charStats.TotalRacingSmashablesSmashed);
+			factory->Write<std::uint64_t>(charStats.TotalRacesFinished);
+			factory->Write<std::uint64_t>(charStats.TotalFirstPlaceFinishes);
 
 			auto endSec = factory->GetWriteOffset();
 
