@@ -16,7 +16,7 @@
 #include "Server/AuthServer.hpp"
 #include "Server/WorldServer.hpp"
 #include "Server/Bridges/BridgeMasterServer.hpp"
-#include "WebInterface/WebInterface.hpp"
+#include "API/API.hpp"
 #include "GameCache/Interface/FastDatabase.hpp"
 #include "DataTypes/AMF3.hpp"
 
@@ -257,7 +257,7 @@ void TestPhysics() {
 		std::thread mT([](MasterServer* ms) { ms = new MasterServer(); }, ServerInfo::masterServer);
 		mT.detach();
 
-		std::thread wiT([]() { WebInterface::WebInterfaceLoop(); });
+		std::thread wiT([]() { StartAPI(); });
 		wiT.detach();
 	}
 
@@ -374,7 +374,7 @@ int main(int argc, char* argv[]) {
 
 	//TestPhysics(); return 0;
 
-	Logger::log("MAIN", "Setting up GLFW in case a renderer is being active.");
+	// Logger::log("MAIN", "Setting up GLFW in case a renderer is being active.");
 	/*glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -425,6 +425,14 @@ int main(int argc, char* argv[]) {
 	}
 
 	ServerInfo::init();
+
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
+		std::thread mT([](MasterServer* ms) { ms = new MasterServer(); }, ServerInfo::masterServer);
+		mT.detach();
+
+		std::thread wiT([]() { StartAPI(); });
+		wiT.detach();
+	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
 		masterServerBridge = new BridgeMasterServer(ipMaster);

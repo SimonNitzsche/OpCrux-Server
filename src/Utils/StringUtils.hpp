@@ -209,7 +209,7 @@ namespace StringUtils {
 		return std::u16string(input.begin(), input.end());
 	}
 
-	inline std::u16string generate_session_key(int max_length) {
+	inline std::string generateRandomString(int max_length) {
 		std::string possible_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 		std::random_device rd;
 		std::mt19937 engine(rd());
@@ -219,7 +219,7 @@ namespace StringUtils {
 			int random_index = dist(engine);
 			ret += possible_characters[random_index];
 		}
-		return to_u16string(ret);
+		return ret;
 	}
 	
 	inline float StringToFloat(std::string arg) {
@@ -239,6 +239,14 @@ namespace StringUtils {
 	}
 
 	inline std::string FloatToString(float arg) {
+		std::string returnvalue;
+		std::stringstream ss;
+		ss << arg;
+		ss >> returnvalue;
+		return returnvalue;
+	}
+
+	inline std::string IntToString(int arg) {
 		std::string returnvalue;
 		std::stringstream ss;
 		ss << arg;

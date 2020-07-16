@@ -318,6 +318,63 @@ public:
 		return false;
 	}
 
+	static bool APILoginCheck(std::string s_username, std::string s_password) {
+		std::string h_password = sha512(s_password);
+		SetupStatementHandle();
+		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT password FROM OPCRUX_AD.dbo.Accounts WHERE username=?", SQL_NTS);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+
+		SQLLEN __L__ = 32;
+		int __1__ = SQL_C_TCHAR;
+		SQLSMALLINT* pfSqlType;
+		SQLULEN* pcbParamDef;
+		SQLSMALLINT* pibScale;
+		SQLSMALLINT* pfNullable;
+		size_t len = s_username.size();
+		SQLDescribeParam(sqlStmtHandle, 1, (SQLSMALLINT*)&__1__, (SQLULEN*)&__L__, 0, 0);
+		int wat = SQL_NTS;
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, s_username.size(), 0, (SQLPOINTER)s_username.c_str(), s_username.size(), (SQLLEN*)&len);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+		ret = SQLExecute(sqlStmtHandle);
+		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+			std::cout << "Database Exception on Execute!\n";
+			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
+			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+			return false;
+		}
+		{
+			if (SQLFetch(sqlStmtHandle) != SQL_SUCCESS) {
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
+				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
+				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+				return false;
+			}
+			{
+				SQLCHAR sqlAnswer[SQL_RESULT_LEN];
+				SQLLEN ptrSqlAnswer;
+				SQLGetData(sqlStmtHandle, 1, SQL_CHAR, sqlAnswer, SQL_RESULT_LEN, &ptrSqlAnswer);
+				std::string db_hash = std::string((char*)&sqlAnswer, ptrSqlAnswer);
+				std::string dbhash = "DB_HASH: " + db_hash;
+				std::string pkhash = "PK_HASH: " + h_password;
+				if (db_hash == h_password) {
+					SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+					return true;
+				}
+
+			}
+		}
+		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
+		return false;
+	}
+
 	static void SetupStatementHandle() {
 
 		if (sqlStmtHandle != NULL) {
@@ -2420,6 +2477,5 @@ public:
 			return false;
 		}
 	}
-
 };
 #endif // !__DATABASE_HPP__

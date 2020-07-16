@@ -342,11 +342,7 @@ add_executable(OpCrux_Server
 	src/Utils/ServerInfo.cpp
 	src/Utils/ServerInfo.hpp
 	src/Utils/StringUtils.hpp
-	src/WebInterface/DashboardAPI.cpp
-	src/WebInterface/DashboardAPI.hpp
-	src/WebInterface/DashboardResources.hpp
-	src/WebInterface/DashboardTools.hpp
-	src/WebInterface/WebInterface.hpp
+	src/API/API.hpp
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
