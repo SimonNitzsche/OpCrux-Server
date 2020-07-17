@@ -426,6 +426,12 @@ int main(int argc, char* argv[]) {
 
 	ServerInfo::init();
 
+	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
+		std::thread mT([](MasterServer * ms) { ms = new MasterServer(); }, ServerInfo::masterServer);
+		mT.detach();
+	}
+
+	
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
 		masterServerBridge = new BridgeMasterServer(ipMaster);
 		masterServerBridge->Connect();
