@@ -2,6 +2,7 @@
 #define __CONFIGURATION__CONFPORTS_HPP__
 
 #include "FileTypes/INIFile/ConfFile.hpp"
+#include "Utils/StringUtils.hpp"
 
 namespace Configuration {
 	class ConfPorts : public ConfFile {
@@ -27,9 +28,12 @@ namespace Configuration {
 					{"PORTMIN", "2002"},
 					// PORTMAX
 					{"PORTMAX", "2199"}
-				}}
+				}},
 
-				
+				{"API", {
+					// Port to use
+					{"PORT", "8080"},
+				}}
 			};
 		};
 	};

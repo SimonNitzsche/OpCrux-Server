@@ -63,7 +63,10 @@ namespace Configuration {
 
 			{"API", {
 				// API Token
-				{"TOKEN", StringUtils::generateRandomString(10)}
+				{"TOKEN", StringUtils::generateRandomString(10)},
+				// Whether to use SSL at all
+				{"USESSL", "FALSE"}
+
 			}}
 		};}
 	};
