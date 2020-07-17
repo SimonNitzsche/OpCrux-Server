@@ -20,12 +20,8 @@ static std::vector<std::string> app_keys = {};
 using json = nlohmann::json;
 json j;
 
-inline char* mg_str2TEXT(struct mg_str* mgstr)
-{
-	char* text = (char*)malloc(mgstr->len + 1);
-	strncpy(text, mgstr->p, mgstr->len);
-	text[mgstr->len] = '\0';
-	return text;
+std::string mg_str2string(mg_str* string) {
+	return std::string(string->p, string->len);
 }
 
 inline std::string_view sw_str(mg_str _mstr) {
@@ -112,7 +108,7 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 	if (ev == MG_EV_HTTP_REQUEST) {
 		struct http_message* hm = (struct http_message*)p;
 
-		std::string url = mg_str2TEXT(&hm->uri);
+		std::string url = mg_str2string(&hm->uri);
 		std::vector<std::string> args = StringUtils::splitString(url.erase(0, 1), '/');
 
 		if (sw_str(hm->method) != "GET") {
@@ -183,7 +179,7 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 			mg_printf(c, "%.*s", msg.length(), msg.c_str());
 		}
 		else {
-			std::string msg = HandleJson(1, "403 Forbidden needs correct Token", p);
+			std::string msg = HandleJson(0, "403 Forbidden needs correct Token", p);
 			mg_send_head(c, 403, msg.length(), "Content-Type: text/plain");
 			mg_printf(c, "%.*s", msg.length(), msg.c_str());
 		}
