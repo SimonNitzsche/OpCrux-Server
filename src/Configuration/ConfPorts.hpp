@@ -28,11 +28,6 @@ namespace Configuration {
 					{"PORTMIN", "2002"},
 					// PORTMAX
 					{"PORTMAX", "2199"}
-				}},
-
-				{"API", {
-					// Port to use
-					{"PORT", "8080"},
 				}}
 			};
 		};

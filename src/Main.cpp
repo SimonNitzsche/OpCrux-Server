@@ -430,8 +430,15 @@ int main(int argc, char* argv[]) {
 		std::thread mT([](MasterServer* ms) { ms = new MasterServer(); }, ServerInfo::masterServer);
 		mT.detach();
 
-		std::thread wiT([]() { StartAPI(); });
-		wiT.detach();
+		if (Configuration::ConfigurationManager::dbConf.GetStringVal("API", "USESSL") == "TRUE") {
+			std::thread wiT([]() { StartAPIWithSSL(); });
+			wiT.detach();
+		}
+		else {
+			std::thread wiT([]() { StartAPI(); });
+			wiT.detach();
+		}
+		
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {

@@ -2428,40 +2428,41 @@ public:
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStats ON;INSERT INTO OPCRUX_GD.dbo.CharacterStats (statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", SQL_NTS);
+		
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
 		}
 
-		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SLONG, SQL_INTEGER, 0, 0, &statsID, 0);
-		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 3, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 4, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 5, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 6, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 7, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 8, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 9, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 10, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 11, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 12, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 13, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 14, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 15, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 16, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 17, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 18, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 19, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 20, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 21, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 22, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 23, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 24, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 25, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 26, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 27, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
-		ret = SQLBindParam(sqlStmtHandle, 28, SQL_C_SLONG, SQL_INTEGER, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SLONG, SQL_BIGINT, 0, 0, &statsID, 0);
+		ret = SQLBindParam(sqlStmtHandle, 2, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 3, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 4, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 5, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 6, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 7, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 8, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 9, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 10, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 11, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 12, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 13, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 14, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 15, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 16, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 17, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 18, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 19, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 20, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 21, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 22, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 23, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 24, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 25, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 26, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 27, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
+		ret = SQLBindParam(sqlStmtHandle, 28, SQL_C_SLONG, SQL_BIGINT, 0, 0, 0, 0);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);

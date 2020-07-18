@@ -199,6 +199,7 @@ add_executable(OpCrux_Server
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp
+	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_DEATH_TRIGGER.hpp
 	src/Entity/NativeScripts/ai/NP/L_NPC_NP_SPACEMAN_BOB.hpp
 	src/Entity/NativeScripts/ai/RACING/TRACK_GF/GF_RACE_SERVER.hpp
 	src/Entity/NativeScripts/ai/RACING/RACE_IMAGINATION_SPAWNER.hpp
