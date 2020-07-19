@@ -14,7 +14,7 @@
 #include <list>
 
 #include <RakNet/BitStream.h>
-#include <random>
+#include "Utils/RandomUtil.hpp"
 
 namespace StringUtils {
 
@@ -211,47 +211,29 @@ namespace StringUtils {
 
 	inline std::string generateRandomString(int max_length) {
 		std::string possible_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-		std::random_device rd;
-		std::mt19937 engine(rd());
 		std::uniform_int_distribution<> dist(0, possible_characters.size() - 1);
 		std::string ret = "";
 		for (int i = 0; i < max_length; i++) {
-			int random_index = dist(engine);
+			int random_index = dist(RandomUtil::GetEngine());
 			ret += possible_characters[random_index];
 		}
 		return ret;
 	}
 	
 	inline float StringToFloat(std::string arg) {
-		float num;
-		std::stringstream ss;
-		ss << arg;
-		ss >> num;
-		return num;
+		return std::stof(arg);
 	}
 
 	inline int StringToInt(std::string arg) {
-		int num;
-		std::stringstream ss;
-		ss << arg;
-		ss >> num;
-		return num;
+		return std::stoi(arg);
 	}
 
 	inline std::string FloatToString(float arg) {
-		std::string returnvalue;
-		std::stringstream ss;
-		ss << arg;
-		ss >> returnvalue;
-		return returnvalue;
+		return std::to_string(arg);
 	}
 
 	inline std::string IntToString(int arg) {
-		std::string returnvalue;
-		std::stringstream ss;
-		ss << arg;
-		ss >> returnvalue;
-		return returnvalue;
+		return std::to_string(arg);
 	}
 }
 

@@ -348,7 +348,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}) 
+	${SDL_INCLUDE} "src/Utils/RandomUtil.hpp" "src/Utils/RandomUtil.cpp") 
 	
 
 
