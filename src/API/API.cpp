@@ -33,26 +33,21 @@ const char * GetPort() {
 	}
 }
 
-std::vector<std::string> loadTokens() {
+void loadTokens() {
 	const std::string& path = "conf/keys.txt";
 	struct stat buffer;
-	if ((stat(path.c_str(), &buffer) == 0) == 0) {
-		return std::vector<std::string>();
-	}
-	else {
-		std::ifstream file("conf/keys.txt");
-		std::string str;
-		while (std::getline(file, str)) {
-			if (str.length() == 0)
-				continue;
-			if (str[0] == ' ')
-				continue;
-			if (str[0] == '\t')
-				continue;
-			if (str[0] == '\r')
-				continue;
-			keys.push_back(str);
-		}
+	std::ifstream file("conf/keys.txt");
+	std::string str;
+	while (std::getline(file, str)) {
+		if (str.length() == 0)
+			continue;
+		if (str[0] == ' ')
+			continue;
+		if (str[0] == '\t')
+			continue;
+		if (str[0] == '\r')
+			continue;
+		keys.push_back(str);
 	}
 }
 
@@ -165,14 +160,8 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 
 		std::unordered_map<std::string, std::string_view> form_data = {};
 		mg_parse_form_data(hm, form_data);
-
-		if (args[0] == "favicon.ico") {
-			const char* empty;
-			size_t empty2 {};
-			mg_send_head(c, 404, empty2, "Content-Type: text/plain");
-			mg_printf(c, "%.*s", empty2, empty);
-			return;
-		}
+		if (args.size() == 0) { return; }
+		if (args[0] == "favicon.ico") { return; }
 
 		if (checkToken(args[0])) {
 			if (args[1] == "getprocessname") {
@@ -181,7 +170,7 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 				mg_printf(c, "%.*s", msg.length(), msg.c_str());
 				return;
 			}
-			else if (args[1] == "getBannedStatus") {
+			else if (args[1] == "getBannedStatus") { // Implement this
 				if (args.size() > 2) {
 					bool isBanned = true;
 					// bool isBanned = Database::GetAccountBannedStatus(args[1]);
