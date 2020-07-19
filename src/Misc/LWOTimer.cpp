@@ -25,15 +25,24 @@ void LWOTimer::Update() {
 
 void LWOTimer::AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::GameObject * object) {
 	if (timers.find(object) == timers.end()) timers.insert(std::pair<Entity::GameObject*, std::unordered_map<std::u16string, long long>>(object, {}));
-	if (timers.at(object).find(name) == timers.at(object).end()) {
-		// Add
-		timers.at(object).insert(std::make_pair(name, ServerInfo::uptimeMs() + timeInMs));
+	if (object == nullptr) { return; }
+	if (timers.size() > 1000) { return; }
+	if (timeInMs > 100) {
+		if (timers.at(object).find(name) == timers.at(object).end()) {
+			// Add
+			// Logger::log("TIMER", "Timer " + StringUtils::to_string(name) + " added to " + object->GetNameStr());
+			timers.at(object).insert(std::make_pair(name, ServerInfo::uptimeMs() + timeInMs));
+		}
+		else {
+			Logger::log("TIMER", "Timer " + StringUtils::to_string(name) + " with duplicate name added to " + object->GetNameStr(), LogType::WARN);
+		}
 	}
 	else {
-		// Already exists, can't add again -> Error
+		Logger::log("TIMER", "Timer " + StringUtils::to_string(name) + " was added to " + object->GetNameStr() + " with too short length", LogType::WARN);
 	}
+		
 }
 
-void LWOTimer::AddTimerWithCancel(float timeInSeconds, std::u16string name, Entity::GameObject * object) {
+void LWOTimer::AddTimerWithCancel(float timeInSeconds, std::u16string name, Entity::GameObject* object) {
 	AddTimerWithCancelMs(std::lroundf(timeInSeconds) * 1000, name, object);
 }
