@@ -19,6 +19,11 @@ namespace GM {
 			GM_VAR_SERIALIZE(bs, ObjIDTerminator);
 			GM_VAR_SERIALIZE(bs, type);
 		}
+
+		void Deserialize(RakNet::BitStream* bs) {
+			GM_VAR_DESERIALIZE(bs, ObjIDTerminator);
+			GM_VAR_DESERIALIZE(bs, type);
+		}
 	};
 }
 

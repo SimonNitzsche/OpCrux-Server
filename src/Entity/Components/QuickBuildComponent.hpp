@@ -35,7 +35,7 @@ private:
 		5 = Building
 		6 = Incomplete
 	*/
-	std::uint32_t qbState = 0;
+	std::uint32_t qbState = 6;
 	bool qbSuccess = false;
 	bool qbEnabled = true;
 	std::float_t timeSinceStartOfBuild = 0.0f;
@@ -43,7 +43,8 @@ private:
 
 
 	std::float_t completionTime;
-
+	std::float_t resetTime;
+	std::float_t timeSmash;
 
 	clock_t buildStartTime = 0;
 	std::int32_t playerStartImagination;
@@ -77,10 +78,11 @@ public:
 		if (qbState == 5) {
 			// When build time is up
 			if ((buildStartTime - ::time(0) + completionTime) <= .0f) {
+				buildCompleteTime = ::time(0) + std::uint32_t(completionTime);
 				{GM::RebuildNotifyState msg; msg.player = buildingPlayer->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 2); GameMessages::Broadcast(this->owner, msg); }
 				{GM::PlayFXEffect msg; msg.effectID = 507; msg.effectType = u"create"; msg.fScale = 1.0f; msg.name = "BrickFadeUpVisCompleteEffect"; msg.priority = 0.4000000059604645f; msg.serialize = true; GameMessages::Broadcast(this->owner, msg); }
 				{GM::EnableRebuild msg; msg.user = buildingPlayer->GetObjectID(); msg.bSuccess; msg.fDuration = completionTime; GameMessages::Broadcast(this->owner, msg); }
-				{GM::ServerTerminateInteraction msg; msg.ObjIDTerminator = buildingPlayer->GetObjectID(); msg.type = Enums::ETerminateType::FROM_INTERACTION; GameMessages::Broadcast(this->owner, msg); }
+				{GM::TerminateInteraction msg; msg.ObjIDTerminator = buildingPlayer->GetObjectID(); msg.type = Enums::ETerminateType::FROM_INTERACTION; GameMessages::Broadcast(this->owner, msg); }
 
 
 				activator->Remove();
@@ -90,16 +92,23 @@ public:
 				this->_isDirtyFlag = true;
 				this->owner->SetDirty();
 
-				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
-
-				buildingPlayer->SetPlayerActivity(0);
+				buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
 			}
 		}
 		// When completed
 		else if (qbState == 2) {
-			if (true) {
-			}
+			auto doResetTime = buildCompleteTime + std::uint32_t(resetTime);
+			auto now = ::time(0);
 
+			// indicate resetting
+			if (now > doResetTime) {
+				PacketFactory::Chat::SendChatMessage(buildingPlayer, 0, u"Starting reset of quickbuild");
+				{GM::RebuildNotifyState msg; msg.player = buildingPlayer->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 4); GameMessages::Broadcast(this->owner, msg); }
+				//this->_isDirtyFlag = true;
+				//this->owner->SetDirty();
+
+				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
+			}
 		}
 	}
 
@@ -133,6 +142,10 @@ public:
 		auto cacheRow = CacheRebuildComponent::getRow(GetComponentID());
 
 		LDF_GET_VAL_FROM_COLLECTION(completionTime, collection, u"compTime", CacheRebuildComponent::GetCompleteTime(cacheRow));
+		LDF_GET_VAL_FROM_COLLECTION(resetTime, collection, u"rebuild_reset_time", CacheRebuildComponent::GetResetTime(cacheRow));
+		LDF_GET_VAL_FROM_COLLECTION(timeSmash, collection, u"tmeSmsh", CacheRebuildComponent::GetTimeBeforeSmash(cacheRow));
+
+		resetTime = 5.f;
 
 		std::u16string wRebuildPos;
 		LDF_GET_VAL_FROM_COLLECTION(wRebuildPos, collection, u"rebuild_activators", u"NULL");
@@ -199,11 +212,22 @@ public:
 
 			this->_isDirtyFlag = true;
 			this->owner->SetDirty();
-			buildingPlayer->SetPlayerActivity(1);
+			buildingPlayer->SetPlayerActivity(Enums::EGameActivity::QUICKBUILD);
 		}
 
 	}
 
+	void OnServerTerminateInteraction(Entity::GameObject* sender, GM::ServerTerminateInteraction& msg) {
+		if (buildingPlayer != nullptr) {
+			buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
+		}
+	}
+
+	void OnRebuildCancel(Entity::GameObject* sender, GM::RebuildCancel& msg) {
+		if (buildingPlayer != nullptr) {
+			buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
+		}
+	}
 };
 
 #endif

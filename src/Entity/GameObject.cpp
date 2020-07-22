@@ -718,7 +718,7 @@ void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 	}
 }
 
-void Entity::GameObject::SetPlayerActivity(std::uint32_t activity) {
+void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {
 	CharacterComponent* charComp = GetComponent<CharacterComponent>();
 	if (charComp != nullptr) {
 		charComp->SetActivity(activity);

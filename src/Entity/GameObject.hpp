@@ -13,6 +13,7 @@
 #include <optional>
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
+#include "Enums/EGameActivity.hpp"
 
 #include "Entity/GMUtils.hpp"
 
@@ -361,8 +362,7 @@ namespace Entity {
 			void OnCollisionPhantom(Entity::GameObject * other);
 			void OnOffCollisionPhantom(Entity::GameObject * other);
 
-			void SetPlayerActivity(std::uint32_t activity);
-
+            void SetPlayerActivity(Enums::EGameActivity activity);
 		public:
 			/* Game Messages */
 			//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }

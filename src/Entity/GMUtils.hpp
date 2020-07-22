@@ -60,6 +60,7 @@
 	mfun(StartBuildingWithItem);\
 	mfun(StartSkill);\
 	mfun(SyncSkill);\
+	mfun(ServerTerminateInteraction);\
 	mfun(SetBuildMode);\
 	mfun(SetFlag);\
 	mfun(TerminateInteraction);\

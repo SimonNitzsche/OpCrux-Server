@@ -48,6 +48,7 @@ namespace GM {
 	class RequestSmashPlayer;
 	class RequestUse;
 	class RequestPlatformResync;
+	class ServerTerminateInteraction;
 	class SetBuildMode;
 	class SetJetPackMode;
 	class StartBuildingWithItem;

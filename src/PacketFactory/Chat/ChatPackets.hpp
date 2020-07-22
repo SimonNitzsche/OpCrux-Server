@@ -83,27 +83,22 @@ namespace PacketFactory {
 				returnBS.Write<std::uint64_t>(target->GetObjectID()); // Sender OBJID
 				returnBS.Write<std::uint16_t>(0ULL); // ???
 
-				if (Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(sender->GetObjectID())) >= 5) {returnBS.Write<bool>(true);} // Is sender Mythran
-				else {returnBS.Write<bool>(false);}
+				// Is sender Mythran
+				returnBS.Write<std::uint8_t>(Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(sender->GetObjectID())) >= 5);
 
 				StringUtils::writeBufferedWStringToBitStream(&returnBS, sender->GetName()); // Senders Name
-				if (Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(target->GetObjectID())) >= 5) {returnBS.Write<bool>(true);} // Is Sender 
-				else {returnBS.Write<bool>(false);}
-
+				returnBS.Write<std::uint8_t>(Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(target->GetObjectID())) >= 5); // Is Sender 
+			
 				returnBS.Write<std::uint8_t>(0);
 			}
 			else {
 				StringUtils::writeBufferedWStringToBitStream(&returnBS, u"");
 				returnBS.Write<std::uint64_t>(0ULL);
 				returnBS.Write<std::uint16_t>(0ULL);
-				returnBS.Write<bool>(false);
+				returnBS.Write<std::uint8_t>(false);
 				StringUtils::writeBufferedWStringToBitStream(&returnBS, u"");
-				if (Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(target->GetObjectID())) >= 5) {
-					returnBS.Write<bool>(true);
-				}
-				else {
-					returnBS.Write<bool>(false);
-				}
+				returnBS.Write<std::uint8_t>(Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(target->GetObjectID())) >= 5);
+				
 				returnBS.Write<std::uint8_t>(0);
 			}
 

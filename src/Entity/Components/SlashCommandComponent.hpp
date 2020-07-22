@@ -48,8 +48,8 @@ public:
 							Jetpackmode.bBypassChecks = true;
 							Jetpackmode.bUse = true;
 							Jetpackmode.effectID = 1;
-							Jetpackmode.fAirspeed = 10;
-							Jetpackmode.fMaxAirspeed = 15;
+							Jetpackmode.fAirspeed = 10*2;
+							Jetpackmode.fMaxAirspeed = 15*2;
 							GameMessages::Send(sender, targetOBJID, Jetpackmode);
 						}
 						else if (args[1] == u"off") {

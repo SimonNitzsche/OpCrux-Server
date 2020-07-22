@@ -219,6 +219,7 @@ add_executable(OpCrux_Server
 	src/Enums/EComponents.hpp
 	src/Enums/EDisconnectReason.hpp
 	src/Enums/EFailReason.hpp
+	src/Enums/EGameActivity.hpp
 	src/Enums/EGameMessages.hpp
 	src/Enums/EKillType.hpp
 	src/Enums/ELoginReturnCode.hpp

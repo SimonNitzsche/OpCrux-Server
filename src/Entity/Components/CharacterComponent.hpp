@@ -8,6 +8,8 @@
 
 #include "Entity/GameMessages/SetFlag.hpp"
 
+#include "Enums/EGameActivity.hpp"
+
 class CharacterComponent : public IEntityComponent {
 private:
 	DatabaseModels::Str_DB_CharInfo charInfo = DatabaseModels::Str_DB_CharInfo();
@@ -21,8 +23,8 @@ private:
 
 	Entity::GameObject* mountedObject = nullptr;
 
-	std::uint32_t gameActivity = 0;
-
+	Enums::EGameActivity gameActivity = Enums::EGameActivity::NONE;
+		
 	
 	enum class WorldTransitionState : std::uint8_t {IN_WORLD, ENTERING_WORLD, LEAVING_WORLD} worldTransitionState = WorldTransitionState::ENTERING_WORLD;
 
@@ -50,8 +52,9 @@ public:
 		return charInfo.uLevel;
 	}
 
-	void SetActivity(std::uint32_t activity) {
+	void SetActivity(Enums::EGameActivity activity) {
 		gameActivity = activity;
+		this->owner->SetDirty();
 	}
 
 	CharacterComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
@@ -244,12 +247,9 @@ public:
 		factory->Write<std::uint8_t>(0); // Unknown
 		
 		// Activity
-		if (gameActivity == 0) {
-			factory->Write(false); // Not doing activity
-		}
-		else {
-			factory->Write(true); // doing activity
-			factory->Write<std::uint32_t>(gameActivity);
+		factory->Write<bool>(true);
+		if (true) {
+			factory->Write<std::uint32_t>(std::uint32_t(gameActivity));
 		}
 		
 
