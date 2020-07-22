@@ -22,7 +22,7 @@ public:
 			std::int32_t amount = rand() % 2 + 1;
 
 			for (int i = 0; i < amount; ++i) {
-				LWOOBJID newID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + self->GetZoneInstance()->spawnedObjectIDCounter++);
+				DataTypes::LWOOBJID newID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + self->GetZoneInstance()->spawnedObjectIDCounter++);
 				{
 					GM::DropClientLoot nmsg; nmsg.itemTemplate = 935; nmsg.owner = msg.killerID; nmsg.lootID = newID; nmsg.sourceObj = self->GetObjectID();
 					GameMessages::Send(self->GetZoneInstance()->objectsManager->GetObjectByID(msg.killerID), self->GetObjectID(), nmsg);

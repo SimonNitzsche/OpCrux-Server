@@ -26,6 +26,7 @@
 #include "Structs/Networking/General/StructPacketHeader.hpp"
 
 #include "PacketFactory/General/GeneralPackets.hpp"
+#include "PacketFactory/Chat/ChatPackets.hpp"
 #include "PacketFactory/World/WorldPackets.hpp"
 #include <fstream>
 #include "Database/Database.hpp"
@@ -540,11 +541,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				if (zoneID == 1303) {
 					WorldServer* Instance = this;
-
-					
-
 				}
-				
 
 				break;
 			}
@@ -563,23 +560,14 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 			case Enums::EWorldPacketID::CLIENT_STRING_CHECK: {
 				std::uint8_t chatMode, chatChannel;
+				std::uint16_t string_length;
 				data->Read(chatMode);
 				data->Read(chatChannel);
-
-				// TODO: Make it nice
-				LUPacketHeader responseHead;
-				responseHead.protocolID = 0x53;
-				responseHead.remoteType = 0x05;
-				responseHead.packetID = 0x3b;
-				RakNet::BitStream response;
-				response.Write(responseHead);
+				std::u16string private_name = StringUtils::readBufferedWStringFromBitStream(data, 84);
+				data->Read(string_length);
+				std::u16string message = StringUtils::readBufferedWStringFromBitStream(data, int(string_length * 2));
 				
-				response.Write<std::uint8_t>(1);
-				response.Write<std::uint16_t>(0);
-				response.Write(chatChannel);
-				response.Write(chatMode);
-
-				rakServer->Send(&response, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
+				PacketFactory::Chat::StringCheck(objectsManager->GetObjectByID(clientSession->actorID), chatMode, chatChannel, message);
 				break;
 			}
 
@@ -593,7 +581,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Entity::GameObject* playerObject = objectsManager->GetObjectByID(clientSession->actorID);
 				if (playerObject != nullptr) {
-					PacketFactory::World::SendChatMessage(playerObject, 0x04, chatMessage);
+					PacketFactory::Chat::SendChatMessage(playerObject, 0x04, chatMessage);
 				}
 
 				break;

@@ -9,7 +9,7 @@
 #include <Entity\GameMessages\NotifyRacingClient.hpp>
 #include <Entity\GameMessages\ActivityStart.hpp>
 
-#include "PacketFactory/World/WorldPackets.hpp"
+#include "PacketFactory/Chat/ChatPackets.hpp"
 
 namespace GM {
 	struct PlayerLoaded : GMBase {
@@ -33,7 +33,7 @@ namespace GM {
 
 			GM::RestoreToPostLoadStats  rtpls;
 			GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), rtpls);
-			PacketFactory::World::SendChatMessage(sender->GetZoneInstance()->zoneControlObject, 4, u"Player " + sender->GetName() + u" joined the game.");
+			PacketFactory::Chat::SendChatMessage(sender->GetZoneInstance()->zoneControlObject, 4, u"Player " + sender->GetName() + u" joined the game.");
 
 			auto zoneControlObject = sender->GetZoneInstance()->zoneControlObject;
 			auto racingComp = zoneControlObject->GetComponent<RacingControlComponent>();

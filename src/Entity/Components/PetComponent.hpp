@@ -12,8 +12,8 @@ private:
 	std::uint32_t unknown1 = 0x80;
 	std::uint32_t unknown2 = 0x80;
 
-	LWOOBJID interactionObject = 0ULL;
-	LWOOBJID ownerID = 0ULL;
+	DataTypes::LWOOBJID interactionObject = 0ULL;
+	DataTypes::LWOOBJID ownerID = 0ULL;
 
 	bool _isNameDirty = false;
 	std::uint32_t moderationStatus = 0;

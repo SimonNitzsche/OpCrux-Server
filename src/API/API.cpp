@@ -18,7 +18,6 @@
 static struct mg_serve_http_opts s_http_server_opts;
 static std::vector<std::string> keys = {};
 using json = nlohmann::json;
-json j;
 
 #define SSL_PRIVATE "res/ssl/private.pem"
 #define SSL_PUBLIC "res/ssl/public.pem"
@@ -92,6 +91,7 @@ void mg_parse_form_data(http_message* hm, std::unordered_map<std::string, std::s
 }
 
 static std::string HandleJson(int code, int arguement, void* p) {
+	json j;
 	struct http_message* hm = (struct http_message*)p;
 	if (code == 0) {
 		Logger::log("WebAPI", std::string(hm->uri.p, hm->uri.len));
@@ -107,6 +107,7 @@ static std::string HandleJson(int code, int arguement, void* p) {
 }
 
 static std::string HandleJson(int code, std::string arguement, void* p) {
+	json j;
 	struct http_message* hm = (struct http_message*)p;
 	if (code == 0) {
 		Logger::log("WebAPI", std::string(hm->uri.p, hm->uri.len));
@@ -122,6 +123,7 @@ static std::string HandleJson(int code, std::string arguement, void* p) {
 }
 
 static std::string HandleJson(int code, const char* arguement, void* p) {
+	json j;
 	struct http_message* hm = (struct http_message*)p;
 	if (code == 0) {
 		Logger::log("WebAPI", std::string(hm->uri.p, hm->uri.len));
@@ -137,6 +139,7 @@ static std::string HandleJson(int code, const char* arguement, void* p) {
 }
 
 static std::string HandleJson(void* p) {
+	json j;
 	struct http_message* hm = (struct http_message*)p;
 	Logger::log("WebAPI", std::string(hm->uri.p, hm->uri.len), LogType::WARN);
 	j["Status"] = "Fail";
@@ -213,6 +216,43 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 	}
 }
 
+//void StartAPIWithSSL() {
+//	struct mg_mgr mgr;
+//	struct mg_connection* c;
+//	struct mg_bind_opts bind_opts;
+//	const char* err;
+//
+//	loadTokens();
+//
+//	mg_mgr_init(&mgr, NULL);
+//
+//	setlocale(LC_TIME, "en_US.UTF-8");
+//
+//	memset(&bind_opts, 0, sizeof(bind_opts));
+//	bind_opts.ssl_cert = SSL_PUBLIC;
+//	bind_opts.ssl_key = SSL_PRIVATE;
+//
+//	bind_opts.error_string = &err;
+//	printf("[WebAPI] Starting SSL server on port %s, cert from %s, key from %s\n", GetPort(), SSL_PUBLIC, SSL_PRIVATE);
+//
+//	c = mg_bind_opt(&mgr, GetPort(), ev_handler, bind_opts);
+//
+//	if (c == nullptr) {
+//		throw std::runtime_error("Failed to create WebAPI listener.");
+//	}
+//
+//	s_http_server_opts.document_root = ".";  // Serve current directory
+//
+//	mg_set_protocol_http_websocket(c);
+//
+//	Logger::log("WebAPI", "Started Up WebAPI.....");
+//
+//	for (;;) {
+//		mg_mgr_poll(&mgr, 1000);
+//	}
+//	mg_mgr_free(&mgr);
+//} I still can't seem to work this out not entirely sure what the issue is.
+
 void StartAPI() {
 	struct mg_mgr mgr;
 	struct mg_connection* c;
@@ -226,43 +266,6 @@ void StartAPI() {
 	setlocale(LC_TIME, "en_US.UTF-8");
 
 	c = mg_bind(&mgr, GetPort(), ev_handler);
-
-	if (c == nullptr) {
-		throw std::runtime_error("Failed to create WebAPI listener.");
-	}
-
-	s_http_server_opts.document_root = ".";  // Serve current directory
-
-	mg_set_protocol_http_websocket(c);
-
-	Logger::log("WebAPI", "Started Up WebAPI.....");
-
-	for (;;) {
-		mg_mgr_poll(&mgr, 1000);
-	}
-	mg_mgr_free(&mgr);
-}
-
-void StartAPIWithSSL() {
-	struct mg_mgr mgr;
-	struct mg_connection* c;
-	struct mg_bind_opts bind_opts;
-	const char* err;
-
-	loadTokens();
-
-	mg_mgr_init(&mgr, NULL);
-
-	setlocale(LC_TIME, "en_US.UTF-8");
-
-	memset(&bind_opts, 0, sizeof(bind_opts));
-	//bind_opts.ssl_cert = SSL_PUBLIC; // It says bind_opts has no member ssl_cert so that needs to be looked at.
-	//bind_opts.ssl_key = SSL_PRIVATE;
-
-	bind_opts.error_string = &err;
-	printf("[WebAPI] Starting SSL server on port %s, cert from %s, key from %s\n", GetPort(), SSL_PUBLIC, SSL_PRIVATE);
-
-	c = mg_bind_opt(&mgr, GetPort(), ev_handler, bind_opts);
 
 	if (c == nullptr) {
 		throw std::runtime_error("Failed to create WebAPI listener.");

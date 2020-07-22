@@ -12,6 +12,7 @@
 #include "Database/Database.hpp"
 #include "Enums/EKillType.hpp"
 #include "PacketFactory/World/WorldPackets.hpp"
+#include "PacketFactory/Chat/ChatPackets.hpp"
 
 class SlashCommandComponent : public IEntityComponent {
 public:
@@ -126,25 +127,25 @@ private:
 	enum class Response {RankTooLow = 1, NoCommand = 2, NoArguements = 3,};
 
 	void Reply(std::u16string message, Entity::GameObject* sender, Entity::GameObject* empty = nullptr) {
-		PacketFactory::World::SendPrivateChatMessage(empty, sender, message);
+		PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
 	}
 
 	void Reply(Response code, Entity::GameObject* sender, Entity::GameObject* empty = nullptr) {
 		switch(code) {
 			case Response::RankTooLow: {
 				std::u16string message = u"You do not have high enough permissions for that";
-				PacketFactory::World::SendPrivateChatMessage(empty, sender, message);
+				PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
 				break;
 			}
 			case Response::NoCommand: {
 				std::u16string message = u"That command doesn't exist";
-				PacketFactory::World::SendPrivateChatMessage(empty, sender, message);
+				PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
 				break;
 			}
 			
 			case Response::NoArguements: {
 				std::u16string message = u"This command requires arguements";
-				PacketFactory::World::SendPrivateChatMessage(empty, sender, message);
+				PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
 				break;
 			}	
 		}

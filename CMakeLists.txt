@@ -313,6 +313,7 @@ add_executable(OpCrux_Server
 	src/PacketFactory/Auth/AuthPackets.hpp
 	src/PacketFactory/General/GeneralPackets.hpp
 	src/PacketFactory/World/WorldPackets.hpp
+	src/PacketFactory/Chat/ChatPackets.hpp
 	src/Rendering/DebugRenderer.cpp
 	src/Rendering/DebugRenderer.hpp
 	src/Rendering/UGCRenderer.cpp
@@ -343,12 +344,14 @@ add_executable(OpCrux_Server
 	src/Utils/ServerInfo.cpp
 	src/Utils/ServerInfo.hpp
 	src/Utils/StringUtils.hpp
+	src/Utils/RandomUtil.hpp 
+	src/Utils/RandomUtil.cpp
 	src/API/API.cpp
 	src/API/API.hpp
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE} "src/Utils/RandomUtil.hpp" "src/Utils/RandomUtil.cpp") 
+	${SDL_INCLUDE} ) 
 	
 
 

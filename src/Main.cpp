@@ -431,14 +431,13 @@ int main(int argc, char* argv[]) {
 		mT.detach();
 
 		if (Configuration::ConfigurationManager::dbConf.GetStringVal("API", "USESSL") == "TRUE") {
-			std::thread wiT([]() { StartAPIWithSSL(); });
-			wiT.detach();
+			/*std::thread wiT([]() { StartAPIWithSSL(); });
+			wiT.detach();*/
 		}
 		else {
 			std::thread wiT([]() { StartAPI(); });
 			wiT.detach();
 		}
-		
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {

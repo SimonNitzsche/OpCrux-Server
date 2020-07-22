@@ -162,7 +162,7 @@ Entity::GameObject::~GameObject() {
 	}
 }
 
-void Entity::GameObject::SetObjectID(LWOOBJID ID) {
+void Entity::GameObject::SetObjectID(DataTypes::LWOOBJID ID) {
 	this->objectID = ID;
 }
 

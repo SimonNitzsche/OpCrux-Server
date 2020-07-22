@@ -1,0 +1,144 @@
+#ifndef __PACKETFACTORY__CHAT__CHATPACKETS_HPP__
+#define __PACKETFACTORY__CHAT__CHATPACKETS_HPP__
+
+#include <memory>
+#include <RakNet/BitStream.h>
+#include <RakNet/Types.h>
+#include <RakNet/RakNetTypes.h>
+#include <RakNet/MessageIdentifiers.h>
+#include <RakNet/RakPeerInterface.h>
+
+
+#include "Enums/EPackets.hpp"
+#include "Structs/Networking/General/StructPacketHeader.hpp"
+#include "Enums/ERemoteConnection.hpp"
+#include "Utils/ServerInfo.hpp"
+
+#include "Enums/EPackets.hpp"
+#include "NetworkDataTypes/ByteBool.hpp"
+#include "Database/Database.hpp"
+#include "DataTypes/LWOOBJID.hpp"
+#include "DataTypes/LDF.hpp"
+
+#include "Entity/GameObject.hpp"
+
+using namespace Enums;
+
+namespace PacketFactory {
+
+	namespace Chat {
+		inline void SendChatMessage(Entity::GameObject* sender, char chatChannel, std::u16string message) {
+			if (sender == nullptr) return;
+
+			RakNet::BitStream returnBS;
+
+			// Head
+			LUPacketHeader returnBSHead;
+			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CHAT);
+			returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EChatPacketID::GENERAL_CHAT_MESSAGE);
+			returnBS.Write(returnBSHead);
+
+			returnBS.Write<std::uint64_t>(0ULL);
+			returnBS.Write(chatChannel);
+
+			returnBS.Write<std::uint32_t>(message.size());
+
+			if (sender != nullptr && sender->GetObjectID() != 0x3FFFFFFFFFFE) {
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, sender->GetName());
+				returnBS.Write(sender->GetObjectID());
+				returnBS.Write<std::uint16_t>(0ULL);
+				returnBS.Write<std::uint8_t>(0);
+			}
+			else {
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, u"");
+				returnBS.Write<std::uint64_t>(0ULL);
+				returnBS.Write<std::uint16_t>(0ULL);
+				returnBS.Write<std::uint8_t>(0);
+			}
+
+			StringUtils::writeBufferedWStringToBitStream(&returnBS, message, message.size() + 1);
+			auto clients = sender->GetZoneInstance()->sessionManager.GetClients();
+			for (int i = 0; i < clients.size(); ++i)
+				sender->GetZoneInstance()->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clients.at(i).systemAddress, false);
+		}
+
+		inline void SendPrivateChatMessage(Entity::GameObject* sender, Entity::GameObject* target, std::u16string message) {
+			RakNet::BitStream returnBS;
+
+			// Head
+			LUPacketHeader returnBSHead;
+			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CHAT);
+			returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EChatPacketID::PRIVATE_CHAT_MESSAGE);
+			returnBS.Write(returnBSHead);
+
+			returnBS.Write<std::uint64_t>(0ULL);
+			returnBS.Write<byte>(0x07);
+
+			returnBS.Write<std::uint32_t>(message.size());
+
+			if (sender != nullptr) {
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, target->GetName()); // Sender Name
+				returnBS.Write<std::uint64_t>(target->GetObjectID()); // Sender OBJID
+				returnBS.Write<std::uint16_t>(0ULL); // ???
+
+				if (Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(sender->GetObjectID())) >= 5) {returnBS.Write<bool>(true);} // Is sender Mythran
+				else {returnBS.Write<bool>(false);}
+
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, sender->GetName()); // Senders Name
+				if (Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(target->GetObjectID())) >= 5) {returnBS.Write<bool>(true);} // Is Sender 
+				else {returnBS.Write<bool>(false);}
+
+				returnBS.Write<std::uint8_t>(0);
+			}
+			else {
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, u"");
+				returnBS.Write<std::uint64_t>(0ULL);
+				returnBS.Write<std::uint16_t>(0ULL);
+				returnBS.Write<bool>(false);
+				StringUtils::writeBufferedWStringToBitStream(&returnBS, u"");
+				if (Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(target->GetObjectID())) >= 5) {
+					returnBS.Write<bool>(true);
+				}
+				else {
+					returnBS.Write<bool>(false);
+				}
+				returnBS.Write<std::uint8_t>(0);
+			}
+
+			StringUtils::writeBufferedWStringToBitStream(&returnBS, message, message.size() + 1);
+			ClientSession* targetsession = target->GetZoneInstance()->sessionManager.GetSession(target->GetObjectID());
+
+			target->GetZoneInstance()->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, targetsession->systemAddress, false);
+		}
+
+		inline void StringCheck(Entity::GameObject* target, uint8_t chatMode, uint8_t chatChannel, std::u16string message) {
+
+			LUPacketHeader responseHead;
+			responseHead.protocolID = 0x53;
+			responseHead.remoteType = 0x05;
+			responseHead.packetID = 0x3b;
+			RakNet::BitStream response;
+			response.Write(responseHead);
+
+			bool messageIsApproved = true;
+
+			if (messageIsApproved) {
+				response.Write<std::uint8_t>(1);
+				response.Write<std::uint16_t>(0);
+				response.Write(chatChannel);
+			}
+			else {
+				response.Write<std::uint8_t>(0);
+				response.Write<std::uint16_t>(0);
+				response.Write(chatChannel);
+			}
+
+			ClientSession* targetsession = target->GetZoneInstance()->sessionManager.GetSession(target->GetObjectID());
+			target->GetZoneInstance()->rakServer->Send(&response, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, targetsession->systemAddress, false);
+		}
+	};
+};
+
+#endif // !__PACKETFACTORY__CHAT__CHATPACKETS_HPP__
