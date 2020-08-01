@@ -35,7 +35,7 @@ private:
 		5 = Building
 		6 = Incomplete
 	*/
-	std::uint32_t qbState = 6;
+	std::uint32_t qbState = 0;
 	bool qbSuccess = false;
 	bool qbEnabled = true;
 	std::float_t timeSinceStartOfBuild = 0.0f;
@@ -102,8 +102,11 @@ public:
 
 			// indicate resetting
 			if (now > doResetTime) {
-				PacketFactory::Chat::SendChatMessage(buildingPlayer, 0, u"Starting reset of quickbuild");
-				{GM::RebuildNotifyState msg; msg.player = buildingPlayer->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 4); GameMessages::Broadcast(this->owner, msg); }
+				GM::RebuildNotifyState msg; 
+				msg.player = buildingPlayer->GetObjectID(); 
+				msg.iPrevState = qbState;
+				msg.iState = (qbState) + 4;
+				GameMessages::Broadcast(this->owner, msg); 
 				//this->_isDirtyFlag = true;
 				//this->owner->SetDirty();
 
@@ -163,10 +166,10 @@ public:
 		ScriptedActivityComponent::owner->GetZoneInstance()->objectsManager->RegisterObject(activator);
 	}
 
-	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO */
 		// Check if Destructible or Collectible component is attached, if so don't serialize
-		if (ScriptedActivityComponent::owner->GetComponent<DestructibleComponent>() == nullptr && ScriptedActivityComponent::owner->GetComponent<CollectibleComponent>() == nullptr)
+		if (ScriptedActivityComponent::owner->GetComponent<DestructibleComponent>() == nullptr || ScriptedActivityComponent::owner->GetComponent<CollectibleComponent>() == nullptr)
 			statsComponent->Serialize(factory, packetType);
 
 		ScriptedActivityComponent::Serialize(factory, packetType);

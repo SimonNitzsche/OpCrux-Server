@@ -16,6 +16,7 @@
 #include "Enums/EPackets.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/ESystem.hpp"
+#include "Enums/EFriendRequestCodes.hpp"
 
 #include "Exceptions/ExNetException.hpp"
 
@@ -325,6 +326,43 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				PacketFactory::General::doHandshake(rakServer, packet->getSystemAddress(), false);
 			}
 			break;
+		}
+		case ERemoteConnection::CHAT: {
+			switch (EChatPacketID(packetHeader.packetID)) {
+			case EChatPacketID::ADD_FRIEND_REQUEST: {
+				uint64_t unknown;
+				data->Read<uint64_t>(unknown);
+				std::u16string PersonToBeAddedAsFriend = StringUtils::readBufferedWStringFromBitStream(data);
+				uint8_t isBestFriendRequest;
+				data->Read<uint8_t>(isBestFriendRequest);
+				
+			}
+			case EChatPacketID::ADD_FRIEND_RESPONSE: {
+				uint64_t unknown;
+				data->Read<uint64_t>(unknown);
+				Enums::EFriendRequestCodes Status;
+				data->Read<Enums::EFriendRequestCodes>(Status);
+				std::u16string PersonToBeAddedAsFriend = StringUtils::readBufferedWStringFromBitStream(data);
+			}
+			case EChatPacketID::REMOVE_FRIEND: {
+				uint64_t unknown;
+				data->Read<uint64_t>(unknown);
+				std::u16string FriendToBeRemoved = StringUtils::readBufferedWStringFromBitStream(data);
+			}
+			case EChatPacketID::TEAM_INVITE: {
+				uint64_t unknown;
+				data->Read<uint64_t>(unknown);
+				std::u16string PersonInvited = StringUtils::readBufferedWStringFromBitStream(data);
+			}
+			case EChatPacketID::TEAM_INVITE_RESPONSE: {
+				uint64_t unknown;
+				data->Read<uint64_t>(unknown);
+				uint8_t IsInviteDenied;
+				data->Read<uint8_t>(IsInviteDenied);
+				uint64_t InvitersOBJID;
+				data->Read<uint64_t>(InvitersOBJID);
+			}
+			}
 		}
 		case ERemoteConnection::SERVER: {
 			// TODO: Check if client is authenticated session.
