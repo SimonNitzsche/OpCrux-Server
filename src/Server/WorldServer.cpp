@@ -515,6 +515,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
+				charComp->CheckLevelProgression();
 				DestructibleComponent* charDestComp = playerObject->GetComponent<DestructibleComponent>();
 				charDestComp->SetImagination(info.imagination);
 

@@ -283,6 +283,7 @@ add_executable(OpCrux_Server
 	src/GameCache/Emotes.hpp
 	src/GameCache/InventoryComponent.hpp
 	src/GameCache/ItemComponent.hpp
+	src/GameCache/LevelProgressionLookup.hpp
 	src/GameCache/LootMatrix.hpp
 	src/GameCache/LootMatrixIndex.hpp
 	src/GameCache/LootTable.hpp

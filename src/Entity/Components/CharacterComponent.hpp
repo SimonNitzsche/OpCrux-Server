@@ -10,6 +10,8 @@
 
 #include "Enums/EGameActivity.hpp"
 
+#include "GameCache/LevelProgressionLookup.hpp"
+
 class CharacterComponent : public IEntityComponent {
 private:
 	DatabaseModels::Str_DB_CharInfo charInfo = DatabaseModels::Str_DB_CharInfo();
@@ -304,6 +306,14 @@ public:
 			
 			{GM::SetCurrency nmsg; nmsg.currency = charInfo.currency; nmsg.position = msg.position; nmsg.sourceType = 11; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
 
+			Database::UpdateChar(charInfo);
+		}
+	}
+
+	void CheckLevelProgression() {
+		std::int32_t level = CacheLevelProgrssionLookup::GetLevelByUScorePassed(charInfo.uScore);
+		if (level != charInfo.uScore) {
+			charInfo.uLevel = level;
 			Database::UpdateChar(charInfo);
 		}
 	}

@@ -434,6 +434,7 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
     
     charComp->InitCharInfo(charInfo);
     Database::UpdateChar(charInfo);
+	charComp->CheckLevelProgression();
     player->GetZoneInstance()->objectsManager->Serialize(player);
 
     // TODO: Reward: Items
