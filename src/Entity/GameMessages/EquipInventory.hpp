@@ -20,12 +20,6 @@ namespace GM {
 			GM_VAR_DESERIALIZE(bs, bOutSuccess);
 			GM_VAR_DESERIALIZE(bs, itemToEquip);
 		}
-
-		
-
-		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-			Logger::log("WRLD", "Triggered Equip Item");
-		}
 	};
 }
 

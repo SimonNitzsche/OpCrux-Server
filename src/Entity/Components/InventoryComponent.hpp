@@ -295,6 +295,9 @@ public:
 				// We're already equipped!
 				if (it->second.equip) return false;
 
+				// Make sure we have nothing equipped on the location
+				this->UnEquipLocation(equipLocation);
+
 				// Equip it.
 				it->second.equip = true;
 
@@ -307,6 +310,88 @@ public:
 
 				// We're done
 				return true;
+			}
+		}
+
+		// We couldn't find the item
+		return false;
+	}
+
+	inline bool EquipItem(DataTypes::LWOOBJID itemToEquip) {
+		Entity::GameObject* objItemToEquip = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(itemToEquip);
+		if (objItemToEquip == nullptr) return false;
+
+		std::int32_t LOT = objItemToEquip->GetLOT();
+
+		auto targetTab = GetTabForLOT(LOT);
+
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
+		if (itemCompID == -1) return false;
+
+		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		if (static_cast<std::string>(equipLocation) == "") return false;
+
+		auto tabIt = inventory.find(targetTab);
+
+		// We do not have tab, unable to equip
+		if (tabIt == inventory.end()) return false;
+
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.objectID == itemToEquip) {
+				// We found it!
+
+				// We're already equipped!
+				if (it->second.equip) return false;
+
+				// Make sure we have nothing equipped on the location
+				this->UnEquipLocation(equipLocation);
+
+				// Equip it.
+				it->second.equip = true;
+
+				// Save equip
+				this->SaveStack(it->second);
+
+				// Sync equip.
+				this->_isDirtyFlagEquippedItems = true;
+				this->owner->SetDirty();
+
+				// We're done
+				return true;
+			}
+		}
+
+		// We couldn't find the item
+		return false;
+	}
+
+	inline bool UnEquipLocation(FDB::PointerString location) {
+		std::string locationStr = location;
+		for (auto tabIt = inventory.begin(); tabIt != inventory.end(); ++tabIt) {
+			for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+				auto itemCompID = CacheComponentsRegistry::GetComponentID(it->second.LOT, 11);
+				if (itemCompID == -1) return false;
+
+				auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID).operator std::string();
+				if (equipLocation == locationStr) {
+					// We found it!
+
+					// We're not already equipped!
+					if (!it->second.equip) continue;
+
+					// Equip it.
+					it->second.equip = false;
+
+					// Save equip
+					this->SaveStack(it->second);
+
+					// Sync equip.
+					this->_isDirtyFlagEquippedItems = true;
+					this->owner->SetDirty();
+
+					// We're done
+					return true;
+				}
 			}
 		}
 
@@ -593,6 +678,10 @@ public:
 		//itemModel.
 		//Database::AddItemToInventory(itemModel);
 		// TODO: GM::AddItemToClientSync
+	}
+
+	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {
+		this->EquipItem(msg.itemToEquip);
 	}
 };
 
