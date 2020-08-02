@@ -35,6 +35,7 @@ namespace GM {
 	class NotifyClientFlagChange;
 	class NotifyServerLevelProcessingComplete;
 	class ParseChatMessage;
+	class PickupCurrency;
 	class PickupItem;
 	class PlayEmote;
 	class PlayerLoaded;

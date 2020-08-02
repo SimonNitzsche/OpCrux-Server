@@ -47,6 +47,7 @@
 	mfun(MissionDialogueOK);\
 	mfun(ModuleAssemblyQueryData);\
 	mfun(NotifyClientFlagChange);\
+	mfun(PickupCurrency);\
 	mfun(PickupItem);\
 	mfun(PlayEmote);\
 	mfun(PlayerLoaded);\

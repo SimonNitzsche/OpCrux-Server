@@ -50,6 +50,36 @@ public:
 	unsigned long TotalFirstPlaceFinishes;
 };
 
+enum class EStats {
+	TotalCurrencyCollected = 1,
+	TotalBricksCollected,
+	TotalSmashablesSmashed,
+	TotalQuickBuildsCompleted,
+	TotalEnemiesSmashed,
+	TotalRocketsUsed,
+	TotalMissionsCompleted,
+	TotalPetsTamed,
+	TotalImaginationPowerUpsCollected,
+	TotalLifePowerUpsCollected,
+	TotalArmorPowerUpsCollected,
+	TotalDistanceTraveled,
+	TotalSuicides,
+	TotalDamageTaken,
+	TotalDamageHealed,
+	TotalArmorRepaired,
+	TotalImaginationRestored,
+	TotalImaginationUsed,
+	TotalDistanceDriven,
+	TotalTimeAirborne,
+	TotalRacingImaginationPowerUpsCollected,
+	TotalRacingImaginationCratesSmashed,
+	TotalRacecarBoostsActivated,
+	TotalRacecarWrecks,
+	TotalRacingSmashablesSmashed,
+	TotalRacesFinished,
+	TotalFirstPlaceFinishes
+};
+
 struct Str_DB_CharInfo {
 public: 
 	unsigned long accountID;

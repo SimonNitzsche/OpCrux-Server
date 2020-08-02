@@ -399,7 +399,8 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
     InventoryComponent* invComp = player->GetComponent<InventoryComponent>();
     if (invComp == nullptr) return;
 
-    auto charInfo = charComp->GetCharInfo();
+	auto charInfo = charComp->GetCharInfo();
+	auto charStats = charComp->GetCharStats();
 
     /*
         TODO: Repeatable Missions
@@ -410,6 +411,11 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
     // Reward: Currency
     tmpVal = CacheMissions::GetRewardCurrency(missionRow);;
     charInfo.currency += (tmpVal > 0 ? tmpVal : 0);
+
+	charStats.TotalCurrencyCollected += (tmpVal > 0 ? tmpVal : 0);
+	{GM::UpdatePlayerStatistic nmsg; nmsg.updateID = std::uint32_t(EStats::TotalCurrencyCollected); nmsg.updateValue = tmpVal > 0 ? tmpVal : 0; GameMessages::Send(player, player->GetObjectID(), nmsg); }
+	{GM::SetCurrency nmsg; nmsg.currency = charInfo.currency; nmsg.sourceObject = player->GetObjectID(); nmsg.sourceType = 5; GameMessages::Send(player, player->GetObjectID(), nmsg); }
+
     // Reward: LEGO Score
     tmpVal = CacheMissions::GetLegoScore(missionRow);
     charInfo.uScore += (tmpVal > 0 ? tmpVal : 0);

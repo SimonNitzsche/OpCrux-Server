@@ -74,12 +74,16 @@ public:
 		charStyle = style;
 	}
 
-	DatabaseModels::Str_DB_CharInfo GetCharInfo() {
+	DatabaseModels::Str_DB_CharInfo & GetCharInfo() {
 		return charInfo;
 	}
 
-	DatabaseModels::Str_DB_CharStyle GetCharStyle() {
+	DatabaseModels::Str_DB_CharStyle & GetCharStyle() {
 		return charStyle;
+	}
+
+	DatabaseModels::Str_DB_CharStats & GetCharStats() {
+		return charStats;
 	}
 
 	void SetImagination(std::int32_t imag) {
@@ -288,6 +292,19 @@ public:
 		// OnRequestUse is always received by the player and then redirected to the object internally
 		if (objectToUse != nullptr && objectToUse != this->owner) {
 			objectToUse->OnRequestUse(this->owner, msg);
+		}
+	}
+
+	void OnPickupCurrency(Entity::GameObject* sender, GM::PickupCurrency& msg) {
+		if (DataTypes::Vector3::Distance(owner->GetPosition(), msg.position) <= 28.0f) {
+			// TODO: Anti Cheat
+			charStats.TotalCurrencyCollected += msg.currency;
+			{GM::UpdatePlayerStatistic nmsg; nmsg.updateID = std::uint32_t(EStats::TotalCurrencyCollected); nmsg.updateValue = msg.currency; GameMessages::Send(owner, owner->GetObjectID(), nmsg);}
+			charInfo.currency += msg.currency;
+			
+			{GM::SetCurrency nmsg; nmsg.currency = charInfo.currency; nmsg.position = msg.position; nmsg.sourceType = 11; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
+
+			Database::UpdateChar(charInfo);
 		}
 	}
 };

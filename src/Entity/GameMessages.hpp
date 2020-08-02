@@ -129,6 +129,7 @@ public:
 #include "Entity/GameMessages/NotifyVehicleOfRacingObject.hpp"
 #include "Entity/GameMessages/OfferMission.hpp"
 #include "Entity/GameMessages/ParseChatMessage.hpp"
+#include "Entity/GameMessages/PickupCurrency.hpp"
 #include "Entity/GameMessages/PickupItem.hpp"
 #include "Entity/GameMessages/PlayAnimation.hpp"
 #include "Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp"
@@ -154,6 +155,7 @@ public:
 #include "Entity/GameMessages/Resurrect.hpp"
 #include "Entity/GameMessages/ServerTerminateInteraction.hpp"
 #include "Entity/GameMessages/SetBuildMode.hpp"
+#include "Entity/GameMessages/SetCurrency.hpp"
 #include "Entity/GameMessages/SetGhostReferencePosition.hpp"
 #include "Entity/GameMessages/SetJetPackMode.hpp"
 #include "Entity/GameMessages/SetFlag.hpp"
@@ -168,6 +170,7 @@ public:
 #include "Entity/GameMessages/Teleport.hpp"
 #include "Entity/GameMessages/ToggleGhostReferenceOverride.hpp"
 #include "Entity/GameMessages/ToggleSendingPositionUpdates.hpp"
+#include "Entity/GameMessages/UpdatePlayerStatistic.hpp"
 #include "Entity/GameMessages/VehicleUnlockInput.hpp"
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
 
