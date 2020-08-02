@@ -19,6 +19,7 @@ namespace GM {
 	class BuildModeSet;
 	class CancelRailMovement;
 	class Die;
+	class DoneArrangingWithItem;
 	class EquipInventory;
 	class HasBeenCollected;
 	class MissionDialogueOK;
