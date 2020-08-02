@@ -169,7 +169,7 @@ public:
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO */
 		// Check if Destructible or Collectible component is attached, if so don't serialize
-		if (ScriptedActivityComponent::owner->GetComponent<DestructibleComponent>() == nullptr || ScriptedActivityComponent::owner->GetComponent<CollectibleComponent>() == nullptr)
+		if (ScriptedActivityComponent::owner->GetComponent<DestructibleComponent>() == nullptr && ScriptedActivityComponent::owner->GetComponent<CollectibleComponent>() == nullptr)
 			statsComponent->Serialize(factory, packetType);
 
 		ScriptedActivityComponent::Serialize(factory, packetType);
