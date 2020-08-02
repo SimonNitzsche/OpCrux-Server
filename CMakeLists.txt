@@ -194,6 +194,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/Teleport.hpp
 	src/Entity/GameMessages/CancelRailMovement.hpp 
 	src/Entity/GameMessages/ReportBug.hpp
+	src/Entity/GameMessages/RespondToMission.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
@@ -234,6 +235,7 @@ add_executable(OpCrux_Server
 	src/Enums/ESystem.hpp
 	src/Enums/ETerminateType.hpp
 	src/Enums/StringEnums.hpp
+	src/Enums/EFriendRequestCodes.hpp
 	src/Exceptions/ExNetException.hpp
 	src/FileTypes/GFile/GeometryFile.cpp
 	src/FileTypes/GFile/GeometryFile.hpp
