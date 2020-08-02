@@ -81,7 +81,8 @@
 	mfun(Teleport);\
 	mfun(ModifyGhostingDistance);\
 	mfun(CancelRailMovement);\
-	mfun(ReportBug);
+	mfun(ReportBug);\
+	mfun(DoneArrangingWithItem);
 
 // 	mfun(BuildExitConfirmation);
 #endif

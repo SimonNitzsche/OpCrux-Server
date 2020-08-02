@@ -22,7 +22,6 @@
 
 #include "Entity/GameObject.hpp"
 
-// #include "Moderation/Chat.hpp"
 
 using namespace Enums;
 
@@ -120,7 +119,6 @@ namespace PacketFactory {
 			response.Write(responseHead);
 
 			bool messageIsApproved = true;
-			//bool messageIsApproved = Moderation::Chat::StringCheck(StringUtils::to_string(message));
 
 			if (messageIsApproved) {
 				response.Write<std::uint8_t>(1);

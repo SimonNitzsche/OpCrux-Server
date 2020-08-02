@@ -106,6 +106,7 @@ public:
 #include "Entity/GameMessages/BuildModeSet.hpp"
 #include "Entity/GameMessages/CancelRailMovement.hpp"
 #include "Entity/GameMessages/Die.hpp"
+#include "Entity/GameMessages/DoneArrangingWithItem.hpp"
 #include "Entity/GameMessages/DropClientLoot.hpp"
 #include "Entity/GameMessages/EchoStartSkill.hpp"
 #include "Entity/GameMessages/EchoSyncSkill.hpp"
