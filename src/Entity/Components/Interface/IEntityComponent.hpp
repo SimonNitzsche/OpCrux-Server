@@ -15,7 +15,7 @@ namespace Entity {
 #include "Entity/GMUtils.hpp"
 
 namespace GM {
-	// class BuildExitConfirmation;
+	class BuildExitConfirmation;
 	class BuildModeSet;
 	class CancelRailMovement;
 	class Die;
@@ -90,6 +90,9 @@ x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 
 			// Called when Component Requires Serialization.
 			virtual void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {};
+
+			// Called when object is destroyed
+			virtual void Deserialize() {};
 
 			// Called after constructor
 			virtual void OnEnable() {}

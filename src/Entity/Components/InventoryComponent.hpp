@@ -116,6 +116,7 @@ public:
 	void Awake() {
 		if (owner->GetLOT() == 1) {
 			auto playerBags = Database::GetFullInventory(owner->GetObjectID().getPureID());
+			auto objMan = this->owner->GetZoneInstance()->objectsManager;
 			for (auto playerInv : playerBags) {
 				auto playerItems = playerInv.second;
 				for (auto it = playerItems.begin(); it != playerItems.end(); ++it) {
@@ -128,6 +129,11 @@ public:
 					itemStack.metadata = it->metadata;
 					itemStack.subkey = it->subkey;
 					itemStack.tab = it->tab;
+
+					Entity::GameObject* itmObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
+					itmObj->SetObjectID(itemStack.objectID);
+					objMan->RegisterObject(itmObj);
+					itmObj->isSerializable = false;
 
 					auto tabIt = inventory.find(it->tab);
 					if (tabIt != inventory.end()) {
@@ -144,6 +150,17 @@ public:
 			MissionManager::LaunchTaskEvent(Enums::EMissionTask::GATHER, owner, owner->GetObjectID());
 
 			//_isDirtyFlagEquippedItems = _isDirtyFlagEquippedItems | playerItems.size() != 0;
+		}
+	}
+
+	void Deserialize() {
+		if (owner->GetLOT() != 1) return;
+		auto objMan = this->owner->GetZoneInstance()->objectsManager;
+		for (auto it = inventory.begin(); it != inventory.end(); ++it) {
+			for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+				Entity::GameObject* itmObj = objMan->GetObjectByID(it2->second.objectID);
+				itmObj->Remove();
+			}
 		}
 	}
 
@@ -280,6 +297,46 @@ public:
 
 				// Equip it.
 				it->second.equip = true;
+
+				// Save equip
+				this->SaveStack(it->second);
+
+				// Sync equip.
+				this->_isDirtyFlagEquippedItems = true;
+				this->owner->SetDirty();
+
+				// We're done
+				return true;
+			}
+		}
+
+		// We couldn't find the item
+		return false;
+	}
+
+	inline bool UnEquipItem(std::uint32_t LOT) {
+		auto targetTab = GetTabForLOT(LOT);
+
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
+		if (itemCompID == -1) return false;
+
+		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		if (static_cast<std::string>(equipLocation) == "") return false;
+
+		auto tabIt = inventory.find(targetTab);
+
+		// We do not have tab, unable to equip
+		if (tabIt == inventory.end()) return false;
+
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.LOT == LOT) {
+				// We found it!
+
+				// We're already equipped!
+				if (!it->second.equip) continue;
+
+				// Equip it.
+				it->second.equip = false;
 
 				// Save equip
 				this->SaveStack(it->second);

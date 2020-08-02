@@ -41,6 +41,7 @@
 #define GM_MAKE_COMPONENT_DECLARE(name) virtual void On##name(Entity::GameObject * sender, GM::##name & msg) {}
 
 #define GM_MAKE_LIST_CLIENT(mfun) \
+	mfun(BuildExitConfirmation);\
 	mfun(BuildModeSet);\
 	mfun(FireEventServerSide);\
 	mfun(HasBeenCollected);\

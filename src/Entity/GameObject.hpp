@@ -236,6 +236,11 @@ namespace Entity {
 			void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType);
 
 			/*
+				Deserializes the object
+			*/
+			void DoDeserialize(RakNet::BitStream* inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress);
+
+			/*
 				Serializes the components of the object.
 			*/
 			void SerializeComponents(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType);

@@ -287,6 +287,14 @@ public:
 		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
 	}
 
+	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded& msg) {
+		GM::PlayerReady nmsg;
+		auto Instance = this->owner->GetZoneInstance();
+		GameMessages::Send(Instance, this->clientAddress, Instance->zoneControlObject->GetObjectID(), nmsg);
+		GameMessages::Send(Instance, this->clientAddress, this->owner->GetObjectID(), nmsg);
+	}
+
+
 	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg) {
 		Entity::GameObject * objectToUse = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(msg.objectID);
 

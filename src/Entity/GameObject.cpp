@@ -118,6 +118,7 @@ ReplicaReturnResult Entity::GameObject::Serialize(bool *sendTimestamp, RakNet::B
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::Deserialize(RakNet::BitStream *inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress) {
+	this->DoDeserialize(inBitStream, timestamp, lastDeserializeTime, systemAddress);
 	return REPLICA_PROCESSING_DONE;
 }
 
@@ -309,6 +310,13 @@ void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::Pa
 	}
 }
 
+void Entity::GameObject::DoDeserialize(RakNet::BitStream* inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress) {
+
+	for (auto it = this->components.begin(); it != this->components.end(); ++it) {
+		it->second->Deserialize();
+	}
+}
+
 void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 	SERIALIZE_COMPONENT_IF_ATTACHED(PossessableComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ModuleAssemblyComponent);
@@ -487,7 +495,7 @@ void Entity::GameObject::Remove() {
 	}
 
 	// Remove me
-	delete[] this;
+	delete this;
 }
 
 void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {

@@ -575,9 +575,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Server done loading");
 				PacketFactory::World::TestLoad(rakServer, clientSession);
 
-				//this->zoneControlObject->GetComponent<MinigameComponent>()->AddPlayerToActivity(playerObject->GetObjectID());
-				GameMessages::Send(this, clientSession->systemAddress, this->zoneControlObject->GetObjectID(), GM::PlayerReady());
-
 				if (zoneID == 1303) {
 					WorldServer* Instance = this;
 				}

@@ -15,6 +15,8 @@ public:
 
 	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg);
 
+	void OnSetBuildMode(Entity::GameObject* sender, GM::SetBuildMode& msg);
+
 	void OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem& msg);
 
 };

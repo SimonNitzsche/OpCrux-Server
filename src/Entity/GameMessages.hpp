@@ -102,7 +102,7 @@ public:
 #include "Entity/GameMessages/ActivityStart.hpp"
 #include "Entity/GameMessages/AddItemToInventoryClientSync.hpp"
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
-// #include "Entity/GameMessages/BuildExitConfirmation.hpp"
+#include "Entity/GameMessages/BuildExitConfirmation.hpp"
 #include "Entity/GameMessages/BuildModeSet.hpp"
 #include "Entity/GameMessages/CancelRailMovement.hpp"
 #include "Entity/GameMessages/Die.hpp"
