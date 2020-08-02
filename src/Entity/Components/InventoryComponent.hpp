@@ -153,7 +153,7 @@ public:
 		}
 	}
 
-	void Deserialize() {
+	void Destruct() {
 		if (owner->GetLOT() != 1) return;
 		auto objMan = this->owner->GetZoneInstance()->objectsManager;
 		for (auto it = inventory.begin(); it != inventory.end(); ++it) {

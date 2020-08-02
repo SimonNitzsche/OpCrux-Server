@@ -92,8 +92,8 @@ x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 			// Called when Component Requires Serialization.
 			virtual void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {};
 
-			// Called when object is destroyed
-			virtual void Deserialize() {};
+			// Called on destruct serialization while serialization is only called for construct and update
+			virtual void Destruct() {};
 
 			// Called after constructor
 			virtual void OnEnable() {}

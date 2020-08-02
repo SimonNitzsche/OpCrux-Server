@@ -118,7 +118,6 @@ ReplicaReturnResult Entity::GameObject::Serialize(bool *sendTimestamp, RakNet::B
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::Deserialize(RakNet::BitStream *inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress) {
-	this->DoDeserialize(inBitStream, timestamp, lastDeserializeTime, systemAddress);
 	return REPLICA_PROCESSING_DONE;
 }
 
@@ -281,6 +280,13 @@ T * Entity::GameObject::AddComponent(std::int32_t componentID) {
 }
 
 void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+	if (packetType == ReplicaTypes::PacketTypes::DESTRUCTION) {
+		for (auto it = components.begin(); it != components.end(); ++it) {
+			it->second->Destruct();
+		}
+		return;
+	}
+
 	SerializeBaseData(factory, packetType);
 	SerializeComponents(factory, packetType);
 	objectDirty = false;
@@ -307,13 +313,6 @@ void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::Pa
 		factory->SetReadOffset(0);
 		copyBs.Write(reinterpret_cast<char*>(factory->GetData()), factory->GetNumberOfBytesUsed());
 		FileUtils::SavePacket(&copyBs, 2000, 50000);
-	}
-}
-
-void Entity::GameObject::DoDeserialize(RakNet::BitStream* inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress) {
-
-	for (auto it = this->components.begin(); it != this->components.end(); ++it) {
-		it->second->Deserialize();
 	}
 }
 
