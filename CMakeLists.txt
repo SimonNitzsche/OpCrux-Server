@@ -196,6 +196,10 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/ReportBug.hpp
 	src/Entity/GameMessages/RespondToMission.hpp
 	src/Entity/GameMessages/DoneArrangingWithItem.hpp
+	src/Entity/GameMessages/FinishArrangingWithItem.hpp
+	src/Entity/GameMessages/PickupCurrency.hpp
+	src/Entity/GameMessages/UpdatePlayerStatistic.hpp
+	src/Entity/GameMessages/SetCurrency.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp
 	src/Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp
@@ -328,6 +332,7 @@ add_executable(OpCrux_Server
 	src/Server/Bridges/BridgeMasterServer.hpp
 	src/Server/Interfaces/ILUServer.hpp
 	src/Server/Manager/WorldInstanceManager.hpp
+	src/Server/Manager/WorldInstanceManager.cpp
 	src/Server/AuthServer.cpp
 	src/Server/AuthServer.hpp
 	src/Server/MasterServer.cpp
@@ -356,7 +361,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp") 
+	${SDL_INCLUDE}  ) 
 	
 
 

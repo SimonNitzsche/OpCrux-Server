@@ -1,6 +1,7 @@
 #ifndef __ENTITY__GM__DoneArrangingWithItem_HPP__
 #define __ENTITY__GM__DoneArrangingWithItem_HPP__
 #include "Entity/GameMessages.hpp"
+#include "Entity/GameMessages/FinishArrangingWithItem.hpp"
 
 namespace GM {
 	struct DoneArrangingWithItem : GMBase {
@@ -12,7 +13,7 @@ namespace GM {
 
 		int newSourceBAG;
 		DataTypes::LWOOBJID newSourceID;
-		uint32_t newSourceLOT;
+		uint32_t newSourceLot;
 		uint32_t newSourceType;
 		DataTypes::LWOOBJID newTargetID;
 		uint32_t newTargetLOT;
@@ -26,7 +27,7 @@ namespace GM {
 		void Deserialize(RakNet::BitStream* bs) {
 			GM_VAR_DESERIALIZE(bs, newSourceBAG);
 			GM_VAR_DESERIALIZE(bs, newSourceID);
-			GM_VAR_DESERIALIZE(bs, newSourceLOT);
+			GM_VAR_DESERIALIZE(bs, newSourceLot);
 			GM_VAR_DESERIALIZE(bs, newSourceType);
 			GM_VAR_DESERIALIZE(bs, newTargetID);
 			GM_VAR_DESERIALIZE(bs, newTargetLOT);
@@ -39,17 +40,31 @@ namespace GM {
 		}
 
 		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-			Logger::log("TEST", std::to_string(newSourceBAG));
-			Logger::log("TEST", std::to_string(newSourceID));
-			Logger::log("TEST", std::to_string(newSourceLOT));
-			Logger::log("TEST", std::to_string(newSourceType));
-			Logger::log("TEST", std::to_string(newTargetID));
-			Logger::log("TEST", std::to_string(newTargetLOT));
-			Logger::log("TEST", std::to_string(newTargetType));
-			Logger::log("TEST", std::to_string(oldItemBag));
-			Logger::log("TEST", std::to_string(oldItemID));
-			Logger::log("TEST", std::to_string(oldItemLot));
-			Logger::log("TEST", std::to_string(oldItemType));
+			Entity::GameObject* buildBorder = nullptr;
+			bool found;
+			for (auto obj : sender->GetZoneInstance()->objectsManager->GetObjects()) {
+				if (obj->GetLOT() == 9980) {
+					buildBorder = obj;
+					found = true;
+				}
+			}
+			if (found) {
+				GM::FinishArrangingWithItem NewGM;
+				NewGM.buildAreaID = buildBorder->GetObjectID();
+				NewGM.newSourceBAG = newSourceBAG;
+				NewGM.newSourceID = newSourceID;
+				NewGM.newSourceLOT = newSourceLot;
+				NewGM.newSourceTYPE = newSourceType;
+				NewGM.newTargetID = newTargetID;
+				NewGM.newTargetLOT = newTargetLOT;
+				NewGM.newTargetTYPE = newTargetType;
+				NewGM.newtargetPOS = newTargetPos;
+				NewGM.oldItemBAG = oldItemBag;
+				NewGM.oldItemID = oldItemID;
+				NewGM.oldItemLOT = oldItemLot;
+				NewGM.oldItemTYPE = oldItemType;
+				GameMessages::Send(sender, sender->GetObjectID(), NewGM);
+			}
 		}
 	};
 }

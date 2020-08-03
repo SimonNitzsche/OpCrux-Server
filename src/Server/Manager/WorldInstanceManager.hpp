@@ -2,16 +2,18 @@
 #define _WORLD_INSTANCE_MANAGER_HPP__
 
 #include "Server/WorldServer.hpp"
+#include "DataTypes/ZoneInfo.hpp"
+#include <Configuration/ConfPorts.hpp>
+#include <Configuration/ConfigurationManager.hpp>
+
 #include <stdlib.h>
 #include <vector>
 
-static class WorldInstanceManager {
-private:
-	std::vector<std::shared_ptr<WorldServer>> instances;
-	std::uint32_t nextPortIndex = 0;
-
-public:
-	WorldServer * CreateInstance(std::uint16_t zoneID);
-};
+uint16_t GetNextPort();
+WorldServer* CreateInstance(unsigned short zoneID, unsigned short port);
+uint16_t GetWorldServer(int worldID);
+uint16_t GetCharacterServer();
+bool IsInstanceFull(WorldServer* server);
+void CloseInstance(WorldServer* server);
 
 #endif // !_WORLD_INSTANCE_MANAGER_HPP__

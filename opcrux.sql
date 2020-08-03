@@ -1,6 +1,7 @@
-CREATE DATABASE OPCRUX_AD
-CREATE DATABASE OPCRUX_CD
-CREATE DATABASE OPCRUX_GD
+
+CREATE DATABASE OPCRUX_AD;
+CREATE DATABASE OPCRUX_CD;
+CREATE DATABASE OPCRUX_GD;
 
 USE OPCRUX_GD;
 
@@ -30,6 +31,7 @@ CREATE TABLE [dbo].[Characters](
 	[armor] [int] NOT NULL
 ) ON [PRIMARY]
 GO
+
 CREATE TABLE [dbo].[CharacterStyles](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[headColor] [int] NOT NULL,
@@ -78,13 +80,15 @@ GO
 CREATE TABLE [dbo].[Inventory](
 	[objectID] [bigint] NOT NULL,
 	[ownerID] [bigint] NOT NULL,
+	[subkey] [bigint] NULL,
 	[tab] [int] NOT NULL,
 	[slot] [int] NOT NULL,
 	[template] [int] NOT NULL,
 	[count] [int] NOT NULL,
-	[attributes] [tinyint] NULL,
+	[attributes] [smallint] NULL,
 	[metadata] [text] NULL
 ) ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
 GO
 CREATE TABLE [dbo].[FlagChunks] (
 	[playerID] [bigint] NOT NULL,
@@ -92,7 +96,6 @@ CREATE TABLE [dbo].[FlagChunks] (
 	[chunkData] [bigint] NOT NULL
 ) ON [PRIMARY]
 GO
-
 CREATE TABLE [dbo].[Missions] (
 	[charID] [bigint],
 	[missionID] [int],
@@ -105,7 +108,6 @@ CREATE TABLE [dbo].[Missions] (
 GO
 
 USE OPCRUX_AD;
-
 CREATE TABLE [dbo].[Accounts](
 	[id] [int] IDENTITY(0,1) NOT NULL,
 	[username] [varchar](33) NOT NULL,

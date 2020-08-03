@@ -14,6 +14,7 @@
 #include "PacketFactory/World/WorldPackets.hpp"
 #include "PacketFactory/Chat/ChatPackets.hpp"
 #include "DataTypes/AMF3.hpp"
+#include "GameCache\Objects.hpp"
 
 class SlashCommandComponent : public IEntityComponent {
 public:
@@ -147,8 +148,51 @@ public:
 					Reply(Response::RankTooLow, sender);
 				}
 			})
+			.Case(u"/testmap", [&]() {
+				bool handled = false;
+				std::vector<std::int32_t> approvedWorlds = {1100, 1200};
+				for (auto item : approvedWorlds) {
+					if (item == std::stoi(StringUtils::to_string(args[1]))) {
+						handled = true;
+					}
+				}
+				if (!handled) { Reply(u"Sorry that zone is disabled, you can't testmap to it", sender); }
+			})
 			.Case(u"/gmlevel", [&]() {
 				Reply(StringUtils::to_u16string(StringUtils::IntToString(Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(sender->GetObjectID())))), sender);
+			})
+			.Case(u"/gmadditem", [&]() {
+				if (args.size() >= 2) {
+					InventoryComponent* InvComp = sender->GetComponent<InventoryComponent>();
+					InvComp->AddItem(std::stoi(StringUtils::to_string(args[1])));
+				}
+			})
+			.Case(u"/getAllObjects", [&]() {
+				Entity::GameObject* player = sender->GetZoneInstance()->objectsManager->GetObjectByID(sender->GetObjectID());
+				for (auto obj : sender->GetZoneInstance()->objectsManager->GetObjects()) {
+					if (obj != player) {
+						Reply(StringUtils::to_u16string((std::string)CacheObjects::GetName(obj->GetLOT())) + StringUtils::to_u16string(" with LOT ") + StringUtils::to_u16string(std::to_string(obj->GetLOT())) + StringUtils::to_u16string(" as ") + StringUtils::to_u16string(std::to_string((std::uint64_t)obj->GetObjectID())), sender);
+					}
+				}
+			})
+			.Case(u"/getNearObject", [&]() {
+				Entity::GameObject* player = sender->GetZoneInstance()->objectsManager->GetObjectByID(sender->GetObjectID());
+				DataTypes::Vector3 playerPos = player->GetPosition();
+				float nearestDistance = INFINITY;
+				Entity::GameObject* nearestObject = nullptr;
+				for (auto obj : sender->GetZoneInstance()->objectsManager->GetObjects()) {
+					if (obj != player) {
+						DataTypes::Vector3 objPos;
+						objPos = obj->GetPosition();
+
+						float distance = Vector3::Distance(playerPos, objPos);
+						if (distance < nearestDistance) {
+							nearestDistance = distance;
+							nearestObject = obj;
+						}
+					}
+				}
+				Reply(u"Nearest Object is " + StringUtils::to_u16string((std::string)CacheObjects::GetName(nearestObject->GetLOT())) + StringUtils::to_u16string(" with LOT ") + StringUtils::to_u16string(std::to_string(nearestObject->GetLOT())) + StringUtils::to_u16string(" as ") + StringUtils::to_u16string(std::to_string((std::uint64_t)nearestObject->GetObjectID())), sender);
 			})
 			.Default([&]() {
 				std::stringstream ss;

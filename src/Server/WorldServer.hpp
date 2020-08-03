@@ -21,6 +21,7 @@ private:
 	std::vector<std::string> mf_FirstNames = {};
 	std::vector<std::string> mf_MiddleNames = {};
 	std::vector<std::string> mf_LastNames = {};
+	uint16_t port;
 public:
 	SessionManager sessionManager;
 	ReplicaManager * replicaManager = nullptr;
@@ -44,7 +45,9 @@ public:
 	void DebugRendererThread();
 	void GamePhysicsThread();
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
+	void SetServerPort(std::uint16_t incomingport);
 	std::uint16_t GetZoneID();
+	std::uint16_t GetServerPort();
 	~WorldServer();
 };
 

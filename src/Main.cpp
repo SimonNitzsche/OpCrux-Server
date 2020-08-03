@@ -16,6 +16,7 @@
 #include "Server/AuthServer.hpp"
 #include "Server/WorldServer.hpp"
 #include "Server/Bridges/BridgeMasterServer.hpp"
+#include "Server/Manager/WorldInstanceManager.hpp"
 #include "API/API.hpp"
 #include "GameCache/Interface/FastDatabase.hpp"
 #include "DataTypes/AMF3.hpp"
@@ -37,9 +38,6 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH, UGCOP } MODE_
 
 GameCache::Interface::FDB::Connection Cache;
 BridgeMasterServer* masterServerBridge;
-
-int givenWorldID = 1000;
-
 
 // Following Includes are for testing
 #include "FileTypes/LUZFile/LUZone.hpp"
@@ -275,7 +273,7 @@ void TestPhysics() {
 
 	WorldServer* testWs;
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-		std::thread wT([](WorldServer* ws) { ws = new WorldServer(givenWorldID, 0, 2001); }, testWs);
+		std::thread wT([](WorldServer* ws) { ws = new WorldServer(0, 0, 2001); }, testWs);
 		wT.detach();
 	}
 
@@ -415,9 +413,6 @@ int main(int argc, char* argv[]) {
 			std::system("title OpCrux Server (UGC only)");
 #endif
 		}
-		else if (arg == "--worldID" && i < argc) {
-			givenWorldID = std::stoi(argv[i + 1]);
-		}
 
 		if (argc >= 4) {
 			ipMaster = argv[i + 1];
@@ -447,21 +442,23 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
-		AuthServer * aS;
-		std::thread aT([](AuthServer * as) { as = new AuthServer(); }, aS);
+		AuthServer* aS;
+		std::thread aT([](AuthServer* as) { as = new AuthServer(); }, aS);
 		aT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-		WorldServer * charSelectWs;
-		std::thread wT([](WorldServer * ws) { ws = new WorldServer(givenWorldID, 0,2001); }, charSelectWs);
-		wT.detach();
-	}
+		WorldServer* CharServer;
+		std::thread CharThread([&]() { CharServer = CreateInstance(0, GetNextPort()); });
+		CharThread.detach();
+		
+		//WorldServer* VEInstance;
+		//std::thread VEThread([&]() { VEInstance = CreateInstance(1000); });
+		//VEThread.detach();
 
-	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::UGCOP) {
-		//UGCServer* ugcServer;
-		//std::thread ugcT([](UGCServer* ugcs) {ugcs = new UGCServer(); }, ugcServer);
-		//ugcT.detach();
+		//WorldServer* AGInstance;
+		//std::thread AGThread([&]() { AGInstance = CreateInstance(1100); });
+		//AGThread.detach();
 	}
 
 	while (ServerInfo::bRunning) {RakSleep(30);}

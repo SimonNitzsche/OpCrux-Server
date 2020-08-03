@@ -683,6 +683,16 @@ public:
 	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {
 		this->EquipItem(msg.itemToEquip);
 	}
+
+	int32_t GetLOTFromObjectID(DataTypes::LWOOBJID objid) {
+		std::vector<InventoryItemStack> Items = GetEquippedItems();
+		for (auto item : Items) {
+			if (item.objectID = objid) {
+				return item.LOT;
+			}
+		}
+		return NULL;
+	}
 };
 
 #endif
