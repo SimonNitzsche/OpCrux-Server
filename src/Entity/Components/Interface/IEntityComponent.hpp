@@ -26,7 +26,6 @@ namespace GM {
 	class RequestDie;
 	class RequestUse;
 	class SetFlag;
-	class FinishArrangingWithItem;
 	class FireEventServerSide;
 	class HasBeenCollected;
 	class MissionDialogueOK;
@@ -62,7 +61,6 @@ namespace GM {
 	class Teleport;
 	class ToggleSendingPositionUpdates;
 	class ToggleGhostReferenceOverride;
-	class UnEquipInventory;
 	class SetTooltipFlag;
 	class SetGhostReferencePosition;
 };

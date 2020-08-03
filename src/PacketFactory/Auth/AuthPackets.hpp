@@ -14,7 +14,6 @@
 #include "Enums/ERemoteConnection.hpp"
 #include "Utils/ServerInfo.hpp"
 #include "Utils/IPUtils.hpp"
-#include <Server/Manager/WorldInstanceManager.hpp>
 
 #include "Enums/ELoginReturnCode.hpp"
 #include "NetworkDataTypes/ByteBool.hpp"

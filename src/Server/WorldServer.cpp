@@ -73,7 +73,6 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	std::ifstream file3("res/names/minifigname_last.txt");
 	while (std::getline(file3, buf)) mf_LastNames.push_back(buf);
 	file3.close();
-	SetServerPort(port);
 
 	sessionManager = SessionManager();
 
@@ -85,10 +84,12 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
 	// Initializes SocketDescriptor
-	SocketDescriptor socketDescriptor((unsigned short)WorldServer::port, 0);
+	SocketDescriptor socketDescriptor((unsigned short)2001, 0);
 	Logger::log("WRLD", "Starting World...");
 
-	rakServer->SetMaximumIncomingConnections(32);
+	short maxPlayers = 120;
+
+	rakServer->SetMaximumIncomingConnections(maxPlayers);
 
 	replicaManager = new ReplicaManager();
 	rakServer->AttachPlugin(replicaManager);
@@ -108,8 +109,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		//debugRenderer = new DebugRenderer();
 		//debugRenderer->AssignZoneInstance(this);
 	}
+
 	// Check startup
-	if (!rakServer->Startup(32, 30, &socketDescriptor, 1)) {
+	if (!rakServer->Startup(maxPlayers, 30, &socketDescriptor, 1)) {
 		std::cin.get();
 		return;
 	}
@@ -145,8 +147,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		std::string zoneName = CacheZoneTable::GetZoneName(zone);
 
 		// Load Zone
-		Logger::log("WRLD", "Loading Zone: " + zoneName + " on port " + std::to_string(port));
+		Logger::log("WRLD", "Loading Zone: " + zoneName);
 		luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
+		Logger::log("WRLD", "Sucessfully loaded zone.");
 
 		if (luZone->zoneID != zone) {
 			Logger::log("WRLD", "Invalid zoneID within LUZ file, correcting...", LogType::UNEXPECTED);
@@ -159,6 +162,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		this->zoneControlObject->SetObjectID(0x3FFFFFFFFFFE);
 		objectsManager->RegisterObject(this->zoneControlObject);
 		this->zoneControlObject->Finish();
+
 		// TODO: Move this to somewhere else
 		for (auto scene : luZone->scenes) {
 			for (auto objT : scene.scene.objectsChunk.objects) {
@@ -435,6 +439,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				DataTypes::LWOOBJID objectID;
 				data->Read(objectID);
 				clientSession->actorID = objectID;
+
+				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
+				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
 				
 				PacketFactory::World::LoadStaticZone(rakServer, clientSession, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
 				break;
@@ -656,16 +663,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	rakServer->DeallocatePacket(packet->getPacket());
 }
 
-void WorldServer::SetServerPort(std::uint16_t incomingport) {
-	WorldServer::port = incomingport;
-}
-
 std::uint16_t WorldServer::GetZoneID() {
 	return luZone->zoneID;
-}
-
-std::uint16_t WorldServer::GetServerPort() {
-	return WorldServer::port;
 }
 
 WorldServer::~WorldServer() {
