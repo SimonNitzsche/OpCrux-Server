@@ -40,7 +40,7 @@ using namespace Exceptions;
 
 AuthServer::AuthServer() : ILUServer() {
 	// Initializes the RakPeerInterface used for the auth server
-	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
+	rakServer = RakNetworkFactory::GetRakPeerInterface();
 
 	// Initializes Securiry
 	// TODO: Init Security
@@ -160,7 +160,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					if (authSuccess) {
 						std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
 						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
-						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 					}
 					else
 						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
@@ -170,7 +170,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					if (authSuccess) {
 						std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
 						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
-						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 					}
 					else
 						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
@@ -200,6 +200,10 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	// Deallocate the packet to conserve memory
 	delete data;
 	rakServer->DeallocatePacket(packet->getPacket());
+}
+
+void AuthServer::MasterClientAuthResponse(SystemAddress systemAddress, int accountID, int reason) {
+	PacketFactory::Auth::doLoginResponse(this->rakServer, systemAddress, ELoginReturnCode(reason));
 }
 
 AuthServer::~AuthServer() {

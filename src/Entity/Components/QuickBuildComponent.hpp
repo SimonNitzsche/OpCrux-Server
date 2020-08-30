@@ -105,7 +105,7 @@ public:
 				GM::RebuildNotifyState msg; 
 				msg.player = buildingPlayer->GetObjectID(); 
 				msg.iPrevState = qbState;
-				msg.iState = (qbState) + 4;
+				msg.iState = (qbState = 4);
 				GameMessages::Broadcast(this->owner, msg); 
 				//this->_isDirtyFlag = true;
 				//this->owner->SetDirty();

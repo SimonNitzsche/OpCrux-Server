@@ -29,9 +29,11 @@ public:
 	void Listen();
 	void SayHello();
 	void ClientLoginAuth(SystemAddress systemAddress, int accountID);
+    void ClientLoginRespond(SystemAddress systemAddress, int accountID, int reason);
 	void ClientWorldAuth(SystemAddress systemAddress, int accountID);
 	void ClientDisconnect(SystemAddress systemAddress);
 	void ChooseWorldServer();
+    void NotifyInstanceLoaded(std::uint16_t zoneID, std::uint16_t instanceID, std::uint32_t cloneID, SystemAddress systemAddress);
 };
 
 #endif // !__SERVER__BRIDGES__BRIDGEMASTERSERVER_HPP__

@@ -647,8 +647,8 @@ public:
 			float posX;
 			float posY;
 			float posZ;
-			SQLINTEGER shirtObjectID;
-			SQLINTEGER pantsObjectID;
+			SQLBIGINT shirtObjectID;
+			SQLBIGINT pantsObjectID;
 			SQLINTEGER uScore;
 			SQLINTEGER uLevel;
 			SQLINTEGER currency;
@@ -672,8 +672,8 @@ public:
 			SQLGetData(sqlStmtHandle, 11, SQL_C_FLOAT, &posX, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 12, SQL_C_FLOAT, &posY, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 13, SQL_C_FLOAT, &posZ, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 14, SQL_C_SLONG, &shirtObjectID, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 15, SQL_C_SLONG, &pantsObjectID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 14, SQL_C_UBIGINT, &shirtObjectID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 15, SQL_C_UBIGINT, &pantsObjectID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 16, SQL_C_SLONG, &uScore, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 17, SQL_C_SLONG, &uLevel, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 18, SQL_C_SLONG, &currency, 0, &ptrSqlAnswer);
@@ -770,8 +770,8 @@ public:
 			float posX;
 			float posY;
 			float posZ;
-			SQLINTEGER shirtObjectID;
-			SQLINTEGER pantsObjectID;
+			SQLBIGINT shirtObjectID;
+			SQLBIGINT pantsObjectID;
 			SQLINTEGER uScore;
 			SQLINTEGER uLevel;
 			SQLINTEGER currency;
@@ -795,8 +795,8 @@ public:
 			SQLGetData(sqlStmtHandle, 11, SQL_C_FLOAT, &posX, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 12, SQL_C_FLOAT, &posY, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 13, SQL_C_FLOAT, &posZ, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 14, SQL_C_SLONG, &shirtObjectID, 0, &ptrSqlAnswer);
-			SQLGetData(sqlStmtHandle, 15, SQL_C_SLONG, &pantsObjectID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 14, SQL_C_UBIGINT, &shirtObjectID, 0, &ptrSqlAnswer);
+			SQLGetData(sqlStmtHandle, 15, SQL_C_UBIGINT, &pantsObjectID, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 16, SQL_C_SLONG, &uScore, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 17, SQL_C_SLONG, &uLevel, 0, &ptrSqlAnswer);
 			SQLGetData(sqlStmtHandle, 18, SQL_C_SLONG, &currency, 0, &ptrSqlAnswer);
@@ -1080,8 +1080,8 @@ public:
 			ret = SQLBindParameter(sqlStmtHandle, 12, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.x), 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 13, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.y), 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 14, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &(position.z), 0, &lenZero);
-			ret = SQLBindParameter(sqlStmtHandle, 15, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &shirtObject.objectID, 0, &lenZero);
-			ret = SQLBindParameter(sqlStmtHandle, 16, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &pantsObject.objectID, 0, &lenZero);
+			ret = SQLBindParameter(sqlStmtHandle, 15, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &shirtObject.objectID, 0, &lenZero);
+			ret = SQLBindParameter(sqlStmtHandle, 16, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &pantsObject.objectID, 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 17, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &uScore, 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 18, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &uLevel, 0, &lenZero);
 			ret = SQLBindParameter(sqlStmtHandle, 19, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &currency, 0, &lenZero);

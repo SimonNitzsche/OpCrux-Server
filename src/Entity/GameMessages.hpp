@@ -171,6 +171,7 @@ public:
 #include "Entity/GameMessages/Teleport.hpp"
 #include "Entity/GameMessages/ToggleGhostReferenceOverride.hpp"
 #include "Entity/GameMessages/ToggleSendingPositionUpdates.hpp"
+#include "Entity/GameMessages/UnEquipInventory.hpp"
 #include "Entity/GameMessages/UpdatePlayerStatistic.hpp"
 #include "Entity/GameMessages/VehicleUnlockInput.hpp"
 #include "Entity/GameMessages/VendorOpenWindow.hpp"

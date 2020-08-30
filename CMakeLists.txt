@@ -104,6 +104,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/QuickBuildComponent.hpp
 	src/Entity/Components/RacingControlComponent.hpp
 	src/Entity/Components/RacingStatsComponent.hpp
+	src/Entity/Components/RailActivatorComponent.hpp
 	src/Entity/Components/RebuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/RigidBodyPhantomPhysics.hpp
@@ -189,6 +190,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RequestPlatformResync.hpp
 	src/Entity/GameMessages/ParseChatMessage.hpp
 	src/Entity/GameMessages/EquipInventory.hpp
+	src/Entity/GameMessages/UnEquipInventory.hpp
 	src/Entity/GameMessages/SetJetPackMode.hpp
 	src/Entity/GameMessages/ModifyGhostingDistance.hpp
 	src/Entity/GameMessages/Teleport.hpp
@@ -356,7 +358,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp") 
+	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp" ) 
 	
 
 

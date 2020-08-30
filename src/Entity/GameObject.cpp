@@ -68,6 +68,7 @@
 #include "Entity/Components/QuickBuildComponent.hpp"
 #include "Entity/Components/RacingControlComponent.hpp"
 #include "Entity/Components/RacingStatsComponent.hpp"
+#include "Entity/Components/RailActivatorComponent.hpp"
 #include "Entity/Components/RebuildComponent.hpp"
 #include "Entity/Components/RenderComponent.hpp"
 #include "Entity/Components/RigidBodyPhantomPhysics.hpp"
@@ -251,6 +252,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(PropertyVendorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(ProximityMonitorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RacingStatsComponent);
+		COMPONENT_ONADD_SWITCH_CASE(RailActivatorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RocketLandingComponent);
 		COMPONENT_ONADD_SWITCH_CASE(RocketLaunchComponent);
 		COMPONENT_ONADD_SWITCH_CASE(SlashCommandComponent);

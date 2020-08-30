@@ -43,6 +43,8 @@ private:
 
 	std::unordered_map<std::uint32_t /*behaviorHandle*/, std::int32_t /*behaviorAction*/> behaviorHandles;
 	std::mutex mutex_behaviorHandles;
+public:
+	std::uint32_t currentStackDepth = 0;
 
 public:
 
@@ -144,6 +146,7 @@ public:
 
 
 void SkillComponent::UnCast(const std::string sBitStream, long behaviorID) {
+	currentStackDepth = 0;
 	RakNet::BitStream bs = RakNet::BitStream(reinterpret_cast<unsigned char*>(const_cast<char*>(sBitStream.c_str())), sBitStream.size(), false);
 	if(behaviorID <= 0) behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
 	AbstractAggregateBehavior::StartUnCast(this, behaviorID, &bs);

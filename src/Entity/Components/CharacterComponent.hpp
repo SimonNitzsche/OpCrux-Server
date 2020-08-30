@@ -11,6 +11,7 @@
 #include "Enums/EGameActivity.hpp"
 
 #include "GameCache/LevelProgressionLookup.hpp"
+#include "GameCache/ItemComponent.hpp"
 
 class CharacterComponent : public IEntityComponent {
 private:
@@ -323,6 +324,24 @@ public:
 		if (level != charInfo.uScore) {
 			charInfo.uLevel = level;
 			Database::UpdateChar(charInfo);
+		}
+	}
+
+	void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
+		Entity::GameObject * itm = owner->GetZoneInstance()->objectsManager->GetObjectByID(msg.itemToUnEquip);
+		if (itm == nullptr) return;
+		auto itmCompID = itm->GetComponentByType(11)->GetComponentID();
+		std::string equipLocation = CacheItemComponent::GetEquipLocation(itmCompID);
+
+		if (equipLocation == "chest") {
+			GM::EquipInventory nmsg;
+			nmsg.itemToEquip = this->charInfo.shirtObjectID;
+			owner->GetComponentByType(17)->OnEquipInventory(sender, nmsg);
+		}
+		else if (equipLocation == "legs") {
+			GM::EquipInventory nmsg;
+			nmsg.itemToEquip = this->charInfo.pantsObjectID;
+			owner->GetComponentByType(17)->OnEquipInventory(sender, nmsg);
 		}
 	}
 };

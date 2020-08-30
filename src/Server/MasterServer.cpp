@@ -20,6 +20,8 @@
 #include "Utils/Logger.hpp"
 #include "Utils/ServerInfo.hpp"
 #include "Utils/PacketUtil.hpp"
+#include "Utils/LDFUtils.hpp"
+#include "Database/Database.hpp"
 using namespace Enums;
 
 enum class SERVERMODE : uint8_t;
@@ -103,19 +105,25 @@ void MasterServer::Listen() {
 						proc.port = packet->systemAddress.port;
 						proc.processID = contentStruct.processID;
 						proc.server_mode = contentStruct.serverMode;
+						proc.systemAddress = packet->systemAddress;
 						machine.processes.push_back(proc);
 
 						// Check if in list
 						bool alreadyExists = false;
-						for (Machine m : connected_machines)
+						for (Machine & m : connected_machines)
 							if (m.machineName == machine.machineName)
 								if (m.machineOS == machine.machineOS)
 									if (m.dottedIP == machine.dottedIP)
-										if (alreadyExists = true)
-											{ m.processes.push_back(proc); break; }
+										if (alreadyExists = true) {
+											proc.machine = &m;
+											m.processes.push_back(proc); break;
+										}
 
 						if (!alreadyExists) {
-							connected_machines.push_back(machine);
+							Machine & m = connected_machines.emplace_back(machine);
+							for (MachineProcess& proc : m.processes) {
+								proc.machine = &m;
+							}
 						}
 
 					} break;
@@ -140,7 +148,33 @@ void MasterServer::Listen() {
 						Logger::log("MASTER", "on " + mp->machine->machineName + " #" + std::to_string(mp->processID));
 
 						// Add Client
+
+						bool isPending = false;
+						if (!isWorldRequest) {
+
+							sessionMR.SetVar<std::int32_t>(u"targetZone", 0);
+
+							auto charServer = GetHubCharServer();
+							if (charServer != nullptr) {
+							
+							}
+							else {
+								isPending = true;
+							}
+						}
+						else {
+							// Get last player location
+							//Database::GetChar()
+						}
+
+						sessionMR.sessionState = ClientSessionMRState::IN_TRANSFER_QUEUE;
 						connected_clients.push_back(sessionMR);
+
+						if (isPending) {
+							if (!isWorldRequest) {
+								RequestNewZoneInstance(0, 0);
+							}
+						}
 
 					} break;
 
@@ -160,7 +194,31 @@ void MasterServer::Listen() {
 
 					} break;
 
-					case EMasterPacketID::MSG_MASTER_RESERVE_INSTANCE_ID: {
+					case EMasterPacketID::MSG_IM_WORLD_LEVEL_LOADED_NOTIFY: {
+						std::uint16_t zoneID; data->Read(zoneID);
+						std::uint16_t instanceID; data->Read(instanceID);
+						std::uint32_t cloneID; data->Read(cloneID);
+						SystemAddress sysAddress; data->Read(sysAddress);
+
+						for (auto it = pending_instances.begin(); it != pending_instances.end(); ++it) {
+							if (it->zoneID == zoneID && it->instanceID == instanceID && it->cloneID == cloneID) {
+								it->port = sysAddress.port;
+
+								for (auto it2 = it->process->instances.begin(); it2 != it->process->instances.end(); ++it2) {
+									if ((*it2) == &(*it)) {
+										it->process->instances.erase(it2);
+										break;
+									}
+								}
+
+								it->process->instances.push_back(&available_instances.emplace_back(*it));
+								pending_instances.erase(it);
+
+								break;
+							}
+						}
+
+						CheckTransferQueue(zoneID, instanceID, cloneID);
 
 					} break;
 					}
@@ -192,6 +250,9 @@ void MasterServer::Listen() {
 			delete data;
 			rakServer->DeallocatePacket(packet);
 		}
+	
+		// Other stuff
+
 	}
 
 	// QUIT
@@ -201,10 +262,155 @@ void MasterServer::Listen() {
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
 }
 
-const int MasterServer::reserveInstanceID() {
-	return nextInstanceID++;
+void MasterServer::CheckTransferQueue(std::uint16_t zoneID, std::uint16_t instanceID, std::uint32_t cloneID) {
+	for (auto it = connected_clients.begin(); it != connected_clients.end(); ++it) {
+		if (it->sessionState == ClientSessionMRState::IN_TRANSFER_QUEUE) {
+			if (it->GetVar<std::int32_t>(u"targetZone") == zoneID) {
+				// TODO: TRANSFER
+
+			}
+		}
+	}
+}
+
+std::uint32_t MasterServer::GetPlayerCountOfInstance(RemoteWorldInstance* instance) {
+	std::uint32_t counter = 0;
+	for (auto it = connected_clients.begin(); it != connected_clients.end(); ++it) {
+		if (it->currentInstance != instance) continue;
+		++counter;
+	}
+	return counter;
+}
+
+#include "GameCache/ZoneTable.hpp"
+
+RemoteWorldInstance* MasterServer::SelectInstanceToJoin(std::uint16_t zoneID, std::uint32_t cloneID/* = 0*/, bool ignoreSoftCap/* = false*/) {
+	Logger::log("MASTER", "Looking for instance to join; zoneID=" + std::to_string(zoneID) + "; cloneID=" + std::to_string(cloneID) + "; ignoreSoftCap" + (ignoreSoftCap ? "true" : "false"));
+	std::int32_t cap = 0;
+	if (zoneID != 0) {
+		if (ignoreSoftCap) {
+			cap = CacheZoneTable::GetPopulationHardCap(zoneID);
+		}
+		else {
+			cap = CacheZoneTable::GetPopulationSoftCap(zoneID);
+		}
+	}
+	else {
+		cap = 32000;
+	}
+
+	RemoteWorldInstance * bestInstance = nullptr;
+
+	for (auto it = available_instances.begin(); it != available_instances.end(); ++it) {
+		if (it->zoneID != zoneID || it->cloneID != cloneID) continue;
+		std::uint32_t pop = GetPlayerCountOfInstance(&(*it));
+		if (pop <= cap) {
+			if (bestInstance == nullptr || GetPlayerCountOfInstance(bestInstance) > pop) {
+				bestInstance = &(*it);
+			}
+		}
+	}
+
+	return bestInstance;
+}
+
+void MasterServer::RequestNewZoneInstance(std::uint16_t zoneID, std::uint32_t cloneID) {
+	
+	// Check if we already have requested it.
+	for (auto it = pending_instances.begin(); it != pending_instances.end(); ++it) {
+		if (it->zoneID == zoneID && it->cloneID == cloneID)
+			return;
+	}
+
+	Logger::log("MASTER", "Requesting new zone instance; zoneID=" + std::to_string(zoneID) + "; cloneID=" + std::to_string(cloneID));
+
+	// Request it
+	// - make instance id
+	auto it = instanceID_counter.find(zoneID);
+	if (it == instanceID_counter.end()) {
+		instanceID_counter.insert({ zoneID, 0 });
+		it = instanceID_counter.find(zoneID);
+	}
+	else {
+		++it->second;
+	}
+	auto instanceID = it->second;
+
+	std::float_t fLightestMachine = 0.0f;
+	Machine* lightestMachine = nullptr;
+	// - get lightest machine
+	for (auto it2 = connected_machines.begin(); it2 != connected_machines.end(); ++it2) {
+		
+		std::float_t machineWeight = 0.0f;
+		for (auto it3 = it2->processes.begin(); it3 != it2->processes.end(); ++it3) {
+			std::float_t processWeight = 0.0f;
+			for (auto it4 = it3->instances.begin(); it4 != it3->instances.end(); ++it4) {
+				processWeight += CacheZoneTable::GetFZoneWeight((*it4)->zoneID);
+			}
+			machineWeight += processWeight;
+		}
+
+		if (lightestMachine == nullptr || machineWeight < fLightestMachine) {
+			lightestMachine = &(*it2);
+			fLightestMachine = machineWeight;
+		}
+	}
+
+	if (lightestMachine == nullptr) return;
+
+	std::float_t fLightestMachineProcess = 0.0f;
+	MachineProcess* lightestMachineProcess = nullptr;
+	// - get lightest machine process
+	for (auto it3 = lightestMachine->processes.begin(); it3 != lightestMachine->processes.end(); ++it3) {
+		std::float_t processWeight = 0.0f;
+		for (auto it4 = it3->instances.begin(); it4 != it3->instances.end(); ++it4) {
+			processWeight += CacheZoneTable::GetFZoneWeight((*it4)->zoneID);
+		}
+
+		if (lightestMachineProcess == nullptr || processWeight < fLightestMachineProcess) {
+			lightestMachineProcess = &(*it3);
+			fLightestMachineProcess = processWeight;
+		}
+	}
+
+	if (lightestMachineProcess == nullptr) return;
+
+	// make instance object
+	RemoteWorldInstance remInstance;
+	remInstance.cloneID = cloneID;
+	remInstance.instanceID = instanceID;
+	remInstance.port = 0;
+	remInstance.zoneID = zoneID;
+	remInstance.process = lightestMachineProcess;
+
+	// add it to pending list and process
+	lightestMachineProcess->instances.push_back(&pending_instances.emplace_back(remInstance));
+
+	// tell the process to make new instance
+	auto cpacket = PacketUtils::initPacket(ERemoteConnection::GENERAL, static_cast<uint8_t>(EMasterPacketID::MSG_MASTER_REQUEST_NEW_INSTANCE));
+
+	RakNet::BitStream* cpacketPTR = cpacket.get();
+	
+	cpacketPTR->Write(remInstance.zoneID);
+	cpacketPTR->Write(remInstance.instanceID);
+	cpacketPTR->Write(remInstance.cloneID);
+
+	rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, lightestMachineProcess->systemAddress, false);
 }
 
 MasterServer::~MasterServer() {
 	listenThread.~thread();
+}
+
+RemoteWorldInstance* MasterServer::GetHubCharServer() {
+	for (RemoteWorldInstance& instance : this->available_instances) {
+		if (instance.zoneID == 0)
+			return &instance;
+	}
+
+	return nullptr;
+}
+
+void MasterServer::MovePlayerSessionToNewInstance(ClientSessionMR& playerSession, RemoteWorldInstance& instance) {
+
 }

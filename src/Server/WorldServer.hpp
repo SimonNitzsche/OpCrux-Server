@@ -39,7 +39,7 @@ public:
 	LWOTimer timer;
 	std::mutex m_lock;
 public:
-	WorldServer(int zone, int instanceID, int port);
+	WorldServer(int zone, int instanceID, int cloneID, int port);
 	void GameLoopThread();
 	void DebugRendererThread();
 	void GamePhysicsThread();

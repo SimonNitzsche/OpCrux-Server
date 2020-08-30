@@ -61,7 +61,7 @@ using namespace Exceptions;
 extern BridgeMasterServer* masterServerBridge;
 extern std::vector<ILUServer*> virtualServerInstances;
 
-WorldServer::WorldServer(int zone, int instanceID, int port) {
+WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) {
 	// Preload
 	std::string buf;
 	std::ifstream file1("res/names/minifigname_first.txt");
@@ -149,6 +149,18 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		// Load Zone
 		Logger::log("WRLD", "Loading Zone: " + zoneName);
 		luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
+		if (!luZone->_isFileLoaded()) {
+			delete collisionConfiguration;
+			delete collisionDispatcher;
+			delete overlappingPairCache;
+			delete constraintSolver;
+			delete dynamicsWorld;
+			delete luZone;
+
+			// TODO: Tell MS that loading failed
+
+			return;
+		}
 		Logger::log("WRLD", "Sucessfully loaded zone.");
 
 		if (luZone->zoneID != zone) {
@@ -251,6 +263,12 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	std::thread gpT([=]() { GamePhysicsThread(); });
 	gpT.detach();
+
+	// TODO: Tell MS that instance has loaded
+	SystemAddress addr;
+	addr.SetBinaryAddress("127.0.0.1");
+	addr.port = port;
+	masterServerBridge->NotifyInstanceLoaded(zone, instanceID, cloneID, addr);
 
 	while (ServerInfo::bRunning) {
 		RakSleep(30);

@@ -16,6 +16,10 @@ namespace Configuration {
 		}
 		ConfFileStruct GetConfTemplate() const {
 			return {
+				{"General", {
+					{"LANMODE", "true"}
+				}},
+
 				// [Auth]
 				{"Auth", {
 					// PORT

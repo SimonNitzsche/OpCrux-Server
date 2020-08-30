@@ -26,6 +26,8 @@ struct AbstractAggregateBehavior {
 #include "Entity/Components/SkillComponent/BehaviorStun.hpp"
 #include "Entity/Components/SkillComponent/BehaviorTacArc.hpp"
 
+#include "Exceptions/ExNetException.hpp"
+
 enum class eBehaviorTemplate : std::uint32_t {
 	__INVALID__ = 0,
 	BASIC_ATTACK = 1,
@@ -97,6 +99,10 @@ enum class eBehaviorTemplate : std::uint32_t {
 
 void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBehavior, RakNet::BitStream* bs) {
 	if (nextBehavior <= 0) return;
+	++comp->currentStackDepth;
+	if (comp->currentStackDepth > 50000) {
+		throw Exceptions::NetException::CorruptPacket();
+	}
 
 	long templateID = CacheBehaviorTemplate::GetTemplateID(nextBehavior);
 	

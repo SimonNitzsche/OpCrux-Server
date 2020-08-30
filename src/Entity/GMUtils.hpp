@@ -82,7 +82,8 @@
 	mfun(ModifyGhostingDistance);\
 	mfun(CancelRailMovement);\
 	mfun(ReportBug);\
-	mfun(DoneArrangingWithItem);
+	mfun(DoneArrangingWithItem);\
+	mfun(UnEquipInventory);
 
 // 	mfun(BuildExitConfirmation);
 #endif
