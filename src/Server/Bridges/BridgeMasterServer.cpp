@@ -48,19 +48,38 @@ void BridgeMasterServer::ListenHandle() {
 						SayHello();
 						break;
 					}
+					default: {
+						Logger::log("MasterBridge", "Received unknown packet.");
+					}
+					}
+				} break;
+				case ERemoteConnection::SERVER: {
+					switch (static_cast<EMasterPacketID>(packetType)) {
 					case EMasterPacketID::MSG_MASTER_REQUEST_NEW_INSTANCE: {
-					
+
+						std::uint16_t port; data->Read(port);
 						std::uint16_t zoneID; data->Read(zoneID);
 						std::uint16_t instanceID; data->Read(instanceID);
 						std::uint32_t cloneID; data->Read(cloneID);
 
-						Logger::log("MasterBridge", "Starting new zone instance; zoneID=" + std::to_string(instanceID) + "; cloneID=" + std::to_string(instanceID) + "; cloneID=" + std::to_string(cloneID));
-
-						std::uint16_t port = 2001;
+						Logger::log("MasterBridge", "Starting new zone instance; zoneID=" + std::to_string(instanceID) + "; cloneID=" + std::to_string(instanceID) + "; cloneID=" + std::to_string(cloneID) + "; port=" + std::to_string(port));
 
 						WorldServer* testWs;
 						std::thread wT([](WorldServer* ws, std::uint16_t zoneID, std::uint16_t cloneID, std::uint32_t instanceID, std::uint16_t port) { ws = new WorldServer(zoneID, instanceID, cloneID, port); }, testWs, zoneID, cloneID, instanceID, port);
 						wT.detach();
+						break;
+					}
+					case EMasterPacketID::MSG_MASTER_SELECT_WORLD_FOR_USER: {
+						DataTypes::LWOOBJID objectID; data->Read(objectID);
+						SystemAddress playerAddr; data->Read(playerAddr);
+						std::uint16_t zoneID; data->Read(zoneID);
+						std::uint16_t instanceID; data->Read(instanceID);
+						std::uint32_t cloneID; data->Read(cloneID);
+						SystemAddress instanceAddr; data->Read(instanceAddr);
+						std::uint16_t port; data->Read(port);
+
+						instanceAddr.port = port;
+						authServer->DoPlayerLoginSuccess(playerAddr, instanceAddr);
 						break;
 					}
 					default: {

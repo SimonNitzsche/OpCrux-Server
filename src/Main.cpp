@@ -355,6 +355,8 @@ void TestPhysics() {
 
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();
+	ServerInfo::init();
+
 	std::string ipMaster = "127.0.0.1";
 	//std::string ipMaster = "foxsog.com";
 
@@ -425,8 +427,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	ServerInfo::init();
-
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
 		std::thread mT([](MasterServer* ms) { ms = new MasterServer(); }, ServerInfo::masterServer);
 		mT.detach();
@@ -448,7 +448,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
-		std::thread aT([](AuthServer * as) { as = new AuthServer(); }, authServer);
+		std::thread aT([](AuthServer ** as) { new AuthServer(); }, &authServer);
 		aT.detach();
 	}
 

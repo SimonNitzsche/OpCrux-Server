@@ -84,8 +84,8 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) {
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
 	// Initializes SocketDescriptor
-	SocketDescriptor socketDescriptor((unsigned short)2001, 0);
-	Logger::log("WRLD", "Starting World...");
+	SocketDescriptor socketDescriptor((unsigned short)port, 0);
+	Logger::log("WRLD", "Starting world on port "+ std::to_string(port) + "...");
 
 	short maxPlayers = 120;
 
@@ -213,7 +213,7 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) {
 
 					if (!spawnedObject->isSerializable) {
 						// Spawn Error Object
-						delete[] spawnedObject;
+						delete spawnedObject;
 						spawnedObject = new Entity::GameObject(Instance, 1845);
 
 					}
@@ -249,6 +249,9 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) {
 		for (auto go : this->objectsManager->GetObjects()) {
 			go->Finish();
 		}
+	}
+	else {
+		Logger::log("WORLD", "Loaded char server successfully");
 	}
 
 	virtualServerInstances.push_back(this);
@@ -461,7 +464,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
 				
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
+				// PacketFactory::World::LoadStaticZone(rakServer, clientSession, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
@@ -686,9 +689,9 @@ std::uint16_t WorldServer::GetZoneID() {
 }
 
 WorldServer::~WorldServer() {
-	if (replicaManager) delete[] replicaManager;
-	if (networkIdManager) delete[] networkIdManager;
-	if (luZone) delete[] luZone;
+	if (replicaManager) delete replicaManager;
+	if (networkIdManager) delete networkIdManager;
+	if (luZone) delete luZone;
 	if (collisionConfiguration) delete collisionConfiguration;
 	if (collisionDispatcher) delete collisionDispatcher;
 	if (overlappingPairCache) delete overlappingPairCache;

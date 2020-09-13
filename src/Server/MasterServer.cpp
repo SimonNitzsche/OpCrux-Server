@@ -113,16 +113,25 @@ void MasterServer::Listen() {
 						for (Machine & m : connected_machines)
 							if (m.machineName == machine.machineName)
 								if (m.machineOS == machine.machineOS)
-									if (m.dottedIP == machine.dottedIP)
-										if (alreadyExists = true) {
-											proc.machine = &m;
-											m.processes.push_back(proc); break;
-										}
+									if (m.dottedIP == machine.dottedIP) {
+										alreadyExists = true;
+										proc.machine = &m;
+										m.processes.push_back(proc); break;
+									}
 
 						if (!alreadyExists) {
 							Machine & m = connected_machines.emplace_back(machine);
 							for (MachineProcess& proc : m.processes) {
 								proc.machine = &m;
+							}
+
+							/*
+								Allocate available ports
+							*/
+							std::uint16_t portMin = std::stoi(Configuration::ConfigurationManager::portsConf.GetStringVal("World", "PORTMIN"));
+							std::uint16_t portMax = std::stoi(Configuration::ConfigurationManager::portsConf.GetStringVal("World", "PORTMAX"));
+							for (std::uint16_t i = portMin; i <= portMax; ++i) {
+								m.availablePorts.push(i);
 							}
 						}
 
@@ -149,6 +158,9 @@ void MasterServer::Listen() {
 
 						// Add Client
 
+
+						sessionMR.sessionState = ClientSessionMRState::IN_TRANSFER_QUEUE;
+
 						bool isPending = false;
 						if (!isWorldRequest) {
 
@@ -156,7 +168,7 @@ void MasterServer::Listen() {
 
 							auto charServer = GetHubCharServer();
 							if (charServer != nullptr) {
-							
+								MovePlayerFromAuthToSession(&sessionMR, charServer);
 							}
 							else {
 								isPending = true;
@@ -167,7 +179,6 @@ void MasterServer::Listen() {
 							//Database::GetChar()
 						}
 
-						sessionMR.sessionState = ClientSessionMRState::IN_TRANSFER_QUEUE;
 						connected_clients.push_back(sessionMR);
 
 						if (isPending) {
@@ -266,7 +277,20 @@ void MasterServer::CheckTransferQueue(std::uint16_t zoneID, std::uint16_t instan
 	for (auto it = connected_clients.begin(); it != connected_clients.end(); ++it) {
 		if (it->sessionState == ClientSessionMRState::IN_TRANSFER_QUEUE) {
 			if (it->GetVar<std::int32_t>(u"targetZone") == zoneID) {
-				// TODO: TRANSFER
+				
+				RemoteWorldInstance* rwi;
+				rwi = SelectInstanceToJoin(zoneID, cloneID);
+
+				if(rwi==nullptr) throw "Help!";
+
+				// Are we still auth?
+				if (it->currentInstance == nullptr) {
+					MovePlayerFromAuthToSession(&*it, rwi);
+				}
+				// Otherwise move
+				{
+					MovePlayerSessionToNewInstance(&*it, rwi);
+				}
 
 			}
 		}
@@ -285,7 +309,7 @@ std::uint32_t MasterServer::GetPlayerCountOfInstance(RemoteWorldInstance* instan
 #include "GameCache/ZoneTable.hpp"
 
 RemoteWorldInstance* MasterServer::SelectInstanceToJoin(std::uint16_t zoneID, std::uint32_t cloneID/* = 0*/, bool ignoreSoftCap/* = false*/) {
-	Logger::log("MASTER", "Looking for instance to join; zoneID=" + std::to_string(zoneID) + "; cloneID=" + std::to_string(cloneID) + "; ignoreSoftCap" + (ignoreSoftCap ? "true" : "false"));
+	Logger::log("MASTER", "Looking for instance to join; zoneID=" + std::to_string(zoneID) + "; cloneID=" + std::to_string(cloneID) + "; ignoreSoftCap=" + (ignoreSoftCap ? "true" : "false"));
 	std::int32_t cap = 0;
 	if (zoneID != 0) {
 		if (ignoreSoftCap) {
@@ -379,7 +403,8 @@ void MasterServer::RequestNewZoneInstance(std::uint16_t zoneID, std::uint32_t cl
 	RemoteWorldInstance remInstance;
 	remInstance.cloneID = cloneID;
 	remInstance.instanceID = instanceID;
-	remInstance.port = 0;
+	remInstance.port = lightestMachine->availablePorts.front();
+	lightestMachine->availablePorts.pop();
 	remInstance.zoneID = zoneID;
 	remInstance.process = lightestMachineProcess;
 
@@ -387,10 +412,10 @@ void MasterServer::RequestNewZoneInstance(std::uint16_t zoneID, std::uint32_t cl
 	lightestMachineProcess->instances.push_back(&pending_instances.emplace_back(remInstance));
 
 	// tell the process to make new instance
-	auto cpacket = PacketUtils::initPacket(ERemoteConnection::GENERAL, static_cast<uint8_t>(EMasterPacketID::MSG_MASTER_REQUEST_NEW_INSTANCE));
+	auto cpacket = PacketUtils::initPacket(ERemoteConnection::SERVER, static_cast<uint8_t>(EMasterPacketID::MSG_MASTER_REQUEST_NEW_INSTANCE));
 
 	RakNet::BitStream* cpacketPTR = cpacket.get();
-	
+	cpacketPTR->Write(remInstance.port);
 	cpacketPTR->Write(remInstance.zoneID);
 	cpacketPTR->Write(remInstance.instanceID);
 	cpacketPTR->Write(remInstance.cloneID);
@@ -411,6 +436,23 @@ RemoteWorldInstance* MasterServer::GetHubCharServer() {
 	return nullptr;
 }
 
-void MasterServer::MovePlayerSessionToNewInstance(ClientSessionMR& playerSession, RemoteWorldInstance& instance) {
+void MasterServer::MovePlayerFromAuthToSession(ClientSessionMR * playerSession, RemoteWorldInstance * instance) {
+	auto cpacket = PacketUtils::initPacket(ERemoteConnection::SERVER, static_cast<uint8_t>(EMasterPacketID::MSG_MASTER_SELECT_WORLD_FOR_USER));
+
+	RakNet::BitStream* cpacketPTR = cpacket.get();
+	cpacketPTR->Write(playerSession->objectID);
+	cpacketPTR->Write(playerSession->systemAddress);
+	cpacketPTR->Write(instance->zoneID);
+	cpacketPTR->Write(instance->instanceID);
+	cpacketPTR->Write(instance->cloneID);
+	cpacketPTR->Write(instance->process->systemAddress);
+	cpacketPTR->Write(instance->port);
+
+	rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, instance->process->systemAddress, false);
+
+	playerSession->sessionState = ClientSessionMRState::IN_TRANSFER;
+}
+
+void MasterServer::MovePlayerSessionToNewInstance(ClientSessionMR * playerSession, RemoteWorldInstance * instance) {
 
 }

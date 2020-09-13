@@ -38,7 +38,12 @@ using namespace Exceptions;
 
 #include "Database/Database.hpp"
 
+#include "Configuration/ConfigurationManager.hpp"
+
+extern AuthServer * authServer;
+
 AuthServer::AuthServer() : ILUServer() {
+	authServer = this;
 	// Initializes the RakPeerInterface used for the auth server
 	rakServer = RakNetworkFactory::GetRakPeerInterface();
 
@@ -47,7 +52,7 @@ AuthServer::AuthServer() : ILUServer() {
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
 	// Initializes SocketDescriptor
-	SocketDescriptor socketDescriptor(1001, 0);
+	SocketDescriptor socketDescriptor(std::stoi(Configuration::ConfigurationManager::portsConf.GetStringVal("Auth","PORT")), 0);
 	Logger::log("AUTH", "Starting Auth...");
 
 	// Max Connections
@@ -204,6 +209,10 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 void AuthServer::MasterClientAuthResponse(SystemAddress systemAddress, int accountID, int reason) {
 	PacketFactory::Auth::doLoginResponse(this->rakServer, systemAddress, ELoginReturnCode(reason));
+}
+
+void AuthServer::DoPlayerLoginSuccess(SystemAddress systemAddress, SystemAddress destination) {
+	PacketFactory::Auth::doLoginResponse(rakServer, systemAddress, ELoginReturnCode::SUCCESS, destination);
 }
 
 AuthServer::~AuthServer() {

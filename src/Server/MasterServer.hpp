@@ -9,6 +9,7 @@
 #include <RakNet/Types.h>
 #include "DataTypes/LWOOBJID.hpp"
 #include "DataTypes/LDF.hpp"
+#include <queue>
 
 enum class SERVERMODE : uint8_t;
 
@@ -25,7 +26,7 @@ public:
 	std::vector<RemoteWorldInstance*> instances;
 };
 
-enum ClientSessionMRState {
+enum class ClientSessionMRState {
 	IN_TRANSFER_QUEUE,
 	IN_TRANSFER,
 	IN_WORLD_LOADING,
@@ -40,7 +41,7 @@ public:
 	DataTypes::LWOOBJID objectID;
 	SystemAddress systemAddress;
 	MachineProcess * process;
-	RemoteWorldInstance* currentInstance;
+	RemoteWorldInstance* currentInstance = nullptr;
 	ClientSessionMRState sessionState;
 	LDFCollection metadata;
 
@@ -75,6 +76,7 @@ public:
 	std::string dottedIP;
 
 	std::vector<MachineProcess> processes;
+	std::queue<std::uint16_t> availablePorts;
 };
 
 struct RemoteWorldInstance {
@@ -135,11 +137,8 @@ public:
 
 	RemoteWorldInstance* GetHubCharServer();
 
-	//void GetLightestServer();
-
-	//void RequestZoneInit()
-
-	void MovePlayerSessionToNewInstance(ClientSessionMR& playerSession, RemoteWorldInstance& instance);
+    void MovePlayerFromAuthToSession(ClientSessionMR * playerSession, RemoteWorldInstance * instance);
+	void MovePlayerSessionToNewInstance(ClientSessionMR * playerSession, RemoteWorldInstance * instance);
 };
 
 /*

@@ -48,7 +48,7 @@ namespace PacketFactory {
 
 			//ip = "foxsog.com";
 
-			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip);
+			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip + ":" + std::to_string(wsAddr.port));
 
 			StringUtils::writeBufferedWStringToBitStream(&returnBS, u"fad1892aa57db9e0cf74d45445f71599", 33);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
