@@ -293,6 +293,7 @@ paket-files/
 
 # VS Code
 .vscode
+build/
 
 # CodeRush
 .cr/
