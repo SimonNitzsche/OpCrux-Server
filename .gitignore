@@ -291,6 +291,9 @@ paket-files/
 .idea/
 *.sln.iml
 
+# VS Code
+.vscode
+
 # CodeRush
 .cr/
 
@@ -341,6 +344,9 @@ CMakeCache.txt
 **/Makefile
 **/cmake_install.cmake
 **/*.a
+*.cmake
+CMakeDoxyfile.in
+*.pc
 
 # MSSQL creds
 bin/conf/*.ini
@@ -349,8 +355,11 @@ bin/conf/*.ini
 libs/bullet3-*/data/*
 bin.zip
 
+# GLFW artifacts
+libs/glfw-3.3.2/docs/Doxyfile
+libs/glfw-3.3.2/src/glfw_config.h
+
+# Auth resources
 services/CruxAuthService/CruxAuthService/openssl/
-
 services/CruxAuthService/CruxAuthService/res/
-
 services/CruxAuthService/CruxAuthService/libbcrypt/
