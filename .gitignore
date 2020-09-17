@@ -339,14 +339,17 @@ bin/*
 !bin/res/README.txt
 
 # Linux CMake build files
+CMakeLists.txt.user
 CMakeCache.txt
-**/CMakeFiles/*
-**/Makefile
-**/cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+CMakeFiles/
+Makefile
+cmake_install.cmake
 **/*.a
-*.cmake
 CMakeDoxyfile.in
-*.pc
+CMakeDoxygenDefaults.cmake
 
 # MSSQL creds
 bin/conf/*.ini
@@ -355,9 +358,23 @@ bin/conf/*.ini
 libs/bullet3-*/data/*
 bin.zip
 
+# Bullet artifacts
+libs/bullet3-2.89/BulletConfig.cmake
+libs/bullet3-2.89/Extras/BulletRobotics/bullet_robotics.pc
+libs/bullet3-2.89/bullet.pc
+
 # GLFW artifacts
 libs/glfw-3.3.2/docs/Doxyfile
 libs/glfw-3.3.2/src/glfw_config.h
+libs/glfw-3.3.2/cmake_uninstall.cmake
+libs/glfw-3.3.2/src/glfw3.pc
+libs/glfw-3.3.2/src/glfw3Config.cmake
+libs/glfw-3.3.2/src/glfw3ConfigVersion.cmake
+
+# Random artifacts
+libs/random/effolkronium_randomConfig.cmake
+libs/random/effolkronium_randomConfigVersion.cmake
+libs/random/effolkronium_randomTargets.cmake
 
 # Auth resources
 services/CruxAuthService/CruxAuthService/openssl/
