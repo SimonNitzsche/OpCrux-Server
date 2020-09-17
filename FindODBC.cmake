@@ -1,24 +1,3 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@SimonNitzsche 
-Kitware
-/
-CMake
-143
-2.9k1.4k
- Code Pull requests 0 Actions Projects 0 Security Insights
-CMake/Modules/FindODBC.cmake
-@cristianadam cristianadam FindODBC: Add library name for MinGW toolchains
-cb8042b on 25 Nov 2019
-@mloskot@cristianadam
-231 lines (180 sloc)  6.98 KB
-  
 # Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
 # file Copyright.txt or https://cmake.org/licensing for details.
 
