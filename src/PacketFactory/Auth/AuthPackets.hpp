@@ -50,7 +50,7 @@ namespace PacketFactory {
 
 			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip + ":" + std::to_string(wsAddr.port));
 
-			StringUtils::writeBufferedWStringToBitStream(&returnBS, u"fad1892aa57db9e0cf74d45445f71599", 33);
+			StringUtils::writeBufferedWStringToBitStream(&returnBS, (char16_t*)"$2a$10$KssILxWNR6k62B7yiX0GAe2Q7wwHlrzhF3LqtVvpyvHZf0MwvNfVu", 33);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			returnBS.Write<uint16_t>(wsAddr.port);

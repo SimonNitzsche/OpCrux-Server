@@ -207,6 +207,10 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	rakServer->DeallocatePacket(packet->getPacket());
 }
 
+std::string& GenerateSessionKey() {
+	throw;
+}
+
 void AuthServer::MasterClientAuthResponse(SystemAddress systemAddress, int accountID, int reason) {
 	PacketFactory::Auth::doLoginResponse(this->rakServer, systemAddress, ELoginReturnCode(reason));
 }
