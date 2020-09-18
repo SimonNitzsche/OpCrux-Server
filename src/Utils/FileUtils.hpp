@@ -13,6 +13,7 @@
 #include <string>
 #include <memory>
 #include <fstream>
+#include <sys/stat.h>
 
 #ifdef OPCRUX_PLATFORM_WIN32
 
@@ -69,12 +70,12 @@ namespace FileUtils {
 		return file.substr(0, file.find_last_of("\\/"));
 	}
 	
-	inline bool FileExists(std::string &file) {
+	inline bool FileExists(std::string const &file) {
 		struct stat buf;
 		return (stat(file.c_str(), &buf) == 0);
 	}
 
-	inline std::string ReadTextFile(std::string& filename) {
+	inline std::string ReadTextFile(std::string const& filename) {
 		// Open
 		FILE* file;
 		fopen_s(&file, filename.c_str(), "r");
@@ -101,7 +102,7 @@ namespace FileUtils {
 		return std::string(data.get(), data.get() + size);
 	}
 
-	inline void SaveTextFile(std::string &file, std::string &data) {
+	inline void SaveTextFile(std::string const &file, std::string &data) {
 		std::ofstream stream;
 		stream.open(file);
 		stream << data;

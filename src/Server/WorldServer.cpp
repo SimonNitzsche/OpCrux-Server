@@ -49,13 +49,13 @@
 #include "Utils/LDFUtils.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
 
-
 #include "Entity/GameMessages.hpp"
-#include <Entity\Components\ModuleAssemblyComponent.hpp>
-#include <Entity\Components\PossessableComponent.hpp>
-#include <Entity\GameMessages\NotifyRacingClient.hpp>
-#include <Entity\Components\RacingControlComponent.hpp>
-#include <Entity\Components\MinigameComponent.hpp>
+#include "Entity/Components/ModuleAssemblyComponent.hpp"
+#include "Entity/Components/PossessableComponent.hpp"
+#include "Entity/GameMessages/NotifyRacingClient.hpp"
+#include "Entity/Components/RacingControlComponent.hpp"
+#include "Entity/Components/MinigameComponent.hpp"
+
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;

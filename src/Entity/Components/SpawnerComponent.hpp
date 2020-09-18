@@ -99,7 +99,7 @@ public:
 	}
 
 	void AddRespawnTask() {
-		__int64 x = __int64(::time(0)) + __int64(respawnTime);
+		std::int64_t x = std::int64_t(::time(0)) + std::int64_t(respawnTime);
 		this->respawnTasks.push_back(x);
 		//this->respawnTasks.push_back(::time(0));
 	}

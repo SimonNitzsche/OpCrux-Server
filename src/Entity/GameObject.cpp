@@ -174,7 +174,7 @@ void Entity::GameObject::Update() {
 	for (auto oPair : components)
 		oPair.second->Update();
 
-	if (maxAge != 0LL && __int64(::time(0)) >= __int64(maxAge)) {
+	if (maxAge != 0LL && std::int64_t(::time(0)) >= std::int64_t(maxAge)) {
 		this->Remove();
 	}
 }

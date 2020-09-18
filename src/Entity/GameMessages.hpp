@@ -92,7 +92,7 @@ public:
 
 	template<typename T = GM::GMBase>
 	static inline void Broadcast(Entity::GameObject* target, T gm, bool excludeSelf = false) {
-		Send(target->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm, excludeSelf?target->GetObjectID():0ULL);
+		Send(target->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm, excludeSelf ? target->GetObjectID() : DataTypes::LWOOBJID(0ULL));
 	}
 };
 

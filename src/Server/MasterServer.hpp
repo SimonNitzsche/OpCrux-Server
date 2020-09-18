@@ -77,7 +77,7 @@ private:
 	inline ClientSessionMR* GetClientSessionMR(std::uint32_t accountID) {
 		for (auto it = connected_clients.begin(); it != connected_clients.end(); ++it) {
 			if (it->accountID == accountID) {
-				return it._Ptr;
+				return &(*it);
 			}
 		}
 		return nullptr;
