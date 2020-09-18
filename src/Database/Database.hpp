@@ -137,7 +137,6 @@ public:
 
 		//output
 		Logger::log("DATABASE", "Attempting connection to SQL Server...");
-		ListDrivers();
 
 		//connect to SQL Server
 		//I am using a trusted connection and port 14808
