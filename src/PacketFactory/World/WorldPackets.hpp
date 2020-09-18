@@ -29,29 +29,28 @@ namespace PacketFactory {
 		inline void sendCharList(RakPeerInterface * rakServer, ClientSession * client) {
 			RakNet::BitStream returnBS;
 			// Head
-			LUPacketHeader returnBSHead;
-			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
-			returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
-			returnBSHead.packetID = static_cast<uint32_t>(Enums::EClientPacketID::CHARACTER_LIST);
+			LUPacketHeader returnBSHead{};
+			returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<std::uint16_t>(Enums::ERemoteConnection::CLIENT);
+			returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EClientPacketID::CHARACTER_LIST);
 			returnBS.Write(returnBSHead);
 			//Data
 
 			std::vector<DatabaseModels::Str_DB_CharInfo> charsInfo = Database::GetChars(client->accountID);
 			size_t count = charsInfo.size();
-			returnBS.Write(static_cast<std::uint8_t>(count & 0xFF));
-			returnBS.Write(static_cast<std::uint8_t>(0)); // front char index
+			returnBS.Write<std::uint8_t>(count & 0xFF);
+			returnBS.Write<std::uint8_t>(0); // front char index
 
-			for (int i = 0; i < charsInfo.size(); ++i) {
-				DatabaseModels::Str_DB_CharInfo charInfo = charsInfo[i];
-				DatabaseModels::Str_DB_CharStyle charStyle = Database::GetCharStyle(charInfo.styleID);
+			for (auto charInfo : charsInfo) {
+			    DatabaseModels::Str_DB_CharStyle charStyle = Database::GetCharStyle(charInfo.styleID);
 				DataTypes::LWOOBJID objectID = DataTypes::LWOOBJID::makePlayerObjectID(charInfo.objectID);
 				returnBS.Write(objectID);
-				returnBS.Write(static_cast<std::uint32_t>(charInfo.charIndex));
+				returnBS.Write<std::uint32_t>(charInfo.charIndex);
 				StringUtils::writeBufferedWStringToBitStream(&returnBS, std::u16string(charInfo.name.begin(), charInfo.name.end()));
 				StringUtils::writeBufferedWStringToBitStream(&returnBS, std::u16string(charInfo.pendingName.begin(), charInfo.pendingName.end()));
-				returnBS.Write(static_cast<std::uint16_t>(0));
+				returnBS.Write<std::uint16_t>(0);
 				returnBS.Write(charStyle.headColor);
-				returnBS.Write(static_cast<std::uint16_t>(0));
+				returnBS.Write<std::uint16_t>(0);
 				returnBS.Write(charStyle.head);
 				returnBS.Write(charStyle.chestColor);
 				returnBS.Write(charStyle.chest);
@@ -75,17 +74,17 @@ namespace PacketFactory {
 
 				std::list<std::int32_t> equippedLOTs = {};
 
-				for (auto it = inventory.begin(); it != inventory.end(); ++it) {
-					for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-						if (it2->attributes.GetEquipped()) {
-							equippedLOTs.push_back(it2->templateID);
+				for (auto & it : inventory) {
+					for (auto & it2 : it.second) {
+						if (it2.attributes.GetEquipped()) {
+							equippedLOTs.push_back(it2.templateID);
 						}
 					}
 				}
 
 				returnBS.Write<std::uint16_t>(equippedLOTs.size());
-				for (auto it = equippedLOTs.begin(); it != equippedLOTs.end(); ++it) {
-					returnBS.Write<std::uint32_t>(*it);
+				for (int & equippedLOT : equippedLOTs) {
+					returnBS.Write<std::uint32_t>(equippedLOT);
 				}
 
 				Logger::log("WRLD", "Sent character " + charInfo.name);
@@ -98,10 +97,10 @@ namespace PacketFactory {
 			{
 				RakNet::BitStream returnBS;
 				// Head
-				LUPacketHeader returnBSHead;
-				returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
-				returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
-				returnBSHead.packetID = static_cast<uint32_t>(Enums::EClientPacketID::SERVER_GAME_MSG);
+				LUPacketHeader returnBSHead{};
+				returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+				returnBSHead.remoteType = static_cast<std::uint16_t>(Enums::ERemoteConnection::CLIENT);
+				returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EClientPacketID::SERVER_GAME_MSG);
 				returnBS.Write(returnBSHead);
 				returnBS.Write<std::uint64_t>(clientSession->actorID);
 				returnBS.Write<std::uint16_t>(0x66a); // Server Done Loading All Objects
@@ -112,10 +111,10 @@ namespace PacketFactory {
 			{
 				RakNet::BitStream returnBS;
 				// Head
-				LUPacketHeader returnBSHead;
-				returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
-				returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
-				returnBSHead.packetID = static_cast<uint32_t>(Enums::EClientPacketID::SERVER_GAME_MSG);
+				LUPacketHeader returnBSHead{};
+				returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+				returnBSHead.remoteType = static_cast<std::uint16_t>(Enums::ERemoteConnection::CLIENT);
+				returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EClientPacketID::SERVER_GAME_MSG);
 				returnBS.Write(returnBSHead);
 				returnBS.Write<std::uint64_t>(clientSession->actorID);
 				returnBS.Write<std::uint16_t>(0x1fd); // Server Done Loading All Objects
@@ -129,10 +128,10 @@ namespace PacketFactory {
 		inline void CreateCharacter(RakPeerInterface * rakServer, ClientSession * clientSession, Entity::GameObject * go) {
 			RakNet::BitStream returnBS;
 			// Head
-			LUPacketHeader returnBSHead;
-			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
-			returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
-			returnBSHead.packetID = static_cast<uint32_t>(Enums::EWorldPacketID::CLIENT_LOGIN_REQUEST);
+			LUPacketHeader returnBSHead{};
+			returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<std::uint16_t>(Enums::ERemoteConnection::CLIENT);
+			returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EWorldPacketID::CLIENT_LOGIN_REQUEST);
 			returnBS.Write(returnBSHead);
 			//Data
 			RakNet::BitStream outerWrapperBS;
@@ -140,19 +139,18 @@ namespace PacketFactory {
 			RakNet::BitStream contentWrapperBS;
 			
 			std::vector<LDFEntry> ldfEntries;
-			ldfEntries.push_back(LDFEntry(u"template", std::int32_t(1)));
-			ldfEntries.push_back(LDFEntry(u"objid", clientSession->actorID));
-			ldfEntries.push_back(LDFEntry(u"xmlData", go->GenerateXML()));
-			ldfEntries.push_back(LDFEntry(u"name", go->GetName()));
-			ldfEntries.push_back(LDFEntry(u"accountID", std::int64_t(clientSession->accountID)));
+			ldfEntries.emplace_back(u"template", std::int32_t(1));
+			ldfEntries.emplace_back(u"objid", clientSession->actorID);
+			ldfEntries.emplace_back(u"xmlData", go->GenerateXML());
+			ldfEntries.emplace_back(u"name", go->GetName());
+			ldfEntries.emplace_back(u"accountID", std::int64_t(clientSession->accountID));
 
 			std::int64_t levelid = clientSession->currentZone.zoneID | (clientSession->currentZone.zoneInstance << 16) | (clientSession->currentZone.zoneClone << 32);
-			ldfEntries.push_back(LDFEntry(u"levelid", levelid));
+			ldfEntries.emplace_back(u"levelid", levelid);
 
 			contentWrapperBS.Write(std::uint32_t(ldfEntries.size()));
-			for (int i = 0; i < ldfEntries.size(); ++i) {
-				LDFEntry entry = ldfEntries[i];
-				StringUtils::writeWStringToBitStream<std::uint8_t>(&contentWrapperBS, entry.key, true);
+			for (auto entry : ldfEntries) {
+					StringUtils::writeWStringToBitStream<std::uint8_t>(&contentWrapperBS, entry.key, true);
 				contentWrapperBS.Write<std::uint8_t>(entry.type);
 				entry.WriteToBitstream(&contentWrapperBS);
 			}
@@ -188,10 +186,10 @@ namespace PacketFactory {
 		inline void LoadStaticZone(RakPeerInterface * rakServer, ClientSession * clientSession, std::uint16_t zoneID, std::uint16_t mapInstance, std::uint32_t mapClone, std::uint32_t mapChecksum, DataTypes::Vector3 playerPosition, std::uint32_t activityMap) {
 			RakNet::BitStream returnBS;
 			// Head
-			LUPacketHeader returnBSHead;
-			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
-			returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
-			returnBSHead.packetID = static_cast<uint32_t>(Enums::EClientPacketID::MSG_CLIENT_LOAD_STATIC_ZONE);
+			LUPacketHeader returnBSHead{};
+			returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<std::uint16_t>(Enums::ERemoteConnection::CLIENT);
+			returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EClientPacketID::MSG_CLIENT_LOAD_STATIC_ZONE);
 			returnBS.Write(returnBSHead);
 			//Data
 

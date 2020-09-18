@@ -26,16 +26,16 @@ namespace PacketFactory {
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead;
-			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
-			returnBSHead.remoteType = static_cast<uint16_t>(ERemoteConnection::GENERAL);
-			returnBSHead.packetID = static_cast<uint32_t>(EServerPacketID::VERSION_CONFIRM);
+			returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<std::uint16_t>(ERemoteConnection::GENERAL);
+			returnBSHead.packetID = static_cast<std::uint32_t>(EServerPacketID::VERSION_CONFIRM);
 			returnBS.Write(returnBSHead);
 			//Data
 			returnBS.Write(SERVER_VERSION); // version
-			returnBS.Write(0x93UL); // ???
-			returnBS.Write(static_cast<uint32_t>(isAuth?1:4)); // connType
+			returnBS.Write<std::uint32_t>(0x93); // ???
+			returnBS.Write<std::uint32_t>(isAuth ? 1 : 4 ); // connType
 			returnBS.Write(ServerInfo::processID);
-			returnBS.Write(static_cast<unsigned short>(0xff));
+			returnBS.Write<std::uint16_t>(0xff);
 			returnBS.Write(RakNet::RakString("127.0.0.1"), 264);
 
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client, false);
@@ -44,10 +44,10 @@ namespace PacketFactory {
 		inline void doDisconnect(RakPeerInterface * rakServer, SystemAddress client, EDisconnectReason reason) {
 			RakNet::BitStream returnBS;
 			// Head
-			LUPacketHeader returnBSHead;
-			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
-			returnBSHead.remoteType = static_cast<uint16_t>(ERemoteConnection::GENERAL);
-			returnBSHead.packetID = static_cast<uint32_t>(EServerPacketID::DISCONNECT_NOTIFY);
+			LUPacketHeader returnBSHead{};
+			returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<std::uint16_t>(ERemoteConnection::GENERAL);
+			returnBSHead.packetID = static_cast<std::uint32_t>(EServerPacketID::DISCONNECT_NOTIFY);
 			returnBS.Write(returnBSHead);
 			//Data
 			returnBS.Write(reason);

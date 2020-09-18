@@ -51,40 +51,40 @@ namespace PacketFactory {
 			StringUtils::writeBufferedWStringToBitStream(&returnBS, u"fad1892aa57db9e0cf74d45445f71599", 33);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
-			returnBS.Write<uint16_t>(2001);
-			returnBS.Write<uint16_t>(0);
+			returnBS.Write<std::uint16_t>(2001);
+			returnBS.Write<std::uint16_t>(0);
 			StringUtils::FillZero(&returnBS, 33);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, "00000000-0000-0000-0000-000000000000", 37);
-			returnBS.Write<uint32_t>(0);
+			returnBS.Write<std::uint32_t>(0);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, SERVER_LANGUAGE, 3);
-			returnBS.Write<ByteBool>(true); // first Subscription Logon
-			returnBS.Write<ByteBool>(false); // is FTP
-			returnBS.Write<uint64_t>(0);
+			returnBS.Write<std::uint8_t>(true); // first Subscription Logon
+			returnBS.Write<std::uint8_t>(false); // is FTP
+			returnBS.Write<std::uint64_t>(0);
 
 			StringUtils::writeWStringToBitStream<std::uint16_t>(&returnBS, customErrorMessage);
 
 			// Stamp stuff
-			returnBS.Write<uint32_t>(0x0144); // Stamps
-			returnBS.Write<uint64_t>(0x0000000000000000);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x0000001c00000007);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x0000000300000008);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x0000000000000009);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x000000000000000a);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x000000010000000b);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x000000010000000e);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x000000000000000f);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x0000000100000011);	returnBS.Write<uint64_t>(0x000000004ee27a4d);
-			returnBS.Write<uint64_t>(0x0000000000000005);	returnBS.Write<uint64_t>(0x000000004ee27a4d);
-			returnBS.Write<uint64_t>(0x0000000100000006);	returnBS.Write<uint64_t>(0x000000004ee27a4d);
-			returnBS.Write<uint64_t>(0x0000000100000014);	returnBS.Write<uint64_t>(0x000000004ee27a4d);
-			returnBS.Write<uint64_t>(0x000029ca00000013);	returnBS.Write<uint64_t>(0x000000004ee27a4d);
-			returnBS.Write<uint64_t>(0x0000000000000015);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x0000000000000016);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x000029c400000017);	returnBS.Write<uint64_t>(0x000000004ee27a4d);
-			returnBS.Write<uint64_t>(0x000029c40000001b);	returnBS.Write<uint64_t>(0x000000004ee27a4d);
-			returnBS.Write<uint64_t>(0x000000010000001c);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x000000000000001d);	returnBS.Write<uint64_t>(0x000000004ee27a4c);
-			returnBS.Write<uint64_t>(0x000029ca0000001e);	returnBS.Write<uint64_t>(0x000000004ee27a4d);
+			returnBS.Write<std::uint32_t>(0x0144); // Stamps
+			returnBS.Write<std::uint64_t>(0x0000000000000000);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x0000001c00000007);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x0000000300000008);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x0000000000000009);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x000000000000000a);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x000000010000000b);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x000000010000000e);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x000000000000000f);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x0000000100000011);	returnBS.Write<std::uint64_t>(0x000000004ee27a4d);
+			returnBS.Write<std::uint64_t>(0x0000000000000005);	returnBS.Write<std::uint64_t>(0x000000004ee27a4d);
+			returnBS.Write<std::uint64_t>(0x0000000100000006);	returnBS.Write<std::uint64_t>(0x000000004ee27a4d);
+			returnBS.Write<std::uint64_t>(0x0000000100000014);	returnBS.Write<std::uint64_t>(0x000000004ee27a4d);
+			returnBS.Write<std::uint64_t>(0x000029ca00000013);	returnBS.Write<std::uint64_t>(0x000000004ee27a4d);
+			returnBS.Write<std::uint64_t>(0x0000000000000015);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x0000000000000016);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x000029c400000017);	returnBS.Write<std::uint64_t>(0x000000004ee27a4d);
+			returnBS.Write<std::uint64_t>(0x000029c40000001b);	returnBS.Write<std::uint64_t>(0x000000004ee27a4d);
+			returnBS.Write<std::uint64_t>(0x000000010000001c);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x000000000000001d);	returnBS.Write<std::uint64_t>(0x000000004ee27a4c);
+			returnBS.Write<std::uint64_t>(0x000029ca0000001e);	returnBS.Write<std::uint64_t>(0x000000004ee27a4d);
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client, false);
 		}
 

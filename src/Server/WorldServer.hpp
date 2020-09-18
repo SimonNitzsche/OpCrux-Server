@@ -41,7 +41,7 @@ public:
 public:
 	WorldServer(int zone, int instanceID, int port);
 	void GameLoopThread();
-	void DebugRendererThread();
+	static void DebugRendererThread();
 	void GamePhysicsThread();
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 	std::uint16_t GetZoneID();

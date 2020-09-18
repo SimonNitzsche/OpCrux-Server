@@ -164,14 +164,14 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		this->zoneControlObject->Finish();
 
 		// TODO: Move this to somewhere else
-		for (auto scene : luZone->scenes) {
+		for (const auto& scene : luZone->scenes) {
 			for (auto objT : scene.scene.objectsChunk.objects) {
-				Entity::GameObject* go = new Entity::GameObject(this, *objT.LOT);
+				auto* go = new Entity::GameObject(this, *objT.LOT);
 				go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ 70368744177664ULL | *objT.objectID));
 				LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
 
 				// If Spawner
-				SpawnerComponent* spawnerComp = static_cast<SpawnerComponent*>(go->GetComponentByType(10));
+				auto* spawnerComp = dynamic_cast<SpawnerComponent*>(go->GetComponentByType(10));
 				if (spawnerComp != nullptr) {
 					spawnerComp->originPos = objT.spawnPos->pos;
 					spawnerComp->originRot = objT.spawnPos->rot;
@@ -187,7 +187,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		}
 
 		// Path's Network Spawner
-		for (auto pathBase : luZone->paths) {
+		for (const auto& pathBase : luZone->paths) {
 			if (pathBase.second->pathType == FileTypes::LUZ::LUZonePathType::Spawner) {
 				auto spawnerPath = reinterpret_cast<FileTypes::LUZ::LUZonePathSpawner*>(pathBase.second);
 				WorldServer* Instance = this;
@@ -196,7 +196,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 				for (int i = 0; i < spawnerPath->numberToMaintain && i < spawnerPath->waypoints.size(); ++i) {
 					// Create
-					Entity::GameObject* spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
+					auto* spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
 
 
 					if (!spawnedObject->isSerializable) {
@@ -215,12 +215,12 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 					spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->config);
 
 					// Set Position/Rotation
-					ControllablePhysicsComponent* controllablePhysicsComponent = spawnedObject->GetComponent<ControllablePhysicsComponent>();
+					auto* controllablePhysicsComponent = spawnedObject->GetComponent<ControllablePhysicsComponent>();
 					if (controllablePhysicsComponent != nullptr) {
 						controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->position);
 						controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->rotation);
 					}
-					SimplePhysicsComponent* simplePhysicsComponent = spawnedObject->GetComponent<SimplePhysicsComponent>();
+					auto* simplePhysicsComponent = spawnedObject->GetComponent<SimplePhysicsComponent>();
 					if (simplePhysicsComponent != nullptr) {
 						simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->position);
 						simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->rotation);
@@ -269,7 +269,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 			}
 			catch (std::runtime_error * e) {
 				Logger::log("WRLD", "[CRASH] " + std::string(e->what()), LogType::ERR);
-				throw new std::runtime_error(*e);
+				throw std::runtime_error(*e);
 			}
 		}
 	}
@@ -400,28 +400,28 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				std::u16string customName = StringUtils::readBufferedWStringFromBitStream(data);
 				std::string s_customName(customName.begin(), customName.end());
 
-				unsigned long predef_0; data->Read(predef_0);
-				unsigned long predef_1; data->Read(predef_1);
-				unsigned long predef_2; data->Read(predef_2);
+				std::uint32_t predef_0; data->Read(predef_0);
+				std::uint32_t predef_1; data->Read(predef_1);
+				std::uint32_t predef_2; data->Read(predef_2);
 
 				std::stringstream namegen;
 				namegen << mf_FirstNames[predef_0] << mf_MiddleNames[predef_1] << mf_LastNames[predef_2];
 				std::string genname = namegen.str();
 
-				unsigned char unknownA; data->Read(unknownA);
-				unsigned long headColor; data->Read(headColor);
-				unsigned long head;	data->Read(head);
-				unsigned long chestColor; data->Read(chestColor);
-				unsigned long chest; data->Read(chest);
-				unsigned long legs; data->Read(legs);
-				unsigned long hairStyle; data->Read(hairStyle);
-				unsigned long hairColor; data->Read(hairColor);
-				unsigned long leftHand; data->Read(leftHand);
-				unsigned long rightHand; data->Read(rightHand);
-				unsigned long eyebrowStyle; data->Read(eyebrowStyle);
-				unsigned long eyesStyle; data->Read(eyesStyle);
-				unsigned long mouthStyle; data->Read(mouthStyle);
-				unsigned char unknownB; data->Read(unknownB);
+				std::uint8_t unknownA; data->Read(unknownA);
+				std::uint32_t headColor; data->Read(headColor);
+				std::uint32_t head;	data->Read(head);
+				std::uint32_t chestColor; data->Read(chestColor);
+				std::uint32_t chest; data->Read(chest);
+				std::uint32_t legs; data->Read(legs);
+				std::uint32_t hairStyle; data->Read(hairStyle);
+				std::uint32_t hairColor; data->Read(hairColor);
+				std::uint32_t leftHand; data->Read(leftHand);
+				std::uint32_t rightHand; data->Read(rightHand);
+				std::uint32_t eyebrowStyle; data->Read(eyebrowStyle);
+				std::uint32_t eyesStyle; data->Read(eyesStyle);
+				std::uint32_t mouthStyle; data->Read(mouthStyle);
+                std::uint8_t unknownB; data->Read(unknownB);
 
 				if (unknownA != 0 || unknownB != 0) {
 					Logger::log("CHAR-CREATION", "unknownA: " + std::to_string(unknownA));
@@ -505,9 +505,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Construct player");
 				replicaManager->AddParticipant(clientSession->systemAddress);
-				Entity::GameObject * playerObject = new Entity::GameObject(this, 1);
+				auto * playerObject = new Entity::GameObject(this, 1);
 				playerObject->SetObjectID(clientSession->actorID);
-				CharacterComponent * charComp = playerObject->GetComponent<CharacterComponent>();
+				auto * charComp = playerObject->GetComponent<CharacterComponent>();
 				charComp->clientAddress = clientSession->systemAddress;
 				DatabaseModels::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
 				playerObject->SetPosition(luZone->spawnPos.pos);
@@ -516,7 +516,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				charComp->InitCharInfo(info);
 				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
 				charComp->CheckLevelProgression();
-				DestructibleComponent* charDestComp = playerObject->GetComponent<DestructibleComponent>();
+				auto* charDestComp = playerObject->GetComponent<DestructibleComponent>();
 				charDestComp->SetImagination(info.imagination);
 
 				playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
@@ -585,11 +585,11 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				DataTypes::LWOOBJID objectID = clientSession->actorID;
 				Entity::GameObject * playerObject = objectsManager->GetObjectByID(objectID);
 				if (playerObject != nullptr) {
-					ControllablePhysicsComponent * controllablePhysicsComponent = playerObject->GetComponent<ControllablePhysicsComponent>();
+					auto * controllablePhysicsComponent = playerObject->GetComponent<ControllablePhysicsComponent>();
 					controllablePhysicsComponent->Deserialize(data);
 				}
 				else {
-					throw new std::runtime_error("Invalid objectID; TODO: Kick Player -> Cheating");
+					throw std::runtime_error("Invalid objectID; TODO: Kick Player -> Cheating");
 				}
 				break;
 			}
@@ -625,7 +625,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 			case (Enums::EWorldPacketID)91: {
 				/* This is an unknown packet.*/
-				unsigned char * pack = data->GetData();
+				std::uint8_t * pack = data->GetData();
 				Logger::log("WRLD", "Received unknown packet containing: " + std::to_string(*reinterpret_cast<std::int32_t*>(pack)));
 				break;
 			}
@@ -668,12 +668,12 @@ std::uint16_t WorldServer::GetZoneID() {
 }
 
 WorldServer::~WorldServer() {
-	if (replicaManager) delete[] replicaManager;
-	if (networkIdManager) delete[] networkIdManager;
-	if (luZone) delete[] luZone;
-	if (collisionConfiguration) delete collisionConfiguration;
-	if (collisionDispatcher) delete collisionDispatcher;
-	if (overlappingPairCache) delete overlappingPairCache;
-	if (constraintSolver) delete constraintSolver;
-	if (dynamicsWorld) delete dynamicsWorld;
+	delete[] replicaManager;
+	delete[] networkIdManager;
+	delete[] luZone;
+	delete collisionConfiguration;
+	delete collisionDispatcher;
+	delete overlappingPairCache;
+	delete constraintSolver;
+	delete dynamicsWorld;
 }
