@@ -193,4 +193,6 @@ set(RAKNET_SRC
 )
 
 add_library(RakNet STATIC ${RAKNET_SRC})
-target_link_libraries(RakNet ws2_32)
+if(WIN32)
+	target_link_libraries(RakNet ws2_32)
+endif()

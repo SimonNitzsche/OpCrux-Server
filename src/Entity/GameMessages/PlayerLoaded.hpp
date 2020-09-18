@@ -6,8 +6,8 @@
 #include "Entity/GameMessages.hpp"
 
 #include "Entity/GameMessages/RestoreToPostLoadStats.hpp"
-#include <Entity\GameMessages\NotifyRacingClient.hpp>
-#include <Entity\GameMessages\ActivityStart.hpp>
+#include "Entity/GameMessages/NotifyRacingClient.hpp"
+#include "Entity/GameMessages/ActivityStart.hpp"
 
 #include "PacketFactory/Chat/ChatPackets.hpp"
 

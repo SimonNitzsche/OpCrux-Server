@@ -281,7 +281,7 @@ void TestPhysics() {
 
 	ServerInfo::init();
 
-	while (virtualServerInstances.size() == 0) { Sleep(30); }
+	while (virtualServerInstances.size() == 0) { sleep_ms(30); }
 	testWs = static_cast<WorldServer*>(virtualServerInstances.at(0));
 	viewWs = testWs;
 

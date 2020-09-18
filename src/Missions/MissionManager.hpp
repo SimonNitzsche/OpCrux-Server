@@ -11,7 +11,7 @@
 #include "Entity/GameObject.hpp"
 #include "Database/DatabaseModels.hpp"
 
-static class MissionManager {
+class MissionManager {
 	
 public:
 	static std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> GetMissionTasksByTaskTypeAndTarget(Enums::EMissionTask taskType, std::int32_t target);

@@ -398,17 +398,29 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 if(WIN32)
-	target_link_libraries(OpCrux_Server wsock32 ws2_32 odbc32 )
+	target_link_libraries(OpCrux_Server
+		wsock32
+		ws2_32
+		odbc32
+		opengl32
+		glu32
+		../../../libs/SDL/lib/x64/SDL2
+		../../../libs/SDL/lib/x64/SDL2main
+	)
 endif()
 if(UNIX)
-	target_link_libraries(OpCrux_Server pthread odbc )
+	target_link_libraries(OpCrux_Server
+		pthread
+		odbc
+		GL
+		GLU
+		SDL2
+		SDL2main
+	)
 endif()
 
 target_link_libraries(OpCrux_Server
-	opengl32
-	glu32
-	../../../libs/SDL/lib/x64/SDL2
-	../../../libs/SDL/lib/x64/SDL2main
+	
 	OpenGLWindow
 	gwen
 	glad
@@ -424,7 +436,6 @@ target_link_libraries(OpCrux_Server
 	glfw
 	json
 	Mongoose
-	ws2_32
 	RakNet
 	rapidxml
 )

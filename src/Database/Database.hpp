@@ -188,6 +188,8 @@ public:
 
 		case SQL_ERROR:
 			Logger::log("DATABASE", "Could not connect to SQL Server (SQL_ERROR)");
+			Logger::log("DATABASE", "Driver reported the following diagnostics");
+			extract_error("SQLDriverConnect", sqlConnHandle, SQL_HANDLE_DBC);
 			return 2;
 			Disconnect();
 
@@ -842,14 +844,14 @@ public:
 	static void UpdateChar(Str_DB_CharInfo charInfo) {
 		// TODO check if char exists.
 		if (false) {
-			throw std::exception("Player does not exist.");
+			throw std::runtime_error("Player does not exist.");
 		}
 		SetupStatementHandle();
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=? WHERE objectID=?", SQL_NTS);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to prepare sql.");
+			throw std::runtime_error("Unable to prepare sql.");
 		}
 
 		SQLLEN lenZero = 0;
@@ -880,7 +882,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to bind parameters.");
+			throw std::runtime_error("Unable to bind parameters.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -888,7 +890,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to execute query.");
+			throw std::runtime_error("Unable to execute query.");
 		}
 	}
 
@@ -1196,7 +1198,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to query DB");
+			throw std::runtime_error("Unable to query DB");
 		}
 
 		SQLLEN lenZero = 0;
@@ -1207,7 +1209,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to query DB");
+			throw std::runtime_error("Unable to query DB");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1215,7 +1217,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to query DB");
+			throw std::runtime_error("Unable to query DB");
 		}
 
 		SQLLEN rowCount = 0;
@@ -1234,12 +1236,12 @@ public:
 				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-				throw std::exception("Unable to query DB");
+				throw std::runtime_error("Unable to query DB");
 
 			}
 		}
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to query DB");
+		throw std::runtime_error("Unable to query DB");
 	}
 
 	/*
@@ -1264,14 +1266,14 @@ public:
 		model.progress = StringUtils::IntListToString(initialProgress, '|');
 		
 		if (HasMission(charID, missionID)) {
-			throw std::exception("Mission already exists!");
+			throw std::runtime_error("Mission already exists!");
 		}
 		SetupStatementHandle();
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time,chosenReward) VALUES(?,?,?,?,?,?,?)", SQL_NTS);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to add mission.");
+			throw std::runtime_error("Unable to add mission.");
 		}
 
 		SQLLEN lenZero = 0;
@@ -1289,7 +1291,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to add mission.");
+			throw std::runtime_error("Unable to add mission.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1297,7 +1299,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to add mission.");
+			throw std::runtime_error("Unable to add mission.");
 		}
 
 		return model;
@@ -1314,7 +1316,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -1323,7 +1325,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1331,7 +1333,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -1373,7 +1375,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	static std::list<MissionModel> GetAllMissions(std::int64_t charID) {
@@ -1386,7 +1388,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -1394,7 +1396,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1402,7 +1404,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -1446,7 +1448,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	static std::list<MissionModel> GetAllMissionsByState(std::int64_t charID, std::int32_t state) {
@@ -1459,7 +1461,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -1468,7 +1470,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1476,7 +1478,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -1520,7 +1522,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	static std::list<MissionModel> GetAllMissionsByStates(std::int64_t charID, std::list<std::int32_t> state) {
@@ -1541,7 +1543,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -1555,7 +1557,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1563,7 +1565,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -1607,7 +1609,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	static std::list<MissionModel> GetAllMissionsByIDs(std::int64_t charID, std::list<std::int32_t> missions) {
@@ -1628,7 +1630,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -1642,7 +1644,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1650,7 +1652,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -1694,7 +1696,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	static std::list<MissionModel> GetAllMissionsByIDsAndState(std::int64_t charID, std::list<std::int32_t> missions, std::int32_t state) {
@@ -1715,7 +1717,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -1730,7 +1732,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1738,7 +1740,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -1782,7 +1784,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	static std::list<MissionModel> GetAllMissionsByIDsAndStates(std::int64_t charID, std::list<std::int32_t> missions, std::list<std::int32_t> states) {
@@ -1810,7 +1812,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -1828,7 +1830,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1836,7 +1838,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -1880,7 +1882,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	/*
@@ -1888,14 +1890,14 @@ public:
 	*/
 	static void UpdateMission(MissionModel mission) {
 		if (!HasMission(mission.charID, mission.missionID)) {
-			throw std::exception("Mission does not exists on player!");
+			throw std::runtime_error("Mission does not exists on player!");
 		}
 		SetupStatementHandle();
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"UPDATE OPCRUX_GD.dbo.Missions SET state=?,progress=?,repeatCount=?,time=?,chosenReward=? WHERE charID=? AND missionID=?", SQL_NTS);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to add mission.");
+			throw std::runtime_error("Unable to add mission.");
 		}
 
 		SQLLEN lenZero = 0;
@@ -1915,7 +1917,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to add mission.");
+			throw std::runtime_error("Unable to add mission.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1923,7 +1925,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to add mission.");
+			throw std::runtime_error("Unable to add mission.");
 		}
 	}
 
@@ -1937,7 +1939,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("sql error.");
+			throw std::runtime_error("sql error.");
 		}
 
 		SQLLEN lenZero = 0;
@@ -1957,7 +1959,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("error.");
+			throw std::runtime_error("error.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1965,7 +1967,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("error.");
+			throw std::runtime_error("error.");
 		}
 	}
 
@@ -1979,7 +1981,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -1987,7 +1989,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -1995,7 +1997,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -2019,7 +2021,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	static std::map<std::int32_t, std::list<ItemModel>> GetFullInventory(std::int64_t charID) {
@@ -2041,7 +2043,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &charID, 0);
@@ -2050,7 +2052,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -2058,7 +2060,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		SQLLEN rowCount = 0;
@@ -2108,7 +2110,7 @@ public:
 		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		throw std::exception("Unable to fetch DB.");
+		throw std::runtime_error("Unable to fetch DB.");
 	}
 
 	static void AddItemToInventory(ItemModel item) {
@@ -2119,7 +2121,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &item.objectID, 0);
@@ -2140,7 +2142,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -2148,7 +2150,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 	}
 
@@ -2160,7 +2162,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLPrepare", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLBindParam(sqlStmtHandle, 1, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &item.objectID, 0);
@@ -2183,7 +2185,7 @@ public:
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 
 		ret = SQLExecute(sqlStmtHandle);
@@ -2191,7 +2193,7 @@ public:
 			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-			throw std::exception("Unable to fetch DB.");
+			throw std::runtime_error("Unable to fetch DB.");
 		}
 	}
 

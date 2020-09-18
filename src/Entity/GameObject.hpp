@@ -353,7 +353,7 @@ namespace Entity {
 			std::int32_t GetImagination();
 
 			void SetMaxAge(std::int64_t age) {
-				maxAge = __int64(::time(0)) + __int64(age);
+				maxAge = std::int64_t(::time(0)) + std::int64_t(age);
 			}
 
 			/*

@@ -79,7 +79,7 @@ public:
 				}
 
 				int keySize = keyEnd - realBegin;
-				std::string& key = (keySize == 0) ? "" : line.substr(realBegin, keySize);
+				std::string const& key = (keySize == 0) ? "" : line.substr(realBegin, keySize);
 
 				++keyEnd;
 
@@ -97,7 +97,7 @@ public:
 				}
 
 				int valSize = sweeper - keyEnd - whitespaceCount;
-				std::string& val = (valSize == 0) ? "" : line.substr(keyEnd, valSize);
+				std::string const& val = (valSize == 0) ? "" : line.substr(keyEnd, valSize);
 
 				auto itS = _data.find(currentSection);
 				if (itS == _data.end()) {

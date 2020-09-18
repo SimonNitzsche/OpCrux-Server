@@ -11,7 +11,7 @@ void Configuration::ConfigurationManager::Load() {
 	const std::string& path = "conf";
 	struct stat buffer;
 	if ((stat(path.c_str(), &buffer) == 0) == 0) {
-		mkdir("conf");
+		mkdirx("conf");
 		dbConf.Load();
 		portsConf.Load();
 		Logger::log("MAIN", "Please populate the config files", LogType::UNEXPECTED);

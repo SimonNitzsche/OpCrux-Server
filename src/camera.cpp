@@ -1,6 +1,6 @@
 #include "camera.h"
 #include <SDL/include/SDL.h>
-#include <DataTypes\Vector3.hpp>
+#include <DataTypes/Vector3.hpp>
 #include <GL/gl.h>
 #include <GL/glu.h>
 void camera::lockCamera()
