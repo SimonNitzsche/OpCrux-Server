@@ -33,17 +33,17 @@ LUScene::LUScene(FileTypes::LUZ::LUZone * zone, std::string file) {
 				//this->objectsChunk = LVLObjectsChunk(&lvlVersion32, data + dOff);
 
 
-				throw std::runtime_error("TODO: Implement old level format!");
+				throw new std::runtime_error("TODO: Implement old level format!");
 
 				//// Since it's not chunked no more chunks are read.
 				return;
 			}
 			// Otherwise
-			throw std::runtime_error("Level file is broken: Invalid chunk magic.");
+			throw new std::runtime_error("Level file is broken: Invalid chunk magic.");
 		}
 
 		// Read Header
-		auto chunkHeader = LVLChunkHeader(data + i + 4);
+		LVLChunkHeader chunkHeader = LVLChunkHeader(data + i + 4);
 
 		// Switch on chunk type so we know which one to add.
 		// And obviously read it.
@@ -63,7 +63,7 @@ LUScene::LUScene(FileTypes::LUZ::LUZone * zone, std::string file) {
 			break;
 		}
 		default: {
-			throw std::runtime_error("File corruption: Invalid chunk type.");
+			throw new std::runtime_error("File corruption: Invalid chunk type.");
 			break;
 		}
 		}

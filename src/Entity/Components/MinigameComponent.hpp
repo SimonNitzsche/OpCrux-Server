@@ -14,7 +14,7 @@ public:
 
 	MinigameComponent(std::int32_t componentID) : ScriptedActivityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 50; }
+	static constexpr int GetTypeID() { return 50; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		ScriptedActivityComponent::Serialize(factory, packetType);

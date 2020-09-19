@@ -21,7 +21,7 @@ struct ClientSession {
 	std::u16string sessionToken;
 	DataTypes::ZoneInfo currentZone;
 	DataTypes::LWOOBJID actorID;
-	std::uint32_t accountID;
+	unsigned long accountID;
 };
 
 #endif // !__SESSIONS__CLIENTSESSION_HPP__

@@ -3,7 +3,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <utility>
 
 #include "DataTypes/LWOOBJID.hpp"
 
@@ -83,7 +82,7 @@ public:
 		}
 		case Enums::LDFType::WSTRING: {
 			std::uint32_t size = *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
-			auto * wcp = reinterpret_cast<char16_t*>(const_cast<char*>(data.c_str()) + 4);
+			char16_t * wcp = reinterpret_cast<char16_t*>(const_cast<char*>(data.c_str()) + 4);
 			std::u16string buffer(wcp, size);
 			bs->Write(size);
 			StringUtils::writeBufferedWStringToBitStream(bs, buffer, buffer.size());
@@ -93,7 +92,7 @@ public:
 	}
 public:
 	LDFEntry(std::u16string inputKey, std::u16string input) {
-		key = std::move(inputKey);
+		key = inputKey;
 		type = Enums::LDFType::WSTRING;
 		data.resize(input.size() * 2 + 4);
 		std::uint32_t size = input.size();
@@ -101,65 +100,65 @@ public:
 		memcpy(const_cast<char*>(data.c_str())+4, input.c_str(), input.size() * 2);
 	}
 
-	LDFEntry(std::u16string inputKey, const char16_t input[]) : LDFEntry(std::move(inputKey), std::u16string(input)) {}
+	LDFEntry(std::u16string inputKey, const char16_t input[]) : LDFEntry(inputKey, std::u16string(input)) {}
 
 	explicit operator std::u16string() const {
-		if (type != Enums::LDFType::WSTRING) throw std::runtime_error("Invalid LDF type.");
-		auto * size = reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
+		if (type != Enums::LDFType::WSTRING) throw new std::runtime_error("Invalid LDF type.");
+		std::uint32_t * size = reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
 		//return std::u16string(reinterpret_cast<char16_t*>(data + 4), reinterpret_cast<char16_t*>(data + 4 + (*size *2) -1));
 		return std::u16string(reinterpret_cast<char16_t*>(const_cast<char*>(data.c_str()) + 4), *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str())));
 	}
 
 	LDFEntry(std::u16string inputKey, std::int32_t input) {
-		key = std::move(inputKey);
+		key = inputKey;	
 		type = Enums::LDFType::S32;
 		data.resize(4);
 		memcpy(const_cast<char*>(data.c_str()), &input, 4);
 	}
 
 	explicit operator std::int32_t() const {
-		if (type != Enums::LDFType::S32) throw std::runtime_error("Invalid LDF type.");
+		if (type != Enums::LDFType::S32) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<std::int32_t*>(const_cast<char*>(data.c_str()));
 	}
 
 	LDFEntry(std::u16string inputKey, std::float_t input) {
-		key = std::move(inputKey);
+		key = inputKey;	
 		type = Enums::LDFType::FLOAT; data.resize(4);
 		memcpy(const_cast<char*>(data.c_str()), &input, 4);
 	}
 
 	explicit operator std::float_t() const {
 		if (type == Enums::LDFType::U32) return reinterpret_cast<std::uint32_t>(this);
-		if (type != Enums::LDFType::FLOAT) throw std::runtime_error("Invalid LDF type.");
+		if (type != Enums::LDFType::FLOAT) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<std::float_t*>(const_cast<char*>(data.c_str()));
 	}
 
 	LDFEntry(std::u16string inputKey, std::double_t input) {
-		key = std::move(inputKey);
+		key = inputKey;	
 		type = Enums::LDFType::DOUBLE;
 		data.resize(8);
 		memcpy(const_cast<char*>(data.c_str()), &input, 8);
 	}
 
 	explicit operator std::double_t() const {
-		if (type != Enums::LDFType::DOUBLE) throw std::runtime_error("Invalid LDF type.");
+		if (type != Enums::LDFType::DOUBLE) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<std::double_t*>(const_cast<char*>(data.c_str()));
 	}
 
 	LDFEntry(std::u16string inputKey, std::uint32_t input) {
-		key = std::move(inputKey);
+		key = inputKey;	
 		type = Enums::LDFType::U32;
 		data.resize(4);
 		memcpy(const_cast<char*>(data.c_str()), &input, 4);
 	}
 
 	explicit operator std::uint32_t() const {
-		if (type != Enums::LDFType::U32) throw std::runtime_error("Invalid LDF type.");
+		if (type != Enums::LDFType::U32) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
 	}
 
 	LDFEntry(std::u16string inputKey, bool input) {
-		key = std::move(inputKey);
+		key = inputKey;	
 		type = Enums::LDFType::BOOLEAN;
 		data.resize(1);
 		memcpy(const_cast<char*>(data.c_str()), &input, 1);
@@ -171,31 +170,31 @@ public:
 	}
 
 	LDFEntry(std::u16string inputKey, std::int64_t input) {
-		key = std::move(inputKey);
+		key = inputKey;	
 		type = Enums::LDFType::S64;
 		data.resize(8);
 		memcpy(const_cast<char*>(data.c_str()), &input, 8);
 	}
 
 	explicit operator std::int64_t() const {
-		if (type != Enums::LDFType::S64) throw std::runtime_error("Invalid LDF type.");
+		if (type != Enums::LDFType::S64) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<std::int64_t*>(const_cast<char*>(data.c_str()));
 	}
 
 	LDFEntry(std::u16string inputKey, DataTypes::LWOOBJID input) {
-		key = std::move(inputKey);
+		key = inputKey;	
 		type = Enums::LDFType::LWOOBJID;
 		data.resize(8);
 		memcpy(const_cast<char*>(data.c_str()), &input, 8);
 	}
 
 	explicit operator DataTypes::LWOOBJID() const {
-		if (type != Enums::LDFType::LWOOBJID) throw std::runtime_error("Invalid LDF type.");
+		if (type != Enums::LDFType::LWOOBJID) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<DataTypes::LWOOBJID*>(const_cast<char*>(data.c_str()));
 	}
 
 	LDFEntry(std::u16string inputKey, std::string input) {
-		key = std::move(inputKey);
+		key = inputKey;	
 		type = Enums::LDFType::STRING;
 		std::uint32_t size = input.size();
 		data.resize(input.size() + 4);
@@ -203,11 +202,11 @@ public:
 		memcpy(const_cast<char*>(data.c_str()) + 4, const_cast<char*>(input.c_str()), input.size());
 	}
 
-	LDFEntry(std::u16string inputKey, const char input[]) : LDFEntry(std::move(inputKey), std::string(input)) {}
+	LDFEntry(std::u16string inputKey, const char input[]) : LDFEntry(inputKey, std::string(input)) {}
 
 	explicit operator std::string() const {
-		if (type != Enums::LDFType::STRING) throw std::runtime_error("Invalid LDF type.");
-		auto * size = reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
+		if (type != Enums::LDFType::STRING) throw new std::runtime_error("Invalid LDF type.");
+		std::uint32_t * size = reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
 		return std::string(reinterpret_cast<char*>(const_cast<char*>(data.c_str()) + 4), reinterpret_cast<char*>(const_cast<char*>(data.c_str()) + 4 + *size));
 	}
 
@@ -234,7 +233,7 @@ public:
 		}
 		}
 
-		throw std::runtime_error("Unknown LDF Type.");
+		throw new std::runtime_error("Unknown LDF Type.");
 		return 0;
 	}
 
@@ -284,7 +283,7 @@ public:
 		}
 		}
 
-		throw std::runtime_error("Unknown LDF Type.");
+		throw new std::runtime_error("Unknown LDF Type.");
 	}
 
 	~LDFEntry() {

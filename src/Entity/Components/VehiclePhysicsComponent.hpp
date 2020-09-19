@@ -23,9 +23,9 @@ public:
 
 	VehiclePhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 30; }
+	static constexpr int GetTypeID() { return 30; }
 
-	void SetPosition(const DataTypes::Vector3& pos) {
+	void SetPosition(DataTypes::Vector3 pos) {
 		position = pos;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
@@ -45,7 +45,7 @@ public:
 		return rotation;
 	}
 
-	void SetVelocity(const DataTypes::Vector3& vel) {
+	void SetVelocity(DataTypes::Vector3 vel) {
 		velocity = vel;
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();

@@ -48,17 +48,17 @@ namespace DataTypes {
 			/*
 				Returns the sqrMagnitude of this Vector.
 			*/
-			[[nodiscard]] float sqrMagnitude() const { return powf(x, 2) + powf(y, 2) + powf(z, 2); }
+			float sqrMagnitude() const { return powf(x, 2) + powf(y, 2) + powf(z, 2); }
 
 			/*
 				Returns the magnitude of this Vector.
 			*/
-			[[nodiscard]] float magnitude() const { return sqrtf(this->sqrMagnitude()); }
+			float magnitude() const { return sqrtf(this->sqrMagnitude()); }
 
 			/*
 				Returns this vector, normalized.
 			*/
-			[[nodiscard]] Vector3 normalized() const { return *this / this->magnitude(); }
+			Vector3 normalized() const { return *this / this->magnitude(); }
 
 			// Static vector properties.
 			static Vector3 up() { return Vector3(0, 1, 0); }
@@ -305,7 +305,7 @@ namespace DataTypes {
 				return (((this->x > other.x - 0.00001) && (this->x < other.x + 0.00001))
 					&& ((this->y > other.y - 0.00001) && (this->y < other.y + 0.00001))
 					&& ((this->z > other.z - 0.00001) && (this->z < other.z + 0.00001)));
-			} // std::numeric_limits<float>::epsilon instead of 0.00001
+			}
 
 			/*
 				Returns weather all axis values are equal to a number.
@@ -334,14 +334,14 @@ namespace DataTypes {
 					case 0:	return this->x;
 					case 1:	return this->y;
 					case 2:	return this->z;
-					default: throw std::runtime_error("Index out of bounds");
+					default: throw new std::runtime_error("Index out of bounds");
 				}
 			}
 
 			/*
 				Returns btVector3
 			*/
-			btVector3 getBt() const {
+			const btVector3 getBt() const {
 				btVector3 btVec3;
 				btVec3.setValue(x, y, z);
 				return btVec3;

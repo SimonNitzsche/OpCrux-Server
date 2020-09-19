@@ -43,6 +43,8 @@ public:
 		SQLSMALLINT  len;
 		SQLRETURN    ret;
 
+		fprintf(stderr, "[DATABASE] While running %s the driver reported:", fn);
+
 		do
 		{
 			ret = SQLGetDiagRec(type, handle, ++i, state, &native, text,
@@ -69,10 +71,10 @@ public:
 				str = "Unknkown " + ret;
 			}
 
-            printf("[DATABASE] While running %s the driver reported: %s\n", fn, str.c_str());
+			std::cout << " " <<str.c_str() << std::endl;
 
 			if (SQL_SUCCEEDED(ret)||ret==SQL_ERROR)
-				printf("[DATABASE] %s \n", text);
+				printf("[DATABASE] %s ->", text);
 		} while (ret == SQL_SUCCESS||ret==SQL_ERROR);
 	}
 
@@ -110,7 +112,7 @@ private:
 	inline static SQLHANDLE sqlConnHandle;
 	inline static SQLHANDLE sqlEnvHandle;
 	inline static SQLCHAR retconstring[SQL_RETURN_CODE_LEN];
-	inline static SQLHANDLE sqlStmtHandle = nullptr;
+	inline static SQLHANDLE sqlStmtHandle = NULL;
 public:
 	static SQLHANDLE GetSqlStmtHandle() {
 		return sqlStmtHandle;
@@ -118,7 +120,7 @@ public:
 
 	static int Connect() {
 		//initializations
-		sqlConnHandle = nullptr;
+		sqlConnHandle = NULL;
 
 		//allocations
 		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &sqlEnvHandle))
@@ -135,7 +137,6 @@ public:
 
 		//output
 		Logger::log("DATABASE", "Attempting connection to SQL Server...");
-
 
 		//connect to SQL Server
 		//I am using a trusted connection and port 14808
@@ -160,12 +161,12 @@ public:
 
 
 		switch (SQLDriverConnect(sqlConnHandle,
-			nullptr,
+			NULL,
 			(SQLCHAR*)connStrBuilder.c_str(),
 			SQL_NTS,
 			retconstring,
 			1000,
-			nullptr,
+			NULL,
 			SQL_DRIVER_COMPLETE)) {
 
 		case SQL_SUCCESS:
@@ -174,6 +175,7 @@ public:
 			break;
 
 		case SQL_SUCCESS_WITH_INFO:
+			Logger::log("DATABASE", "Successfully connected to SQL Server");
 			Logger::log("DATABASE", "Driver reported the following diagnostics");
 			extract_error("SQLDriverConnect", sqlConnHandle, SQL_HANDLE_DBC);
 			return 1;
@@ -181,15 +183,15 @@ public:
 
 		case SQL_INVALID_HANDLE:
 			Logger::log("DATABASE", "Could not connect to SQL Server (SQL_INVALID_HANDLE)");
-			Disconnect();
 			return 2;
+			Disconnect();
 
 		case SQL_ERROR:
 			Logger::log("DATABASE", "Could not connect to SQL Server (SQL_ERROR)");
 			Logger::log("DATABASE", "Driver reported the following diagnostics");
 			extract_error("SQLDriverConnect", sqlConnHandle, SQL_HANDLE_DBC);
-			Disconnect();
 			return 2;
+			Disconnect();
 
 		default:
 			return 0;
@@ -284,14 +286,14 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
 		}
 		{
 			if (SQLFetch(sqlStmtHandle) != SQL_SUCCESS) {
-				printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return false;
@@ -302,8 +304,10 @@ public:
 				SQLGetData(sqlStmtHandle, 1, SQL_CHAR, sqlAnswer, SQL_RESULT_LEN, &ptrSqlAnswer);
 
 				std::string db_hash = std::string((char*)&sqlAnswer, ptrSqlAnswer);
-				Logger::log("DATABASE", "Database Hash: " + db_hash);
-				Logger::log("DATABASE", "Incoming Hash: " + h_password);
+				std::string dbhash = "DB_HASH: " + db_hash;
+				std::string pkhash = "PK_HASH: " + h_password;
+				Logger::log("DATABASE", dbhash);
+				Logger::log("DATABASE", pkhash);
 
 				if (db_hash == h_password) {
 					SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
@@ -343,14 +347,14 @@ public:
 		}
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
 		}
 		{
 			if (SQLFetch(sqlStmtHandle) != SQL_SUCCESS) {
-				printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return false;
@@ -375,14 +379,14 @@ public:
 
 	static void SetupStatementHandle() {
 
-		if (sqlStmtHandle != nullptr) {
+		if (sqlStmtHandle != NULL) {
 			SQLCloseCursor(sqlStmtHandle);
 			if (SQL_NO_DATA != SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle)) {
 				extract_error("SQLFreeHandle", sqlConnHandle, SQL_HANDLE_DBC);
 				extract_error("SQLFreeHandle", sqlStmtHandle, SQL_HANDLE_STMT);
 			}
 		}
-		sqlStmtHandle = nullptr;
+		sqlStmtHandle = NULL;
 		//if there is a problem connecting then exit application
 		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_STMT, sqlConnHandle, &sqlStmtHandle)) {
 			extract_error("SQLAllocHandle", sqlConnHandle, SQL_HANDLE_DBC);
@@ -399,7 +403,7 @@ public:
 		P_STATS
 	};
 
-	static std::uint64_t reserveCountedID(DBCOUNTERID dbCounterID) {
+	static unsigned long long reserveCountedID(DBCOUNTERID dbCounterID) {
 
 		SQLCHAR * query;
 		switch (dbCounterID) {
@@ -432,7 +436,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
@@ -451,7 +455,7 @@ public:
 			}
 
 			{
-				printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return -1;
@@ -462,7 +466,7 @@ public:
 		return -1;
 	}
 
-	static int GetCharCount(std::uint32_t accountID) {
+	static int GetCharCount(unsigned long accountID) {
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT COUNT(objectID) FROM OPCRUX_GD.dbo.Characters WHERE accountID=?", SQL_NTS);
@@ -484,7 +488,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
@@ -503,7 +507,7 @@ public:
 			}
 
 			{
-				printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return -1;
@@ -514,7 +518,7 @@ public:
 		return false;
 	}
 
-	static Str_DB_CharStyle GetCharStyle(std::uint32_t styleID) {
+	static Str_DB_CharStyle GetCharStyle(unsigned long styleID) {
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle FROM OPCRUX_GD.dbo.CharacterStyles WHERE id=?", SQL_NTS);
@@ -536,7 +540,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
@@ -591,13 +595,13 @@ public:
 			return charStyle;
 		}
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		return {};
 	}
 
-	static std::vector<Str_DB_CharInfo> GetChars(std::uint32_t accountID) {
+	static std::vector<Str_DB_CharInfo> GetChars(unsigned long accountID) {
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT objectID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE accountID=? ORDER BY charIndex", SQL_NTS);
@@ -619,7 +623,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
@@ -707,7 +711,7 @@ public:
 		}
 
 		if(charsInfo.size() != GetCharCount(accountID)){
-			printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+			std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 			extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
@@ -721,7 +725,7 @@ public:
 		return {};
 	}
 
-	static Str_DB_CharInfo GetChar(std::uint64_t objectID) {
+	static Str_DB_CharInfo GetChar(unsigned long long objectID) {
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE objectID=? ORDER BY charIndex", SQL_NTS);
@@ -743,7 +747,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
@@ -828,7 +832,7 @@ public:
 			return charInfo;
 		}
 
-			printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+			std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 			extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
@@ -883,19 +887,19 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to execute query.");
 		}
 	}
 
-	static std::uint32_t CreateCharStyle(
-            std::int16_t headColor, std::int16_t head, std::int16_t chestColor, std::int16_t chest,
-        std::int16_t legs, std::int16_t hairStyle, std::int16_t hairColor, std::int16_t leftHand,
-        std::int16_t rightHand, std::int16_t eyebrowStyle, std::int16_t eyesStyle, std::int16_t mouthStyle
+	static unsigned long CreateCharStyle(
+		int headColor, int head, int chestColor, int chest,
+		int legs, int hairStyle, int hairColor, int leftHand,
+		int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
 	){
-		std::int32_t id = reserveCountedID(DBCOUNTERID::P_STYLE);
+		long id = reserveCountedID(DBCOUNTERID::P_STYLE);
 
 		SetupStatementHandle();
 
@@ -930,7 +934,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
@@ -939,9 +943,9 @@ public:
 		return id;
 	}
 
-	static std::uint64_t CreateNewChar (
-		unsigned long accountID, std::string customName, std::string genname, std::int16_t headColor, std::int16_t head, std::int16_t chestColor, std::int16_t chest,
-        std::int16_t legs, std::int16_t hairStyle, std::int16_t hairColor, std::int16_t leftHand, std::int16_t rightHand, std::int16_t eyebrowStyle, std::int16_t eyesStyle, std::int16_t mouthStyle
+	static unsigned long long CreateNewChar (
+		unsigned long accountID, std::string customName, std::string genname, int headColor, int head, int chestColor, int chest,
+		int legs, int hairStyle, int hairColor, int leftHand, int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
 	) {
 		// Get Char Count
 		int charCount = GetCharCount(accountID);
@@ -950,16 +954,16 @@ public:
 		if (charCount < 4) {
 
 			// Default Valuse
-            std::int16_t lastWorld = 0;
-            std::int16_t lastInstance = 0;
-            std::int16_t lastClone = 0;
-			std::uint64_t lastLog = 0;
+			int lastWorld = 0;
+			int lastInstance = 0;
+			int lastClone = 0;
+			unsigned long long lastLog = 0;
 			DataTypes::Vector3 position = DataTypes::Vector3::zero();
 
 			int shirtObjectLOT = 0;
 			{
 				FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
-				if (!rth.isRowHeaderValid()) throw std::runtime_error("Invalid Row Header");
+				if (!rth.isRowHeaderValid()) throw new std::runtime_error("Invalid Row Header");
 				for (int i = 0; i < rth.getRowCount(); ++i) {
 					if (!rth.isValid(i)) continue;
 					try {
@@ -1009,22 +1013,22 @@ public:
 					return -1; // Fail
 				}
 			}
-			std::int16_t uScore = 0;
-			std::int16_t uLevel = 0;
-			std::int16_t currency = 0;
-			std::int16_t reputation = 0;
-			std::int16_t health = 4;
-			std::int16_t imagination = 0;
-			std::int16_t armor = 0;
+			int uScore = 0;
+			int uLevel = 0;
+			int currency = 0;
+			int reputation = 0;
+			int health = 4;
+			int imagination = 0;
+			int armor = 0;
 
 			// Create style
-            std::uint32_t styleID = CreateCharStyle(headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+			unsigned long styleID = CreateCharStyle(headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 
 			// Create statistics
-			std::uint32_t statsID = CreateCharStats(reserveCountedID(DBCOUNTERID::P_STATS));
+			unsigned long statsID = CreateCharStats(reserveCountedID(DBCOUNTERID::P_STATS));
 
 			// Reserve objectID
-			std::uint64_t objectID = reserveCountedID(DBCOUNTERID::PLAYER);
+			unsigned long long objectID = reserveCountedID(DBCOUNTERID::PLAYER);
 
 			// Create default shirt/pants objects
 			DatabaseModels::ItemModel shirtObject;
@@ -1096,7 +1100,7 @@ public:
 
 			ret = SQLExecute(sqlStmtHandle);
 			if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-				printf("Database Exception on Execute!\n");
+				std::cout << "Database Exception on Execute!\n";
 				extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return false;
@@ -1129,14 +1133,14 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return -1;
 		}
 		{
 			if (SQLFetch(sqlStmtHandle) != SQL_SUCCESS) {
-				printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return -1;
@@ -1182,7 +1186,7 @@ public:
 			"racesFinished",
 			"racesWon"
 		};
-		if (statsID >= 27) throw std::runtime_error("Index out of range.");
+		if (statsID >= 27) throw new std::runtime_error("Index out of range.");
 		std::string statsName = lookup[statsID];
 		return 0;
 	}
@@ -1210,7 +1214,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to query DB");
@@ -1229,7 +1233,7 @@ public:
 			}
 
 			{
-				printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				throw std::runtime_error("Unable to query DB");
@@ -1292,7 +1296,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to add mission.");
@@ -1326,7 +1330,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -1368,7 +1372,7 @@ public:
 			
 		}
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -1397,7 +1401,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -1441,7 +1445,7 @@ public:
 
 		return retVal;
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -1471,7 +1475,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -1515,7 +1519,7 @@ public:
 
 		return retVal;
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -1528,7 +1532,7 @@ public:
 
 		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND state IN (";
 
-		if (!state.empty())
+		if (state.size() != 0)
 			stmBuilder += "?";
 		for (int i = 1; i < state.size(); ++i)
 			stmBuilder += ",?";
@@ -1558,7 +1562,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -1602,7 +1606,7 @@ public:
 
 		return retVal;
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -1615,7 +1619,7 @@ public:
 
 		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID IN (";
 
-		if (!missions.empty())
+		if (missions.size() != 0)
 			stmBuilder += "?";
 		for (int i = 1; i < missions.size(); ++i)
 			stmBuilder += ",?";
@@ -1645,7 +1649,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -1689,7 +1693,7 @@ public:
 
 		return retVal;
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -1702,7 +1706,7 @@ public:
 
 		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND state=? AND missionID IN (";
 
-		if (!missions.empty())
+		if (missions.size() != 0)
 			stmBuilder += "?";
 		for (int i = 1; i < missions.size(); ++i)
 			stmBuilder += ",?";
@@ -1733,7 +1737,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -1777,7 +1781,7 @@ public:
 
 		return retVal;
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -1790,13 +1794,13 @@ public:
 
 		std::string stmBuilder = "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID IN (";
 
-		if (!missions.empty())
+		if (missions.size() != 0)
 			stmBuilder += "?";
 		for (int i = 1; i < missions.size(); ++i)
 			stmBuilder += ",?";
 		stmBuilder += ") AND state IN (";
 
-		if (!states.empty())
+		if (states.size() != 0)
 			stmBuilder += "?";
 		for (int i = 1; i < states.size(); ++i)
 			stmBuilder += ",?";
@@ -1831,7 +1835,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -1875,7 +1879,7 @@ public:
 
 		return retVal;
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -1900,7 +1904,7 @@ public:
 		SQLLEN NTS = SQL_NTS;
 		SQLLEN lenProgress = mission.progress.size();
 
-		mission.time = time(nullptr);
+		mission.time = time(0);
 
 		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &mission.state, 0, &lenZero);
 		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_TCHAR, SQL_VARCHAR, std::max<SQLUINTEGER>(mission.progress.size(), 1), 0, (SQLPOINTER)mission.progress.c_str(), 0, &lenProgress);
@@ -1918,7 +1922,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to add mission.");
@@ -1960,7 +1964,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO && ret != SQL_NO_DATA) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("error.");
@@ -1990,7 +1994,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -2014,7 +2018,7 @@ public:
 
 		return retVal;
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -2023,8 +2027,8 @@ public:
 	static std::map<std::int32_t, std::list<ItemModel>> GetFullInventory(std::int64_t charID) {
 		const std::list<std::int32_t> tabs = { 0,1,2,4,5,6,7,8,12,14 };
 		std::map<std::int32_t, std::list<ItemModel>> result;
-		for (int tab : tabs) {
-			result.insert({ tab, GetInventoryItemsOfTab(charID, tab) });
+		for (auto it = tabs.begin(); it != tabs.end(); ++it) {
+			result.insert({ *it, GetInventoryItemsOfTab(charID, *it) });
 		}
 		return result;
 	}
@@ -2053,7 +2057,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -2103,7 +2107,7 @@ public:
 
 		return retVal;
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		throw std::runtime_error("Unable to fetch DB.");
@@ -2143,7 +2147,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
@@ -2186,14 +2190,14 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			throw std::runtime_error("Unable to fetch DB.");
 		}
 	}
 
-	static std::uint32_t GetAccountIDFromMinifigOBJID(std::uint64_t objid) {
+	static int GetAccountIDFromMinifigOBJID(unsigned long objid) {
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT accountID FROM OPCRUX_GD.dbo.Characters WHERE objectID=?", SQL_NTS);
@@ -2213,7 +2217,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
@@ -2231,7 +2235,7 @@ public:
 			}
 
 			{
-				printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 				return -1;
@@ -2242,7 +2246,7 @@ public:
 		return false;
 	}
 
-	static std::uint16_t GetAccountGMLevel(std::uint32_t accountID) {
+	static int GetAccountGMLevel(unsigned long accountID) {
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT rank FROM OPCRUX_AD.dbo.Accounts WHERE id=?", SQL_NTS);
@@ -2262,7 +2266,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;
@@ -2281,18 +2285,18 @@ public:
 			}
 
 			{
-				printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+				std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 				extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 				SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-				return 2;
+				return -1;
 
 			}
 		}
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
-		return 2;
+		return false;
 	}
 
-	static Str_DB_CharStats GetCharStats(std::uint32_t charIndex) {
+	static Str_DB_CharStats GetCharStats(long charIndex) {
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SELECT statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes FROM OPCRUX_GD.dbo.CharacterStats WHERE charIndex=?", SQL_NTS);
@@ -2312,7 +2316,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return {};
@@ -2413,7 +2417,7 @@ public:
 			return charStats;
 		}
 
-		printf("%s :: %s Database Exception on Fetch\n", __FILE__, __LINE__);
+		std::cout << __FILE__ << " :: " << __LINE__ << " Database Exception on Fetch!\n";
 		extract_error("SQLFetch", sqlStmtHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 		return {};
@@ -2422,7 +2426,7 @@ public:
 		return {};
 	}
 
-	static std::uint32_t CreateCharStats(std::int32_t statsID) {
+	static unsigned long CreateCharStats(long statsID) {
 		SetupStatementHandle();
 
 		SQLRETURN ret = SQLPrepare(sqlStmtHandle, (SQLCHAR*)"SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStats ON;INSERT INTO OPCRUX_GD.dbo.CharacterStats (statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", SQL_NTS);
@@ -2470,7 +2474,7 @@ public:
 
 		ret = SQLExecute(sqlStmtHandle);
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-			printf("Database Exception on Execute!\n");
+			std::cout << "Database Exception on Execute!\n";
 			extract_error("SQLExecute", sqlStmtHandle, SQL_HANDLE_STMT);
 			SQLFreeHandle(SQL_HANDLE_STMT, sqlStmtHandle);
 			return false;

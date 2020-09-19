@@ -29,7 +29,7 @@ public:
 
 	SimplePhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 3; }
+	static constexpr int GetTypeID() { return 3; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		bool tmpFlag = false;
@@ -75,7 +75,7 @@ public:
 		}
 	}
 
-	void SetPosition(const DataTypes::Vector3& pos) {
+	void SetPosition(DataTypes::Vector3 pos) {
 		position = pos;
 		_posRotDirty = true;
 		owner->SetDirty();

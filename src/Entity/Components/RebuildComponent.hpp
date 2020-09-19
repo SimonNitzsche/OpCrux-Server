@@ -9,7 +9,7 @@ public:
 	RebuildComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 
-	static constexpr std::int16_t GetTypeID() { return 12; }
+	static constexpr int GetTypeID() { return 12; }
 
 };
 

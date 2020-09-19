@@ -11,7 +11,7 @@ namespace GM {
 
 		ModularAssemblyNIFCompleted() : GMBase() {}
 
-        std::int64_t objectID;
+		int64_t objectID;
 
 		void Deserialize(RakNet::BitStream* bs) {
 			GM_VAR_DESERIALIZE(bs, objectID);

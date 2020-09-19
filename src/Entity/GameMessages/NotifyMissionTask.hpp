@@ -19,8 +19,8 @@ namespace GM {
 			GM_VAR_SERIALIZE(bs, missionID);
 			GM_VAR_SERIALIZE(bs, taskMask);
 			bs->Write<std::uint8_t>(updates.size());
-			for (float & update : updates)
-				bs->Write<std::float_t>(update);
+			for (auto it = updates.begin(); it != updates.end(); ++it)
+				bs->Write<std::float_t>(*it);
 		}
 	};
 }

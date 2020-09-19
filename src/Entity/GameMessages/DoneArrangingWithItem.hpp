@@ -12,16 +12,16 @@ namespace GM {
 
 		int newSourceBAG;
 		DataTypes::LWOOBJID newSourceID;
-		std::uint32_t newSourceLOT;
-        std::uint32_t newSourceType;
+		uint32_t newSourceLOT;
+		uint32_t newSourceType;
 		DataTypes::LWOOBJID newTargetID;
-        std::uint32_t newTargetLOT;
-        std::uint32_t newTargetType;
+		uint32_t newTargetLOT;
+		uint32_t newTargetType;
 		Vector3 newTargetPos;
-        std::uint32_t oldItemBag;
+		uint32_t oldItemBag;
 		DataTypes::LWOOBJID oldItemID;
-        std::uint32_t oldItemLot;
-        std::uint32_t oldItemType;
+		uint32_t oldItemLot;
+		uint32_t oldItemType;
 
 		void Deserialize(RakNet::BitStream* bs) {
 			GM_VAR_DESERIALIZE(bs, newSourceBAG);

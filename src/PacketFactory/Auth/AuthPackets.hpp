@@ -2,7 +2,6 @@
 #define __PACKETFACTORY__AUTH__AUTHPACKETS_HPP__
 
 #include <memory>
-#include <utility>
 #include <RakNet/BitStream.h>
 #include <RakNet/Types.h>
 #include <RakNet/RakNetTypes.h>
@@ -26,7 +25,7 @@ namespace PacketFactory {
 		inline void doLoginResponse(RakPeerInterface * rakServer, SystemAddress client, ELoginReturnCode reason, std::u16string customErrorMessage=u"") {
 			RakNet::BitStream returnBS;
 			// Head
-			LUPacketHeader returnBSHead{};
+			LUPacketHeader returnBSHead;
 			returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
 			returnBSHead.remoteType = static_cast<uint16_t>(ERemoteConnection::CLIENT);
 			returnBSHead.packetID = static_cast<uint32_t>(EAuthPacketID::LOGIN_REQUEST);
@@ -62,7 +61,7 @@ namespace PacketFactory {
 			returnBS.Write<std::uint8_t>(false); // is FTP
 			returnBS.Write<std::uint64_t>(0);
 
-			StringUtils::writeWStringToBitStream<std::uint16_t>(&returnBS, std::move(customErrorMessage));
+			StringUtils::writeWStringToBitStream<std::uint16_t>(&returnBS, customErrorMessage);
 
 			// Stamp stuff
 			returnBS.Write<std::uint32_t>(0x0144); // Stamps

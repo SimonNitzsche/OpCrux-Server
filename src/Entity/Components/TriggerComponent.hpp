@@ -13,7 +13,7 @@ public:
 
 	TriggerComponent(std::int32_t componentID) : IEntityComponent(componentID), trigger(-1, false) {}
 	
-	static constexpr std::int16_t GetTypeID() { return 69; }
+	static constexpr int GetTypeID() { return 69; }
 
 	void AssignTrigger(ZoneTrigger _trigger) {
 		trigger = _trigger;
@@ -113,7 +113,7 @@ private:
 			displayZoneSummary
 				[1 for zone start, 0 for zone end]
 			SetPhysicsVolumeStatus
-				[ï¿½Onï¿½, ï¿½Offï¿½]
+				[“On”, “Off”]
 			setModelToBuild
 				[template ID]
 			spawnModelBricks
@@ -146,7 +146,7 @@ private:
 
 				std::string effectTypeStr = zCommand->args.at(0);
 				
-				if (effectTypeStr == "Push") { phantomPhysicsComponent->physEffectType = 0; }
+					 if (effectTypeStr == "Push") { phantomPhysicsComponent->physEffectType = 0; }
 				else if (effectTypeStr == "Attract") { phantomPhysicsComponent->physEffectType = 1; }
 				else if (effectTypeStr == "Repulse") { phantomPhysicsComponent->physEffectType = 2; }
 				else if (effectTypeStr == "Gravity") { phantomPhysicsComponent->physEffectType = 3; }
@@ -188,13 +188,13 @@ private:
 		}
 	}
 
-	void HandleEvent(const std::string& eventID, Entity::GameObject * invoker) {
+	void HandleEvent(std::string eventID, Entity::GameObject * invoker) {
 		if (trigger.enabled) {
-			for (auto & event : trigger.events) {
-				ZoneTriggerEvent * zEvent = &event;
+			for (int i = 0; i < trigger.events.size(); ++i) {
+				ZoneTriggerEvent * zEvent = &trigger.events.at(i);
 				if (zEvent->id == eventID) {
-					for (auto & command : zEvent->commands) {
-						ZoneTriggerCommand * zCommand = &command;
+					for (int j = 0; j < zEvent->commands.size(); ++j) {
+						ZoneTriggerCommand * zCommand = &zEvent->commands.at(j);
 						
 						TriggerCommand(zCommand, invoker);
 					}

@@ -17,8 +17,8 @@ public:
 	}
 
 	ClientSession * GetSession(SystemAddress systemAddress) {
-		for (auto & client : clients) {
-			ClientSession * session = &client;
+		for (int i = 0; i < clients.size(); ++i) {
+			ClientSession * session = &clients[i];
 			if ((session->systemAddress) != systemAddress) continue;
 			return session;
 		}
@@ -26,15 +26,15 @@ public:
 	}
 
 	ClientSession* GetSession(DataTypes::LWOOBJID object) {
-		for (auto & client : clients) {
-			ClientSession* session = &client;
+		for (int i = 0; i < clients.size(); ++i) {
+			ClientSession* session = &clients[i];
 			if ((session->actorID) != object) continue;
 			return session;
 		}
 		return nullptr;
 	}
 
-	void AddSession(const ClientSession& csCopy) {
+	void AddSession(ClientSession csCopy) {
 		clients.push_back(csCopy);
 	}
 	void RemoveSession(ClientSession * session) {

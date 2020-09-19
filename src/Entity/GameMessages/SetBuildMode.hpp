@@ -12,9 +12,9 @@ namespace GM {
 		SetBuildMode() : GMBase() {}
 
 		bool bStart;
-		std::int16_t distanceType;
+		int distanceType;
 		bool modePaused;
-        std::int16_t modeValue;
+		int modeValue;
 		DataTypes::LWOOBJID playerID;
 		DataTypes::Vector3 startPos;
 		DataTypes::Vector3 empty;

@@ -4,50 +4,50 @@
 namespace DatabaseModels {
 	struct Str_DB_CharStyle {
 public:
-	std::int16_t headColor;
-	std::int16_t head;
-	std::int16_t chestColor;
-	std::int16_t chest;
-	std::int16_t legs;
-	std::int16_t hairStyle;
-	std::int16_t hairColor;
-	std::int16_t leftHand;
-	std::int16_t rightHand;
-	std::int16_t eyebrowStyle;
-	std::int16_t eyesStyle;
-	std::int16_t mouthStyle;
+	int headColor;
+	int head;
+	int chestColor;
+	int chest;
+	int legs;
+	int hairStyle;
+	int hairColor;
+	int leftHand;
+	int rightHand;
+	int eyebrowStyle;
+	int eyesStyle;
+	int mouthStyle;
 };
 
 struct Str_DB_CharStats {
 public:
-	std::uint64_t charIndex;
-	std::uint32_t TotalCurrencyCollected;
-	std::uint32_t TotalBricksCollected;
-	std::uint32_t TotalSmashablesSmashed;
-	std::uint32_t TotalQuickBuildsCompleted;
-	std::uint32_t TotalEnemiesSmashed;
-	std::uint32_t TotalRocketsUsed;
-	std::uint32_t TotalMissionsCompleted;
-	std::uint32_t TotalPetsTamed;
-	std::uint32_t TotalImaginationPowerUpsCollected;
-	std::uint32_t TotalLifePowerUpsCollected;
-	std::uint32_t TotalArmorPowerUpsCollected;
-	std::uint32_t TotalDistanceTraveled;
-	std::uint32_t TotalSuicides;
-	std::uint32_t TotalDamageTaken;
-	std::uint32_t TotalDamageHealed;
-	std::uint32_t TotalArmorRepaired;
-	std::uint32_t TotalImaginationRestored;
-	std::uint32_t TotalImaginationUsed;
-	std::uint32_t TotalDistanceDriven;
-	std::uint32_t TotalTimeAirborne;
-	std::uint32_t TotalRacingImaginationPowerUpsCollected;
-	std::uint32_t TotalRacingImaginationCratesSmashed;
-	std::uint32_t TotalRacecarBoostsActivated;
-	std::uint32_t TotalRacecarWrecks;
-	std::uint32_t TotalRacingSmashablesSmashed;
-	std::uint32_t TotalRacesFinished;
-	std::uint32_t TotalFirstPlaceFinishes;
+	unsigned long long charIndex;
+	unsigned long TotalCurrencyCollected;
+	unsigned long TotalBricksCollected;
+	unsigned long TotalSmashablesSmashed;
+	unsigned long TotalQuickBuildsCompleted;
+	unsigned long TotalEnemiesSmashed;
+	unsigned long TotalRocketsUsed;
+	unsigned long TotalMissionsCompleted;
+	unsigned long TotalPetsTamed;
+	unsigned long TotalImaginationPowerUpsCollected;
+	unsigned long TotalLifePowerUpsCollected;
+	unsigned long TotalArmorPowerUpsCollected;
+	unsigned long TotalDistanceTraveled;
+	unsigned long TotalSuicides;
+	unsigned long TotalDamageTaken;
+	unsigned long TotalDamageHealed;
+	unsigned long TotalArmorRepaired;
+	unsigned long TotalImaginationRestored;
+	unsigned long TotalImaginationUsed;
+	unsigned long TotalDistanceDriven;
+	unsigned long TotalTimeAirborne;
+	unsigned long TotalRacingImaginationPowerUpsCollected;
+	unsigned long TotalRacingImaginationCratesSmashed;
+	unsigned long TotalRacecarBoostsActivated;
+	unsigned long TotalRacecarWrecks;
+	unsigned long TotalRacingSmashablesSmashed;
+	unsigned long TotalRacesFinished;
+	unsigned long TotalFirstPlaceFinishes;
 };
 
 enum class EStats {
@@ -82,27 +82,27 @@ enum class EStats {
 
 struct Str_DB_CharInfo {
 public: 
-	std::uint32_t accountID;
-	std::uint64_t objectID;
-	std::uint8_t charIndex;
+	unsigned long accountID;
+	unsigned long long objectID;
+	unsigned char charIndex;
 	std::string name = "";
 	std::string pendingName = "";
-	std::uint16_t styleID;
-	std::uint16_t statsID;
-	std::uint16_t lastWorld;
-	std::uint16_t lastInstance;
-    std::uint16_t lastClone;
-	std::uint64_t lastLog;
+	unsigned int styleID;
+	unsigned int statsID;
+	unsigned short lastWorld;
+	unsigned short lastInstance;
+	unsigned int lastClone;
+	unsigned long long lastLog;
 	DataTypes::Vector3 position;
-	std::uint16_t shirtObjectID;
-	std::uint16_t pantsObjectID;
-	std::uint16_t uScore;
-	std::uint16_t uLevel;
-	std::uint16_t currency;
-	std::uint16_t reputation;
-	std::uint16_t health;
-	std::uint16_t imagination;
-	std::uint16_t armor;
+	unsigned int shirtObjectID;
+	unsigned int pantsObjectID;
+	unsigned int uScore;
+	unsigned int uLevel;
+	unsigned int currency;
+	unsigned int reputation;
+	unsigned int health;
+	unsigned int imagination;
+	unsigned int armor;
 	Str_DB_CharInfo() {
 		name = "";
 		pendingName = "";

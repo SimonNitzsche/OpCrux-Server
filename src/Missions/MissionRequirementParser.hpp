@@ -4,7 +4,6 @@
 #include "Database/Database.hpp"
 #include <iostream>
 #include <string_view>
-#include <utility>
 
 class MissionRequirementParser {
 private:
@@ -39,8 +38,9 @@ private:
 
 	inline bool hasMissionFromBuffer(std::string_view missionAndOrTask) {
 		auto mt = splitMission(missionAndOrTask);
-		for (auto mm : m_availableMissions) {
-				if (mm.missionID == mt.first) {
+		for (auto it = m_availableMissions.begin(); it != m_availableMissions.end(); ++it) {
+			auto mm = *it;
+			if (mm.missionID == mt.first) {
 				return mm.state == mt.second;
 			}
 		}
@@ -192,7 +192,7 @@ public:
 
 					// Check for duplicates
 					bool isDuplicate = false;
-					if (!result.empty()) {
+					if (result.size() != 0) {
 						auto resultEnd = result.end();
 						auto newEntryBegin = newEntry.begin();
 						for (auto it = result.begin(); it != resultEnd; ++it) {
@@ -220,14 +220,15 @@ public:
 		std::list<std::int32_t> result = {};
 		std::list<std::string_view> sRes = sweepMissionList(statement);
 
-		for (auto svE : sRes) {
-				result.push_back(splitMission(svE).first);
+		for (auto it1 = sRes.begin(); it1 != sRes.end(); ++it1) {
+			std::string_view svE = *it1;
+			result.push_back(splitMission(svE).first);
 		}
 
 		return result;
 	}
 
-	MissionRequirementParser(std::string_view statement, std::list<DatabaseModels::MissionModel> availableMissions) : m_availableMissions(std::move(availableMissions)) {
+	MissionRequirementParser(std::string_view statement, std::list<DatabaseModels::MissionModel> availableMissions) : m_availableMissions(availableMissions) {
 		parseSucceeded = true;
 
 		result = parse(statement);

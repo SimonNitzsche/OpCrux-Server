@@ -5,7 +5,7 @@
 namespace GM {
 	struct ActivityStart : GMBase {
 
-		std::int16_t iPathIndex;
+		int iPathIndex;
 
 		inline constexpr static Enums::EGameMessageID GetID() {
 			return Enums::EGameMessageID::SERVER_ACTIVITY_START;

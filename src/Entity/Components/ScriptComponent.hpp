@@ -78,7 +78,7 @@ public:
 
 	ScriptComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 5; }
+	static constexpr int GetTypeID() { return 5; }
 
 	void OnEnable() {
 		std::uint32_t compID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 5);

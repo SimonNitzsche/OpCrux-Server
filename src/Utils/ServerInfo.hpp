@@ -1,10 +1,10 @@
 #ifndef __UTILS__SERVERINFO_HPP__
 #define __UTILS__SERVERINFO_HPP__
 
-#include <cstdio>
+#include <stdio.h>
 #include <string>
-#include <ctime>
-#include <cstdint>
+#include <time.h>
+#include <stdint.h>
 #include "Common/CrossPlatform.hpp"
 
 class MasterServer;

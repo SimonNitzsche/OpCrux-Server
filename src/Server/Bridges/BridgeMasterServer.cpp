@@ -11,7 +11,7 @@ using namespace Enums;
 enum class SERVERMODE : uint8_t;
 extern SERVERMODE MODE_SERVER;
 
-BridgeMasterServer::BridgeMasterServer(std::string masterServerIP) : masterServerIP (std::move(masterServerIP)) {
+BridgeMasterServer::BridgeMasterServer(std::string masterServerIP) : masterServerIP (masterServerIP) {
 	rakMasterClient = RakNetworkFactory::GetRakPeerInterface();
 	SocketDescriptor msSocketDesscriptor(0, 0);
 	rakMasterClient->Startup(1, 30, &msSocketDesscriptor, 1);
@@ -24,8 +24,8 @@ void BridgeMasterServer::ListenHandle() {
 	while (ServerInfo::bRunning) {
 		RakSleep(1);
 		while (packet = rakMasterClient->Receive()) {
-			auto *data = new RakNet::BitStream(packet->data, packet->length, false);
-			std::uint8_t packetID;
+			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
+			uint8_t packetID;
 			data->Read(packetID);
 
 			switch (packetID) {
@@ -114,7 +114,6 @@ void BridgeMasterServer::Listen() {
 #include <ios>
 #include <ostream>
 #include <fstream>
-#include <utility>
 
 void BridgeMasterServer::SayHello() {
 	if (!_connected) {

@@ -190,18 +190,18 @@ void display(WorldServer * ws)
 	cam.Control();
 	//drawSkybox(50);
 	cam.UpdateCamera();
-	for (auto & bodie : bodies)
+	for (int i = 0; i < bodies.size(); i++)
 	{
-		if (bodie->getCollisionShape()->getShapeType() == STATIC_PLANE_PROXYTYPE)
-			renderPlane(bodie);
-		else if (bodie->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
-			renderSphere(bodie, DataTypes::Vector3(255, 0, 0));
+		if (bodies[i]->getCollisionShape()->getShapeType() == STATIC_PLANE_PROXYTYPE)
+			renderPlane(bodies[i]);
+		else if (bodies[i]->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+			renderSphere(bodies[i], DataTypes::Vector3(255, 0, 0));
 	}
 
 	ObjectsManager* objMan = ws->objectsManager;
 	auto objects = objMan->GetObjects();
-	for (auto & object : objects) {
-		btRigidBody* rb = object->GetRigidBody();
+	for (auto it = objects.begin(); it != objects.end(); ++it) {
+		btRigidBody* rb = (*it)->GetRigidBody();
 		if (rb == nullptr) continue;
 		if (rb->getCollisionShape()->getShapeType() == BroadphaseNativeTypes::BOX_SHAPE_PROXYTYPE) {
 			renderCube(rb);
@@ -209,7 +209,7 @@ void display(WorldServer * ws)
 		else if (rb->getCollisionShape()->getShapeType() == STATIC_PLANE_PROXYTYPE)
 			renderPlane(rb);
 		else if (rb->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE) {
-			auto colBig = std::hash<std::uint32_t>()(object->GetLOT());
+			auto colBig = std::hash<std::uint32_t>()((*it)->GetLOT());
 			renderSphere(rb,DataTypes::Vector3((colBig & 0xFF0000) >> 16, (colBig & 0x00FF00) >> 8, (colBig & 0x0000FF)));
 			btTransform t = rb->getWorldTransform();
 			//Logger::log("TEST", "Rendering sphere at " + std::to_string(t.getOrigin().x()) + " " + std::to_string(t.getOrigin().y()) + " " + std::to_string(t.getOrigin().z()));
@@ -231,10 +231,10 @@ void init(WorldServer * ws, float angle)
 	btTransform t;
 	t.setIdentity();
 	t.setOrigin(btVector3(0, 0, 0));
-	auto* plane = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+	btStaticPlaneShape* plane = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
 	btMotionState* motion = new btDefaultMotionState(t);
 	btRigidBody::btRigidBodyConstructionInfo info(0.0, motion, plane);
-	auto* body = new btRigidBody(info);
+	btRigidBody* body = new btRigidBody(info);
 	ws->dynamicsWorld->addRigidBody(body);
 	bodies.push_back(body);
 
@@ -281,7 +281,7 @@ void TestPhysics() {
 
 	ServerInfo::init();
 
-	while (virtualServerInstances.empty()) { sleep_ms(30); }
+	while (virtualServerInstances.size() == 0) { sleep_ms(30); }
 	testWs = static_cast<WorldServer*>(virtualServerInstances.at(0));
 	viewWs = testWs;
 

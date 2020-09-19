@@ -53,7 +53,7 @@ namespace StringUtils {
 		std::uint32_t size; bitstream->Read<T>(size);
 		std::unique_ptr<char[]> buff = std::make_unique<char[]>(size * 2);
 		bitstream->Read(buff.get(), size * 2);
-		auto * data = reinterpret_cast<char16_t*>(buff.get());
+		char16_t * data = reinterpret_cast<char16_t*>(buff.get());
 
 		return std::u16string(data, size);
 	}
@@ -73,7 +73,7 @@ namespace StringUtils {
 		std::unique_ptr<char[]> buff = std::make_unique<char[]>(len * 2);
 		bitstream->Read(buff.get(), len * 2);
 
-		auto * data = reinterpret_cast<char16_t*>(buff.get());
+		char16_t * data = reinterpret_cast<char16_t*>(buff.get());
 
 		int i;
 		for (i = 0; i < len; ++i) {
@@ -106,7 +106,7 @@ namespace StringUtils {
 	}
 
 	template<class T>
-	inline void writeStringToBitStream(RakNet::BitStream * bitstream, const std::string& text) {
+	inline void writeStringToBitStream(RakNet::BitStream * bitstream, std::string text) {
 		std::uint32_t size = text.size();
 		bitstream->Write<T>(size);
 
@@ -114,7 +114,7 @@ namespace StringUtils {
 	}
 
 	template<class T>
-	inline void writeWStringToBitStream(RakNet::BitStream * bitstream, const std::u16string& text, bool writeSizeOfBytes=false) {
+	inline void writeWStringToBitStream(RakNet::BitStream * bitstream, std::u16string text, bool writeSizeOfBytes=false) {
 		T size = text.size();
 
 		if (writeSizeOfBytes) size *= 2;
@@ -199,8 +199,8 @@ namespace StringUtils {
 
 	inline std::list<std::int32_t> StringVectorToIntList(std::vector<std::string> input){
 		std::list<std::int32_t> output = {};
-		for (auto & i : input) {
-			output.push_back(std::stoi(i));
+		for (int i = 0; i < input.size(); ++i) {
+			output.push_back(std::stoi(input.at(i)));
 		}
 		return output;
 	}
@@ -220,19 +220,19 @@ namespace StringUtils {
 		return ret;
 	}
 	
-	inline float StringToFloat(const std::string& arg) {
+	inline float StringToFloat(std::string arg) {
 		return std::stof(arg);
 	}
 
-	inline int StringToInt(const std::string& arg) {
+	inline int StringToInt(std::string arg) {
 		return std::stoi(arg);
 	}
 
-	inline std::string FloatToString(std::float_t arg) {
+	inline std::string FloatToString(float arg) {
 		return std::to_string(arg);
 	}
 
-	inline std::string IntToString(std::int32_t arg) {
+	inline std::string IntToString(int arg) {
 		return std::to_string(arg);
 	}
 }

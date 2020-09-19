@@ -52,7 +52,7 @@ public:
 
 	InventoryComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 17; }
+	static constexpr int GetTypeID() { return 17; }
 
 	void OnEnable() {
 		// Get componentID
@@ -69,9 +69,9 @@ public:
 			bool equip = CacheInventoryComponent::GetEquip(rowInfo);
 
 			if (itemID >= 17000)
-				throw std::runtime_error("Invalid LOT: " + std::to_string(itemID));
+				throw new std::runtime_error("Invalid LOT: " + std::to_string(itemID));
 
-			auto* item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
+			Entity::GameObject* item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
 			item->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
 			item->SetIsServerOnly();
 			owner->GetZoneInstance()->objectsManager->RegisterObject(item);
@@ -117,31 +117,31 @@ public:
 		if (owner->GetLOT() == 1) {
 			auto playerBags = Database::GetFullInventory(owner->GetObjectID().getPureID());
 			auto objMan = this->owner->GetZoneInstance()->objectsManager;
-			for (const auto& playerInv : playerBags) {
+			for (auto playerInv : playerBags) {
 				auto playerItems = playerInv.second;
-				for (auto & playerItem : playerItems) {
+				for (auto it = playerItems.begin(); it != playerItems.end(); ++it) {
 					InventoryItemStack itemStack = InventoryItemStack();
-					itemStack.LOT = playerItem.templateID;
-					itemStack.objectID = playerItem.objectID;
-					itemStack.quantity = playerItem.count;
-					itemStack.equip = playerItem.attributes.GetEquipped();
-					itemStack.bound = playerItem.attributes.GetBound();
-					itemStack.metadata = playerItem.metadata;
-					itemStack.subkey = playerItem.subkey;
-					itemStack.tab = playerItem.tab;
+					itemStack.LOT = it->templateID;
+					itemStack.objectID = it->objectID;
+					itemStack.quantity = it->count;
+					itemStack.equip = it->attributes.GetEquipped();
+					itemStack.bound = it->attributes.GetBound();
+					itemStack.metadata = it->metadata;
+					itemStack.subkey = it->subkey;
+					itemStack.tab = it->tab;
 
-					auto* itmObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
+					Entity::GameObject* itmObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
 					itmObj->SetObjectID(itemStack.objectID);
 					objMan->RegisterObject(itmObj);
 					itmObj->isSerializable = false;
 
-					auto tabIt = inventory.find(playerItem.tab);
+					auto tabIt = inventory.find(it->tab);
 					if (tabIt != inventory.end()) {
-						tabIt->second.insert({ playerItem.slot, itemStack });
+						tabIt->second.insert({ it->slot, itemStack });
 					}
 					else {
-						InventoryTab _tab; _tab.insert({ playerItem.slot, itemStack });
-						inventory.insert({ playerItem.tab, _tab });
+						InventoryTab _tab; _tab.insert({ it->slot, itemStack });
+						inventory.insert({ it->tab, _tab });
 					}
 				}
 			}
@@ -156,8 +156,8 @@ public:
 	void Destruct() {
 		if (owner->GetLOT() != 1) return;
 		auto objMan = this->owner->GetZoneInstance()->objectsManager;
-		for (auto & it : inventory) {
-			for (auto it2 = it.second.begin(); it2 != it.second.end(); ++it2) {
+		for (auto it = inventory.begin(); it != inventory.end(); ++it) {
+			for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
 				Entity::GameObject* itmObj = objMan->GetObjectByID(it2->second.objectID);
 				itmObj->Remove();
 			}
@@ -193,8 +193,8 @@ public:
 
 	inline std::vector<InventoryItemStack> GetEquippedItems() {
 		std::vector<InventoryItemStack> equippedItems{};
-		for (const auto& itemTab : inventory) {
-			for (const auto& itemStack : itemTab.second) {
+		for (auto itemTab : inventory) {
+			for (auto itemStack : itemTab.second) {
 				if (itemStack.second.equip) {
 					InventoryItemStack iis = itemStack.second;
 					equippedItems.push_back(iis);
@@ -260,16 +260,16 @@ public:
 
 	inline bool hasEquipped(std::uint32_t LOT) {
 		auto equippedItems = GetEquippedItems();
-		for (auto & equippedItem : equippedItems) {
-			if (equippedItem.LOT == LOT) return true;
+		for (auto it = equippedItems.begin(); it != equippedItems.end(); ++it) {
+			if (it->LOT == LOT) return true;
 		}
 		return false;
 	}
 
 	inline bool hasEquipped(DataTypes::LWOOBJID objID) {
 		auto equippedItems = GetEquippedItems();
-		for (auto & equippedItem : equippedItems) {
-			if (equippedItem.objectID == objID) return true;
+		for (auto it = equippedItems.begin(); it != equippedItems.end(); ++it) {
+			if (it->objectID == objID) return true;
 		}
 		return false;
 	}
@@ -288,21 +288,21 @@ public:
 		// We do not have tab, unable to equip
 		if (tabIt == inventory.end()) return false;
 	
-		for (auto & it : tabIt->second) {
-			if (it.second.LOT == LOT) {
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.LOT == LOT) {
 				// We found it!
 
 				// We're already equipped!
-				if (it.second.equip) return false;
+				if (it->second.equip) return false;
 
 				// Make sure we have nothing equipped on the location
 				this->UnEquipLocation(equipLocation);
 
 				// Equip it.
-				it.second.equip = true;
+				it->second.equip = true;
 
 				// Save equip
-				this->SaveStack(it.second);
+				this->SaveStack(it->second);
 
 				// Sync equip.
 				this->_isDirtyFlagEquippedItems = true;
@@ -336,21 +336,21 @@ public:
 		// We do not have tab, unable to equip
 		if (tabIt == inventory.end()) return false;
 
-		for (auto & it : tabIt->second) {
-			if (it.second.objectID == itemToEquip) {
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.objectID == itemToEquip) {
 				// We found it!
 
 				// We're already equipped!
-				if (it.second.equip) return false;
+				if (it->second.equip) return false;
 
 				// Make sure we have nothing equipped on the location
 				this->UnEquipLocation(equipLocation);
 
 				// Equip it.
-				it.second.equip = true;
+				it->second.equip = true;
 
 				// Save equip
-				this->SaveStack(it.second);
+				this->SaveStack(it->second);
 
 				// Sync equip.
 				this->_isDirtyFlagEquippedItems = true;
@@ -367,8 +367,8 @@ public:
 
 	inline bool UnEquipLocation(FDB::PointerString location) {
 		std::string locationStr = location;
-		for (auto & tabIt : inventory) {
-			for (auto it = tabIt.second.begin(); it != tabIt.second.end(); ++it) {
+		for (auto tabIt = inventory.begin(); tabIt != inventory.end(); ++tabIt) {
+			for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
 				auto itemCompID = CacheComponentsRegistry::GetComponentID(it->second.LOT, 11);
 				if (itemCompID == -1) return false;
 
@@ -413,18 +413,18 @@ public:
 		// We do not have tab, unable to equip
 		if (tabIt == inventory.end()) return false;
 
-		for (auto & it : tabIt->second) {
-			if (it.second.LOT == LOT) {
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.LOT == LOT) {
 				// We found it!
 
 				// We're already equipped!
-				if (!it.second.equip) continue;
+				if (!it->second.equip) continue;
 
 				// Equip it.
-				it.second.equip = false;
+				it->second.equip = false;
 
 				// Save equip
-				this->SaveStack(it.second);
+				this->SaveStack(it->second);
 
 				// Sync equip.
 				this->_isDirtyFlagEquippedItems = true;

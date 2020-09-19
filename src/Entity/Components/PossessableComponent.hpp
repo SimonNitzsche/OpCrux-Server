@@ -10,7 +10,7 @@ public:
 
 	DataTypes::LWOOBJID driver;
 
-	static constexpr std::int16_t GetTypeID() { return 108; }
+	static constexpr int GetTypeID() { return 108; }
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		factory->Write(driver != 0ULL);

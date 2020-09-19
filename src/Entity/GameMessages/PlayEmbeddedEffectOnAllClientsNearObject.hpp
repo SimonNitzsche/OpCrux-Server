@@ -11,7 +11,7 @@ namespace GM {
 
 		std::u16string effectName = u"";
 		DataTypes::LWOOBJID fromObjectID = 0;
-        std::float_t radius = 1.0f;
+		float radius = 1.0f;
 
 		PlayEmbeddedEffectOnAllClientsNearObject() : GMBase() {}
 

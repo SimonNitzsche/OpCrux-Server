@@ -11,9 +11,9 @@ namespace GM {
 
 		std::int32_t effectID = -1;
 		std::u16string effectType = u"";
-        std::float_t fScale = 1.0f;
+		float fScale = 1.0f;
 		std::string name;
-        std::float_t priority = 1.0f;
+		float priority = 1.0f;
 		DataTypes::LWOOBJID secondary = 0;
 		bool serialize = true;
 

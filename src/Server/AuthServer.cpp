@@ -105,7 +105,7 @@ std::string AuthServer::MakeAccountAPICall(std::string scope, std::unordered_map
 	cmd += " \"" + Configuration::ConfigurationManager::dbConf.GetStringVal("ExtAccountService", "HOSTURL");
 	cmd += "/auth\"";
 
-	std::array<char, 128> buffer{};
+	std::array<char, 128> buffer;
 	std::string result;
 	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
 	if (!pipe) {
@@ -118,7 +118,7 @@ std::string AuthServer::MakeAccountAPICall(std::string scope, std::unordered_map
 }
 
 void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
-	auto *data = new RakNet::BitStream(packet->getData(), packet->getLength(), false);
+	RakNet::BitStream *data = new RakNet::BitStream(packet->getData(), packet->getLength(), false);
 	LUPacketHeader packetHeader = packet->getHeader();
 
 	switch (packetHeader.protocolID) {

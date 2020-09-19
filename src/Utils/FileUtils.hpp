@@ -66,12 +66,12 @@ namespace FileUtils {
 		return data;
 	}
 
-	inline std::string GetFileDir(const std::string& file) {
+	inline std::string GetFileDir(std::string file) {
 		return file.substr(0, file.find_last_of("\\/"));
 	}
 	
 	inline bool FileExists(std::string const &file) {
-		struct stat buf{};
+		struct stat buf;
 		return (stat(file.c_str(), &buf) == 0);
 	}
 

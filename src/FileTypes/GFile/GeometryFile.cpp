@@ -18,7 +18,7 @@ GeometryFile::GeometryFile(const char * filepath) {
 
 	this->vertexCoordinates = reinterpret_cast<DataTypes::Vector3*>(filePtr + 16);
 
-	std::uint8_t * filePosition = reinterpret_cast<unsigned char*>(this->vertexCoordinates + *this->vertexCount);
+	unsigned char * filePosition = reinterpret_cast<unsigned char*>(this->vertexCoordinates + *this->vertexCount);
 	
 	if ((*this->options & 0x02) != 0) {
 		this->vertexNormals = reinterpret_cast<DataTypes::Vector3*>(filePosition);

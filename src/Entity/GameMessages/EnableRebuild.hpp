@@ -14,8 +14,8 @@ namespace GM {
 		bool bEnable = false;
 		bool bFail = false;
 		bool bSuccess = false;
-		Enums::EFailReason eFailReason = ::Enums::EFailReason::REASON_NOT_GIVEN;
-		std::float_t fDuration;
+		::Enums::EFailReason eFailReason = ::Enums::EFailReason::REASON_NOT_GIVEN;
+		::std::float_t fDuration;
 		DataTypes::LWOOBJID user;
 
 		EnableRebuild() {}

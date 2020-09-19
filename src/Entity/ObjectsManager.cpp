@@ -33,7 +33,7 @@ void ObjectsManager::UnRegisterObject(Entity::GameObject * object) {
 
 Entity::GameObject * ObjectsManager::GetObjectByID(DataTypes::LWOOBJID objID) {
 	auto it = object_list.find(objID);
-	if (it != object_list.end() && (object_garbage.empty() || std::find(object_garbage.begin(), object_garbage.end(), objID) == object_garbage.end()))
+	if (it != object_list.end() && (object_garbage.size() == 0 || std::find(object_garbage.begin(), object_garbage.end(), objID) == object_garbage.end()))
 		return it->second;
 	return nullptr;
 }
@@ -41,7 +41,7 @@ Entity::GameObject * ObjectsManager::GetObjectByID(DataTypes::LWOOBJID objID) {
 std::vector<Entity::GameObject*> ObjectsManager::GetObjects() {
 	std::vector<Entity::GameObject*> out;
 	for (auto oPair : object_list)
-		if (object_garbage.empty() || std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end())
+		if (object_garbage.size() == 0 || std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end())
 			out.push_back(oPair.second);
 	return out;
 }
@@ -49,7 +49,7 @@ std::vector<Entity::GameObject*> ObjectsManager::GetObjects() {
 std::vector<Entity::GameObject*> ObjectsManager::GetObjectsInGroup(std::u16string groupName) {
 	std::vector<Entity::GameObject*> out;
 	for (auto oPair : object_list) {
-		if (object_garbage.empty() || std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end()) {
+		if (object_garbage.size() == 0 || std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end()) {
 			if (oPair.second->IsWithinGroup(groupName)) {
 				out.push_back(oPair.second);
 			}
@@ -80,7 +80,7 @@ void ObjectsManager::Serialize() {
 
 void ObjectsManager::Serialize(DataTypes::LWOOBJID objID) {
 	Entity::GameObject * gameObject = GetObjectByID(objID);
-	if (gameObject && !gameObject->GetIsServerOnly())
+	if (gameObject && gameObject != nullptr && !gameObject->GetIsServerOnly())
 		Serialize(gameObject);
 }
 
@@ -103,14 +103,14 @@ void ObjectsManager::Destruct(Entity::GameObject * object) {
 
 void ObjectsManager::OnUpdate() {
 	// Call update
-	for (auto & it : object_list) {
-		if (it.second->GetObjectID() == it.first && it.second != nullptr)
-			it.second->Update();
+	for (auto it = object_list.begin(); it != object_list.end(); ++it) {
+		if (it->second->GetObjectID() == it->first && it->second != nullptr)
+			it->second->Update();
 	}
 
 	// Check for garbage
-	for (unsigned long & it : object_garbage) {
-		object_list.erase(it);
+	for (auto it = object_garbage.begin(); it != object_garbage.end(); ++it) {
+		object_list.erase(*it);
 	}
 	object_garbage.clear();
 

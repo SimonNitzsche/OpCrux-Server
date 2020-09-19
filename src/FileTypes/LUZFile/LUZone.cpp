@@ -56,7 +56,7 @@ LUZonePathBase * FileTypes::LUZ::LUZone::AllocatePath(const LUZonePathType pathT
 		case LUZonePathType::Rail:
 			return new LUZonePathRail();			
 	}
-	throw std::runtime_error("Invalid path type.");
+	throw new std::runtime_error("Invalid path type.");
 }
 
 LUZonePathWaypointBase * FileTypes::LUZ::LUZone::AllocatePathWaypoint(const LUZonePathType pathType) {
@@ -78,12 +78,12 @@ LUZonePathWaypointBase * FileTypes::LUZ::LUZone::AllocatePathWaypoint(const LUZo
 	case LUZonePathType::Rail:
 		return new LUZonePathWaypointRail();
 	}
-	throw std::runtime_error("Invalid path type.");
+	throw new std::runtime_error("Invalid path type.");
 }
 
 LUZone::LUZone() {}
 LUZone::~LUZone() {
-	for (const auto& pkp : paths) {
+	for (auto pkp : paths) {
 
 		switch (pkp.second->pathType) {
 		case LUZonePathType::Movement:
@@ -177,7 +177,7 @@ void LUZone::Read() {
 
 	// Transisions
 	if (version >= 0x1f) {
-		auto * countOfScenes = reinterpret_cast<uint32_t*>(currentOffset);
+		uint32_t * countOfScenes = reinterpret_cast<uint32_t*>(currentOffset);
 		currentOffset = reinterpret_cast<uint8_t*>(countOfScenes+1);
 		for (int transIndx = 0; transIndx < *countOfScenes; ++transIndx) {
 			SceneTransition transitionFactory;
@@ -191,7 +191,7 @@ void LUZone::Read() {
 
 			// Transition Points
 			for (int transPtIndx = 0; transPtIndx < loopTimes; ++transPtIndx) {
-				auto * transPtFactory = reinterpret_cast<SceneTransitionPoint*>(currentOffset);
+				SceneTransitionPoint * transPtFactory = reinterpret_cast<SceneTransitionPoint*>(currentOffset);
 				transitionFactory.points.push_back(transPtFactory);
 				currentOffset = reinterpret_cast<uint8_t*>(transPtFactory) + 20;
 			}
@@ -201,17 +201,17 @@ void LUZone::Read() {
 	
 	// Paths
 	if (version >= 0x23) {
-		auto * lengthOfRestOfFile = reinterpret_cast<uint32_t*>(currentOffset);
+		uint32_t * lengthOfRestOfFile = reinterpret_cast<uint32_t*>(currentOffset);
 		uint32_t * unknown1 = lengthOfRestOfFile + 1;
 		uint32_t * countOfPaths = unknown1 + 1;
 		currentOffset = currentOffset + 12;
 
 		for (int pathIndx = 0; pathIndx < *countOfPaths; ++pathIndx) {
-			auto * pathVersion = reinterpret_cast<uint32_t*>(currentOffset);
+			uint32_t * pathVersion = reinterpret_cast<uint32_t*>(currentOffset);
 			ZoneWString pathName; currentOffset = pathName.Read(currentOffset + 4);
-			auto * pathType = reinterpret_cast<LUZonePathType*>(currentOffset);
-			auto * unknown2 = reinterpret_cast<std::uint32_t*>(currentOffset + 4);
-			auto * pathBehaviour = reinterpret_cast<LUZonePathBehaviour*>(currentOffset + 8);
+			LUZonePathType * pathType = reinterpret_cast<LUZonePathType*>(currentOffset);
+			std::uint32_t * unknown2 = reinterpret_cast<std::uint32_t*>(currentOffset + 4);
+			LUZonePathBehaviour * pathBehaviour = reinterpret_cast<LUZonePathBehaviour*>(currentOffset + 8);
 			currentOffset += 12;
 
 			LUZonePathBase * pathFactory = AllocatePath(*pathType);
@@ -226,7 +226,7 @@ void LUZone::Read() {
 			// depending on version, that hasn't been added to the code below yet.
 
 			if (*pathType == LUZonePathType::MovingPlatform) {
-				auto * pathMovingPlatform = reinterpret_cast<LUZonePathMovingPlatform*>(pathFactory);
+				LUZonePathMovingPlatform * pathMovingPlatform = reinterpret_cast<LUZonePathMovingPlatform*>(pathFactory);
 				if (*pathVersion >= 18) {
 					pathMovingPlatform->unknownByte = *reinterpret_cast<std::uint8_t*>(currentOffset++);
 				}
@@ -235,7 +235,7 @@ void LUZone::Read() {
 				}
 			}
 			else if (*pathType == LUZonePathType::Property) {
-				auto * pathProperty = reinterpret_cast<LUZonePathProperty*>(pathFactory);
+				LUZonePathProperty * pathProperty = reinterpret_cast<LUZonePathProperty*>(pathFactory);
 				pathProperty->unknown1 = *reinterpret_cast<std::int32_t*>(currentOffset);
 				pathProperty->price = *reinterpret_cast<std::int32_t*>(currentOffset + 4);
 				pathProperty->rentalTime = *reinterpret_cast<std::int32_t*>(currentOffset + 8);
@@ -252,14 +252,14 @@ void LUZone::Read() {
 				currentOffset = currentOffset + 36;
 			}
 			else if (*pathType == LUZonePathType::Camera) {
-				auto * pathCamera = reinterpret_cast<LUZonePathCamera*>(pathFactory);
+				LUZonePathCamera * pathCamera = reinterpret_cast<LUZonePathCamera*>(pathFactory);
 				currentOffset = pathCamera->nextPath.Read(reinterpret_cast<std::uint8_t*>(currentOffset));
 				if (*pathVersion >= 14) {
 					pathCamera->unknownBool = *reinterpret_cast<std::uint8_t*>(currentOffset++);
 				}
 			}
 			else if (*pathType == LUZonePathType::Spawner) {
-				auto * pathSpawner = reinterpret_cast<LUZonePathSpawner*>(pathFactory);
+				LUZonePathSpawner * pathSpawner = reinterpret_cast<LUZonePathSpawner*>(pathFactory);
 				pathSpawner->spawnedLOT = *reinterpret_cast<std::uint32_t*>(currentOffset);
 				pathSpawner->respawnTime = *reinterpret_cast<std::uint32_t*>(currentOffset + 4);
 				pathSpawner->maxToSpawn = *reinterpret_cast<std::int32_t*>(currentOffset + 8);
@@ -275,13 +275,13 @@ void LUZone::Read() {
 			std::uint32_t waypointCount = *reinterpret_cast<std::uint32_t*>(currentOffset);
 			currentOffset += 4;
 			if (waypointCount > 10000)
-				throw std::runtime_error("File Corruption: Maximum amount of path waypoints has been exeeded.");
+				throw new std::runtime_error("File Corruption: Maximum amount of path waypoints has been exeeded.");
 			for (int i = 0; i < waypointCount; ++i) {
 				LUZonePathWaypointBase * waypointFactory = AllocatePathWaypoint(*pathType);
 				waypointFactory->position = *reinterpret_cast<DataTypes::Vector3*>(currentOffset);
 				currentOffset = currentOffset + 12;
 				if (*pathType == LUZonePathType::MovingPlatform) {
-					auto * waypointMovingPlatform = reinterpret_cast<LUZonePathWaypointMovingPlatform*>(waypointFactory);
+					LUZonePathWaypointMovingPlatform * waypointMovingPlatform = reinterpret_cast<LUZonePathWaypointMovingPlatform*>(waypointFactory);
 					waypointMovingPlatform->rotation = DataTypes::Quaternion (
 						*reinterpret_cast<std::float_t*>(currentOffset + 4),
 						*reinterpret_cast<std::float_t*>(currentOffset + 8),
@@ -298,7 +298,7 @@ void LUZone::Read() {
 					}
 				}
 				else if (*pathType == LUZonePathType::Camera) {
-					auto * waypointCamera = reinterpret_cast<LUZonePathWaypointCamera*>(waypointFactory);
+					LUZonePathWaypointCamera * waypointCamera = reinterpret_cast<LUZonePathWaypointCamera*>(waypointFactory);
 					waypointCamera->rotation = DataTypes::Quaternion(
 						*reinterpret_cast<std::float_t*>(currentOffset + 4),
 						*reinterpret_cast<std::float_t*>(currentOffset + 8),
@@ -315,7 +315,7 @@ void LUZone::Read() {
 					currentOffset = currentOffset + 20;
 				}
 				else if (*pathType == LUZonePathType::Spawner) {
-					auto * waypointSpawner = reinterpret_cast<LUZonePathWaypointSpawner*>(waypointFactory);
+					LUZonePathWaypointSpawner * waypointSpawner = reinterpret_cast<LUZonePathWaypointSpawner*>(waypointFactory);
 					waypointSpawner->rotation = DataTypes::Quaternion(
 						*reinterpret_cast<std::float_t*>(currentOffset + 4),
 						*reinterpret_cast<std::float_t*>(currentOffset + 8),
@@ -325,7 +325,7 @@ void LUZone::Read() {
 					currentOffset = currentOffset + 16;
 				}
 				else if (*pathType == LUZonePathType::Race) {
-					auto * waypointRace = reinterpret_cast<LUZonePathWaypointRace*>(waypointFactory);
+					LUZonePathWaypointRace * waypointRace = reinterpret_cast<LUZonePathWaypointRace*>(waypointFactory);
 					waypointRace->rotation = DataTypes::Quaternion(
 						*reinterpret_cast<std::float_t*>(currentOffset + 4),
 						*reinterpret_cast<std::float_t*>(currentOffset + 8),
@@ -340,7 +340,7 @@ void LUZone::Read() {
 					currentOffset = currentOffset + 30;
 				}
 				else if (*pathType == LUZonePathType::Rail) {
-					auto * waypointRail = reinterpret_cast<LUZonePathWaypointRail*>(waypointFactory);
+					LUZonePathWaypointRail * waypointRail = reinterpret_cast<LUZonePathWaypointRail*>(waypointFactory);
 					waypointRail->rotation = DataTypes::Quaternion(
 						*reinterpret_cast<std::float_t*>(currentOffset + 4),
 						*reinterpret_cast<std::float_t*>(currentOffset + 8),

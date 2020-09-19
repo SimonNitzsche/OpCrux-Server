@@ -9,7 +9,7 @@ public:
 	GenericActivatorComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 
-	static constexpr std::int16_t GetTypeID() { return 64; }
+	static constexpr int GetTypeID() { return 64; }
 
 };
 

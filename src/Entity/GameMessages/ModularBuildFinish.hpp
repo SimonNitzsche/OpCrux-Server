@@ -11,8 +11,8 @@ namespace GM {
 
 		ModularBuildFinish() : GMBase() {}
 
-        std::uint8_t count;
-        std::int32_t modulelot;
+		uint8_t count;
+		int32_t modulelot;
 
 		void Deserialize(RakNet::BitStream* bs) {
 			GM_VAR_DESERIALIZE(bs, count);

@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include <cstdint>
 #include <libgen.h>
-#include <ctime>
+#include <time.h>
 #include <sys/stat.h>
 
 typedef std::uint8_t byte;

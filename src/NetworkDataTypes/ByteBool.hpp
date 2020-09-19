@@ -12,7 +12,7 @@ public:
 	ByteBool(bool val) : data(val) {}
 	~ByteBool() {}
 
-	explicit operator bool() const {
+	operator bool() const {
 		return data;
 	}
 

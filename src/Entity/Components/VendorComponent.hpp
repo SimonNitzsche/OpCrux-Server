@@ -19,7 +19,7 @@ public:
 
 	VendorComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 16; }
+	static constexpr int GetTypeID() { return 16; }
 
 	void OnEnable() {
 
@@ -36,7 +36,7 @@ public:
 	}
 
 	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
-		auto * charComp = sender->GetComponent<CharacterComponent>();
+		CharacterComponent * charComp = sender->GetComponent<CharacterComponent>();
 		if (charComp != nullptr) {
 			GameMessages::Send(owner->GetZoneInstance(), charComp->clientAddress, sender->GetObjectID(), GM::VendorOpenWindow());
 			

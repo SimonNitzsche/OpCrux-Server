@@ -39,7 +39,7 @@ private:
 	std::uint32_t currentHandle = 0;
 	std::uint32_t currentSkill = 0;
 
-	void UnCast(std::string sBitStream, long behaviorID = 0);
+	void UnCast(const std::string sBitStream, long behaviorID = 0);
 
 	std::unordered_map<std::uint32_t /*behaviorHandle*/, std::int32_t /*behaviorAction*/> behaviorHandles;
 	std::mutex mutex_behaviorHandles;
@@ -58,7 +58,7 @@ public:
 
 	SkillComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 9; }
+	static constexpr int GetTypeID() { return 9; }
 
 	void Awake() {
 		

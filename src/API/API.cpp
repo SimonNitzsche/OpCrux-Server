@@ -34,7 +34,7 @@ const char * GetPort() {
 
 void loadTokens() {
 	const std::string& path = "conf/keys.txt";
-	struct stat buffer{};
+	struct stat buffer;
 	std::ifstream file("conf/keys.txt");
 	std::string str;
 	while (std::getline(file, str)) {
@@ -92,7 +92,7 @@ void mg_parse_form_data(http_message* hm, std::unordered_map<std::string, std::s
 
 static std::string HandleJson(int code, int arguement, void* p) {
 	json j;
-	auto* hm = (struct http_message*)p;
+	struct http_message* hm = (struct http_message*)p;
 	if (code == 0) {
 		Logger::log("WebAPI", std::string(hm->uri.p, hm->uri.len));
 		j["Status"] = "Success";
@@ -108,7 +108,7 @@ static std::string HandleJson(int code, int arguement, void* p) {
 
 static std::string HandleJson(int code, std::string arguement, void* p) {
 	json j;
-	auto* hm = (struct http_message*)p;
+	struct http_message* hm = (struct http_message*)p;
 	if (code == 0) {
 		Logger::log("WebAPI", std::string(hm->uri.p, hm->uri.len));
 		j["Status"] = "Success";
@@ -124,7 +124,7 @@ static std::string HandleJson(int code, std::string arguement, void* p) {
 
 static std::string HandleJson(int code, const char* arguement, void* p) {
 	json j;
-	auto* hm = (struct http_message*)p;
+	struct http_message* hm = (struct http_message*)p;
 	if (code == 0) {
 		Logger::log("WebAPI", std::string(hm->uri.p, hm->uri.len));
 		j["Status"] = "Success";
@@ -140,7 +140,7 @@ static std::string HandleJson(int code, const char* arguement, void* p) {
 
 static std::string HandleJson(void* p) {
 	json j;
-	auto* hm = (struct http_message*)p;
+	struct http_message* hm = (struct http_message*)p;
 	Logger::log("WebAPI", std::string(hm->uri.p, hm->uri.len), LogType::WARN);
 	j["Status"] = "Fail";
 	return j.dump();
@@ -149,7 +149,7 @@ static std::string HandleJson(void* p) {
 
 static void ev_handler(struct mg_connection* c, int ev, void* p) {
 	if (ev == MG_EV_HTTP_REQUEST) {
-		auto* hm = (struct http_message*)p;
+		struct http_message* hm = (struct http_message*)p;
 
 		std::string url = mg_str2string(&hm->uri);
 		std::vector<std::string> args = StringUtils::splitString(url.erase(0, 1), '/');
@@ -163,7 +163,7 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 
 		std::unordered_map<std::string, std::string_view> form_data = {};
 		mg_parse_form_data(hm, form_data);
-		if (args.empty()) { return; }
+		if (args.size() == 0) { return; }
 		if (args[0] == "favicon.ico") { return; }
 
 		if (checkToken(args[0])) {
@@ -254,14 +254,14 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 //} I still can't seem to work this out not entirely sure what the issue is.
 
 void StartAPI() {
-	struct mg_mgr mgr{};
+	struct mg_mgr mgr;
 	struct mg_connection* c;
-	struct mg_bind_opts bind_opts{};
+	struct mg_bind_opts bind_opts;
 	const char* err;
 
 	loadTokens();
 
-	mg_mgr_init(&mgr, nullptr);
+	mg_mgr_init(&mgr, NULL);
 
 	setlocale(LC_TIME, "en_US.UTF-8");
 

@@ -13,11 +13,11 @@ using namespace DataTypes;
 class MovementAIComponent : public IEntityComponent {
 private:
 
-	std::float_t wanderChance;
-	std::float_t wanderDelayMax;
-	std::float_t wanderDelayMin;
-	std::float_t wanderRadius;
-	std::float_t wanderSpeed;
+	float wanderChance;
+	float wanderDelayMax;
+	float wanderDelayMin;
+	float wanderRadius;
+	float wanderSpeed;
 
 	ControllablePhysicsComponent * controllablePhysicsComponent;
 	Vector3 basePosition;
@@ -29,7 +29,7 @@ public:
 
 	MovementAIComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 31; }
+	static constexpr int GetTypeID() { return 31; }
 
 	void OnEnable() {
 		std::int32_t componentID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 31);

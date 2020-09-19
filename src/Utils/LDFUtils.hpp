@@ -8,7 +8,6 @@
 
 #include <string>
 #include <memory>
-#include <utility>
 
 #include "DataTypes/LDF.hpp"
 
@@ -56,16 +55,17 @@ public:
 			break;
 		}
 		default: {
-			throw std::runtime_error("Unable to recognize LDFType");
+			throw new std::runtime_error("Unable to recognize LDFType");
 		}
 		}
 		return e;
 	}
-	static LDFCollection ParseCollectionFromWString(const std::u16string& input) {
+	static LDFCollection ParseCollectionFromWString(std::u16string input) {
 		LDFCollection output;
 		std::vector<std::u16string> entries = StringUtils::splitWString(input,0x000a);
-		for (auto entry : entries) {
-				std::vector<std::u16string> key_typeVal = StringUtils::splitWString(entry,0x003d);
+		for (int i = 0; i < entries.size(); ++i) {
+			std::u16string entry = entries.at(i);
+			std::vector<std::u16string> key_typeVal = StringUtils::splitWString(entry,0x003d);
 			std::vector<std::u16string> type_val = StringUtils::splitWString(key_typeVal.at(1), 0x003a);
 
 			Enums::LDFType type = (Enums::LDFType)std::stoi(StringUtils::to_string(type_val.at(0)));
@@ -73,7 +73,7 @@ public:
 			LDFEntry e;
 
 			
-			if (type_val.size() == 1) type_val.emplace_back(u"");
+			if (type_val.size() == 1) type_val.push_back(u"");
 
 			std::u16string valFinal = type_val.at(1);
 			// Fuse value splited by ":"
@@ -105,20 +105,20 @@ public:
 	}
 	static LDFCollection MakeCollectionFromLDFVector(std::vector<LDFEntry> & vec) {
 		LDFCollection output;
-		for (auto & it : vec) {
-			output.insert({ it.key, it });
+		for (auto it = vec.begin(); it != vec.end(); ++it) {
+			output.insert({ it->key, *it });
 		}
 		return output;
 	}
-	static LDFEntry ReadEntryFromLUZWString(std::u16string key, const std::u16string& val) {
+	static LDFEntry ReadEntryFromLUZWString(std::u16string key, std::u16string val) {
 		std::vector<std::u16string> type_val = StringUtils::splitWString(val, 0x003a);
 		bool typeDefined = val.find(0x003a) != std::u16string::npos;
 		Enums::LDFType type = typeDefined ? (Enums::LDFType)std::stoi(StringUtils::to_string(type_val.at(0))) : Enums::LDFType::WSTRING;
 		if (type_val.size() == 1) {
 			if (type == Enums::LDFType::STRING || type == Enums::LDFType::WSTRING)
-				type_val.emplace_back(u"");
+				type_val.push_back(u"");
 			else
-				type_val.emplace_back(u"-1");
+				type_val.push_back(u"-1");
 		}
 
 		std::u16string valFinal = type_val.at(1);
@@ -129,7 +129,7 @@ public:
 			}
 		}
 
-		return MakeLDFEntryFromWStringData(std::move(key), type, typeDefined ? valFinal : type_val.at(0));
+		return MakeLDFEntryFromWStringData(key, type, typeDefined ? valFinal : type_val.at(0));
 	}
 };
 

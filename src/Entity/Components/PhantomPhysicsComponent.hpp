@@ -39,7 +39,7 @@ public:
 
 	PhantomPhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 40; }
+	static constexpr int GetTypeID() { return 40; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		// Enable dirty flags on creation
@@ -100,12 +100,12 @@ public:
 
 		// Get own position
 		Vector3 pos = Vector3::zero();
-		auto * contPhysComp = owner->GetComponent<ControllablePhysicsComponent>();
+		ControllablePhysicsComponent * contPhysComp = owner->GetComponent<ControllablePhysicsComponent>();
 		if (contPhysComp) {
 			pos = contPhysComp->GetPosition();
 		}
 		else {
-			auto * simpPhysComp = owner->GetComponent<SimplePhysicsComponent>();
+			SimplePhysicsComponent * simpPhysComp = owner->GetComponent<SimplePhysicsComponent>();
 			if (simpPhysComp)
 				pos = simpPhysComp->GetPosition();
 			else
@@ -122,8 +122,8 @@ public:
 
 		for (auto o : this->owner->GetZoneInstance()->objectsManager->GetObjects()) {
 			// we can assume, the object has a controllable physics object, otherwise it can't move.
-			auto * objectPhysicsComponent = o->GetComponent<ControllablePhysicsComponent>();
-			if (!objectPhysicsComponent) continue;
+			ControllablePhysicsComponent * objectPhysicsComponent = o->GetComponent<ControllablePhysicsComponent>();
+			if (!objectPhysicsComponent || objectPhysicsComponent == nullptr) continue;
 			Vector3 position = Vector3::zero();
 			position = objectPhysicsComponent->GetPosition();
 
@@ -163,14 +163,14 @@ public:
 
 	}
 
-	void SetEffectDirection(const DataTypes::Vector3& direction) {
+	void SetEffectDirection(DataTypes::Vector3 direction) {
 		physEffectDirection = direction;
 		_isDirtyFlagPhysEffectDirection = true;
 		owner->SetDirty();
 		SetEffectDirty();
 	}
 
-	void SetPosition(const DataTypes::Vector3& pos) {
+	void SetPosition(DataTypes::Vector3 pos) {
 		position = pos;
 		_isDirtyFlagPosRot = true;
 		owner->SetDirty();

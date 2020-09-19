@@ -51,20 +51,20 @@ private:
 	RakPeerInterface * rakServer = nullptr;
 	std::thread listenThread;
 	std::atomic_int32_t nextInstanceID = 0;
-	int reserveInstanceID();
+	const int reserveInstanceID();
 public:
 	std::vector<Machine> connected_machines;
 	std::vector<ClientSessionMR> connected_clients;
 private:
 	inline MachineProcess * GetMachineProcess(Packet * packet) {
-		for (auto & connected_machine : connected_machines) {
-			Machine* m = &connected_machine;
+		for (int i = 0; i < connected_machines.size(); ++i) {
+			Machine* m = &(connected_machines[i]);
 			if (m->dottedIP == packet->systemAddress.ToString(false)) {
 				for (int j = 0; j < m->processes.size(); ++j) {
 					MachineProcess* p = &(m->processes[j]);
 					if (p->port == packet->systemAddress.port) {
 						if (p->machine == nullptr) p->machine = m;
-						return &(connected_machine.processes[j]);
+						return &(connected_machines[i].processes[j]);
 					}
 				}
 			}

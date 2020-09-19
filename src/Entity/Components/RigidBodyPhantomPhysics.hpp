@@ -20,7 +20,7 @@ public:
 
 	RigidBodyPhantomPhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 20; }
+	static constexpr int GetTypeID() { return 20; }
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		bool tmpFlag = false;

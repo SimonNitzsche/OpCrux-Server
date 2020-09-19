@@ -15,7 +15,7 @@ public:
 
 	BaseCombatAIComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr std::int16_t GetTypeID() { return 60; }
+	static constexpr int GetTypeID() { return 60; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: BaseCombatAIComponent Serialization */

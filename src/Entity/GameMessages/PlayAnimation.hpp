@@ -13,8 +13,8 @@ namespace GM {
 		bool bExpectAnimToExist = true;
 		bool bPlayImmediate = false;
 		bool bTriggerOnCompleteMsg = false;
-		std::float_t fPriority = 0.400000005960465f;
-        std::float_t fScale = 1.0f;
+		float fPriority = 0.400000005960465f;
+		float fScale = 1.0f;
 
 		PlayAnimation() : GMBase() {}
 		void Deserialize(RakNet::BitStream * bs) {
