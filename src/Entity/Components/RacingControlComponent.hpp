@@ -45,7 +45,7 @@ public:
 
 	RacingControlComponent(std::int32_t componentID) : ScriptedActivityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 71; }
+	static constexpr std::int16_t GetTypeID() { return 71; }
 
 	void OnEnable() {
 		
@@ -62,7 +62,7 @@ public:
 		if (playerObject == nullptr) return;
 
 		// Make Car
-		Entity::GameObject* myCar = new Entity::GameObject(this->owner->GetZoneInstance(), 8092);
+		auto* myCar = new Entity::GameObject(this->owner->GetZoneInstance(), 8092);
 
 		if (!myCar->isSerializable) {
 			// Spawn Error Object

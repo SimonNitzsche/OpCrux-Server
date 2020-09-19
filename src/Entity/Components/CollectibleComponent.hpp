@@ -21,7 +21,7 @@ public:
 
 	CollectibleComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 23; }
+	static constexpr std::int16_t GetTypeID() { return 23; }
 
 	void OnEnable() {
 		if ((statsComponent = owner->GetComponent<StatsComponent>()) == nullptr) {

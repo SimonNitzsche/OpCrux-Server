@@ -44,7 +44,7 @@ private:
 	std::int32_t maxToSpawn;
 	bool noAutoSpawn;
 	bool noTimedSpawn;
-	float respawnTime;
+	std::float_t respawnTime;
 	bool respawnVolume;
 	std::u16string respawnVolumeName;
 	DataTypes::Vector3 respawnPosition;
@@ -60,7 +60,7 @@ public:
 
 	SpawnerComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 10; }
+	static constexpr std::int16_t GetTypeID() { return 10; }
 
 	void OnEnable() {
 		owner->isSerializable = false;
@@ -76,8 +76,8 @@ public:
 		std::uint64_t currentTime = ::time(0);
 		std::uint32_t taskNumToRespawn = 0;
 		// Look how many tasks to respawn
-		for (auto it = this->respawnTasks.begin(); it != this->respawnTasks.end(); ++it) {
-			if (*it <= currentTime) ++taskNumToRespawn;
+		for (std::uint64_t & respawnTask : this->respawnTasks) {
+			if (respawnTask <= currentTime) ++taskNumToRespawn;
 			else break;
 		}
 
@@ -159,7 +159,7 @@ public:
 		WorldServer * Instance = this->owner->GetZoneInstance();
 		
 		// Create
-		Entity::GameObject * spawnedObject = new Entity::GameObject(Instance, spawnTemplate);
+		auto * spawnedObject = new Entity::GameObject(Instance, spawnTemplate);
 		
 		
 		if (!spawnedObject->isSerializable) {

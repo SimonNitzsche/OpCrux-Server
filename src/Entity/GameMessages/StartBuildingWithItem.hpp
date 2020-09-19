@@ -11,7 +11,7 @@ namespace GM {
 
 		bool bFirstTime = true;
 		bool bSuccess;
-		int sourceBAG;
+		std::int16_t sourceBAG;
 		DataTypes::LWOOBJID sourceID;
 		std::uint32_t sourceLOT;
 		std::int32_t sourceTYPE;

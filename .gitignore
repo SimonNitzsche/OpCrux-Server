@@ -351,6 +351,7 @@ cmake_install.cmake
 **/*.a
 CMakeDoxyfile.in
 CMakeDoxygenDefaults.cmake
+cmake-build-debug/
 
 # MSSQL creds
 bin/conf/*.ini

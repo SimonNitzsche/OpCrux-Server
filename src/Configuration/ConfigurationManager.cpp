@@ -9,7 +9,7 @@ Configuration::ConfPorts Configuration::ConfigurationManager::portsConf;
 
 void Configuration::ConfigurationManager::Load() {
 	const std::string& path = "conf";
-	struct stat buffer;
+	struct stat buffer{};
 	if ((stat(path.c_str(), &buffer) == 0) == 0) {
 		mkdirx("conf");
 		dbConf.Load();

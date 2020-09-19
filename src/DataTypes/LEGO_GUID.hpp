@@ -10,10 +10,10 @@ namespace DataTypes {
 		Contitutes a LEGO Global Unique Identifier.
 	*/
 	typedef struct LEGO_GUID {
-		uint32_t Data1;
-		uint16_t Data2;
-		uint16_t Data3;
-		uint64_t Data4;
+		std::uint32_t Data1;
+		std::uint16_t Data2;
+		std::uint16_t Data3;
+		std::uint64_t Data4;
 	};
 }
 

@@ -19,7 +19,7 @@ class SlashCommandComponent : public IEntityComponent {
 public:
 	SlashCommandComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 90; }
+	static constexpr std::int16_t GetTypeID() { return 90; }
 
 	void OnParseChatMessage(Entity::GameObject* sender, GM::ParseChatMessage& msg) {
 		// Check if we are a command, otherwise return
@@ -35,7 +35,7 @@ public:
 			.Case(u"/debugUI", [&]() {
 				if (accountGMLevel >= 5) {
 					RakNet::BitStream bs = RakNet::BitStream();
-					LUPacketHeader returnBSHead;
+					LUPacketHeader returnBSHead{};
 					returnBSHead.protocolID = static_cast<uint8_t>(ID_USER_PACKET_ENUM);
 					returnBSHead.remoteType = static_cast<uint16_t>(Enums::ERemoteConnection::CLIENT);
 					returnBSHead.packetID = static_cast<uint32_t>(Enums::EClientPacketID::SERVER_GAME_MSG);
@@ -64,7 +64,7 @@ public:
 				}
 			})
 			.Case(u"/fly", [&]() {
-				if (command.find(u" ") != std::u16string::npos) {
+				if (command.find(u' ') != std::u16string::npos) {
 					if (accountGMLevel >= 5) {
 						DataTypes::LWOOBJID targetOBJID = sender->GetObjectID();
 						GM::SetJetPackMode Jetpackmode;
@@ -101,14 +101,11 @@ public:
 				}
 			})
 			.Case(u"/teleport", [&]() {
-				if (command.find(u" ") != std::u16string::npos) {
+				if (command.find(u' ') != std::u16string::npos) {
 					if (accountGMLevel >= 5) {
 						DataTypes::LWOOBJID targetOBJID = sender->GetObjectID();
 						GM::Teleport teleport;
 						teleport.pos = DataTypes::Vector3(StringUtils::StringToFloat(StringUtils::to_string(args[1])), StringUtils::StringToFloat(StringUtils::to_string(args[2])), StringUtils::StringToFloat(StringUtils::to_string(args[3])));
-						teleport.x = 0;
-						teleport.y = 0;
-						teleport.z = 0;
 						GameMessages::Send(sender, targetOBJID, teleport);
 					}
 					else { Reply(Response::RankTooLow, sender); }
@@ -117,7 +114,7 @@ public:
 				}
 			})
 			.Case(u"/changegravity", [&]() {
-				if (command.find(u" ") != std::u16string::npos) {
+				if (command.find(u' ') != std::u16string::npos) {
 					if (accountGMLevel >= 5) {
 						DataTypes::LWOOBJID targetOBJID = sender->GetObjectID();
 						GM::SetGravityScale GravityScale;

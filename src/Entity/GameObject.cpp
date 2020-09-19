@@ -156,9 +156,7 @@ void Entity::GameObject::Finish() {
 
 Entity::GameObject::~GameObject() {
 	for (auto reference : components) {
-		if (reference.second) {
-			delete[] reference.second;
-		}
+		delete[] reference.second;
 	}
 }
 
@@ -189,7 +187,7 @@ void Entity::GameObject::Tick() {
 }
 
 IEntityComponent* Entity::GameObject::GetComponentByType(int id) {
-	if (id == -1) throw new std::runtime_error("Invalid Component Type (-1)!");
+	if (id == -1) throw std::runtime_error("Invalid Component Type (-1)!");
 	auto it = components.find(id);
 	if(it != components.end())
 		return it->second;
@@ -281,8 +279,8 @@ T * Entity::GameObject::AddComponent(std::int32_t componentID) {
 
 void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 	if (packetType == ReplicaTypes::PacketTypes::DESTRUCTION) {
-		for (auto it = components.begin(); it != components.end(); ++it) {
-			it->second->Destruct();
+		for (auto & component : components) {
+			component.second->Destruct();
 		}
 		return;
 	}
@@ -401,11 +399,11 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 			factory->Write<std::uint64_t>(parent->objectID);
 			factory->Write(false);
 		}
-		factory->Write(children.size() != 0);
-		if (children.size() != 0) {
+		factory->Write(!children.empty());
+		if (!children.empty()) {
 			factory->Write<std::uint16_t>(children.size());
-			for (int i = 0; i < children.size(); ++i) {
-				factory->Write<std::uint64_t>(children.at(i)->objectID);
+			for (auto & i : children) {
+				factory->Write<std::uint64_t>(i->objectID);
 			}
 		}
 	}
@@ -726,7 +724,7 @@ void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 }
 
 void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {
-	CharacterComponent* charComp = GetComponent<CharacterComponent>();
+	auto* charComp = GetComponent<CharacterComponent>();
 	if (charComp != nullptr) {
 		charComp->SetActivity(activity);
 	}
@@ -749,17 +747,17 @@ void Entity::GameObject::PickupLoot(Entity::GameObject* loot) {
 }
 
 void Entity::GameObject::SetProximityRadius(std::string name, float radius) {
-	ScriptComponent * scriptComp = this->GetComponent<ScriptComponent>();
+	auto * scriptComp = this->GetComponent<ScriptComponent>();
 	if (scriptComp) {
 		if (scriptComp->proximityRadii.find(name) == scriptComp->proximityRadii.end()) {
 			scriptComp->proximityRadii.insert({ name, { radius, {}} });
 		}
 		else {
-			throw new std::runtime_error("Radius already exists.");
+			throw std::runtime_error("Radius already exists.");
 		}
 	}
 	else {
-		throw new std::runtime_error("Script component not attached.");
+		throw std::runtime_error("Script component not attached.");
 	}
 }
 
@@ -773,7 +771,7 @@ void Entity::GameObject::PlayNDAudioEmitter(std::string guid) {
 std::string Entity::GameObject::GenerateXML() {
 	std::stringstream ss;
 
-	CharacterComponent * charComponent = this->GetComponent<CharacterComponent>();
+	auto * charComponent = this->GetComponent<CharacterComponent>();
 	DatabaseModels::Str_DB_CharInfo charInfo = charComponent->GetCharInfo();
 	DatabaseModels::Str_DB_CharStyle charStyle = charComponent->GetCharStyle();
 
@@ -798,12 +796,12 @@ std::string Entity::GameObject::GenerateXML() {
 			{
 				auto playerInventory = Database::GetFullInventory(GetObjectID().getPureID());
 
-				for (auto it = playerInventory.begin(); it != playerInventory.end(); ++it) {
+				for (auto & it : playerInventory) {
 
-					ss << "<in t=" << it->first << ">";
+					ss << "<in t=" << it.first << ">";
 
 					//"<i l=\"6086\" id=\"1152921507005357158\" s=\"6\" b=\"1\"/>";
-					for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+					for (auto it2 = it.second.begin(); it2 != it.second.end(); ++it2) {
 						ss << "<i l=\"" << it2->templateID << "\" id=\"" << it2->objectID << "\" s=\"" << it2->slot << "\" b=\"" << (it2->attributes.GetBound() ? 1 : 0) << "\"";
 						if (it2->count != 1) {
 							ss << " c=\"" << it2->count << "\"";
@@ -888,9 +886,9 @@ std::string Entity::GameObject::GenerateXML() {
 			{
 				auto charComp = GetComponent<CharacterComponent>();
 				auto flagChunks = charComp->GetFlagChunks();
-				for (auto it = flagChunks.begin(); it != flagChunks.end(); ++it) {
-					if (it->second != 0) {
-						ss << "<f id=\"" << it->first << "\" v=\"" << it->second << "\"/>";
+				for (auto & flagChunk : flagChunks) {
+					if (flagChunk.second != 0) {
+						ss << "<f id=\"" << flagChunk.first << "\" v=\"" << flagChunk.second << "\"/>";
 					}
 				}
 			}
@@ -907,8 +905,8 @@ std::string Entity::GameObject::GenerateXML() {
 				ss << "<done>";
 				{
 					auto missionsDone = Database::GetAllMissionsByStates(objectID & 0xFFFFFFFF, { 8, 9 });
-					for (auto it = missionsDone.begin(); it != missionsDone.end(); ++it) {
-						ss << "<m id=\"" << it->missionID << "\" cts=\"" << it->time << "\" cct=\"" << it->repeatCount << "\"/>";
+					for (auto & it : missionsDone) {
+						ss << "<m id=\"" << it.missionID << "\" cts=\"" << it.time << "\" cct=\"" << it.repeatCount << "\"/>";
 					}
 				}
 				ss << "</done>";
@@ -918,15 +916,15 @@ std::string Entity::GameObject::GenerateXML() {
 					for (auto it = missionsActive.begin(); it != missionsActive.end(); ++it) {
 						ss << "<m id=\"" << it->missionID << "\">";
 						auto c_missionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
-						if (it->progress != "") {
+						if (!it->progress.empty()) {
 							auto taskprogress = StringUtils::splitString(it->progress, '|');
 							for (int i = 0; i < taskprogress.size(); ++i) {
 								// Collectible tasks are handled differently.
 								if (CacheMissionTasks::GetTaskType(*std::next(c_missionTasks.begin(), i)) == 3) {
 									auto subtaskprogress = StringUtils::splitString(taskprogress.at(i), ':');
 									ss << "<sv v=\"" << subtaskprogress.size() << "\"/>";
-									for (int j = 0; j < subtaskprogress.size(); ++j) {
-										ss << "<sv v=\"" << subtaskprogress.at(j) << "\"/>";
+									for (auto & subtaskprogres : subtaskprogress) {
+										ss << "<sv v=\"" << subtaskprogres << "\"/>";
 									}
 								}
 								else {

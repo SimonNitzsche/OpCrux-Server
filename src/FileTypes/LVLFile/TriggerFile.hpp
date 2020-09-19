@@ -84,7 +84,7 @@ public:
 					for (xml_node<> * command_node = event_node->first_node("command"); command_node; command_node = command_node->next_sibling()) {
 						std::string command_id = command_node->first_attribute("id")->value();
 						std::string command_target = command_node->first_attribute("target")->value();
-						std::string command_targetName = "";
+						std::string command_targetName;
 						if (command_target == "objGroup") {
 							command_targetName = command_node->first_attribute("targetName")->value();
 						}

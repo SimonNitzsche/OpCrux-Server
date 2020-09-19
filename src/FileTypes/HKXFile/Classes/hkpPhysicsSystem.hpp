@@ -21,7 +21,7 @@ public:
 
 		this->hkfile = hkfile; this->fd = fd;
 
-		unsigned char* doff = fd + off;
+		std::uint8_t* doff = fd + off;
 
 		for (auto itType = hkfile->hkTypes.begin(); itType != hkfile->hkTypes.end(); ++itType) {
 			if (itType->name != "hkpPhysicsSystem") continue;

@@ -11,7 +11,7 @@ namespace GM {
 
 		ParseChatMessage() : GMBase() {}
 
-		int iClientState;
+		std::int16_t iClientState;
 		std::u16string wsString;
 
 		void Deserialize(RakNet::BitStream* bs) {

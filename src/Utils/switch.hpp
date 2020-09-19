@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <functional>
+#include <utility>
 
 
 template<typename Key>
@@ -14,7 +15,7 @@ public:
     }
 
     Switcher& Default(Func func) {
-        m_default = func;
+        m_default = std::move(func);
         return *this;
     }
 

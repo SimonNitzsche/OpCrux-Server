@@ -14,7 +14,7 @@ HKX::HKXFile* HKXCacheManager::GetHKXFile(std::string filename) {
 	std::size_t fnameHash = std::hash<std::string>()(filename);
 
 	// Check if we have entries
-	if (fileCache.size() != 0) {
+	if (!fileCache.empty()) {
 
 		// Check if we already have it
 		auto cacheIt = fileCache.find(fnameHash);
@@ -25,7 +25,7 @@ HKX::HKXFile* HKXCacheManager::GetHKXFile(std::string filename) {
 
 	// At this point we don't have it already and need to load it
 	Logger::log("WRLD", "Loading hkxFile: " + filename);
-	HKX::HKXFile* hkxFile = new HKX::HKXFile();
+	auto* hkxFile = new HKX::HKXFile();
 	if (!hkxFile->Load(filename)) {
 		// Load returned false, couldn't load file, return nullptr
 		delete hkxFile;

@@ -12,11 +12,11 @@ namespace GM {
 		bool bBypassChecks = false;
 		bool bDoHover = false;
 		bool bUse = false;
-		int effectID = -1;
-		float fAirspeed = 10;
-		float fMaxAirspeed = 15;
-		float fVertVel = 1;
-		int iWarningEffectID = -1;
+        std::int16_t effectID = -1;
+		std::float_t fAirspeed = 10;
+        std::float_t fMaxAirspeed = 15;
+        std::float_t fVertVel = 1;
+		std::int16_t iWarningEffectID = -1;
 
 		SetJetPackMode() : GMBase() {}
 

@@ -9,7 +9,7 @@ namespace GM {
 			return Enums::EGameMessageID::SERVER_SET_GRAVITY_SCALE;
 		}
 
-		float gravityScale=1;
+		std::float_t gravityScale=1;
 
 		SetGravityScale() {}
 		void Deserialize(RakNet::BitStream * bs) {

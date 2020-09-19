@@ -5,7 +5,7 @@ void LWOTimer::Update() {
 	long long currentTime = ServerInfo::uptimeMs();
 	for (auto it1 : timers) {
 		auto r1 = timers.at(it1.first);
-		for (auto it2 : r1) {
+		for (const auto& it2 : r1) {
 			auto r2 = r1.at(it2.first);
 
 			//Logger::log("TEST", std::string(it2.first.begin(), it2.first.end()) + " time left: " + std::to_string(r2 - currentTime));
@@ -23,7 +23,7 @@ void LWOTimer::Update() {
 }
 }
 
-void LWOTimer::AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::GameObject * object) {
+void LWOTimer::AddTimerWithCancelMs(int timeInMs, const std::u16string& name, Entity::GameObject * object) {
 	if (timers.find(object) == timers.end()) timers.insert(std::pair<Entity::GameObject*, std::unordered_map<std::u16string, long long>>(object, {}));
 	if (object == nullptr) { return; }
 	if (timers.size() > 1000) { return; }
@@ -43,6 +43,6 @@ void LWOTimer::AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::G
 		
 }
 
-void LWOTimer::AddTimerWithCancel(float timeInSeconds, std::u16string name, Entity::GameObject* object) {
+void LWOTimer::AddTimerWithCancel(float timeInSeconds, const std::u16string& name, Entity::GameObject* object) {
 	AddTimerWithCancelMs(std::lroundf(timeInSeconds) * 1000, name, object);
 }

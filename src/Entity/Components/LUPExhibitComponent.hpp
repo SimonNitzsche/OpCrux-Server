@@ -22,7 +22,7 @@ public:
 
 	LUPExhibitComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 75; }
+	static constexpr std::int16_t GetTypeID() { return 75; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		ENABLE_FLAG_ON_CONSTRUCTION(_isDirty);

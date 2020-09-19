@@ -55,7 +55,7 @@ void MasterServer::Listen() {
 		RakSleep(1);
 		while (packet = rakServer->Receive()) {
 			//Logger::log("MASTER", "Packet received");
-			RakNet::BitStream *data = new RakNet::BitStream(packet->data, packet->length, false);
+			auto *data = new RakNet::BitStream(packet->data, packet->length, false);
 			uint8_t packetID;
 			data->Read(packetID);
 
@@ -76,7 +76,7 @@ void MasterServer::Listen() {
 						struct {
 							RakNet::RakString computerName;
 							RakNet::RakString osName;
-							int processID;
+							int processID{};
 							SERVERMODE serverMode;
 						} contentStruct;
 						
@@ -148,7 +148,7 @@ void MasterServer::Listen() {
 						RakNet::RakString sysAddress;
 						data->Read(sysAddress);
 
-						SystemAddress sysAddrBin;
+						SystemAddress sysAddrBin{};
 
 						// Remove client
 						for (int i = 0; i < connected_clients.size(); ++i) {
@@ -201,7 +201,7 @@ void MasterServer::Listen() {
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
 }
 
-const int MasterServer::reserveInstanceID() {
+std::int32_t MasterServer::reserveInstanceID() {
 	return nextInstanceID++;
 }
 

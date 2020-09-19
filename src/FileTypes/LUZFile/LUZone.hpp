@@ -398,8 +398,8 @@ namespace FileTypes::LUZ {
 			LUZone(const std::string& filename);
 			bool _isFileLoaded();
 			std::uint32_t calculateRevisionChecksum();
-			LUZonePathBase * AllocatePath(const LUZonePathType pathType);
-			LUZonePathWaypointBase * AllocatePathWaypoint(const LUZonePathType pathType);
+			LUZonePathBase * AllocatePath(LUZonePathType pathType);
+			LUZonePathWaypointBase * AllocatePathWaypoint(LUZonePathType pathType);
 			LUZone();
 			~LUZone();
 		private:

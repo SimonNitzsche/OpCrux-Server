@@ -15,7 +15,7 @@ namespace GM {
 		NotifyVehicleOfRacingObject() {}
 
 		void Serialize(RakNet::BitStream* bs) {
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, racingObjectID, 0);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, racingObjectID, DataTypes::LWOOBJID());
 		}
 	};
 }

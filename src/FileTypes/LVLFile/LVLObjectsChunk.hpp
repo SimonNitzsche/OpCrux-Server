@@ -21,7 +21,7 @@ public:
 	std::list<LVLObjectsChunkObject> objects;
 public:
 	LVLObjectsChunk() {}
-	LVLObjectsChunk(std::uint32_t * version, char * data) {
+	LVLObjectsChunk(const std::uint32_t * version, char * data) {
 		objectCount = reinterpret_cast<std::uint32_t*>(data + 0);
 		std::uint32_t off = 4;
 		for (std::uint32_t i = 0; i < *objectCount; ++i) {
@@ -52,7 +52,7 @@ public:
 
 			if (*version >= 7) {
 				if (*reinterpret_cast<std::uint32_t*>(data + off) != 0x00000000) {
-					throw new std::runtime_error("Invalid pointer position on lvl file.");
+					throw std::runtime_error("Invalid pointer position on lvl file.");
 				}
 				off += 4;
 			}

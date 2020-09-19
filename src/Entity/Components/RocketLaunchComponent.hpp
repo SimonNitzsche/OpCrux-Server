@@ -18,7 +18,7 @@ public:
 	RocketLaunchComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 
-	static constexpr int GetTypeID() { return 67; }
+	static constexpr std::int16_t GetTypeID() { return 67; }
 
 };
 

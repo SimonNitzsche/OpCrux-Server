@@ -25,7 +25,7 @@ public:
 
 	MovingPlatformComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 25; }
+	static constexpr std::int16_t GetTypeID() { return 25; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Moving Platform Component Serialization */
@@ -97,9 +97,8 @@ public:
 			testBs.Write(false);
 
 			auto clients = owner->GetZoneInstance()->sessionManager.GetClients();
-			for (int i = 0; i < clients.size(); ++i) {
-				ClientSession session = clients.at(i);
-				owner->GetZoneInstance()->rakServer->Send(&testBs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
+			for (auto session : clients) {
+					owner->GetZoneInstance()->rakServer->Send(&testBs, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, session.systemAddress, false);
 			}
 		}
 	}

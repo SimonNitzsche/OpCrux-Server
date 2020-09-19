@@ -1,6 +1,8 @@
 #ifndef __REPLICA__COMPONENTS__CHARACTER_COMPONENT_HPP__
 #define __REPLICA__COMPONENTS__CHARACTER_COMPONENT_HPP__
 
+#include <utility>
+
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "Database/Database.hpp"
 
@@ -61,12 +63,12 @@ public:
 
 	CharacterComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 4; }
+	static constexpr std::int16_t GetTypeID() { return 4; }
 
 	void InitCharInfo(DatabaseModels::Str_DB_CharInfo info) {
-		charInfo = info;
+		charInfo = std::move(info);
 
-		StatsComponent* statsComp = this->owner->GetComponent<StatsComponent>();
+		auto* statsComp = this->owner->GetComponent<StatsComponent>();
 		if (statsComp != nullptr) {
 			statsComp->SetDirty();
 		}

@@ -33,32 +33,32 @@ public:
 
 	DestructibleComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 7; }
+	static constexpr std::int16_t GetTypeID() { return 7; }
 
 	std::list<ItemModel> GetLootDrop(Entity::GameObject * lootOwner) {
 		std::list<ItemModel> dropList = {};
 
 		auto lootRowMain = CacheLootMatrix::getRow(lootMatrixIndex);
 		auto lootRows = lootRowMain.flatIt();
-		for (auto it = lootRows.begin(); it != lootRows.end(); ++it) {
+		for (auto & lootRow : lootRows) {
 			// Check if we have flag
-			std::int32_t flag = CacheLootMatrix::GetFlagID(*it);
+			std::int32_t flag = CacheLootMatrix::GetFlagID(lootRow);
 			if(flag != 0 && !lootOwner->GetFlag(flag)) continue;
 
-			std::float_t chance = CacheLootMatrix::GetPercent(*it);
+			std::float_t chance = CacheLootMatrix::GetPercent(lootRow);
 
 			// Check if drop?
 			srand(::time(0));
 			if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) > chance) continue;
 
-			std::int32_t minToDrop = CacheLootMatrix::GetMinToDrop(*it);
-			std::int32_t maxToDrop = CacheLootMatrix::GetMaxToDrop(*it);
+			std::int32_t minToDrop = CacheLootMatrix::GetMinToDrop(lootRow);
+			std::int32_t maxToDrop = CacheLootMatrix::GetMaxToDrop(lootRow);
 			maxToDrop = minToDrop > maxToDrop ? minToDrop : maxToDrop;
 
 			srand(::time(0));
 			std::int32_t dropCount = rand() % maxToDrop + minToDrop;
 
-			std::int32_t lootTableIndex = CacheLootMatrix::GetLootTableIndex(*it);
+			std::int32_t lootTableIndex = CacheLootMatrix::GetLootTableIndex(lootRow);
 
 			auto lootTableRows = CacheLootTable::getRows(lootTableIndex);
 			lootTableRows.sort([](GameCache::Interface::FDB::RowInfo a, GameCache::Interface::FDB::RowInfo b)
@@ -176,9 +176,9 @@ public:
 		auto mainRow = CacheCurrencyTable::getRow(currencyIndex);
 		auto rows = mainRow.flatIt();
 		auto usingRow = mainRow;
-		for (auto it = rows.begin(); it != rows.end(); ++it) {
-			if (CacheCurrencyTable::GetNPCMinLevel(*it) <= npcLevel && CacheCurrencyTable::GetNPCMinLevel(*it) >= CacheCurrencyTable::GetNPCMinLevel(usingRow)) {
-				usingRow = *it;
+		for (auto & row : rows) {
+			if (CacheCurrencyTable::GetNPCMinLevel(row) <= npcLevel && CacheCurrencyTable::GetNPCMinLevel(row) >= CacheCurrencyTable::GetNPCMinLevel(usingRow)) {
+				usingRow = row;
 			}
 		}
 
@@ -282,20 +282,20 @@ public:
 				}
 
 				auto itemLoot = GetLootDrop(lootOwner);
-				for (auto it = itemLoot.begin(); it != itemLoot.end(); ++it) {
+				for (auto & it : itemLoot) {
 					GM::DropClientLoot msg;
 					msg.iCurrency = 0;
 					msg.owner = lootOwner->GetObjectID();
 					msg.sourceObj = owner->GetObjectID();
 					msg.spawnPosition = owner->GetPosition();
 					msg.finalPosition = owner->GetPosition();
-					msg.itemTemplate = it->templateID;
-					msg.lootID = it->objectID;
+					msg.itemTemplate = it.templateID;
+					msg.lootID = it.objectID;
 					GameMessages::Send(lootOwner, msg.sourceObj, msg);
 
-					Entity::GameObject * droppedLoot = new Entity::GameObject(owner->GetZoneInstance(), msg.itemTemplate);
+					auto * droppedLoot = new Entity::GameObject(owner->GetZoneInstance(), msg.itemTemplate);
 					droppedLoot->SetObjectID(msg.lootID);
-					ItemComponent * lootItemComp = droppedLoot->GetComponent<ItemComponent>();
+					auto * lootItemComp = droppedLoot->GetComponent<ItemComponent>();
 					owner->GetZoneInstance()->objectsManager->RegisterObject(droppedLoot);
 					droppedLoot->SetMaxAge(2);
 					droppedLoot->Finish();

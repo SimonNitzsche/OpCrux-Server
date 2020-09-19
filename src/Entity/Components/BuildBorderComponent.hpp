@@ -11,7 +11,7 @@ public:
 	// IMAGINATION HELMET LOT
 	const std::uint32_t thinkingHatLOT = 6086;
 
-	static constexpr int GetTypeID() { return 114; }
+	static constexpr std::int16_t GetTypeID() { return 114; }
 
 	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg);
 

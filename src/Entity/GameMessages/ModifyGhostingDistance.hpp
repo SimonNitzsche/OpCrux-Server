@@ -11,7 +11,7 @@ namespace GM {
 
 		ModifyGhostingDistance() : GMBase() {}
 
-		float fDistanceScalar;
+		std::float_t fDistanceScalar;
 
 		void Deserialize(RakNet::BitStream* bs) {
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, fDistanceScalar, 1.0f);

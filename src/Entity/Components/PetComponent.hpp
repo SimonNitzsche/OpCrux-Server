@@ -24,7 +24,7 @@ public:
 
 	PetComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 26; }
+	static constexpr std::int16_t GetTypeID() { return 26; }
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		factory->Write(_isDirty);

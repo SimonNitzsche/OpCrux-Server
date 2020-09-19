@@ -311,7 +311,7 @@ void WorldServer::GamePhysicsThread() {
 }
 
 void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
-	RakNet::BitStream *data = new RakNet::BitStream(packet->getData(), packet->getLength(), false);
+	auto *data = new RakNet::BitStream(packet->getData(), packet->getLength(), false);
 	LUPacketHeader packetHeader = packet->getHeader();
 
 	switch (packetHeader.protocolID) {

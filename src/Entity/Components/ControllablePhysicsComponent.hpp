@@ -51,7 +51,7 @@ public:
 		//collisionShape = new btBoxShape(btVector3(5, 5, 5));
 		if(owner->GetLOT() != 1) {
 			std::string cPhysicsAsset = CachePhysicsComponent::GetPhysicsAsset(GetComponentID());
-			if (cPhysicsAsset.size() != 0) {
+			if (!cPhysicsAsset.empty()) {
 				std::string physResPath = "res/physics/" + cPhysicsAsset;
 				this->physicsAsset = HKXCacheManager::GetHKXFile(physResPath);
 			}
@@ -64,7 +64,7 @@ public:
 			btVector3 inertia(0, 0, 0);	//inertia is 0,0,0 for static object, else
 			if (mass != 0.0)
 				collisionShape->calculateLocalInertia(mass, inertia);	//it can be determined by this function (for all kind of shapes)
-			btDefaultMotionState* motionState = new btDefaultMotionState(transform);
+			auto* motionState = new btDefaultMotionState(transform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collisionShape, btVector3(0, 0, 0));
 			rigidBody = new btRigidBody(rbInfo);
 
@@ -85,7 +85,7 @@ public:
 		delete collisionShape;
 	}
 
-	static constexpr int GetTypeID() { return 1; }
+	static constexpr std::int16_t GetTypeID() { return 1; }
 
 	void SetPosition(Vector3 pos) {
 		position = pos;

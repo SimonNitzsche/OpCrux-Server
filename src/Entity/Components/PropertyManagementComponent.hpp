@@ -18,7 +18,7 @@ public:
 	PropertyManagementComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
 
-	static constexpr int GetTypeID() { return 45; }
+	static constexpr std::int16_t GetTypeID() { return 45; }
 
 };
 

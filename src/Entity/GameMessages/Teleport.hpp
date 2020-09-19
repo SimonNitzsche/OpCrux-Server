@@ -17,11 +17,7 @@ namespace GM {
 		bool bSkipAllChecks = false;
 		DataTypes::Vector3 pos;
 		bool useNavmesh = false;
-		float w = 1.0;
-		float x;
-		float y;
-		float z;
-		DataTypes::Quaternion rotation = DataTypes::Quaternion(x, y, z, w);
+        DataTypes::Quaternion rotation = DataTypes::Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 
 		void Serialize(RakNet::BitStream* bs) {
 			GM_VAR_SERIALIZE(bs, NoGravTeleport);

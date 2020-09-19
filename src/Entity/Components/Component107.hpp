@@ -23,7 +23,7 @@ public:
 
 	Component107(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 107; }
+	static constexpr std::int16_t GetTypeID() { return 107; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		factory->Write(false);

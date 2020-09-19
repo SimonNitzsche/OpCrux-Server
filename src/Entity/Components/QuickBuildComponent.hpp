@@ -55,7 +55,7 @@ public:
 
 	QuickbuildComponent(std::int32_t componentID) : ScriptedActivityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 48; }
+	static constexpr std::int16_t GetTypeID() { return 48; }
 
 	void OnEnable() {
 		if ((statsComponent = ScriptedActivityComponent::owner->GetComponent<StatsComponent>()) == nullptr) {

@@ -45,7 +45,7 @@ public:
 
 	StatsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 200; }
+	static constexpr std::int16_t GetTypeID() { return 200; }
 
 	void SetDirty() {
 		_isDirtyFlagAttributes = true;

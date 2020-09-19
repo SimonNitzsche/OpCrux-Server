@@ -31,7 +31,7 @@ public:
 */
 struct SceneWString {
 public:
-	uint32_t * length = 0;
+	uint32_t * length = nullptr;
 	char16_t * data = nullptr;
 
 	/*

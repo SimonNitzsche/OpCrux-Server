@@ -1,6 +1,8 @@
 #ifndef __REPLICA__COMPONENTS__MODULE_ASSEMBLY_COMPONENT_HPP__
 #define __REPLICA__COMPONENTS__MODULE_ASSEMBLY_COMPONENT_HPP__
 
+#include <utility>
+
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
 class ModuleAssemblyComponent : public IEntityComponent {
@@ -13,7 +15,7 @@ public:
 	bool useOptionalParts = false;
 	std::u16string assembly;
 
-	static constexpr int GetTypeID() { return 61; }
+	static constexpr std::int16_t GetTypeID() { return 61; }
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
@@ -36,7 +38,7 @@ public:
 	}
 
 	void SetAssembly(std::u16string _assembly) {
-		assembly = _assembly;
+		assembly = std::move(_assembly);
 		isDirty = true;
 		owner->SetDirty();
 	}

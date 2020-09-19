@@ -20,7 +20,7 @@ namespace DataTypes {
 	#define DEG2RAD 0.01745329f;
 
 	// Defines Static Flag Sign_D for future operations.
-	static float Sign_D(float i) { return (i >-0.0f) ? 1.0f : -1.0f; }
+	static float Sign_D(std::float_t i) { return (i >-0.0f) ? 1.0f : -1.0f; }
 
 	/*
 		The Rotation Axis of an Object.
@@ -29,10 +29,10 @@ namespace DataTypes {
 
 		// Quaternion use 4 axis: x, y, z and w.
 #pragma pack(push, 1)
-		float x = 0.f;
-		float y = 0.f;
-		float z = 0.f;
-		float w = 1.f;
+		std::float_t x = 0.f;
+		std::float_t y = 0.f;
+		std::float_t z = 0.f;
+		std::float_t w = 1.f;
 #pragma pack(pop)
 
 		/*
@@ -43,7 +43,7 @@ namespace DataTypes {
 		/*
 			Constructs a Quaternion with x, y, z and w axis.
 		*/
-		Quaternion(float x, float y, float z, float w) {
+		Quaternion(std::float_t x, std::float_t y, std::float_t z, std::float_t w) {
 			// Set x, y, z and w.
 			this->x = x; this->y = y; this->z = z; this->w = w;
 		}

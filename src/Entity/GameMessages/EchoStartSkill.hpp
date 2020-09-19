@@ -26,7 +26,7 @@ namespace GM {
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, iCastType, 0);
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, lastClickedPosit, DataTypes::Vector3());
 			GM_VAR_SERIALIZE(bs, optionalOriginatorID);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, optionalTargetID, 0ULL);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, optionalTargetID, DataTypes::LWOOBJID());
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, originatorRot, DataTypes::Quaternion());
 			GM_VAR_SERIALIZE_STRING(bs, sBitStream);
 			GM_VAR_SERIALIZE(bs, skillID);

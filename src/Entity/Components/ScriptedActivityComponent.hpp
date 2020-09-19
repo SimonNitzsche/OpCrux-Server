@@ -19,7 +19,7 @@ public:
 
 	ScriptedActivityComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 39; }
+	static constexpr std::int16_t GetTypeID() { return 39; }
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		//ENABLE_FLAG_ON_CONSTRUCTION(_componentDirty);
@@ -27,10 +27,10 @@ public:
 		factory->Write(_componentDirty);
 		if (_componentDirty) {
 			factory->Write<std::uint32_t>(playerActivityData.size());
-			for (auto it = playerActivityData.begin(); it != playerActivityData.end(); ++it) {
-				factory->Write<std::uint64_t>(it->first);
+			for (auto & it : playerActivityData) {
+				factory->Write<std::uint64_t>(it.first);
 				for (int i = 0; i < 10; ++i) {
-					factory->Write<std::float_t>(it->second.at(i));
+					factory->Write<std::float_t>(it.second.at(i));
 				}
 			}
 		}
@@ -38,16 +38,16 @@ public:
 
 	bool PlayerInActivity(DataTypes::LWOOBJID player) {
 		// std::find is broken somehow, so we have to iterate by our own.
-		for (auto it = playerActivityData.begin(); it != playerActivityData.end(); ++it)
-			if (it->first == player)
+		for (auto & it : playerActivityData)
+			if (it.first == player)
 				return true;
 		return false;
 	}
 
 	std::list<DataTypes::LWOOBJID> GetPlayersInActivity() {
 		std::list<DataTypes::LWOOBJID> retList {};
-		for (auto it = playerActivityData.begin(); it != playerActivityData.end(); ++it)
-			retList.push_back(it->first);
+		for (auto & it : playerActivityData)
+			retList.push_back(it.first);
 		return retList;
 	}
 
@@ -65,7 +65,7 @@ public:
 		this->owner->SetDirty();
 	}
 
-	void PopulateFromLDF(LDFCollection collection) {
+	void PopulateFromLDF(const LDFCollection& collection) {
 		// TODO
 		
 	}

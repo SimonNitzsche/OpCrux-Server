@@ -19,7 +19,7 @@ public:
 
 	MinifigComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
-	static constexpr int GetTypeID() { return 35; }
+	static constexpr std::int16_t GetTypeID() { return 35; }
 
 	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg) {
 		MissionManager::LaunchTaskEvent(Enums::EMissionTask::TALK_TO_NPC, owner, sender->GetObjectID());

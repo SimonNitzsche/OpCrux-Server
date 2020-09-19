@@ -98,7 +98,7 @@ void HKX::HKXFile::LoadElement(std::uint32_t & currentOffset, std::string_view m
 		currentOffset += 4;
 	}
 	else if (main_type == "string_pointer" || main_type == "cstring") {
-		unsigned char * value = this->file.get() + *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
+		std::uint8_t * value = this->file.get() + *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
 		currentOffset += 4;
 	}
 	else if (main_type == "variant") {
@@ -206,7 +206,7 @@ bool HKXFile::Load(std::string& file) {
 				name_address = *reinterpret_cast<std::uint32_t*>(this->file.get() + currentOffset);
 				
 				currentOffset = (class_name_global_address + name_address);
-				unsigned char* name = this->file.get() + currentOffset;
+				std::uint8_t* name = this->file.get() + currentOffset;
 				std::uint8_t cnamelen;
 				for (cnamelen = 0; cnamelen < 256 && name[cnamelen]; ++cnamelen);
 				type_name = std::string_view(const_cast<const char*>(reinterpret_cast<char*>(name)), cnamelen);
@@ -223,9 +223,9 @@ bool HKXFile::Load(std::string& file) {
 
 				currentOffset += 4;
 
-				for (auto it = type_links.begin(); it != type_links.end(); ++it) {
-					if (it->address_1 == currentOffset) {
-						type.parent_address = it->address_2;
+				for (auto & type_link : type_links) {
+					if (type_link.address_1 == currentOffset) {
+						type.parent_address = type_link.address_2;
 						break;
 					}
 				}
@@ -270,7 +270,7 @@ bool HKXFile::Load(std::string& file) {
 					for (int j = 0; j < type.declared_enums; ++j) {
 						name = this->file.get() + currentOffset;
 						for (cnamelen = 0; cnamelen < 256 && name[cnamelen]; ++cnamelen);
-						type.sub_enum_names.push_back(std::string_view(const_cast<const char*>(reinterpret_cast<char*>(name)), cnamelen));
+						type.sub_enum_names.emplace_back(const_cast<const char*>(reinterpret_cast<char*>(name)), cnamelen);
 						currentOffset += cnamelen + 1;
 
 						pad = 16 - (currentOffset % 16);
@@ -311,9 +311,9 @@ bool HKXFile::Load(std::string& file) {
 						currentOffset += 4;
 						typeMember.structure_address = 0;
 
-						for (auto it = type_links.begin(); it != type_links.end(); ++it) {
-							if (it->address_1 == currentOffset) {
-								typeMember.structure_address = it->address_2;
+						for (auto & type_link : type_links) {
+							if (type_link.address_1 == currentOffset) {
+								typeMember.structure_address = type_link.address_2;
 								break;
 							}
 						}
@@ -377,18 +377,18 @@ bool HKXFile::Load(std::string& file) {
 			}
 
 			// Link types
-			for (auto it = type_links.begin(); it != type_links.end(); ++it) {
-				it->type_parent = nullptr;
-				it->type_node = nullptr;
+			for (auto & type_link : type_links) {
+				type_link.type_parent = nullptr;
+				type_link.type_node = nullptr;
 			}
 
 			for (auto it = hkTypes.begin(); it != hkTypes.end(); ++it) {
 				if (it->class_name != "hkClass") continue;
 
 				if (it->parent_address != 0) {
-					for (auto it2 = hkTypes.begin(); it2 != hkTypes.end(); ++it2) {
-						if (it->parent_address == it2->address) {
-							it->parent = &(*it2);
+					for (auto & hkType : hkTypes) {
+						if (it->parent_address == hkType.address) {
+							it->parent = &hkType;
 							break;
 						}
 					}
@@ -396,9 +396,9 @@ bool HKXFile::Load(std::string& file) {
 
 				for (int j = 0; j < it->members.size(); ++j) {
 					if (it->members.at(j).structure_address != 0) {
-						for (auto it2 = hkTypes.begin(); it2 != hkTypes.end(); ++it2) {
-							if (it2->address == it->members.at(j).structure_address) {
-								it->members.at(j).structure = it2->name;
+						for (auto & hkType : hkTypes) {
+							if (hkType.address == it->members.at(j).structure_address) {
+								it->members.at(j).structure = hkType.name;
 								break;
 							}
 						}
@@ -497,20 +497,20 @@ void HKX::HKXFile::TestStuff() {
 }
 
 std::uint32_t HKX::HKXFile::GetDataPointerTarget(std::uint32_t off) {
-	for (auto it2 = data_pointers.begin(); it2 != data_pointers.end(); ++it2) {
-		if (off == it2->abs_address) {
+	for (auto & data_pointer : data_pointers) {
+		if (off == data_pointer.abs_address) {
 			// Move pointer
-			return it2->target_address;
+			return data_pointer.target_address;
 		}
 	}
 
 	throw;
 }
 std::uint32_t HKX::HKXFile::GetGlobalDataPointerTarget(std::uint32_t off) {
-	for (auto it2 = data_global_pointers.begin(); it2 != data_global_pointers.end(); ++it2) {
-		if (off == it2->abs_address) {
+	for (auto & data_global_pointer : data_global_pointers) {
+		if (off == data_global_pointer.abs_address) {
 			// Move pointer
-			return it2->target_address;
+			return data_global_pointer.target_address;
 		}
 	}
 

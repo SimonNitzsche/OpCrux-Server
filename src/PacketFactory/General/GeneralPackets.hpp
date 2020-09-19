@@ -25,16 +25,16 @@ namespace PacketFactory {
 		inline void doHandshake(RakPeerInterface * rakServer, SystemAddress client, bool isAuth) {
 			RakNet::BitStream returnBS;
 			// Head
-			LUPacketHeader returnBSHead;
+			LUPacketHeader returnBSHead{};
 			returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
 			returnBSHead.remoteType = static_cast<std::uint16_t>(ERemoteConnection::GENERAL);
 			returnBSHead.packetID = static_cast<std::uint32_t>(EServerPacketID::VERSION_CONFIRM);
 			returnBS.Write(returnBSHead);
 			//Data
-			returnBS.Write(SERVER_VERSION); // version
+			returnBS.Write<std::uint32_t>(SERVER_VERSION); // version
 			returnBS.Write<std::uint32_t>(0x93); // ???
 			returnBS.Write<std::uint32_t>(isAuth ? 1 : 4 ); // connType
-			returnBS.Write(ServerInfo::processID);
+			returnBS.Write<std::uint32_t>(ServerInfo::processID);
 			returnBS.Write<std::uint16_t>(0xff);
 			returnBS.Write(RakNet::RakString("127.0.0.1"), 264);
 

@@ -44,10 +44,8 @@ public:
 
 		std::string currentSection = "";
 
-			for (auto it = lines.begin(); it != lines.end(); ++it) {
-				std::string& line = *it;
-
-				// Remove beginning whitespace
+			for (auto & line : lines) {
+					// Remove beginning whitespace
 				int realBegin = 0;
 				while (realBegin < line.size() && (line.at(realBegin) == ' ' || line.at(realBegin) == '\t' || line.at(realBegin) == '\0')) {
 					++realBegin;
@@ -101,14 +99,14 @@ public:
 
 				auto itS = _data.find(currentSection);
 				if (itS == _data.end()) {
-					if (currentSection == "") continue;
+					if (currentSection.empty()) continue;
 					_data.insert({ currentSection, {} });
 					itS = _data.find(currentSection);
 				}
 
 				auto itK = itS->second.find(key);
 				if (itK == itS->second.end()) {
-					if (key == "") continue;
+					if (key.empty()) continue;
 					itS->second.insert({ key, val });
 					itK = itS->second.find(key);
 				}
@@ -125,14 +123,14 @@ public:
 
 		std::string fileoutput = "";
 
-		if (GetComment() != "") {
+		if (!GetComment().empty()) {
 			fileoutput += GetComment() + "\n\n";
 		}
 
-		for (auto it = _data.begin(); it != _data.end(); ++it) {
-			fileoutput += "["+it->first+"]\n";
+		for (auto & it : _data) {
+			fileoutput += "["+it.first+"]\n";
 
-			for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+			for (auto it2 = it.second.begin(); it2 != it.second.end(); ++it2) {
 				fileoutput += it2->first + "=" + it2->second + "\n";
 			}
 
@@ -142,7 +140,7 @@ public:
 		FileUtils::SaveTextFile(GetFullFileName(), fileoutput);
 	}
 
-	std::string GetStringVal(std::string section, std::string key) {
+	std::string GetStringVal(const std::string& section, const std::string& key) {
 		auto itS = _data.find(section);
 		auto itK = itS->second.find(key);
 		return itK->second;
