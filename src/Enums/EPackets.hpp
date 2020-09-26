@@ -146,9 +146,9 @@ namespace Enums {
 		Packet IDs that are sent to the client.
 	*/
 	enum class EClientPacketID : uint32_t {
-		MSG_CLIENT_LOAD_STATIC_ZONE = 2,
-		CHARACTER_LIST = 6,
-		CHARACTER_CREATION_RESPONSE = 7,
+		MSG_CLIENT_LOAD_STATIC_ZONE = 0x02,
+		CHARACTER_LIST = 0x06,
+		CHARACTER_CREATION_RESPONSE,
 		SERVER_GAME_MSG = 12,
 		SERVER_REDIRECT = 14,
 		FRIEND_REQUEST = 27,

@@ -69,7 +69,7 @@ namespace PacketFactory {
 				returnBS.Write(charInfo.lastClone);
 				returnBS.Write(charInfo.lastLog);
 
-				// TODO: Inventory (Equipped Items)
+				// Inventory (Equipped Items)
 
 				auto inventory = Database::GetFullInventory(charInfo.objectID);
 
@@ -201,6 +201,32 @@ namespace PacketFactory {
 			returnBS.Write<std::uint32_t>(mapChecksum);
 			returnBS.Write<DataTypes::Vector3>(playerPosition);
 			returnBS.Write<std::uint32_t>(activityMap);
+
+			// Send
+			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
+		}
+
+		inline void TransferToWorld(RakPeerInterface* rakServer, ClientSession* clientSession, char* ipAddress, std::uint16_t portOrErrorCode, bool doAnnouncement = false) {
+			RakNet::BitStream returnBS;
+			// Head
+			LUPacketHeader returnBSHead;
+			returnBSHead.protocolID = std::uint8_t(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = std::uint16_t(Enums::ERemoteConnection::CLIENT);
+			returnBSHead.packetID = std::uint32_t(Enums::EClientPacketID::SERVER_REDIRECT);
+			returnBS.Write(returnBSHead);
+
+			// Data
+			if (ipAddress != nullptr) {
+				// Success, redirect
+				StringUtils::writeBufferedStringToBitStream(&returnBS, std::string(ipAddress));
+				returnBS.Write(portOrErrorCode);
+				returnBS.Write<std::uint8_t>(doAnnouncement);
+			}
+			else {
+				// Error
+				StringUtils::writeBufferedStringToBitStream(&returnBS, "");
+				returnBS.Write(portOrErrorCode);
+			}
 
 			// Send
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
