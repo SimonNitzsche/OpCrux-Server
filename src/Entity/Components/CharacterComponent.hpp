@@ -114,7 +114,7 @@ public:
 	void SetFlag(std::int32_t flagIndex, bool value) {
 		// Set flag
 		//auto flagChunk = std::find(flags.begin(), flags.end(), flagIndex / 64);
-		std::uint32_t chunkID = flagIndex / 64;
+		std::uint32_t chunkID = std::floor(flagIndex / 64);
 		std::uint64_t chunkData;
 		auto flagChunk = flags.find(chunkID);
 		if (flagChunk != flags.end()) {
