@@ -351,6 +351,8 @@ bin.zip
 
 services/CruxAuthService/CruxAuthService/res/
 
+lib/
+
 services/CruxAuthService/res/ssl/
 
 *.pem
