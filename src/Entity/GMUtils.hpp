@@ -37,7 +37,7 @@
 }
 
 #define GM_MAKE_GAMEOBJECT_DECLARE(name) void On##name(Entity::GameObject * sender, GM::##name & msg)
-#define GM_MAKE_GAMEOBJECT_DEFINE(name) void Entity::GameObject::On##name(Entity::GameObject * sender, GM::##name & msg){ Logger::log("WRLD", "Event "+std::string(#name)+" on object LOT #" + std::to_string(LOT)); for (auto i : components) i.second.On##name(sender, msg);}
+#define GM_MAKE_GAMEOBJECT_DEFINE(name) void Entity::GameObject::On##name(Entity::GameObject * sender, GM::##name & msg){ Logger::log("WRLD", "Event "+std::string(#name)+" on object LOT #" + std::to_string(LOT)); for (auto i : components) i.second->On##name(sender, msg);}
 #define GM_MAKE_COMPONENT_DECLARE(name) virtual void On##name(Entity::GameObject * sender, GM::##name & msg) {}
 
 #define GM_MAKE_LIST_CLIENT(mfun) \

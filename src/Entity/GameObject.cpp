@@ -14,14 +14,13 @@
 #define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T) {COMP_T * comp = this->GetComponent<COMP_T>(); if(comp != nullptr) { /*Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"...");*/ comp->Serialize(factory, packetType);}}
 #define COMPONENT_ONADD_SWITCH_CASE(COMP_T) {\
 	case COMP_T::GetTypeID(): {\
-		COMP_T compLocal = COMP_T(compID); \
-		auto compPair = components.emplace(COMP_T::GetTypeID(), compLocal);\
-		COMP_T * comp = &static_cast<COMP_T>(compPair.second);\
+		COMP_T * comp = new COMP_T(compID);\
+		components.insert(std::make_pair(COMP_T::GetTypeID(), comp));\
 		comp->SetOwner(this); \
 		comp->OnEnable();\
 		/*Logger::log("WRLD", "Added Component "+std::string(#COMP_T)+"!");*/\
 		if(comp == nullptr) {\
-			throw std::runtime_error(std::string(#COMP_T)+" resultet into a nullptr.");\
+			throw new std::runtime_error(std::string(#COMP_T)+" resultet into a nullptr.");\
 		}\
 		return comp;\
 		break;\
@@ -147,17 +146,21 @@ Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
 void Entity::GameObject::Finish() {
 	// Call Awake
 	for (auto component : components) {
-		component.second.Awake();
+		component.second->Awake();
 	}
 
 	// Call Startup
 	for (auto component : components) {
-		component.second.Start();
+		component.second->Start();
 	}
 }
 
 Entity::GameObject::~GameObject() {
-	
+	for (auto reference : components) {
+		if (reference.second) {
+			delete[] reference.second;
+		}
+	}
 }
 
 void Entity::GameObject::SetObjectID(DataTypes::LWOOBJID ID) {
@@ -170,7 +173,7 @@ DataTypes::LWOOBJID Entity::GameObject::GetObjectID() {
 
 void Entity::GameObject::Update() {
 	for (auto oPair : components)
-		oPair.second.Update();
+		oPair.second->Update();
 
 	if (maxAge != 0LL && __int64(::time(0)) >= __int64(maxAge)) {
 		this->Remove();
@@ -179,7 +182,7 @@ void Entity::GameObject::Update() {
 
 void Entity::GameObject::PhysicUpdate() {
 	for (auto oPair : components)
-		oPair.second.PhysicUpdate();
+		oPair.second->PhysicUpdate();
 }
 
 void Entity::GameObject::Tick() {
@@ -190,7 +193,7 @@ IEntityComponent* Entity::GameObject::GetComponentByType(int id) {
 	if (id == -1) throw new std::runtime_error("Invalid Component Type (-1)!");
 	auto it = components.find(id);
 	if(it != components.end())
-		return &it->second;
+		return it->second;
 	return nullptr;
 }
 
@@ -281,7 +284,7 @@ T * Entity::GameObject::AddComponent(std::int32_t componentID) {
 void Entity::GameObject::Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 	if (packetType == ReplicaTypes::PacketTypes::DESTRUCTION) {
 		for (auto it = components.begin(); it != components.end(); ++it) {
-			it->second.Destruct();
+			it->second->Destruct();
 		}
 		return;
 	}
@@ -546,7 +549,9 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	}
 	
 	for (auto component : this->components) {
-		component.second.PopulateFromLDF(collection);
+		if (component.second != nullptr) {
+			component.second->PopulateFromLDF(collection);
+		}
 		//if (this->components.size() == 1) return;
 	}
 }
@@ -707,14 +712,18 @@ void Entity::GameObject::Possess(Entity::GameObject* other) {
 void Entity::GameObject::OnCollisionPhantom(Entity::GameObject * other) {
 	Logger::log("WRLD", "OnCollisionPhantom");
 	for (auto component : this->components) {
-		component.second.OnCollisionPhantom(other);
+		if (component.second != nullptr) {
+			component.second->OnCollisionPhantom(other);
+		}
 	}
 }
 
 void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 	Logger::log("WRLD", "OnOffCollisionPhantom");
 	for (auto component : this->components) {
-		component.second.OnOffCollisionPhantom(other);
+		if (component.second != nullptr) {
+			component.second->OnOffCollisionPhantom(other);
+		}
 	}
 }
 
@@ -730,7 +739,7 @@ void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {
 GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DEFINE);
 
 void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
-	for (auto i : components) i.second.OnDie(sender, msg);
+	for (auto i : components) i.second->OnDie(sender, msg);
 }
 
 
