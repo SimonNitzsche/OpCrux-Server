@@ -73,7 +73,7 @@ namespace Entity {
 			std::vector<std::u16string> groups;
 
 			// The Components assigned to this object.
-			std::unordered_map<std::uint32_t, IEntityComponent*> components;
+			std::unordered_map<std::uint32_t, IEntityComponent> components;
 
 			// The timers assigned to this object.
 			std::unordered_map<char*, LWOTimer> timers;

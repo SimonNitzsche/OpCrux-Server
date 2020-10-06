@@ -401,6 +401,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 			case EWorldPacketID::CLIENT_VALIDATION: {
 				std::u16string wClientName = StringUtils::readBufferedWStringFromBitStream(data);
 				std::u16string wClientKey = StringUtils::readBufferedWStringFromBitStream(data);
+				std::string sClientKey = std::string((const char*)wClientKey.c_str());
 				std::string sClientFDBChecksum = StringUtils::readBufferedStringFromBitStream(data);
 				ClientSession csFactory;
 				csFactory.accountID = Database::GetAccountIDByClientName(std::string(wClientName.begin(), wClientName.end()));
