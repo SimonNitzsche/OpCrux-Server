@@ -31,6 +31,7 @@ ${BULLET_PHYSICS_SOURCE_DIR}/src
 find_package(ODBC REQUIRED)
 
 add_executable(OpCrux_Server
+	libs/glad/include/glad/glad.h
 	libs/glad/src/glad.c
 	src/Common/CrossPlatform.hpp
 	src/Configuration/ConfDatabase.hpp
@@ -412,8 +413,6 @@ target_link_libraries(OpCrux_Server
 	../../../libs/SDL/lib/x64/SDL2
 	../../../libs/SDL/lib/x64/SDL2main
 	OpenGLWindow
-	gwen
-	glad
 	BulletDynamics
 	BulletCollision
 	LinearMath
@@ -429,6 +428,7 @@ target_link_libraries(OpCrux_Server
 	ws2_32
 	RakNet
 	rapidxml
+	bcrypt
 )
 
 
