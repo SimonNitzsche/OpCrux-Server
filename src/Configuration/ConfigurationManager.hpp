@@ -3,6 +3,7 @@
 
 #include "FileTypes/INIFile/ConfFile.hpp"
 #include "Configuration/ConfDatabase.hpp"
+#include "Configuration/ConfGeneral.hpp"
 #include "Configuration/ConfPorts.hpp"
 
 namespace Configuration {
@@ -10,6 +11,7 @@ namespace Configuration {
 	public:
 		static ConfDatabase dbConf;
 		static ConfPorts portsConf;
+		static ConfGeneral generalConf;
 
 		static void Load();
 

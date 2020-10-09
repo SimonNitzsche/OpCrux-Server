@@ -35,6 +35,7 @@ add_executable(OpCrux_Server
 	libs/glad/src/glad.c
 	src/Common/CrossPlatform.hpp
 	src/Configuration/ConfDatabase.hpp
+	src/Configuration/ConfGeneral.hpp
 	src/Configuration/ConfigurationManager.cpp
 	src/Configuration/ConfigurationManager.hpp
 	src/Configuration/ConfPorts.hpp
@@ -330,6 +331,7 @@ add_executable(OpCrux_Server
 	src/Server/Bridges/BridgeMasterServer.cpp
 	src/Server/Bridges/BridgeMasterServer.hpp
 	src/Server/Interfaces/ILUServer.hpp
+	src/Server/Manager/WorldInstanceManager.cpp
 	src/Server/Manager/WorldInstanceManager.hpp
 	src/Server/AuthServer.cpp
 	src/Server/AuthServer.hpp
@@ -359,7 +361,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp" ) 
+	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp"  "src/Configuration/ConfGeneral.hpp") 
 	
 
 

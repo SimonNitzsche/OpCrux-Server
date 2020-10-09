@@ -193,6 +193,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 		Logger::log("AUTH", "Recieving new Connection...");
 		// TODO: Connect as Session
 	} break;
+	case ID_CONNECTION_LOST:
 	case ID_DISCONNECTION_NOTIFICATION: {
 		Logger::log("AUTH", "User Disconnected from AUTH...");
 		// TODO: Disconnect as Session

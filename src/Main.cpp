@@ -50,6 +50,8 @@ int givenWorldID = 2000;
 #include "FileTypes/HKXFile/hkxFile.hpp"
 #include "Database/CacheImporter.hpp"
 
+#include "Server/Manager/WorldInstanceManager.hpp"
+
 #include <iostream>
 #include <SDL/include/SDL.h>
 #include <GL/gl.h>
@@ -456,6 +458,8 @@ int main(int argc, char* argv[]) {
 		//WorldServer * charSelectWs;
 		//std::thread wT([](WorldServer * ws) { ws = new WorldServer(givenWorldID, 0,2001); }, charSelectWs);
 		//wT.detach();
+	
+		//WorldInstanceManager::CreateInstance(1000, 0, 0, 2100);
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::UGCOP) {

@@ -12,6 +12,8 @@ namespace DataTypes {
 		uint16_t zoneID;
 		uint16_t zoneInstance;
 		uint32_t zoneClone;
+
+		ZoneInfo() : zoneID(0), zoneInstance(0), zoneClone(0) {}
 	};
 }
 

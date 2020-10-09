@@ -11,6 +11,8 @@
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/RakNetworkFactory.h>
 #include <RakNet/RakSleep.h>
+#include "DataTypes/LWOOBJID.hpp"
+#include "Sessions/ClientSession.hpp"
 
 class BridgeMasterServer {
 private:
@@ -30,7 +32,8 @@ public:
 	void SayHello();
 	void ClientLoginAuth(SystemAddress systemAddress, int accountID);
     void ClientLoginRespond(SystemAddress systemAddress, int accountID, int reason);
-	void ClientWorldAuth(SystemAddress systemAddress, int accountID);
+	void ClientWorldAuth(SystemAddress systemAddress, ClientSession clSession);
+    void ClientCharAuth(ClientSession* clientSession, std::uint16_t sourcePort, DataTypes::LWOOBJID charID);
 	void ClientDisconnect(SystemAddress systemAddress);
 	void ChooseWorldServer();
     void NotifyInstanceLoaded(std::uint16_t zoneID, std::uint16_t instanceID, std::uint32_t cloneID, SystemAddress systemAddress);

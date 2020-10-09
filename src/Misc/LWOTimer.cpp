@@ -8,7 +8,6 @@ void LWOTimer::Update() {
 		for (auto it2 : r1) {
 			auto r2 = r1.at(it2.first);
 
-			//Logger::log("TEST", std::string(it2.first.begin(), it2.first.end()) + " time left: " + std::to_string(r2 - currentTime));
 			if (currentTime >= r2) {
 				// Time exceeded.
 				// Stop timer and trigger stop event.
@@ -30,7 +29,6 @@ void LWOTimer::AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::G
 	if (timeInMs > 100) {
 		if (timers.at(object).find(name) == timers.at(object).end()) {
 			// Add
-			// Logger::log("TIMER", "Timer " + StringUtils::to_string(name) + " added to " + object->GetNameStr());
 			timers.at(object).insert(std::make_pair(name, ServerInfo::uptimeMs() + timeInMs));
 		}
 		else {

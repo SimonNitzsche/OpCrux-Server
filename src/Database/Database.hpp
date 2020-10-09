@@ -1946,13 +1946,13 @@ public:
 		std::uint64_t ppid = playerID.getPureID();
 
 
-		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &chunkData, 0, &lenZero);
-		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &ppid, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 1, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &chunkData, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 2, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &ppid, 0, &lenZero);
 		ret = SQLBindParameter(sqlStmtHandle, 3, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &chunkID, 0, &lenZero);
 
-		ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &ppid, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 4, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &ppid, 0, &lenZero);
 		ret = SQLBindParameter(sqlStmtHandle, 5, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &chunkID, 0, &lenZero);
-		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, 0, 0, &chunkData, 0, &lenZero);
+		ret = SQLBindParameter(sqlStmtHandle, 6, SQL_PARAM_INPUT, SQL_C_SBIGINT, SQL_BIGINT, 0, 0, &chunkData, 0, &lenZero);
 
 		if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 			extract_error("SQLBindParameter", sqlStmtHandle, SQL_HANDLE_STMT);

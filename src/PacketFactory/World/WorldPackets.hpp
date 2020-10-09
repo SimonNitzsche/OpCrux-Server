@@ -206,7 +206,7 @@ namespace PacketFactory {
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
 		}
 
-		inline void TransferToWorld(RakPeerInterface* rakServer, ClientSession* clientSession, char* ipAddress, std::uint16_t portOrErrorCode, bool doAnnouncement = false) {
+		inline void TransferToWorld(RakPeerInterface* rakServer, SystemAddress clientSession, char* ipAddress, std::uint16_t portOrErrorCode, bool doAnnouncement = false) {
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead;
@@ -228,8 +228,10 @@ namespace PacketFactory {
 				returnBS.Write(portOrErrorCode);
 			}
 
+			Logger::log("WORLD", "Sending world redirect to " + std::string(const_cast<const char*>(ipAddress)) + ":" + std::to_string(portOrErrorCode) + " for " + clientSession.ToString());
+
 			// Send
-			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
+			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession, false);
 		}
 	};
 
