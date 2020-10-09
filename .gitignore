@@ -381,3 +381,7 @@ libs/random/effolkronium_randomTargets.cmake
 services/CruxAuthService/CruxAuthService/openssl/
 services/CruxAuthService/CruxAuthService/res/
 services/CruxAuthService/CruxAuthService/libbcrypt/
+
+services/CruxAuthService/res/ssl/
+
+*.pem
