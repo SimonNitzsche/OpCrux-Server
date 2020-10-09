@@ -38,16 +38,21 @@ using namespace Exceptions;
 
 #include "Database/Database.hpp"
 
+#include "Configuration/ConfigurationManager.hpp"
+
+extern AuthServer * authServer;
+
 AuthServer::AuthServer() : ILUServer() {
+	authServer = this;
 	// Initializes the RakPeerInterface used for the auth server
-	RakPeerInterface* rakServer = RakNetworkFactory::GetRakPeerInterface();
+	rakServer = RakNetworkFactory::GetRakPeerInterface();
 
 	// Initializes Securiry
 	// TODO: Init Security
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
 	// Initializes SocketDescriptor
-	SocketDescriptor socketDescriptor(1001, 0);
+	SocketDescriptor socketDescriptor(std::stoi(Configuration::ConfigurationManager::portsConf.GetStringVal("Auth","PORT")), 0);
 	Logger::log("AUTH", "Starting Auth...");
 
 	// Max Connections
@@ -160,7 +165,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					if (authSuccess) {
 						std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
 						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
-						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 					}
 					else
 						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
@@ -170,7 +175,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					if (authSuccess) {
 						std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
 						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
-						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
+						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 					}
 					else
 						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
@@ -188,6 +193,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 		Logger::log("AUTH", "Recieving new Connection...");
 		// TODO: Connect as Session
 	} break;
+	case ID_CONNECTION_LOST:
 	case ID_DISCONNECTION_NOTIFICATION: {
 		Logger::log("AUTH", "User Disconnected from AUTH...");
 		// TODO: Disconnect as Session
@@ -200,6 +206,18 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	// Deallocate the packet to conserve memory
 	delete data;
 	rakServer->DeallocatePacket(packet->getPacket());
+}
+
+std::string& GenerateSessionKey() {
+	throw;
+}
+
+void AuthServer::MasterClientAuthResponse(SystemAddress systemAddress, int accountID, int reason) {
+	PacketFactory::Auth::doLoginResponse(this->rakServer, systemAddress, ELoginReturnCode(reason));
+}
+
+void AuthServer::DoPlayerLoginSuccess(SystemAddress systemAddress, SystemAddress destination) {
+	PacketFactory::Auth::doLoginResponse(rakServer, systemAddress, ELoginReturnCode::SUCCESS, destination);
 }
 
 AuthServer::~AuthServer() {

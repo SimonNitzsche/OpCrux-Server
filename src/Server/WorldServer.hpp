@@ -21,6 +21,7 @@ private:
 	std::vector<std::string> mf_FirstNames = {};
 	std::vector<std::string> mf_MiddleNames = {};
 	std::vector<std::string> mf_LastNames = {};
+	std::uint16_t m_port;
 public:
 	SessionManager sessionManager;
 	ReplicaManager * replicaManager = nullptr;
@@ -28,7 +29,7 @@ public:
 	ObjectsManager * objectsManager = nullptr;
 	//DebugRenderer* debugRenderer = nullptr;
 	RakPeerInterface* rakServer;
-	FileTypes::LUZ::LUZone * luZone;
+	FileTypes::LUZ::LUZone * luZone = nullptr;
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* collisionDispatcher;
 	btBroadphaseInterface* overlappingPairCache;
@@ -39,11 +40,12 @@ public:
 	LWOTimer timer;
 	std::mutex m_lock;
 public:
-	WorldServer(int zone, int instanceID, int port);
+	WorldServer(int zone, int instanceID, int cloneID, int port);
 	void GameLoopThread();
 	static void DebugRendererThread();
 	void GamePhysicsThread();
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
+    void FinishClientTransfer(ClientSession clSession);
 	std::uint16_t GetZoneID();
 	~WorldServer();
 };

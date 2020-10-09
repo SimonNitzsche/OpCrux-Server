@@ -22,7 +22,7 @@ namespace PacketFactory {
 
 	namespace Auth {
 
-		inline void doLoginResponse(RakPeerInterface * rakServer, SystemAddress client, ELoginReturnCode reason, std::u16string customErrorMessage=u"") {
+		inline void doLoginResponse(RakPeerInterface * rakServer, SystemAddress client, ELoginReturnCode reason, SystemAddress wsAddr = UNASSIGNED_SYSTEM_ADDRESS, std::u16string customErrorMessage=u"") {
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead;
@@ -44,15 +44,17 @@ namespace PacketFactory {
 			std::string ip = (IPUtils::isIPPublic(client.binaryAddress) ? rakServer->GetExternalID(UNASSIGNED_SYSTEM_ADDRESS).ToString(false) :
 							 (IPUtils::isIPIntern(client.binaryAddress) ? rakServer->GetInternalID().ToString(false) : "127.0.0.1"));
 			
+			ip = wsAddr.ToString(false);
+
 			//ip = "foxsog.com";
 
-			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip);
+			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip + ":" + std::to_string(wsAddr.port));
 
-			StringUtils::writeBufferedWStringToBitStream(&returnBS, u"fad1892aa57db9e0cf74d45445f71599", 33);
+			StringUtils::writeBufferedWStringToBitStream(&returnBS, (char16_t*)"$2a$10$KssILxWNR6k62B7yiX0GAe2Q7wwHlrzhF3LqtVvpyvHZf0MwvNfVu", 33);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
-			returnBS.Write<std::uint16_t>(2001);
-			returnBS.Write<std::uint16_t>(0);
+			returnBS.Write<uint16_t>(wsAddr.port);
+			returnBS.Write<uint16_t>(0);
 			StringUtils::FillZero(&returnBS, 33);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, "00000000-0000-0000-0000-000000000000", 37);
 			returnBS.Write<std::uint32_t>(0);

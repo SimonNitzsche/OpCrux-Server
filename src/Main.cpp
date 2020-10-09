@@ -38,7 +38,7 @@ enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH, UGCOP } MODE_
 GameCache::Interface::FDB::Connection Cache;
 BridgeMasterServer* masterServerBridge;
 
-int givenWorldID = 1000;
+int givenWorldID = 2000;
 
 
 // Following Includes are for testing
@@ -49,6 +49,8 @@ int givenWorldID = 1000;
 #include "DataTypes/LDF.hpp"
 #include "FileTypes/HKXFile/hkxFile.hpp"
 #include "Database/CacheImporter.hpp"
+
+#include "Server/Manager/WorldInstanceManager.hpp"
 
 #include <iostream>
 #include <SDL/include/SDL.h>
@@ -65,6 +67,7 @@ camera cam;
 GLUquadricObj* quad;
 std::vector<btRigidBody*> bodies;
 WorldServer* viewWs;
+AuthServer* authServer = nullptr;
 
 
 btRigidBody* addSphere(WorldServer* ws, float rad, float x, float y, float z, float mass)
@@ -272,18 +275,18 @@ void TestPhysics() {
 		std::thread aT([](AuthServer* as) { as = new AuthServer(); }, aS);
 		aT.detach();
 	}
-
+	/*
 	WorldServer* testWs;
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
 		std::thread wT([](WorldServer* ws) { ws = new WorldServer(givenWorldID, 0, 2001); }, testWs);
 		wT.detach();
 	}
-
+	*/
 	ServerInfo::init();
 
-	while (virtualServerInstances.size() == 0) { sleep_ms(30); }
-	testWs = static_cast<WorldServer*>(virtualServerInstances.at(0));
-	viewWs = testWs;
+	//while (virtualServerInstances.size() == 0) { Sleep(30); }
+	//testWs = static_cast<WorldServer*>(virtualServerInstances.at(0));
+	//viewWs = testWs;
 
 	/*SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_SetVideoMode(1600, 900, 32, SDL_OPENGL);
@@ -354,6 +357,8 @@ void TestPhysics() {
 
 int main(int argc, char* argv[]) {
 	FileUtils::ChangeDirectory();
+	ServerInfo::init();
+
 	std::string ipMaster = "127.0.0.1";
 	//std::string ipMaster = "foxsog.com";
 
@@ -424,8 +429,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	ServerInfo::init();
-
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
 		std::thread mT([](MasterServer* ms) { ms = new MasterServer(); }, ServerInfo::masterServer);
 		mT.detach();
@@ -447,15 +450,16 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
-		AuthServer * aS;
-		std::thread aT([](AuthServer * as) { as = new AuthServer(); }, aS);
+		std::thread aT([](AuthServer ** as) { new AuthServer(); }, &authServer);
 		aT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::WORLD) {
-		WorldServer * charSelectWs;
-		std::thread wT([](WorldServer * ws) { ws = new WorldServer(givenWorldID, 0,2001); }, charSelectWs);
-		wT.detach();
+		//WorldServer * charSelectWs;
+		//std::thread wT([](WorldServer * ws) { ws = new WorldServer(givenWorldID, 0,2001); }, charSelectWs);
+		//wT.detach();
+	
+		//WorldInstanceManager::CreateInstance(1000, 0, 0, 2100);
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::UGCOP) {

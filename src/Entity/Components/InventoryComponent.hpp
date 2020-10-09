@@ -439,6 +439,51 @@ public:
 		return false;
 	}
 
+	inline bool UnEquipItem(DataTypes::LWOOBJID itemToUnEquip) {
+		Entity::GameObject* objItemToEquip = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(itemToUnEquip);
+		if (objItemToEquip == nullptr) return false;
+
+		std::int32_t LOT = objItemToEquip->GetLOT();
+
+		auto targetTab = GetTabForLOT(LOT);
+
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
+		if (itemCompID == -1) return false;
+
+		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		if (static_cast<std::string>(equipLocation) == "") return false;
+
+		auto tabIt = inventory.find(targetTab);
+
+		// We do not have tab, unable to equip
+		if (tabIt == inventory.end()) return false;
+
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.objectID == itemToUnEquip) {
+				// We found it!
+
+				// We're already equipped!
+				if (!it->second.equip) return false;
+
+				// Equip it.
+				it->second.equip = false;
+
+				// Save equip
+				this->SaveStack(it->second);
+
+				// Sync equip.
+				this->_isDirtyFlagEquippedItems = true;
+				this->owner->SetDirty();
+
+				// We're done
+				return true;
+			}
+		}
+
+		// We couldn't find the item
+		return false;
+	}
+
 	inline void SaveStack(InventoryItemStack stack) {
 		// Dont save thinking hat!
 		if (stack.LOT == 6068) return;
@@ -682,6 +727,10 @@ public:
 
 	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {
 		this->EquipItem(msg.itemToEquip);
+	}
+	void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
+		this->UnEquipItem(msg.itemToUnEquip);
+		sender->GetComponentByType(4)->OnUnEquipInventory(sender, msg);
 	}
 };
 

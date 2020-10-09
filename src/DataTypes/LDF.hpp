@@ -153,6 +153,7 @@ public:
 	}
 
 	explicit operator std::uint32_t() const {
+		if (type == Enums::LDFType::S32) return operator int32_t();
 		if (type != Enums::LDFType::U32) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<std::uint32_t*>(const_cast<char*>(data.c_str()));
 	}

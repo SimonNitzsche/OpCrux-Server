@@ -380,7 +380,8 @@ libs/random/effolkronium_randomTargets.cmake
 # Auth resources
 services/CruxAuthService/CruxAuthService/openssl/
 services/CruxAuthService/CruxAuthService/res/
-services/CruxAuthService/CruxAuthService/libbcrypt/
+
+lib/
 
 services/CruxAuthService/res/ssl/
 

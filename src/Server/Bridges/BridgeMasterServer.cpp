@@ -6,10 +6,19 @@
 #include "Utils/Logger.hpp"
 #include "Utils/PacketUtil.hpp"
 #include "Utils/ServerInfo.hpp"
+#include <Server\AuthServer.hpp>
+
+#include "Server/WorldServer.hpp"
+
+#include "PacketFactory/World/WorldPackets.hpp"
+
+#include "Server/Manager/WorldInstanceManager.hpp"
+
 using namespace Enums;
 
 enum class SERVERMODE : uint8_t;
 extern SERVERMODE MODE_SERVER;
+extern AuthServer* authServer;
 
 BridgeMasterServer::BridgeMasterServer(std::string masterServerIP) : masterServerIP (masterServerIP) {
 	rakMasterClient = RakNetworkFactory::GetRakPeerInterface();
@@ -42,6 +51,69 @@ void BridgeMasterServer::ListenHandle() {
 					switch (static_cast<EMasterPacketID>(packetType)) {
 					case EMasterPacketID::MSG_CLIENT_REQUEST_AUTHENTIFACTE_PROCESS: {
 						SayHello();
+						break;
+					}
+					default: {
+						Logger::log("MasterBridge", "Received unknown packet.");
+					}
+					}
+				} break;
+				case ERemoteConnection::SERVER: {
+					switch (static_cast<EMasterPacketID>(packetType)) {
+					case EMasterPacketID::MSG_MASTER_REQUEST_NEW_INSTANCE: {
+
+						std::uint16_t port; data->Read(port);
+						std::uint16_t zoneID; data->Read(zoneID);
+						std::uint16_t instanceID; data->Read(instanceID);
+						std::uint32_t cloneID; data->Read(cloneID);
+
+						Logger::log("MasterBridge", "Starting new zone instance; zoneID=" + std::to_string(zoneID) + "; cloneID=" + std::to_string(instanceID) + "; cloneID=" + std::to_string(cloneID) + "; port=" + std::to_string(port));
+
+						WorldInstanceManager::CreateInstance(zoneID, instanceID, cloneID, port);
+						break;
+					}
+					case EMasterPacketID::MSG_MASTER_SELECT_WORLD_FOR_USER: {
+						DataTypes::LWOOBJID objectID; data->Read(objectID);
+						SystemAddress playerAddr; data->Read(playerAddr);
+						std::uint16_t zoneID; data->Read(zoneID);
+						std::uint16_t instanceID; data->Read(instanceID);
+						std::uint32_t cloneID; data->Read(cloneID);
+						SystemAddress instanceAddr; data->Read(instanceAddr);
+						std::uint16_t port; data->Read(port);
+
+						instanceAddr.port = port;
+						authServer->DoPlayerLoginSuccess(playerAddr, instanceAddr);
+						break;
+					}
+					case EMasterPacketID::MSG_IM_WORLD_CLIENT_TRANSFER_RESPONSE: {
+
+						std::uint16_t sourcePort; data->Read(sourcePort);
+						SystemAddress charIp; data->Read(charIp);
+						SystemAddress processIp; data->Read(processIp);
+						std::uint16_t destinationPort; data->Read(destinationPort);
+						bool doAnouncment; data->Read(doAnouncment);
+
+						WorldServer* remWs = WorldInstanceManager::GetInstance(sourcePort);
+
+
+						PacketFactory::World::TransferToWorld(remWs->rakServer, charIp, const_cast<char*>(processIp.ToString(false)), destinationPort, doAnouncment);
+
+						break;
+					} 
+
+					case EMasterPacketID::MSG_WORLD_CLIENT_LEVEL_LOAD_COMPLETE: {
+
+						// WorldServer * remWs = WorldInstanceManager::GetInstance(sourcePort)
+
+						// PacketFactory::World::LoadStaticZone(rakServer, &csFactory, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
+					} break;
+					case EMasterPacketID::MSG_MASTER_PLAYER_WORLD_AUTH_COMPLETED: {
+
+						ClientSession clSession; clSession.Deserialize(data);
+
+						WorldServer* remWs = WorldInstanceManager::GetInstance(clSession.connectedServerPort);
+						remWs->FinishClientTransfer(clSession);
+
 						break;
 					}
 					default: {
@@ -143,19 +215,26 @@ void BridgeMasterServer::ClientLoginAuth(SystemAddress systemAddress, int accoun
 		throw std::runtime_error("Not listening.");
 	}
 
+	ClientSession clSession{};
+	clSession.accountID = accountID;
+
 	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGIN_REQUEST));
+	RakNet::BitStream* packetPTR = packet.get();
 
 	packet->Write(false); // Is World?
 
 	packet->Write(RakNet::RakString(systemAddress.ToString(true)));
-	packet->Write(accountID);
+	clSession.Serialize(packetPTR);
 
-	RakNet::BitStream* packetPTR = packet.get();
 	Logger::log("Bridge", "Send Client logon");
 	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-void BridgeMasterServer::ClientWorldAuth(SystemAddress systemAddress, int accountID) {
+void BridgeMasterServer::ClientLoginRespond(SystemAddress systemAddress, int accountID, int reason) {
+	authServer->MasterClientAuthResponse(systemAddress, accountID, reason);
+}
+
+void BridgeMasterServer::ClientWorldAuth(SystemAddress systemAddress, ClientSession clSession) {
 	if (!_connected) {
 		throw std::runtime_error("Not connected to Master Server.");
 	}
@@ -164,14 +243,39 @@ void BridgeMasterServer::ClientWorldAuth(SystemAddress systemAddress, int accoun
 	}
 
 	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGIN_REQUEST));
+	RakNet::BitStream* packetPTR = packet.get();
 
 	packet->Write(true); // Is World?
 
 	packet->Write(RakNet::RakString(systemAddress.ToString(true)));
-	packet->Write(accountID);
-
-	RakNet::BitStream * packetPTR = packet.get();
+	clSession.Serialize(packetPTR);
+	
 	Logger::log("Bridge", "Send Client logon");
+	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
+void BridgeMasterServer::ClientCharAuth(ClientSession * clientSession, std::uint16_t sourcePort, DataTypes::LWOOBJID charID) {
+	if (!_connected) {
+		throw std::runtime_error("Not connected to Master Server.");
+	}
+	if (!_listening) {
+		throw std::runtime_error("Not listening.");
+	}
+
+	Str_DB_CharInfo charInfo = Database::GetChar(charID & 0xFFFFFF);
+
+	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_WORLD_NOTIFY_CHAR_SELECT));
+
+	packet->Write(sourcePort);
+	packet->Write(clientSession->accountID);
+	packet->Write(clientSession->systemAddress);
+	clientSession->actorID = charID;
+	packet->Write(charID);
+	packet->Write(charInfo.lastWorld);
+	packet->Write(charInfo.lastClone);
+
+	RakNet::BitStream* packetPTR = packet.get();
+	Logger::log("Bridge", "Send Char select");
 	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
@@ -209,6 +313,25 @@ void BridgeMasterServer::ChooseWorldServer() {
 
 	RakNet::BitStream * packetPTR = packet.get();
 	Logger::log("Bridge", "Send SayHello()");
+	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
+void BridgeMasterServer::NotifyInstanceLoaded(std::uint16_t zoneID, std::uint16_t instanceID, std::uint32_t cloneID, SystemAddress systemAddress) {
+	if (!_connected) {
+		throw std::runtime_error("Not connected to Master Server.");
+	}
+	if (!_listening) {
+		throw std::runtime_error("Not listening.");
+	}
+
+	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_IM_WORLD_LEVEL_LOADED_NOTIFY));
+
+	packet->Write(zoneID);
+	packet->Write(instanceID);
+	packet->Write(cloneID);
+	packet->Write(systemAddress);
+
+	RakNet::BitStream* packetPTR = packet.get();
 	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 

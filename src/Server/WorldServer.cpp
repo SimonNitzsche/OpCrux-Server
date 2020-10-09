@@ -25,6 +25,7 @@
 #include "Utils/StringUtils.hpp"
 
 #include "Structs/Networking/General/StructPacketHeader.hpp"
+#include "Server/Manager/WorldInstanceManager.hpp"
 
 #include "PacketFactory/General/GeneralPackets.hpp"
 #include "PacketFactory/Chat/ChatPackets.hpp"
@@ -61,7 +62,7 @@ using namespace Exceptions;
 extern BridgeMasterServer* masterServerBridge;
 extern std::vector<ILUServer*> virtualServerInstances;
 
-WorldServer::WorldServer(int zone, int instanceID, int port) {
+WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_port(port) {
 	// Preload
 	std::string buf;
 	std::ifstream file1("res/names/minifigname_first.txt");
@@ -84,8 +85,8 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
 	// Initializes SocketDescriptor
-	SocketDescriptor socketDescriptor((unsigned short)2001, 0);
-	Logger::log("WRLD", "Starting World...");
+	SocketDescriptor socketDescriptor((unsigned short)port, 0);
+	Logger::log("WRLD", "Starting world on port "+ std::to_string(port) + "...");
 
 	short maxPlayers = 120;
 
@@ -120,6 +121,8 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		LOAD WORLD STUFF. Zone 0 is char selection only, so we don't need to load world.
 	*/
 
+	WorldInstanceManager::AddWorldServer(m_port, this);
+
 	if (zone != 0) {
 		/// collision configuration contains default setup for memory, collision setup.
 		/// Advanced users can create their own configuration.
@@ -149,6 +152,18 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 		// Load Zone
 		Logger::log("WRLD", "Loading Zone: " + zoneName);
 		luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
+		if (!luZone->_isFileLoaded()) {
+			delete collisionConfiguration;
+			delete collisionDispatcher;
+			delete overlappingPairCache;
+			delete constraintSolver;
+			delete dynamicsWorld;
+			delete luZone;
+
+			// TODO: Tell MS that loading failed
+
+			return;
+		}
 		Logger::log("WRLD", "Sucessfully loaded zone.");
 
 		if (luZone->zoneID != zone) {
@@ -201,7 +216,7 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 					if (!spawnedObject->isSerializable) {
 						// Spawn Error Object
-						delete[] spawnedObject;
+						delete spawnedObject;
 						spawnedObject = new Entity::GameObject(Instance, 1845);
 
 					}
@@ -238,6 +253,9 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 			go->Finish();
 		}
 	}
+	else {
+		Logger::log("WORLD", "Loaded char server successfully");
+	}
 
 	virtualServerInstances.push_back(this);
 
@@ -251,6 +269,12 @@ WorldServer::WorldServer(int zone, int instanceID, int port) {
 
 	std::thread gpT([=]() { GamePhysicsThread(); });
 	gpT.detach();
+
+	// TODO: Tell MS that instance has loaded
+	SystemAddress addr;
+	addr.SetBinaryAddress("127.0.0.1");
+	addr.port = port;
+	masterServerBridge->NotifyInstanceLoaded(zone, instanceID, cloneID, addr);
 
 	while (ServerInfo::bRunning) {
 		RakSleep(30);
@@ -380,15 +404,19 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 			case EWorldPacketID::CLIENT_VALIDATION: {
 				std::u16string wClientName = StringUtils::readBufferedWStringFromBitStream(data);
 				std::u16string wClientKey = StringUtils::readBufferedWStringFromBitStream(data);
+				std::string sClientKey = std::string((const char*)wClientKey.c_str());
 				std::string sClientFDBChecksum = StringUtils::readBufferedStringFromBitStream(data);
-				ClientSession csFactory;
+				ClientSession csFactory{};
 				csFactory.accountID = Database::GetAccountIDByClientName(std::string(wClientName.begin(), wClientName.end()));
 				csFactory.sessionToken = wClientKey;
 				csFactory.systemAddress = packet->getSystemAddress();
+				csFactory.connectedServerPort = this->m_port;
+				
 
 				sessionManager.AddSession(csFactory);
 
-				masterServerBridge->ClientWorldAuth(packet->getSystemAddress(), csFactory.accountID);
+				masterServerBridge->ClientWorldAuth(packet->getSystemAddress(), csFactory);
+
 				break;
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_LIST_REQUEST: {
@@ -427,6 +455,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					Logger::log("CHAR-CREATION", "unknownA: " + std::to_string(unknownA));
 					Logger::log("CHAR-CREATION", "unknownB: " + std::to_string(unknownB));
 				}
+
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
 				Database::CreateNewChar(clientSession->accountID, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 				
@@ -443,7 +472,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
 				//PacketFactory::World::CreateCharacter(rakServer, clientSession);
 				
-				PacketFactory::World::LoadStaticZone(rakServer, clientSession, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
+				// PacketFactory::World::LoadStaticZone(rakServer, clientSession, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
+
+				masterServerBridge->ClientCharAuth(clientSession, m_port, objectID);
+
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
@@ -644,6 +676,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 		Logger::log("WRLD", "Recieving new Connection...");
 		
 	} break;
+	case ID_CONNECTION_LOST:
 	case ID_DISCONNECTION_NOTIFICATION: {
 		Logger::log("WRLD", "User Disconnected from WORLD...");
 		ClientSession * session = sessionManager.GetSession(packet->getSystemAddress());
@@ -663,17 +696,31 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 	rakServer->DeallocatePacket(packet->getPacket());
 }
 
+void WorldServer::FinishClientTransfer(ClientSession clSession) {
+
+	ClientSession * clSessionLocal = this->sessionManager.GetSession(clSession.systemAddress);
+
+	*clSessionLocal = clSession;
+
+	//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::PLAY_SCHEDULE_TIME_DONE);
+	//PacketFactory::World::CreateCharacter(rakServer, clientSession);
+
+	PacketFactory::World::LoadStaticZone(rakServer, clSessionLocal, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
+}
+
 std::uint16_t WorldServer::GetZoneID() {
-	return luZone->zoneID;
+	if(luZone != nullptr)
+		return luZone->zoneID;
+	return 0;
 }
 
 WorldServer::~WorldServer() {
-	delete[] replicaManager;
-	delete[] networkIdManager;
-	delete[] luZone;
-	delete collisionConfiguration;
-	delete collisionDispatcher;
-	delete overlappingPairCache;
-	delete constraintSolver;
-	delete dynamicsWorld;
+	if (replicaManager) delete replicaManager;
+	if (networkIdManager) delete networkIdManager;
+	if (luZone) delete luZone;
+	if (collisionConfiguration) delete collisionConfiguration;
+	if (collisionDispatcher) delete collisionDispatcher;
+	if (overlappingPairCache) delete overlappingPairCache;
+	if (constraintSolver) delete constraintSolver;
+	if (dynamicsWorld) delete dynamicsWorld;
 }

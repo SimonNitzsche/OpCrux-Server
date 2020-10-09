@@ -94,8 +94,8 @@ public:
 	unsigned int lastClone;
 	unsigned long long lastLog;
 	DataTypes::Vector3 position;
-	unsigned int shirtObjectID;
-	unsigned int pantsObjectID;
+	unsigned long long shirtObjectID;
+	unsigned long long pantsObjectID;
 	unsigned int uScore;
 	unsigned int uLevel;
 	unsigned int currency;

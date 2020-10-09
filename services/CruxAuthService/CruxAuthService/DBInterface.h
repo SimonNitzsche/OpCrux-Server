@@ -10,7 +10,7 @@
 #include <sqltypes.h>
 #include <algorithm>
 #include <list>
-#include <bcrypt/BCrypt.hpp>
+#include "libbcrypt/include/bcrypt/BCrypt.hpp"
 
 #define SQL_RESULT_LEN 240
 #define SQL_RETURN_CODE_LEN 1000

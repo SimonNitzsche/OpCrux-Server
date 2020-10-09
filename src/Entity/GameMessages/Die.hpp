@@ -5,9 +5,11 @@
 #include "Enums/EKillType.hpp"
 
 namespace GM {
-	struct Die : GMBase {
+	struct Die : public GMBase {
 		bool bClientDeath = false;
+		bool bDieAccepted = false;
 		bool bSpawnLoot = true;
+		std::float_t coinSpawnTime = 0.f;
 		std::u16string deathType=u"";
 		float directionRelative_AngleXZ=0;
 		float directionRelative_AngleY=0;
@@ -20,14 +22,16 @@ namespace GM {
 			return Enums::EGameMessageID::SERVER_DIE;
 		}
 
-		Die() {}
+		Die() : GMBase() {}
 		void Deserialize(RakNet::BitStream * bs) {
 
 		}
 
 		void Serialize(RakNet::BitStream * bs) {
 			GM_VAR_SERIALIZE(bs, bClientDeath);
+			GM_VAR_SERIALIZE(bs, bDieAccepted);
 			GM_VAR_SERIALIZE(bs, bSpawnLoot);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, coinSpawnTime, 0.f);
 			GM_VAR_SERIALIZE_WSTRING(bs, deathType);
 			GM_VAR_SERIALIZE(bs, directionRelative_AngleXZ);
 			GM_VAR_SERIALIZE(bs, directionRelative_AngleY);

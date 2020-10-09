@@ -25,12 +25,12 @@ static std::string stringifyTimestamp(std::time_t t, const char *format)
 
 static std::string formatTimestamp(std::time_t t)
 {
-	return stringifyTimestamp(t, "%Y-%m-%d %I+%M+%S");
+	return stringifyTimestamp(t, "%Y-%m-%d %H-%M-%S");
 }
 
 static void writeLogfile(const std::string &text)
 {
-	std::ofstream log_file("./res/Logs/" + formatTimestamp(ServerInfo::StartupTime) + ".txt", std::ios::out | std::ios::app);
+	std::ofstream log_file("./logs/" + formatTimestamp(ServerInfo::StartupTime) + ".txt", std::ios::out | std::ios::app);
 	log_file << text;
 }
 

@@ -31,9 +31,11 @@ ${BULLET_PHYSICS_SOURCE_DIR}/src
 find_package(ODBC REQUIRED)
 
 add_executable(OpCrux_Server
+	libs/glad/include/glad/glad.h
 	libs/glad/src/glad.c
 	src/Common/CrossPlatform.hpp
 	src/Configuration/ConfDatabase.hpp
+	src/Configuration/ConfGeneral.hpp
 	src/Configuration/ConfigurationManager.cpp
 	src/Configuration/ConfigurationManager.hpp
 	src/Configuration/ConfPorts.hpp
@@ -104,6 +106,7 @@ add_executable(OpCrux_Server
 	src/Entity/Components/QuickBuildComponent.hpp
 	src/Entity/Components/RacingControlComponent.hpp
 	src/Entity/Components/RacingStatsComponent.hpp
+	src/Entity/Components/RailActivatorComponent.hpp
 	src/Entity/Components/RebuildComponent.hpp
 	src/Entity/Components/RenderComponent.hpp
 	src/Entity/Components/RigidBodyPhantomPhysics.hpp
@@ -189,6 +192,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/RequestPlatformResync.hpp
 	src/Entity/GameMessages/ParseChatMessage.hpp
 	src/Entity/GameMessages/EquipInventory.hpp
+	src/Entity/GameMessages/UnEquipInventory.hpp
 	src/Entity/GameMessages/SetJetPackMode.hpp
 	src/Entity/GameMessages/ModifyGhostingDistance.hpp
 	src/Entity/GameMessages/Teleport.hpp
@@ -327,6 +331,7 @@ add_executable(OpCrux_Server
 	src/Server/Bridges/BridgeMasterServer.cpp
 	src/Server/Bridges/BridgeMasterServer.hpp
 	src/Server/Interfaces/ILUServer.hpp
+	src/Server/Manager/WorldInstanceManager.cpp
 	src/Server/Manager/WorldInstanceManager.hpp
 	src/Server/AuthServer.cpp
 	src/Server/AuthServer.hpp
@@ -356,7 +361,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp") 
+	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp"  "src/Configuration/ConfGeneral.hpp") 
 	
 
 
@@ -422,8 +427,6 @@ endif()
 target_link_libraries(OpCrux_Server
 	
 	OpenGLWindow
-	gwen
-	glad
 	BulletDynamics
 	BulletCollision
 	LinearMath
@@ -438,6 +441,7 @@ target_link_libraries(OpCrux_Server
 	Mongoose
 	RakNet
 	rapidxml
+	bcrypt
 )
 
 
