@@ -23,6 +23,7 @@
 #include "Utils/LDFUtils.hpp"
 #include "Database/Database.hpp"
 #include <Sessions\ClientSession.hpp>
+#include "../libs/libbcrypt/include/bcrypt/BCrypt.hpp"
 using namespace Enums;
 
 enum class SERVERMODE : uint8_t;
@@ -184,6 +185,20 @@ void MasterServer::Listen() {
 						bool isPending = false;
 						if (!isWorldRequest) {
 
+							static const char * key_charset { "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz\\+*~#'!§$%&/()=?ß`´@€" };
+
+							std::string outkey = std::string( 512, '\0' );
+
+							// Give it a session key
+							auto dist_kc512 = std::uniform_int_distribution{ {}, strlen(key_charset) - 1 };
+
+							std::generate_n(outkey.begin(), 512, [&]() {return key_charset[dist_kc512(RandomUtil::GetEngine())]; });
+
+							std::string finalkey_raw = outkey + sessionMRInList->systemAddress.ToString();
+
+							sessionMRInList->sessionKey = BCrypt::generateHash(finalkey_raw);
+
+
 							sessionMRInList->SetVar<std::int32_t>(u"targetZone", 0);
 
 							auto charServer = GetHubCharServer();
@@ -199,6 +214,13 @@ void MasterServer::Listen() {
 							// Set new instance
 							sessionMRInList->currentInstance = GetInstanceByMachineProcessAndPort(mp, clSessRemLocal.connectedServerPort);
 							sessionMRInList->connectedServerPort = clSessRemLocal.connectedServerPort;
+
+							bool keyValid = 0 == strcmp(sessionMRInList->sessionKey.c_str(), reinterpret_cast<const char*>(clSessRemLocal.sessionToken.c_str()));
+
+							if (!keyValid) {
+								// TODO: Key invalid;
+								break;
+							}
 
 							// Get last player location
 							//Database::GetChar()
@@ -233,6 +255,8 @@ void MasterServer::Listen() {
 						// Remove client
 						for (int i = 0; i < connected_clients.size(); ++i) {
 							if (connected_clients[i]->systemAddress.ToString() == sysAddress) {
+								auto it = connected_clients.begin() + i;
+								delete (*it);
 								connected_clients.erase(connected_clients.begin()+i);
 								break;
 							}
@@ -568,6 +592,7 @@ void MasterServer::MovePlayerFromAuthToSession(ClientSessionMR * playerSession, 
 	RakNet::BitStream* cpacketPTR = cpacket.get();
 	cpacketPTR->Write(playerSession->objectID);
 	cpacketPTR->Write(playerSession->systemAddress);
+	StringUtils::writeStringToBitStream<uint32_t>(cpacketPTR, playerSession->sessionKey);
 	cpacketPTR->Write(instance->zoneID);
 	cpacketPTR->Write(instance->instanceID);
 	cpacketPTR->Write(instance->cloneID);

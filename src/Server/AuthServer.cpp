@@ -168,7 +168,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 					}
 					else
-						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
+						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), "", ELoginReturnCode::INVALID_LOGIN);
 				}
 				else {
 					bool authSuccess = MakeAccountAPICall("/auth", { {"username", std::string(name.begin(), name.end())}, {"password", std::string(pswd.begin(), pswd.end())} }) == "PASS";
@@ -178,7 +178,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 					}
 					else
-						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::INVALID_LOGIN);
+						PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), "", ELoginReturnCode::INVALID_LOGIN);
 				}
 				
 			}
@@ -213,11 +213,11 @@ std::string& GenerateSessionKey() {
 }
 
 void AuthServer::MasterClientAuthResponse(SystemAddress systemAddress, int accountID, int reason) {
-	PacketFactory::Auth::doLoginResponse(this->rakServer, systemAddress, ELoginReturnCode(reason));
+	PacketFactory::Auth::doLoginResponse(this->rakServer, systemAddress, "", ELoginReturnCode(reason));
 }
 
-void AuthServer::DoPlayerLoginSuccess(SystemAddress systemAddress, SystemAddress destination) {
-	PacketFactory::Auth::doLoginResponse(rakServer, systemAddress, ELoginReturnCode::SUCCESS, destination);
+void AuthServer::DoPlayerLoginSuccess(SystemAddress systemAddress, SystemAddress destination, std::string sessionKey) {
+	PacketFactory::Auth::doLoginResponse(rakServer, systemAddress, sessionKey, ELoginReturnCode::SUCCESS, destination);
 }
 
 AuthServer::~AuthServer() {

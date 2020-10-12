@@ -22,7 +22,7 @@ namespace PacketFactory {
 
 	namespace Auth {
 
-		inline void doLoginResponse(RakPeerInterface * rakServer, SystemAddress client, ELoginReturnCode reason, SystemAddress wsAddr = UNASSIGNED_SYSTEM_ADDRESS, std::u16string customErrorMessage=u"") {
+		inline void doLoginResponse(RakPeerInterface * rakServer, SystemAddress client, std::string sessionKey, ELoginReturnCode reason, SystemAddress wsAddr = UNASSIGNED_SYSTEM_ADDRESS, std::u16string customErrorMessage=u"") {
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead;
@@ -50,7 +50,7 @@ namespace PacketFactory {
 
 			Logger::log("AUTH", "Redirecting " +  cip + " to " + ip + ":" + std::to_string(wsAddr.port));
 
-			StringUtils::writeBufferedWStringToBitStream(&returnBS, (char16_t*)"$2a$10$KssILxWNR6k62B7yiX0GAe2Q7wwHlrzhF3LqtVvpyvHZf0MwvNfVu", 33);
+			StringUtils::writeBufferedWStringToBitStream(&returnBS, (char16_t*)sessionKey.c_str(), 33);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, ip);
 			returnBS.Write<uint16_t>(wsAddr.port);

@@ -45,6 +45,7 @@ public:
 	std::uint16_t connectedServerPort = 0;
 	ClientSessionMRState sessionState;
 	LDFCollection metadata;
+	std::string sessionKey;
 
 	template<typename T>
 	void SetVar(std::u16string key, T data) {

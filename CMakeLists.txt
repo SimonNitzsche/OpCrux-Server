@@ -33,6 +33,18 @@ find_package(ODBC REQUIRED)
 add_executable(OpCrux_Server
 	libs/glad/include/glad/glad.h
 	libs/glad/src/glad.c
+	libs/libbcrypt/include/bcrypt/bcrypt.h
+	libs/libbcrypt/include/bcrypt/BCrypt.hpp
+	libs/libbcrypt/include/bcrypt/crypt.h
+	libs/libbcrypt/include/bcrypt/crypt_blowfish.h
+	libs/libbcrypt/include/bcrypt/crypt_gensalt.h
+	libs/libbcrypt/include/bcrypt/ow-crypt.h
+	libs/libbcrypt/include/bcrypt/winbcrypt.h
+	libs/libbcrypt/src/bcrypt.c
+	libs/libbcrypt/src/crypt_blowfish.c
+	libs/libbcrypt/src/crypt_gensalt.c
+	libs/libbcrypt/src/wrapper.c
+	libs/libbcrypt/src/x86.S
 	src/Common/CrossPlatform.hpp
 	src/Configuration/ConfDatabase.hpp
 	src/Configuration/ConfGeneral.hpp
@@ -441,7 +453,6 @@ target_link_libraries(OpCrux_Server
 	Mongoose
 	RakNet
 	rapidxml
-	bcrypt
 )
 
 

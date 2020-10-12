@@ -16,7 +16,7 @@ private:
     void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
 public:
 	void MasterClientAuthResponse(SystemAddress systemAddress, int accountID, int reason);
-	void DoPlayerLoginSuccess(SystemAddress systemAddress, SystemAddress destination);
+    void DoPlayerLoginSuccess(SystemAddress systemAddress, SystemAddress destination, std::string sessionKey);
 };
 
 #endif // !__SERVER__AUTHSERVER_HPP__

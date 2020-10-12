@@ -411,7 +411,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				csFactory.sessionToken = wClientKey;
 				csFactory.systemAddress = packet->getSystemAddress();
 				csFactory.connectedServerPort = this->m_port;
-				
 
 				sessionManager.AddSession(csFactory);
 

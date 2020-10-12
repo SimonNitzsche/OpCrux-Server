@@ -75,6 +75,7 @@ void BridgeMasterServer::ListenHandle() {
 					case EMasterPacketID::MSG_MASTER_SELECT_WORLD_FOR_USER: {
 						DataTypes::LWOOBJID objectID; data->Read(objectID);
 						SystemAddress playerAddr; data->Read(playerAddr);
+						std::string sessionKey = StringUtils::readStringFromBitStream<std::uint32_t>(data);
 						std::uint16_t zoneID; data->Read(zoneID);
 						std::uint16_t instanceID; data->Read(instanceID);
 						std::uint32_t cloneID; data->Read(cloneID);
@@ -82,7 +83,7 @@ void BridgeMasterServer::ListenHandle() {
 						std::uint16_t port; data->Read(port);
 
 						instanceAddr.port = port;
-						authServer->DoPlayerLoginSuccess(playerAddr, instanceAddr);
+						authServer->DoPlayerLoginSuccess(playerAddr, instanceAddr, sessionKey);
 						break;
 					}
 					case EMasterPacketID::MSG_IM_WORLD_CLIENT_TRANSFER_RESPONSE: {
