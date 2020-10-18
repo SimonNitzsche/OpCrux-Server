@@ -17,7 +17,8 @@ namespace Configuration {
 			return {
 				{"Master", {
 					// In seconds
-					{"TRANSFER_TIMEOUT", "30"}
+					{"TRANSFER_TIMEOUT", "30"},
+					{"MASTERIP", "127.0.0.1"}
 				}}
 			};
 		}
