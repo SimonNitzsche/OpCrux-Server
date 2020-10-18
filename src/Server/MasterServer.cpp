@@ -315,6 +315,8 @@ void MasterServer::Listen() {
 						std::uint16_t nextCloneID = lastClone;
 						bool ignoreSoftCap = false;
 
+						if (nextZoneID == 0) nextZoneID = 1000;
+
 						auto remoteNextInstance = SelectInstanceToJoin(nextZoneID, nextCloneID, ignoreSoftCap);
 
 						if (remoteNextInstance != nullptr) {
