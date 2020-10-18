@@ -166,25 +166,29 @@ private:
 	enum class Response {RankTooLow = 1, NoCommand = 2, NoArguements = 3,};
 
 	void Reply(std::u16string message, Entity::GameObject* sender, Entity::GameObject* empty = nullptr) {
-		PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
+		//PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
+		PacketFactory::Chat::SendChatMessage(sender, 0x00, message);
 	}
 
 	void Reply(Response code, Entity::GameObject* sender, Entity::GameObject* empty = nullptr) {
 		switch(code) {
 			case Response::RankTooLow: {
 				std::u16string message = u"You do not have high enough permissions for that";
-				PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
+				//PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
+				PacketFactory::Chat::SendChatMessage(sender, 0x00, message);
 				break;
 			}
 			case Response::NoCommand: {
 				std::u16string message = u"That command doesn't exist";
-				PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
+				//PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
+				PacketFactory::Chat::SendChatMessage(sender, 0x00, message);
 				break;
 			}
 			
 			case Response::NoArguements: {
 				std::u16string message = u"This command requires arguements";
-				PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
+				//PacketFactory::Chat::SendPrivateChatMessage(empty, sender, message);
+				PacketFactory::Chat::SendChatMessage(sender, 0x00, message);
 				break;
 			}	
 		}

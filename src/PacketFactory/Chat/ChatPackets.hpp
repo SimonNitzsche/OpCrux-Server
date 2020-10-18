@@ -45,7 +45,7 @@ namespace PacketFactory {
 
 			returnBS.Write<std::uint32_t>(message.size());
 
-			if (sender->GetObjectID() != 0x3FFFFFFFFFFE) {
+			if (sender->GetObjectID() != 0x3FFFFFFFFFFE && chatChannel != 0x00) {
 				StringUtils::writeBufferedWStringToBitStream(&returnBS, sender->GetName());
 				returnBS.Write<std::uint64_t>(sender->GetObjectID());
 				returnBS.Write<std::uint16_t>(0ULL);
@@ -61,7 +61,8 @@ namespace PacketFactory {
 			StringUtils::writeBufferedWStringToBitStream(&returnBS, message, message.size() + 1);
 			auto clients = sender->GetZoneInstance()->sessionManager.GetClients();
 			for (auto & client : clients)
-				sender->GetZoneInstance()->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client.systemAddress, false);
+				if(chatChannel != 0x00 || client.actorID == sender->GetObjectID())
+					sender->GetZoneInstance()->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client.systemAddress, false);
 		}
 
 		inline void SendPrivateChatMessage(Entity::GameObject* sender, Entity::GameObject* target, const std::u16string& message) {
