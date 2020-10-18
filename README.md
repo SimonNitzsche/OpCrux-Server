@@ -19,4 +19,9 @@ We have a CMake build system so compilation on Windows and Linux should be as si
 
 The database uses ODBC (or unixODBC on Unix systems) to connect to any DB that would have a connector for ODBC but we have our SQL files in TSQL (Transact SQL) so MSSQL would be the easiest DB to use but you can convert the SQL file to be used with any other DB (Postgres, MySQL etc).
 
+# Some Useful resources for Setting up the SQL Server and ODBC:
+[SQL Server installation guide](https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server?view=sql-server-ver15)
+[SQL Server technical documentation](https://docs.microsoft.com/en-us/sql/sql-server/?view=sql-server-ver15)
+[How To Set up a Microsoft SQL Server ODBC Data Source](https://support.microsoft.com/en-us/help/965049/how-to-set-up-a-microsoft-sql-server-odbc-data-source)
+
 (We only offer help setting up the server if you plan to help development)
