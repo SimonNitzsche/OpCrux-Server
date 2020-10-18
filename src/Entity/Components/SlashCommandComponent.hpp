@@ -150,6 +150,23 @@ public:
 			.Case(u"/gmlevel", [&]() {
 				Reply(StringUtils::to_u16string(StringUtils::IntToString(Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(sender->GetObjectID())))), sender);
 			})
+			.Case(u"/testmap", [&](){
+				if (command.find(u" ") != std::u16string::npos) {
+					if (accountGMLevel >= 5) {
+						DataTypes::LWOOBJID targetOBJID = sender->GetObjectID();
+						auto zoneID = StringUtils::StringToInt(StringUtils::to_string(args[1]));
+						
+						Reply(u"Requesting map change...", sender);
+						Reply(u"This feature is not ready yet, but it should be finished today.", sender);
+					}
+					else {
+						Reply(Response::RankTooLow, sender);
+					}
+				}
+				else {
+					Reply(Response::NoArguements, sender);
+				}
+			})
 			.Default([&]() {
 				std::stringstream ss;
 				ss << "Unknown Command \"";
