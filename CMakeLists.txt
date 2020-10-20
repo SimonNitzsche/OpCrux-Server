@@ -383,6 +383,7 @@ set_property(TARGET json PROPERTY CXX_STANDARD 98)
 set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
 set_property(TARGET rapidxml PROPERTY CXX_STANDARD 98)
+ADD_DEFINITIONS(-DODBC_STATIC)
 
 SET(RuntimeLibrary "MSd_DynamicDebug")
 
@@ -454,7 +455,7 @@ target_link_libraries(OpCrux_Server
 	Mongoose
 	RakNet
 	rapidxml
-	odbccpp
+	odbccpp_static
 )
 
 
