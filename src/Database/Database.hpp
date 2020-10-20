@@ -148,6 +148,8 @@ public:
 		conn = env->createConnection();
 		conn->connect(connStrBuilder.c_str());
 		conn->setAutoCommit(true);
+
+		return 0;
 	}
 
 	static void Disconnect() {
@@ -1096,6 +1098,7 @@ public:
 			stmt->setULong(i, 0ull);
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
+		return statsID;
 	}
 };
 #endif // !__DATABASE_HPP__
