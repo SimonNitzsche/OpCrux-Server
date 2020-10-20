@@ -21,6 +21,7 @@ endif()
 add_subdirectory(libs)
 include_directories(include)
 include_directories(libs)
+include_directories(libs/odbc-cpp-wrapper/src)
 include_directories(src)
 include_directories(tests)
 
@@ -453,6 +454,7 @@ target_link_libraries(OpCrux_Server
 	Mongoose
 	RakNet
 	rapidxml
+	odbccpp
 )
 
 

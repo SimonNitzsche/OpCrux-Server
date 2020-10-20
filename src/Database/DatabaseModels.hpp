@@ -20,34 +20,34 @@ public:
 
 struct Str_DB_CharStats {
 public:
-	unsigned long long charIndex;
-	unsigned long TotalCurrencyCollected;
-	unsigned long TotalBricksCollected;
-	unsigned long TotalSmashablesSmashed;
-	unsigned long TotalQuickBuildsCompleted;
-	unsigned long TotalEnemiesSmashed;
-	unsigned long TotalRocketsUsed;
-	unsigned long TotalMissionsCompleted;
-	unsigned long TotalPetsTamed;
-	unsigned long TotalImaginationPowerUpsCollected;
-	unsigned long TotalLifePowerUpsCollected;
-	unsigned long TotalArmorPowerUpsCollected;
-	unsigned long TotalDistanceTraveled;
-	unsigned long TotalSuicides;
-	unsigned long TotalDamageTaken;
-	unsigned long TotalDamageHealed;
-	unsigned long TotalArmorRepaired;
-	unsigned long TotalImaginationRestored;
-	unsigned long TotalImaginationUsed;
-	unsigned long TotalDistanceDriven;
-	unsigned long TotalTimeAirborne;
-	unsigned long TotalRacingImaginationPowerUpsCollected;
-	unsigned long TotalRacingImaginationCratesSmashed;
-	unsigned long TotalRacecarBoostsActivated;
-	unsigned long TotalRacecarWrecks;
-	unsigned long TotalRacingSmashablesSmashed;
-	unsigned long TotalRacesFinished;
-	unsigned long TotalFirstPlaceFinishes;
+	std::uint64_t charIndex;
+	std::uint64_t TotalCurrencyCollected;
+	std::uint64_t TotalBricksCollected;
+	std::uint64_t TotalSmashablesSmashed;
+	std::uint64_t TotalQuickBuildsCompleted;
+	std::uint64_t TotalEnemiesSmashed;
+	std::uint64_t TotalRocketsUsed;
+	std::uint64_t TotalMissionsCompleted;
+	std::uint64_t TotalPetsTamed;
+	std::uint64_t TotalImaginationPowerUpsCollected;
+	std::uint64_t TotalLifePowerUpsCollected;
+	std::uint64_t TotalArmorPowerUpsCollected;
+	std::uint64_t TotalDistanceTraveled;
+	std::uint64_t TotalSuicides;
+	std::uint64_t TotalDamageTaken;
+	std::uint64_t TotalDamageHealed;
+	std::uint64_t TotalArmorRepaired;
+	std::uint64_t TotalImaginationRestored;
+	std::uint64_t TotalImaginationUsed;
+	std::uint64_t TotalDistanceDriven;
+	std::uint64_t TotalTimeAirborne;
+	std::uint64_t TotalRacingImaginationPowerUpsCollected;
+	std::uint64_t TotalRacingImaginationCratesSmashed;
+	std::uint64_t TotalRacecarBoostsActivated;
+	std::uint64_t TotalRacecarWrecks;
+	std::uint64_t TotalRacingSmashablesSmashed;
+	std::uint64_t TotalRacesFinished;
+	std::uint64_t TotalFirstPlaceFinishes;
 };
 
 enum class EStats {
@@ -153,12 +153,12 @@ struct ItemModel {
 		}
 
 		inline bool GetAttribute(std::uint16_t index) {
-			if (index > 0x08) throw std::out_of_range("Index higher than 8");
+			if (index >= 0x08) throw std::out_of_range("Index higher than 8");
 			return data & (std::uint16_t(1) << index);
 		}
 
 		inline void SetAttribute(std::uint16_t index, bool flag) {
-			if (index > 0x08) throw std::out_of_range("Index higher than 8");
+			if (index >= 0x08) throw std::out_of_range("Index higher than 8");
 			data ^= (-flag ^ data) & (std::uint16_t(1) << index);
 		}
 

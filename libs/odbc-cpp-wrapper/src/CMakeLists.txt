@@ -1,0 +1,3 @@
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+ADD_SUBDIRECTORY(odbc)
+include_directories(odbc)
