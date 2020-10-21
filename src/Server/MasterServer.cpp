@@ -219,6 +219,7 @@ void MasterServer::Listen() {
 
 							if (!keyValid) {
 								// TODO: Key invalid;
+								Logger::log("MASTER", std::string("Key invalid for ") + sessionMRInList->systemAddress.ToString(), LogType::WARN);
 								break;
 							}
 

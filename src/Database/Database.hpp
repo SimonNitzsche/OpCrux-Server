@@ -302,7 +302,7 @@ public:
 	}
 
 	static Str_DB_CharInfo GetChar(unsigned long long objectID) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE accountID=? ORDER BY charIndex");
+		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE objectID=? ORDER BY charIndex");
 		stmt->setULong(1, objectID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
@@ -921,7 +921,12 @@ public:
 		stmt->setInt(5, chunkID);
 		stmt->setULong(6, chunkData);
 
-		odbc::ResultSetRef rs = stmt->executeQuery();
+		try {
+			odbc::ResultSetRef rs = stmt->executeQuery();
+		}
+		catch (...) {
+			// We will hit a SQL_NO_DATA here, but this is fine, as it shouldn't return anything.
+		}
 	}
 
 	static std::map<std::uint32_t, std::uint64_t> GetFlagChunks(std::int64_t charID) {
