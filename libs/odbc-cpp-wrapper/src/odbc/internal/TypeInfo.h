@@ -137,9 +137,9 @@ struct TypeInfo
         switch (valueType)
         {
         case SQL_C_CHAR:
-            return SQL_LONGVARCHAR;
+            return SQL_VARCHAR;
         case SQL_C_WCHAR:
-            return SQL_WLONGVARCHAR;
+            return SQL_WVARCHAR;
         case SQL_C_SSHORT:
         case SQL_C_USHORT:
             return SQL_SMALLINT;

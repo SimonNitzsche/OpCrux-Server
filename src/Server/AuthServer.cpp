@@ -79,6 +79,10 @@ AuthServer::AuthServer() : ILUServer() {
 				// TODO: Kick player.
 				PacketFactory::General::doDisconnect(rakServer, packet->systemAddress, EDisconnectReason::KICK);
 			}
+			catch (odbc::Exception e) {
+				Logger::log("AUTH", e.what(), LogType::ERR);
+				
+			}
 		}
 	}
 

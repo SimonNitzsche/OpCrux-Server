@@ -91,7 +91,8 @@ void ParameterData::setValue(int16_t type, const void* value, size_t size)
     else
         setValueOnHeap(value, size);
     valueType_ = type;
-    columnSize_ = 0;
+
+    columnSize_ = (type == SQL_C_CHAR) ? (size != 0 ? size : 1) : 0;
     decimalDigits_ = 0;
 }
 //------------------------------------------------------------------------------

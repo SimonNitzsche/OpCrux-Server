@@ -52,8 +52,11 @@ namespace odbc
 //------------------------------------------------------------------------------
 void Exception::checkForError(short rc, short handleType, void* handle)
 {
-    if ((rc != SQL_SUCCESS) && (rc != SQL_SUCCESS_WITH_INFO))
-        throw create(handleType, handle);
+    if ((rc != SQL_SUCCESS) && (rc != SQL_SUCCESS_WITH_INFO)) {
+        auto ex = create(handleType, handle);
+        printf(ex.what());
+        throw ex;
+    }
 }
 //------------------------------------------------------------------------------
 Exception Exception::create(short handleType, void* handle)

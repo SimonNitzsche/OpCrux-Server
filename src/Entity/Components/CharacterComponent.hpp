@@ -17,7 +17,7 @@ class CharacterComponent : public IEntityComponent {
 private:
 	DatabaseModels::Str_DB_CharInfo charInfo = DatabaseModels::Str_DB_CharInfo();
 	DatabaseModels::Str_DB_CharStyle charStyle = DatabaseModels::Str_DB_CharStyle();
-	DatabaseModels::Str_DB_CharStats charStats = Database::GetCharStats(charInfo.statsID);
+	DatabaseModels::Str_DB_CharStats charStats = DatabaseModels::Str_DB_CharStats();
 
 	std::map<std::uint32_t, std::uint64_t> flags;
 
@@ -66,6 +66,8 @@ public:
 
 	void InitCharInfo(DatabaseModels::Str_DB_CharInfo info) {
 		charInfo = info;
+
+		charStats = Database::GetCharStats(charInfo.statsID);
 
 		StatsComponent* statsComp = this->owner->GetComponent<StatsComponent>();
 		if (statsComp != nullptr) {

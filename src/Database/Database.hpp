@@ -167,7 +167,7 @@ public:
 		std::string h_password = sha512(s_password);
 
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT password FROM OPCRUX_AD.dbo.Accounts WHERE username=?");
-		stmt->setCString(1, s_username.c_str());
+		stmt->setString(1, s_username);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 		if (rs->next()) {
 			std::string db_hash = *rs->getString(1);
@@ -188,11 +188,6 @@ public:
 		std::u16string w_password(s_password.begin(), s_password.end());
 
 		return IsLoginCorrect(const_cast<char16_t*>(w_username.c_str()), const_cast<char16_t*>(w_password.c_str()));
-	}
-
-	static void SetupStatementHandle() {
-
-		throw "NO!";
 	}
 
 
@@ -279,7 +274,7 @@ public:
 			Str_DB_CharInfo charInfo;
 			charInfo.accountID = accountID;
 			charInfo.objectID = *rs->getULong(1);
-			charInfo.charIndex = *rs->getInt(2);
+			charInfo.charIndex = *rs->getUByte(2);
 			charInfo.name = *rs->getString(3);
 			charInfo.pendingName = *rs->getString(4);
 			charInfo.styleID = *rs->getInt(5);
@@ -288,7 +283,9 @@ public:
 			charInfo.lastInstance = *rs->getShort(8) & 0xFFFF;
 			charInfo.lastClone = *rs->getInt(9);
 			charInfo.lastLog = *rs->getULong(10);
-			charInfo.position = DataTypes::Vector3(*rs->getFloat(11), *rs->getFloat(12), *rs->getFloat(13));
+			charInfo.position.x = *rs->getFloat(11);
+			charInfo.position.y = *rs->getFloat(12);
+			charInfo.position.z = *rs->getFloat(13);
 			charInfo.shirtObjectID = *rs->getULong(14);
 			charInfo.pantsObjectID = *rs->getULong(15);
 			charInfo.uScore = *rs->getInt(16);
@@ -311,7 +308,7 @@ public:
 
 		std::vector<Str_DB_CharInfo> charsInfo;
 
-		while (rs->next()) {
+		if (rs->next()) {
 			Str_DB_CharInfo charInfo;
 			charInfo.accountID = *rs->getInt(1);
 			charInfo.objectID = objectID;
@@ -324,7 +321,9 @@ public:
 			charInfo.lastInstance = *rs->getShort(8) & 0xFFFF;
 			charInfo.lastClone = *rs->getInt(9);
 			charInfo.lastLog = *rs->getULong(10);
-			charInfo.position = DataTypes::Vector3(*rs->getFloat(11), *rs->getFloat(12), *rs->getFloat(13));
+			charInfo.position.x = *rs->getFloat(11);
+			charInfo.position.y = *rs->getFloat(12);
+			charInfo.position.z = *rs->getFloat(13);
 			charInfo.shirtObjectID = *rs->getULong(14);
 			charInfo.pantsObjectID = *rs->getULong(15);
 			charInfo.uScore = *rs->getInt(16);
@@ -336,6 +335,8 @@ public:
 			charInfo.armor = *rs->getInt(22);
 			return charInfo;
 		}
+
+		return Str_DB_CharInfo();
 	}
 
 	static void UpdateChar(Str_DB_CharInfo charInfo) {
@@ -622,7 +623,8 @@ public:
 		model.progress = StringUtils::IntListToString(initialProgress, '|');
 
 		if (HasMission(charID, missionID)) {
-			throw std::runtime_error("Mission already exists!");
+			return GetMission(charID, missionID);
+			//throw std::runtime_error("Mission already exists!");
 		}
 
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time,chosenReward) VALUES(?,?,?,?,?,?,?)");
@@ -1042,9 +1044,38 @@ public:
 	}
 
 	static Str_DB_CharStats GetCharStats(long charIndex) {
-		SetupStatementHandle();
+		// TODO: Actually implement stats
+		return {};
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes FROM OPCRUX_GD.dbo.CharacterStats WHERE charIndex=?");
+		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT statsID,"
+			"currencyCollected,"
+			"bricksCollected,"
+			"objectsSmashed,"
+			"quickbuildsCompleted,"
+			"enemiesSmashed,"
+			"rocketsUsed,"
+			"missionsCompleted,"
+			"petsTamed,"
+			"imaginationCollected,"
+			"healthCollected,"
+			"armorCollected,"
+			"distanceTraveled,"
+			"smashed,"
+			"damageTaken,"
+			"damageHealed,"
+			"armorRepaired,"
+			"imaginationRestored,"
+			"imaginationUsed,"
+			"distanceDriven,"
+			"airborneTime,"
+			"racingImaginationCollected,"
+			"racingImaginationCratesSmashed,"
+			"racingBoostsActivated,"
+			"racingWrecks,"
+			"racingSmashablesSmashed,"
+			"racesFinished,"
+			"racesWon"
+			" FROM OPCRUX_GD.dbo.CharacterStats WHERE charIndex=?");
 		
 		stmt->setULong(1, charIndex);
 		
@@ -1089,7 +1120,8 @@ public:
 	}
 
 	static unsigned long CreateCharStats(long statsID) {
-
+		// TODO: Actually implement stats
+		return -1;
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStats ON;INSERT INTO OPCRUX_GD.dbo.CharacterStats (statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		stmt->setULong(1, statsID);
