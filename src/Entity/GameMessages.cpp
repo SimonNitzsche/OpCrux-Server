@@ -10,6 +10,11 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 	Entity::GameObject * senderObject = Instance->objectsManager->GetObjectByID(session->actorID);
 	Entity::GameObject * targetObject = Instance->objectsManager->GetObjectByID(targetObjectID);
 
+	if (targetObject == nullptr) {
+		Logger::log("WRLD", "Tried to deserialize a Game Message for an invalid target.", LogType::WARN);
+		return;
+	}
+
 	switch (msgID) {
 		GM_MAKE_LIST_CLIENT(GM_DESERIALIZE_SWITCH_CASE);
 	default: {
