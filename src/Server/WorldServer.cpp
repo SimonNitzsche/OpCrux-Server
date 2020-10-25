@@ -682,7 +682,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 		if (session != nullptr) {
 			objectsManager->Destruct(session->actorID);
 			sessionManager.RemoveSession(session);
-			masterServerBridge->ClientDisconnect(packet->getSystemAddress());
+			masterServerBridge->ClientDisconnect(packet->getSystemAddress(), this);
 		}
 	} break;
 	default: {

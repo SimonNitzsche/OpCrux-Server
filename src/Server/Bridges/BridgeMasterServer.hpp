@@ -14,6 +14,8 @@
 #include "DataTypes/LWOOBJID.hpp"
 #include "Sessions/ClientSession.hpp"
 
+class WorldServer;
+
 class BridgeMasterServer {
 private:
 	std::thread bridgeThread;
@@ -34,7 +36,7 @@ public:
     void ClientLoginRespond(SystemAddress systemAddress, int accountID, int reason);
 	void ClientWorldAuth(SystemAddress systemAddress, ClientSession clSession);
     void ClientCharAuth(ClientSession* clientSession, std::uint16_t sourcePort, DataTypes::LWOOBJID charID);
-	void ClientDisconnect(SystemAddress systemAddress);
+    void ClientDisconnect(SystemAddress systemAddress, WorldServer* instance);
 	void ChooseWorldServer();
     void NotifyInstanceLoaded(std::uint16_t zoneID, std::uint16_t instanceID, std::uint32_t cloneID, SystemAddress systemAddress);
 };

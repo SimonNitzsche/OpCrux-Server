@@ -47,6 +47,7 @@ public:
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
     void FinishClientTransfer(ClientSession clSession);
 	std::uint16_t GetZoneID();
+	inline std::uint16_t GetPort() { return m_port; }
 	~WorldServer();
 };
 

@@ -250,6 +250,8 @@ void MasterServer::Listen() {
 					case EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGOUT_NOTIFY: {
 						RakNet::RakString sysAddress;
 						data->Read(sysAddress);
+						std::uint16_t serverPortFromDisconnect;
+						data->Read(serverPortFromDisconnect);
 
 						SystemAddress sysAddrBin;
 
@@ -257,6 +259,12 @@ void MasterServer::Listen() {
 						for (int i = 0; i < connected_clients.size(); ++i) {
 							if (connected_clients[i]->systemAddress.ToString() == sysAddress) {
 								auto it = connected_clients.begin() + i;
+
+								// Make sure currentInstance is the same instance as the one the user is leaving from
+								// Otherwise the session could be gone before being on the new instance while transfer
+								if ((*it)->currentInstance->port != serverPortFromDisconnect) break;
+
+								Logger::log("MASTER", "User ended playsession for account " + std::to_string((*it)->accountID));
 								delete (*it);
 								connected_clients.erase(connected_clients.begin()+i);
 								break;

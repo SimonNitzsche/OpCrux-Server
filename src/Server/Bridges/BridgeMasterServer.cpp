@@ -280,7 +280,7 @@ void BridgeMasterServer::ClientCharAuth(ClientSession * clientSession, std::uint
 	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-void BridgeMasterServer::ClientDisconnect(SystemAddress systemAddress) {
+void BridgeMasterServer::ClientDisconnect(SystemAddress systemAddress, WorldServer * instance) {
 	if (!_connected) {
 		throw std::runtime_error("Not connected to Master Server.");
 	}
@@ -291,6 +291,7 @@ void BridgeMasterServer::ClientDisconnect(SystemAddress systemAddress) {
 	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGOUT_NOTIFY));
 
 	packet->Write(RakNet::RakString(systemAddress.ToString(true)));
+	packet->Write(instance->GetPort());
 
 	RakNet::BitStream * packetPTR = packet.get();
 	Logger::log("Bridge", "Send Client disconnect");
