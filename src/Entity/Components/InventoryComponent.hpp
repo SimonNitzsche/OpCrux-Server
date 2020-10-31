@@ -274,6 +274,31 @@ public:
 		return false;
 	}
 
+	inline bool HasItem(std::uint32_t LOT) {
+		auto targetTab = GetTabForLOT(LOT);
+
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
+		if (itemCompID == -1) return false;
+
+		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		if (static_cast<std::string>(equipLocation) == "") return false;
+
+		auto tabIt = inventory.find(targetTab);
+
+		// We do not have tab, unable to equip
+		if (tabIt == inventory.end()) return false;
+
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.LOT == LOT) {
+				// We found it!
+				return true;
+			}
+		}
+
+		// We couldn't find the item
+		return false;
+	}
+
 	inline bool EquipItem(std::uint32_t LOT) {
 		auto targetTab = GetTabForLOT(LOT);
 
