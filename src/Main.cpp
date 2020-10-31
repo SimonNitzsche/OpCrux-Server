@@ -361,6 +361,7 @@ int main(int argc, char* argv[]) {
 	ServerInfo::init();
 
 	std::string ipMaster = Configuration::ConfigurationManager::generalConf.GetStringVal("Master", "MASTERIP");
+	ServerInfo::SetAuthIP(Configuration::ConfigurationManager::generalConf.GetStringVal("Master", "AUTHIP"));
 	//std::string ipMaster = "foxsog.com";
 
 	std::string hf = "res/physics/env_nim_ag_puffytree.hkx";

@@ -34,6 +34,15 @@ public:
 		return nullptr;
 	}
 
+	ClientSession* GetSession(std::uint32_t accountID) {
+		for (int i = 0; i < clients.size(); ++i) {
+			ClientSession* session = &clients[i];
+			if ((session->accountID) != accountID) continue;
+			return session;
+		}
+		return nullptr;
+	}
+
 	void AddSession(ClientSession csCopy) {
 		clients.push_back(csCopy);
 	}

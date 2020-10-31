@@ -7,6 +7,7 @@ clock_t ServerInfo::appstart;
 bool ServerInfo::initDone = false;
 bool ServerInfo::bRunning = true;
 const char* ServerInfo::baseTitle = "OpCrux Server";
+std::string ServerInfo::m_authIP = "127.0.0.1";
 time_t ServerInfo::StartupTime;
 
 int ServerInfo::processID;
@@ -85,6 +86,14 @@ std::string ServerInfo::getOsName() {
 #else
 	return "Other";
 #endif
+}
+
+const std::string & ServerInfo::GetAuthIP() {
+	return m_authIP;
+}
+
+void ServerInfo::SetAuthIP(const std::string & authIP) {
+	m_authIP = authIP;
 }
 
 std::string ServerInfo::gameVersion = "1.10.64";
