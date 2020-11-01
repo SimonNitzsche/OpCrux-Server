@@ -208,6 +208,7 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				WorldServer* Instance = this;
 
 				if (spawnerPath->spawnedLOT == 0) continue;
+				if (!spawnerPath->activateSpawnerNetworkOnLoad) continue;
 
 				for (int i = 0; i < spawnerPath->numberToMaintain && i < spawnerPath->waypoints.size(); ++i) {
 					// Create
