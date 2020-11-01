@@ -36,7 +36,7 @@ namespace PacketFactory {
 			returnBS.Write<std::uint32_t>(isAuth ? 1 : 4 ); // connType
 			returnBS.Write(ServerInfo::processID);
 			returnBS.Write<std::uint16_t>(0xff);
-			returnBS.Write(RakNet::RakString("127.0.0.1"), 264);
+			returnBS.Write(ServerInfo::GetAuthIP().c_str(), 264);
 
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client, false);
 		};

@@ -290,7 +290,7 @@ void BridgeMasterServer::ClientDisconnect(SystemAddress systemAddress, WorldServ
 
 	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGOUT_NOTIFY));
 
-	packet->Write(RakNet::RakString(systemAddress.ToString(true)));
+	packet->Write(systemAddress);
 	packet->Write(instance->GetPort());
 
 	RakNet::BitStream * packetPTR = packet.get();

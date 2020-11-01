@@ -18,7 +18,8 @@ namespace Configuration {
 				{"Master", {
 					// In seconds
 					{"TRANSFER_TIMEOUT", "30"},
-					{"MASTERIP", "127.0.0.1"}
+					{"MASTERIP", "127.0.0.1"},
+					{"AUTHIP", "127.0.0.1"}
 				}}
 			};
 		}

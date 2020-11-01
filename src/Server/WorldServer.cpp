@@ -272,7 +272,7 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 
 	// TODO: Tell MS that instance has loaded
 	SystemAddress addr;
-	addr.SetBinaryAddress("127.0.0.1");
+	addr.SetBinaryAddress(ServerInfo::GetAuthIP().c_str());
 	addr.port = port;
 	masterServerBridge->NotifyInstanceLoaded(zone, instanceID, cloneID, addr);
 
@@ -536,22 +536,28 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Construct player");
 				replicaManager->AddParticipant(clientSession->systemAddress);
+
 				auto * playerObject = new Entity::GameObject(this, 1);
 				playerObject->SetObjectID(clientSession->actorID);
 				auto * charComp = playerObject->GetComponent<CharacterComponent>();
-				charComp->clientAddress = clientSession->systemAddress;
-				DatabaseModels::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
-				playerObject->SetPosition(luZone->spawnPos.pos);
-				playerObject->SetRotation(luZone->spawnPos.rot);
+				if (charComp != nullptr) {
+					charComp->clientAddress = clientSession->systemAddress;
+					DatabaseModels::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
+					playerObject->SetPosition(luZone->spawnPos.pos);
+					playerObject->SetRotation(luZone->spawnPos.rot);
 
-				charComp->InitCharInfo(info);
-				charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
-				charComp->CheckLevelProgression();
-				auto* charDestComp = playerObject->GetComponent<DestructibleComponent>();
-				charDestComp->SetImagination(info.imagination);
+					charComp->InitCharInfo(info);
+					charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
+					charComp->CheckLevelProgression();
+				
+					auto* charDestComp = playerObject->GetComponent<DestructibleComponent>();
+					if (charDestComp != nullptr) {
+						charDestComp->SetImagination(info.imagination);
+					}
 
-				playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
-				//playerObject->Finish();
+					playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
+					//playerObject->Finish();
+				}
 				auto invComp = playerObject->GetComponent<InventoryComponent>();
 				
 				// Bypass disabling of player construction
@@ -567,9 +573,11 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				
 				// Tell what world you are
-				auto charInfo = charComp->GetCharInfo();
-				charInfo.lastWorld = luZone->zoneID;
-				Database::UpdateChar(charInfo);
+				if (charComp != nullptr) {
+					auto charInfo = charComp->GetCharInfo();
+					charInfo.lastWorld = luZone->zoneID;
+					Database::UpdateChar(charInfo);
+				}
 
 				
 				if (zoneID == 1203) {
@@ -600,7 +608,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					}
 				}
 
-				invComp->Awake();
+				if(invComp != nullptr)
+					invComp->Awake();
 				objectsManager->Construct(playerObject);
 
 				Logger::log("WRLD", "Server done loading");
@@ -697,7 +706,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 void WorldServer::FinishClientTransfer(ClientSession clSession) {
 
-	ClientSession * clSessionLocal = this->sessionManager.GetSession(clSession.systemAddress);
+	ClientSession * clSessionLocal = this->sessionManager.GetSession(clSession.accountID);
 
 	*clSessionLocal = clSession;
 

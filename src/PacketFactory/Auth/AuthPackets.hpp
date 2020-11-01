@@ -41,7 +41,7 @@ namespace PacketFactory {
 			returnBS.Write(majorVersion); returnBS.Write(currentVersion); returnBS.Write(minorVersion);
 
 			std::string cip = client.ToString(false);
-			std::string ip = (IPUtils::isIPPublic(client.binaryAddress) ? rakServer->GetExternalID(UNASSIGNED_SYSTEM_ADDRESS).ToString(false) :
+			std::string ip = (IPUtils::isIPPublic(client.binaryAddress) ? rakServer->GetExternalID(client).ToString(false) :
 							 (IPUtils::isIPIntern(client.binaryAddress) ? rakServer->GetInternalID().ToString(false) : "127.0.0.1"));
 			
 			ip = wsAddr.ToString(false);

@@ -13,6 +13,7 @@ class ServerInfo {
 private:
 	static clock_t appstart;
 	static bool initDone;
+	static std::string m_authIP;
 public:
 	static time_t StartupTime;
 	static int processID;
@@ -29,6 +30,8 @@ public:
 	static std::string getComputerName();
 	static std::string getOsName();
 	static MasterServer * masterServer;
+	static const std::string & GetAuthIP();
+	static void SetAuthIP(const std::string & authIP);
 	static std::string gameVersion;
 	static void numericGameVersion(uint16_t * major, uint16_t * current, uint16_t * minor);
 };

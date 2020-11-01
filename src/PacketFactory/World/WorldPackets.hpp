@@ -139,7 +139,7 @@ namespace PacketFactory {
 			RakNet::BitStream contentWrapperBS;
 			
 			std::vector<LDFEntry> ldfEntries;
-			ldfEntries.emplace_back(u"template", std::int32_t(1));
+			ldfEntries.emplace_back(u"template", std::int32_t(go->GetLOT()));
 			ldfEntries.emplace_back(u"objid", clientSession->actorID);
 			ldfEntries.emplace_back(u"xmlData", go->GenerateXML());
 			ldfEntries.emplace_back(u"name", go->GetName());

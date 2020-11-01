@@ -248,21 +248,21 @@ void MasterServer::Listen() {
 					} break;
 
 					case EMasterPacketID::MSG_IM_WORLD_CLIENT_LOGOUT_NOTIFY: {
-						RakNet::RakString sysAddress;
+						SystemAddress sysAddress;
 						data->Read(sysAddress);
 						std::uint16_t serverPortFromDisconnect;
 						data->Read(serverPortFromDisconnect);
 
-						SystemAddress sysAddrBin;
 
 						// Remove client
 						for (int i = 0; i < connected_clients.size(); ++i) {
-							if (connected_clients[i]->systemAddress.ToString() == sysAddress) {
+							if (connected_clients[i]->systemAddress == sysAddress) {
 								auto it = connected_clients.begin() + i;
 
 								// Make sure currentInstance is the same instance as the one the user is leaving from
 								// Otherwise the session could be gone before being on the new instance while transfer
 								if ((*it)->currentInstance->port != serverPortFromDisconnect) break;
+								if ((*it)->sessionState == ClientSessionMRState::IN_TRANSFER) break;
 
 								Logger::log("MASTER", "User ended playsession for account " + std::to_string((*it)->accountID));
 								delete (*it);
@@ -327,6 +327,12 @@ void MasterServer::Listen() {
 						if (nextZoneID == 0) nextZoneID = 1000;
 
 						auto remoteNextInstance = SelectInstanceToJoin(nextZoneID, nextCloneID, ignoreSoftCap);
+
+						// Check if we are already on the correct instance,
+						// If we are we shouldn't do anything, as the client wouldn't
+						// destruct himself and the other objects
+						// causing a 0% loading issue
+						if (mrClientSession->currentInstance == remoteNextInstance) break;
 
 						if (remoteNextInstance != nullptr) {
 							MovePlayerSessionToNewInstance(mrClientSession, remoteNextInstance);
