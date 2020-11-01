@@ -680,7 +680,7 @@ public:
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
-		if (rs->next()) {
+		while (rs->next()) {
 			MissionModel model;
 			model.charID = *rs->getULong(1);
 			model.missionID = *rs->getInt(2);
@@ -706,7 +706,7 @@ public:
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
-		if (rs->next()) {
+		while (rs->next()) {
 			MissionModel model;
 			model.charID = *rs->getULong(1);
 			model.missionID = *rs->getInt(2);
@@ -745,7 +745,7 @@ public:
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
-		if (rs->next()) {
+		while (rs->next()) {
 			MissionModel model;
 			model.charID = *rs->getULong(1);
 			model.missionID = *rs->getInt(2);
@@ -784,7 +784,7 @@ public:
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
-		if (rs->next()) {
+		while (rs->next()) {
 			MissionModel model;
 			model.charID = *rs->getULong(1);
 			model.missionID = *rs->getInt(2);
@@ -824,7 +824,7 @@ public:
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
-		if (rs->next()) {
+		while (rs->next()) {
 			MissionModel model;
 			model.charID = *rs->getULong(1);
 			model.missionID = *rs->getInt(2);
@@ -870,7 +870,7 @@ public:
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
-		if (rs->next()) {
+		while (rs->next()) {
 			MissionModel model;
 			model.charID = *rs->getULong(1);
 			model.missionID = *rs->getInt(2);

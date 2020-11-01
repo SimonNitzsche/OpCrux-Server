@@ -802,7 +802,7 @@ std::string Entity::GameObject::GenerateXML() {
 
 				for (auto it = playerInventory.begin(); it != playerInventory.end(); ++it) {
 
-					ss << "<in t=" << it->first << ">";
+					ss << "<in t=\"" << it->first << "\">";
 
 					//"<i l=\"6086\" id=\"1152921507005357158\" s=\"6\" b=\"1\"/>";
 					for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
@@ -908,7 +908,7 @@ std::string Entity::GameObject::GenerateXML() {
 
 				ss << "<done>";
 				{
-					auto missionsDone = Database::GetAllMissionsByStates(objectID & 0xFFFFFFFF, { 8, 9 });
+					auto missionsDone = Database::GetAllMissionsByStates(objectID.getPureID(), { 8, 9 });
 					for (auto it = missionsDone.begin(); it != missionsDone.end(); ++it) {
 						ss << "<m id=\"" << it->missionID << "\" cts=\"" << it->time << "\" cct=\"" << it->repeatCount << "\"/>";
 					}
@@ -916,7 +916,7 @@ std::string Entity::GameObject::GenerateXML() {
 				ss << "</done>";
 				ss << "<cur>";
 				{
-					auto missionsActive = Database::GetAllMissionsByStates(objectID & 0xFFFFFFFF, { 2, 4, 10, 12 });
+					auto missionsActive = Database::GetAllMissionsByStates(objectID.getPureID(), { 2, 4, 10, 12 });
 					for (auto it = missionsActive.begin(); it != missionsActive.end(); ++it) {
 						ss << "<m id=\"" << it->missionID << "\">";
 						auto c_missionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();

@@ -281,12 +281,12 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
                     if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
                         auto targetGroup = StringUtils::StringVectorToIntList(StringUtils::splitString(CacheMissionTasks::GetTargetGroup(cacheMissionTasksRow), ','));
 
-                        bool targetGroupResult = false;
+                        int targetGroupResult = 0;
                         for (auto targetGroupIterator = targetGroup.begin(); targetGroupIterator != targetGroup.end(); ++targetGroupIterator) {
-                            targetGroupResult |= playerObject->GetComponent<CharacterComponent>()->GetFlag(*targetGroupIterator);
+                            if(playerObject->GetComponent<CharacterComponent>()->GetFlag(*targetGroupIterator)) ++targetGroupResult;
                         }
 
-                        missionTasksProgress.at(i) = targetGroupResult ? "1" : "0";
+                        missionTasksProgress.at(i) = std::to_string(targetGroupResult);
 
                         UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
                     }
