@@ -87,24 +87,24 @@ LUZone::~LUZone() {
 
 		switch (pkp.second->pathType) {
 		case LUZonePathType::Movement:
-			for (auto wp : reinterpret_cast<LUZonePathMovement*>(pkp.second)->waypoints) { delete[] wp; } break;
+			for (auto wp : reinterpret_cast<LUZonePathMovement*>(pkp.second)->waypoints) { delete wp; } break;
 		case LUZonePathType::MovingPlatform:
-			for(auto wp :reinterpret_cast<LUZonePathMovingPlatform*>(pkp.second)->waypoints) {delete[] wp;} break;
+			for(auto wp :reinterpret_cast<LUZonePathMovingPlatform*>(pkp.second)->waypoints) {delete wp;} break;
 		case LUZonePathType::Property:
-			for(auto wp :reinterpret_cast<LUZonePathProperty*>(pkp.second)->waypoints) {delete[] wp;} break;
+			for(auto wp :reinterpret_cast<LUZonePathProperty*>(pkp.second)->waypoints) {delete wp;} break;
 		case LUZonePathType::Camera:
-			for(auto wp :reinterpret_cast<LUZonePathCamera*>(pkp.second)->waypoints) {delete[] wp;} break;
+			for(auto wp :reinterpret_cast<LUZonePathCamera*>(pkp.second)->waypoints) {delete wp;} break;
 		case LUZonePathType::Spawner:
-			for(auto wp :reinterpret_cast<LUZonePathSpawner*>(pkp.second)->waypoints) {delete[] wp;} break;
+			for(auto wp :reinterpret_cast<LUZonePathSpawner*>(pkp.second)->waypoints) {delete wp;} break;
 		case LUZonePathType::Showcase:
-			for(auto wp :reinterpret_cast<LUZonePathShowcase*>(pkp.second)->waypoints) {delete[] wp;} break;
+			for(auto wp :reinterpret_cast<LUZonePathShowcase*>(pkp.second)->waypoints) {delete wp;} break;
 		case LUZonePathType::Race:
-			for(auto wp :reinterpret_cast<LUZonePathRace*>(pkp.second)->waypoints) {delete[] wp;} break;
+			for(auto wp :reinterpret_cast<LUZonePathRace*>(pkp.second)->waypoints) {delete wp;} break;
 		case LUZonePathType::Rail:
-			for(auto wp :reinterpret_cast<LUZonePathRail*>(pkp.second)->waypoints) {delete[] wp;} break;
+			for(auto wp :reinterpret_cast<LUZonePathRail*>(pkp.second)->waypoints) {delete wp;} break;
 		}
 
-		delete[] pkp.second;
+		delete pkp.second;
 	}
 }
 
