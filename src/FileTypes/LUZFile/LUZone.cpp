@@ -406,7 +406,49 @@ void LUZone::Read() {
 			}
 
 			// Add path to list
-			paths.insert({ pathFactory->pathName.ToString(), pathFactory });
+			
+			switch (*pathType) {
+			case LUZonePathType::Movement: {
+				auto myPathInsert = reinterpret_cast<LUZonePathMovement*>(pathFactory);
+				paths.insert({myPathInsert->pathName.ToString(), myPathInsert});
+				break;
+			}
+			case LUZonePathType::MovingPlatform: {
+				auto myPathInsert = reinterpret_cast<LUZonePathMovingPlatform*>(pathFactory);
+				paths.insert({myPathInsert->pathName.ToString(), myPathInsert});
+				break;
+			}
+			case LUZonePathType::Property: {
+				auto myPathInsert = reinterpret_cast<LUZonePathProperty*>(pathFactory);
+				paths.insert({myPathInsert->pathName.ToString(), myPathInsert});
+				break;
+			}
+			case LUZonePathType::Camera: {
+				auto myPathInsert = reinterpret_cast<LUZonePathCamera*>(pathFactory);
+				paths.insert({myPathInsert->pathName.ToString(), myPathInsert});
+				break;
+			}
+			case LUZonePathType::Spawner: {
+				auto myPathInsert = reinterpret_cast<LUZonePathSpawner*>(pathFactory);
+				paths.insert({myPathInsert->pathName.ToString(), myPathInsert});
+				break;
+			}
+			case LUZonePathType::Showcase: {
+				auto myPathInsert = reinterpret_cast<LUZonePathShowcase*>(pathFactory);
+				paths.insert({myPathInsert->pathName.ToString(), myPathInsert});
+				break;
+			}
+			case LUZonePathType::Race: {
+				auto myPathInsert = reinterpret_cast<LUZonePathRace*>(pathFactory);
+				paths.insert({myPathInsert->pathName.ToString(), myPathInsert});
+				break;
+			}
+			case LUZonePathType::Rail: {
+				auto myPathInsert = reinterpret_cast<LUZonePathRail*>(pathFactory);
+				paths.insert({myPathInsert->pathName.ToString(), myPathInsert});
+				break;
+			}
+			}
 		}
 	}
 	

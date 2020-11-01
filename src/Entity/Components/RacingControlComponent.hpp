@@ -19,13 +19,15 @@
 #include "Entity/GameMessages/VehicleUnlockInput.hpp"
 
 
+#include "FileTypes/LUZFile/LUZone.hpp"
+
 using namespace DataTypes;
 
 class RacingControlComponent : public ScriptedActivityComponent {
 	friend class ScriptedActivityComponent;
 private:
 
-	std::uint16_t minNumOfPlayers = 1;
+	std::uint16_t minNumOfPlayers = 2;
 
 	struct RacingPlayerInfo {
 		DataTypes::LWOOBJID playerObjectID;
@@ -34,8 +36,8 @@ private:
 		bool playerLoaded;
 	};
 
-	bool _playerInfoDirty;
-	bool _playerInfo2Dirty;
+	bool _playerInfoDirty = false;
+	bool _playerInfo2Dirty = false;
 	std::list<RacingPlayerInfo> playerInfo;
 
 	std::uint16_t numberOfLaps = 3; // remainingLaps
@@ -56,7 +58,6 @@ public:
 	}
 
 	void msgPlayerAddedToWorldLocal(DataTypes::LWOOBJID playerID) {
-
 		Entity::GameObject * playerObject = owner->GetZoneInstance()->objectsManager->GetObjectByID(playerID);
 
 		if (playerObject == nullptr) return;
@@ -66,7 +67,7 @@ public:
 
 		if (!myCar->isSerializable) {
 			// Spawn Error Object
-			delete[] myCar;
+			delete myCar;
 			myCar = new Entity::GameObject(this->owner->GetZoneInstance(), 1845);
 
 		}
@@ -74,13 +75,38 @@ public:
 		// Set ObjectID
 		myCar->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + this->owner->GetZoneInstance()->spawnedObjectIDCounter++));
 
+		// Set Position/Rotation
+		//spawnedObject->SetPosition(DataTypes::Vector3(-1475.7, 794.0, -351.6));
+		//myCar->SetPosition(DataTypes::Vector3(-1.85433960, 203.026459, -27.7652206));
+		//myCar->SetRotation(DataTypes::Quaternion(0, 0.8638404011726379, 0, 0.5037656426429749));
+
+		auto path = reinterpret_cast<FileTypes::LUZ::LUZonePathRace*>(owner->GetZoneInstance()->luZone->paths.find(u"MainPath")->second);
+		myCar->SetPosition(path->waypoints.at(0)->position);
+		//myCar->SetRotation(DataTypes::Quaternion(0, 0.8638404011726379, 0, 0.5037656426429749));
+
+
+		auto modAComp = myCar->GetComponent<ModuleAssemblyComponent>();
+
+		modAComp->SetAssembly(u"1:8129;1:8130;1:13513;1:13512;1:13515;1:13516;1:13514;");
+
 
 		// Set Parent
 		myCar->SetParent(this->owner->GetZoneInstance()->zoneControlObject);
 
+		// Finish & Send car
+		myCar->Finish();
+
+		// Register
+		this->owner->GetZoneInstance()->objectsManager->RegisterObject(myCar);
+
+		// Construct
+		if (myCar->isSerializable)
+			this->owner->GetZoneInstance()->objectsManager->Construct(myCar);
+
+
 		// Add player to activity
 		this->AddPlayerToActivity(playerID);
-		
+
 		// Add player to race
 		RacingPlayerInfo pi;
 		pi.playerObjectID = playerID;
@@ -93,43 +119,23 @@ public:
 
 		// Tell player car is ready and added to race
 		this->owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
-		
+
 		/*
 			TODO: Player Ready & Teleport & ZoneObject: PlayerReady
 			TODO: GetLastCustomBuild
 		*/
-
-		// Finish & Send car
-
-		myCar->Finish();
-
-		// Set Position/Rotation
-		//spawnedObject->SetPosition(DataTypes::Vector3(-1475.7, 794.0, -351.6));
-		myCar->SetPosition(DataTypes::Vector3(-1.85433960, 203.026459, -27.7652206));
-		myCar->SetRotation(DataTypes::Quaternion(0, 0.8638404011726379, 0, 0.5037656426429749));
-
-		auto modAComp = myCar->GetComponent<ModuleAssemblyComponent>();
-
-		modAComp->SetAssembly(u"1:8129;1:8130;1:13513;1:13512;1:13515;1:13516;1:13514;");
-
-		// Register
-		this->owner->GetZoneInstance()->objectsManager->RegisterObject(myCar);
-
-		// Construct
-		if (myCar->isSerializable)
-			this->owner->GetZoneInstance()->objectsManager->Construct(myCar);
-
-
-
 		
 
 		playerObject->Possess(myCar);
 
 		{ GM::NotifyVehicleOfRacingObject msg; msg.racingObjectID = this->owner->GetObjectID(); GameMessages::Broadcast(this->owner->GetZoneInstance(), myCar, msg); }
+
+		{ GM::RacingPlayerLoaded msg; msg.playerID = playerID; msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
+
+		{GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(owner->GetZoneInstance(), myCar, msg); }
 	}
 
 	void OnAcknowledgePossession(Entity::GameObject* player, Entity::GameObject* car) {
-		//{ GM::RacingPlayerLoaded msg; msg.playerID = playerID; msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
 
 		//DataTypes::Vector3 pos = playerObject->GetPosition();
 		//pos.y += 10;
@@ -140,16 +146,15 @@ public:
 
 
 
-		// {GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(owner->GetZoneInstance(), myCar, msg); }
 
 
-		//
+		
 
 		//Test();
-		//this->owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
+		this->owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
 
-		{ GM::NotifyRacingClient msg; msg.eventType = Enums::ERacingClientNotificationType::ACTIVITY_START; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
-		{ GM::ActivityStart msg; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
+		//{ GM::NotifyRacingClient msg; msg.eventType = Enums::ERacingClientNotificationType::ACTIVITY_START; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
+		//{ GM::ActivityStart msg; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
 	}
 
 	void Update() {
@@ -165,8 +170,6 @@ public:
 	}
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
-		/* TODO */
-		
 
 		ScriptedActivityComponent::Serialize(factory, packetType);
 
@@ -174,7 +177,7 @@ public:
 		factory->Write<std::uint16_t>(minNumOfPlayers);
 
 		factory->Write(_playerInfoDirty && playerInfo.size() != 0);
-		if (_playerInfoDirty) {
+		if (_playerInfoDirty && playerInfo.size() != 0) {
 			auto it = playerInfo.begin();
 			while (true) {
 				factory->Write(it == playerInfo.end());
@@ -183,27 +186,27 @@ public:
 				}
 
 				factory->Write(it->playerObjectID);
+				factory->Write(it->carObjectID);
 				factory->Write(it->racingState);
 				factory->Write(it->playerLoaded);
 				++it;
 			}
 		}
 
-		factory->Write(false);
-		/*	factory->Write(_playerInfo2Dirty && playerInfo.size() != 0);
-			if (_playerInfo2Dirty) {
-				auto it = playerInfo.begin();
-				while (true) {
-					factory->Write(it == playerInfo.end());
-					if (it == playerInfo.end()) {
-						break;
-					}
-
-					factory->Write(it->playerObjectID);
-					factory->Write(2);
-					++it;
+		factory->Write(_playerInfo2Dirty && playerInfo.size() != 0);
+		if (_playerInfo2Dirty && playerInfo.size() != 0) {
+			auto it = playerInfo.begin();
+			while (true) {
+				factory->Write(it == playerInfo.end());
+				if (it == playerInfo.end()) {
+					break;
 				}
-			}*/
+
+				factory->Write(it->playerObjectID);
+				factory->Write(0);
+				++it;
+			}
+		}
 
 		factory->Write(packetType == ReplicaTypes::PacketTypes::CONSTRUCTION);
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {

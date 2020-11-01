@@ -181,7 +181,7 @@ namespace FileTypes::LUZ {
 		LUZonePathType pathType;
 		std::uint32_t unknownBaseU32;
 		LUZonePathBehaviour pathBehaviour;
-	private:
+	public:
 		std::vector<LUZonePathWaypointBase*> waypoints {};
 	public:
 		LUZonePathBase() {}

@@ -616,9 +616,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Server done loading");
 				PacketFactory::World::TestLoad(rakServer, clientSession);
 
-				if (zoneID == 1303) {
-					WorldServer* Instance = this;
-				}
 
 				break;
 			}
@@ -630,7 +627,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					controllablePhysicsComponent->Deserialize(data);
 				}
 				else {
-					throw std::runtime_error("Invalid objectID; TODO: Kick Player -> Cheating");
+					// throw std::runtime_error("Invalid objectID; TODO: Kick Player -> Cheating");
 				}
 				break;
 			}

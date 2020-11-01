@@ -170,6 +170,28 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 			Reply(Response::NoArguements, sender);
 		}
 	})
+	.Case(u"/getlot", [&]() {
+		if (command.find(u" ") != std::u16string::npos) {
+			if (accountGMLevel >= 5) {
+				DataTypes::LWOOBJID targetOBJID = sender->GetObjectID();
+				auto objectID = std::stoull(StringUtils::to_string(args[1]));
+
+				Entity::GameObject * go = owner->GetZoneInstance()->objectsManager->GetObjectByID(objectID);
+				if (go == nullptr) {
+					Reply(u"Object could not be found", sender);
+				}
+				else {
+					Reply(u"LOT: " + StringUtils::to_u16string(std::to_string(go->GetLOT())), sender);
+				}
+			}
+			else {
+				Reply(Response::RankTooLow, sender);
+			}
+		}
+		else {
+			Reply(Response::NoArguements, sender);
+		}
+	})
 	.Default([&]() {
 		std::stringstream ss;
 		ss << "Unknown Command \"";

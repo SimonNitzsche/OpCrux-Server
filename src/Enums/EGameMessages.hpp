@@ -13,6 +13,7 @@ namespace Enums {
 	*/
 	enum EGameMessageID : unsigned short {
 		SERVER_TELEPORT = 19,
+		SET_PLAYER_CONTROL_SCHEME = 26,
 		SERVER_DROP_CLIENT_LOOT = 30,
 		SERVER_DIE = 37,
 		CLIENT_REQUEST_DIE = 38,

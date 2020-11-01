@@ -161,6 +161,7 @@ public:
 #include "Entity/GameMessages/SetJetPackMode.hpp"
 #include "Entity/GameMessages/SetFlag.hpp"
 #include "Entity/GameMessages/SetGravityScale.hpp"
+#include "Entity/GameMessages/SetPlayerControlScheme.hpp"
 #include "Entity/GameMessages/SetTooltipFlag.hpp"
 #include "Entity/GameMessages/StartArrangingWithItem.hpp"
 #include "Entity/GameMessages/StartBuildingWithItem.hpp"
