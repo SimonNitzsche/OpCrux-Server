@@ -298,7 +298,7 @@ void BridgeMasterServer::ClientDisconnect(SystemAddress systemAddress, WorldServ
 	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-void BridgeMasterServer::ChooseWorldServer() {
+void BridgeMasterServer::ClientRequestMapChange(ClientSession clSession, DataTypes::ZoneInfo zi) {
 	if (!_connected) {
 		throw std::runtime_error("Not connected to Master Server.");
 	}
@@ -306,15 +306,14 @@ void BridgeMasterServer::ChooseWorldServer() {
 		throw std::runtime_error("Not listening.");
 	}
 
-	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_MASTER_AUTHENTIFICATE_PROCESS));
+	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_IM_WORLD_CLIENT_TRANSFER_REQUEST));
+	RakNet::BitStream* packetPTR = packet.get();
 
-	packet->Write(RakNet::RakString(ServerInfo::getComputerName().c_str()));
-	packet->Write(RakNet::RakString(ServerInfo::getOsName().c_str()));
-	packet->Write(ServerInfo::processID);
-	packet->Write(static_cast<uint8_t>(MODE_SERVER));
+	clSession.Serialize(packetPTR);
+	packet->Write(zi);
 
-	RakNet::BitStream * packetPTR = packet.get();
-	Logger::log("Bridge", "Send SayHello()");
+
+	Logger::log("Bridge", "Send Map Change Request");
 	this->rakMasterClient->Send(packetPTR, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 

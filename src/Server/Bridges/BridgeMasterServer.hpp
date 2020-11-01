@@ -13,6 +13,7 @@
 #include <RakNet/RakSleep.h>
 #include "DataTypes/LWOOBJID.hpp"
 #include "Sessions/ClientSession.hpp"
+#include "DataTypes/ZoneInfo.hpp"
 
 class WorldServer;
 
@@ -37,7 +38,7 @@ public:
 	void ClientWorldAuth(SystemAddress systemAddress, ClientSession clSession);
     void ClientCharAuth(ClientSession* clientSession, std::uint16_t sourcePort, DataTypes::LWOOBJID charID);
     void ClientDisconnect(SystemAddress systemAddress, WorldServer* instance);
-	void ChooseWorldServer();
+    void ClientRequestMapChange(ClientSession clSession, DataTypes::ZoneInfo zi);
     void NotifyInstanceLoaded(std::uint16_t zoneID, std::uint16_t instanceID, std::uint32_t cloneID, SystemAddress systemAddress);
 };
 

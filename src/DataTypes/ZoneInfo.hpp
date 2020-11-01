@@ -9,6 +9,7 @@ namespace DataTypes {
 		Contains all Info we need about a Zone.
 	*/
 	struct ZoneInfo {
+	public:
 		uint16_t zoneID;
 		uint16_t zoneInstance;
 		uint32_t zoneClone;

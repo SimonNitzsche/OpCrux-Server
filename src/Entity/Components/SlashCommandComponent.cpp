@@ -1,5 +1,6 @@
 #include "SlashCommandComponent.hpp"
 #include "InventoryComponent.hpp"
+#include "GameCache/ZoneTable.hpp"
 
 void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::ParseChatMessage& msg) {
 	// Check if we are a command, otherwise return
@@ -148,7 +149,18 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 				auto zoneID = StringUtils::StringToInt(StringUtils::to_string(args[1]));
 
 				Reply(u"Requesting map change...", sender);
-				Reply(u"This feature is not ready yet, but it should be finished soon.", sender);
+
+				if (FileUtils::FileExists("res/maps/" + CacheZoneTable::GetZoneName(zoneID).operator std::string())) {
+
+					ClientSession* clSession = sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID());
+					DataTypes::ZoneInfo zi;
+					zi.zoneID = zoneID;
+
+					masterServerBridge->ClientRequestMapChange(*clSession, zi);
+				}
+				else {
+					Reply(u"Zone does not exist.", sender);
+				}
 			}
 			else {
 				Reply(Response::RankTooLow, sender);

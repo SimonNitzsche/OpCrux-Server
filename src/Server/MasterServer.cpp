@@ -339,6 +339,43 @@ void MasterServer::Listen() {
 						}
 
 					} break;
+					
+					case EMasterPacketID::MSG_IM_WORLD_CLIENT_TRANSFER_REQUEST: {
+						MachineProcess* mp = GetMachineProcess(packet);
+
+						ClientSession clSession;
+						clSession.Deserialize(data);
+						DataTypes::ZoneInfo zoneInfo;
+						data->Read(zoneInfo);
+
+						ClientSessionMR* mrClientSession = GetClientByObjectID(clSession.actorID);
+
+						if (mrClientSession == nullptr) {
+							Logger::log("MASTER", "Couldn't find player with accountID " + std::to_string(std::uint64_t(clSession.accountID)), LogType::ERR);
+							break;
+						}
+
+						SystemAddress charIp = mrClientSession->systemAddress;
+
+						std::uint16_t nextZoneID = zoneInfo.zoneID;
+						std::uint16_t nextCloneID = zoneInfo.zoneClone;
+						bool ignoreSoftCap = false;
+
+						if (nextZoneID == 0) nextZoneID = 1000;
+
+						auto remoteNextInstance = SelectInstanceToJoin(nextZoneID, nextCloneID, ignoreSoftCap);
+
+						if (remoteNextInstance != nullptr) {
+							MovePlayerSessionToNewInstance(mrClientSession, remoteNextInstance);
+						}
+						else {
+							mrClientSession->sessionState = ClientSessionMRState::IN_TRANSFER_QUEUE;
+							mrClientSession->SetVar(u"targetZone", nextZoneID);
+							mrClientSession->SetVar(u"targetClone", nextCloneID);
+							RequestNewZoneInstance(nextZoneID, nextCloneID);
+						}
+					} break;
+
 					}
 				} break;
 
