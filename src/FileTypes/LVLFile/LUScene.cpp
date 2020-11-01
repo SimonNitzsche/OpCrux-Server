@@ -24,7 +24,8 @@ LUScene::LUScene(FileTypes::LUZ::LUZone * zone, std::string file) {
 				++dOff;
 
 				if (lvlVersion >= 37) {
-					std::uint32_t lvlRevision = *reinterpret_cast<std::uint32_t*>(data + dOff);
+					std::uint32_t * lvlRevision = reinterpret_cast<std::uint32_t*>(data + dOff);
+					infoChunk.revision = lvlRevision;
 					dOff += 4;
 				}
 
@@ -32,14 +33,15 @@ LUScene::LUScene(FileTypes::LUZ::LUZone * zone, std::string file) {
 					dOff += 4;
 				}
 
-				dOff += 3 * 4 * 3;
+				dOff += 3 * 4 * 4;
 
 				if (lvlVersion >= 31) {
 					if (lvlVersion >= 39) {
 						dOff += 4 * 12;
 						if (lvlVersion >= 40) {
 							std::uint32_t count = *reinterpret_cast<std::uint32_t*>(data + dOff);
-							dOff += 4 + 3 * 4 * count;
+							dOff += 4;
+							dOff += 3 * 4 * count;
 						}
 					}
 
@@ -54,7 +56,7 @@ LUScene::LUScene(FileTypes::LUZ::LUZone * zone, std::string file) {
 					dOff += 12;
 				}
 
-				if (lvlVersion >= 43) {
+				if (lvlVersion < 42) {
 					dOff += 4 * 3;
 					if (lvlVersion >= 33) {
 						dOff += 4 * 4;
@@ -65,6 +67,8 @@ LUScene::LUScene(FileTypes::LUZ::LUZone * zone, std::string file) {
 					std::uint32_t count = *reinterpret_cast<std::uint32_t*>(data + dOff);
 					dOff += 4 + count;
 				}
+
+				dOff += 4;
 
 				std::uint32_t count = *reinterpret_cast<std::uint32_t*>(data + dOff);
 				dOff += 4 + count * 4 * 3;
