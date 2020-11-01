@@ -1,8 +1,6 @@
 #ifndef __ENTITY__NATIVESCRIPTS__AI__AG__L_AG_IMAG_SMASHABLE_HPP__
 #define __ENTITY__NATIVESCRIPTS__AI__AG__L_AG_IMAG_SMASHABLE_HPP__
 
-//#include "random/include/effolkronium/random.hpp"
-//using Random = effolkronium::random_static;
 
 #include <string>
 #include "Entity/GameObject.hpp"
@@ -55,7 +53,7 @@ public:
 
 				if (!spawnedObject->isSerializable) {
 					// Spawn Error Object
-					delete[] spawnedObject;
+					delete spawnedObject;
 					spawnedObject = new Entity::GameObject(Instance, 1845);
 
 				}

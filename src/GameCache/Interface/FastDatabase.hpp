@@ -193,6 +193,7 @@ namespace GameCache::Interface::FDB {
 		}
 
 		std::list<RowInfo> flatIt() {
+			if (this->memlocation == nullptr) return {};
 			std::list<RowInfo> rList = { *this };
 			RowInfo tmpRI = *this;
 			while (tmpRI.isLinkedRowInfoValid()) {

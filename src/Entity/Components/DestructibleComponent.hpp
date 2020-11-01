@@ -204,6 +204,9 @@ public:
 	}
 
 	void PerformDamageRequest(Entity::GameObject* caster, std::uint32_t damage) {
+		// We are not smashable
+		if (!statsComponent->attributes.isSmashable) return;
+
 		// Cancle if no damage
 		if (damage == 0) { Logger::log("WRLD", "Object received 0 damage", LogType::WARN); return; }
 

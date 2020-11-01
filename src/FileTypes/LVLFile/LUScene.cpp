@@ -76,10 +76,7 @@ LUScene::LUScene(FileTypes::LUZ::LUZone * zone, std::string file) {
 
 				this->objectsChunk = LVLObjectsChunk(&lvlVersion32, data + dOff);
 
-
-				// throw std::runtime_error("TODO: Implement old level format!");
-
-				//// Since it's not chunked no more chunks are read.
+				// Since it's not chunked no more chunks are read.
 				return;
 			}
 			// Otherwise
