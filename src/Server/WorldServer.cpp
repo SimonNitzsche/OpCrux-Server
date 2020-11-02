@@ -282,7 +282,18 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 		/*if (debugRenderer != nullptr) {
 			debugRenderer->Paint();
 		}*/
-		while (packet = rakServer->Receive()) {
+		while (ServerInfo::bRunning) {
+			try {
+				// RakNet likes to crash in debug mode.
+				// Skip packet if unable tro read
+				packet = rakServer->Receive();
+			}
+			catch (...) {
+				break;
+			}
+
+			if (packet == nullptr) break;
+
 			try {
 				m_lock.lock();
 				handlePacket(rakServer, reinterpret_cast<LUPacket*>(packet));
