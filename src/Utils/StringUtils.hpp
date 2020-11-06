@@ -105,7 +105,7 @@ namespace StringUtils {
 		bitstream->Write(std::string(count, 0x00).c_str(), count);
 	}
 
-	template<class T>
+	template<class T = std::uint32_t>
 	inline void writeStringToBitStream(RakNet::BitStream * bitstream, std::string text) {
 		std::uint32_t size = text.size();
 		bitstream->Write<T>(size);

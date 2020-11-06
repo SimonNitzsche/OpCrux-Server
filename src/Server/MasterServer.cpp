@@ -145,10 +145,10 @@ void MasterServer::Listen() {
 						bool isWorldRequest;
 						ClientSession clSessRemLocal;
 						ClientSessionMR sessionMR;
-						RakNet::RakString sysAddress;
+						std::string sysAddress;
 						data->Read(isWorldRequest);
-						data->Read(sysAddress);
-						sessionMR.systemAddress.SetBinaryAddress(sysAddress);
+						sysAddress = StringUtils::readStringFromBitStream<std::uint32_t>(data);
+						sessionMR.systemAddress.SetBinaryAddress(sysAddress.c_str());
 						clSessRemLocal.Deserialize(data);
 						sessionMR.process = mp;
 						sessionMR.accountID = clSessRemLocal.accountID;
