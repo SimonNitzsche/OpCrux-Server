@@ -64,7 +64,7 @@ public:
 
 			if (statsComponent == nullptr) {
 				Logger::log("WRLD", "Something went wrong QuickbuildComponent::OnEnable()");
-				statsComponent = new StatsComponent(0);
+				statsComponent = new StatsComponent(-1);
 			}
 		}
 	}
@@ -85,12 +85,13 @@ public:
 				{GM::TerminateInteraction msg; msg.ObjIDTerminator = buildingPlayer->GetObjectID(); msg.type = Enums::ETerminateType::FROM_INTERACTION; GameMessages::Broadcast(this->owner, msg); }
 
 
-				activator->Remove();
+				activator->InstantiateRemoval();
 				activator = nullptr;
-				owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
 
 				this->_isDirtyFlag = true;
 				this->owner->SetDirty();
+
+				owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
 
 				buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
 			}
@@ -126,6 +127,14 @@ public:
 
 				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
 			}
+		}
+		else if (qbState == 4) {
+			// Die
+			{GM::Die nmsg; nmsg.bSpawnLoot = true; nmsg.killType = EKillType::VIOLENT; GameMessages::Broadcast(owner, nmsg); }
+			// StopFX Effect
+			{GM::StopFXEffect nmsg; nmsg.name = "BrickFadeUpVisCompleteEffect"; GameMessages::Broadcast(owner, nmsg); }
+			// Remove
+			owner->InstantiateRemoval();
 		}
 	}
 
@@ -174,8 +183,9 @@ public:
 		activator->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + ScriptedActivityComponent::owner->GetZoneInstance()->spawnedObjectIDCounter++));
 		ScriptedActivityComponent::owner->AddChild(activator);
 		//activator->isSerializable = true;
-		activator->GetComponent<PhantomPhysicsComponent>()->SetPosition(rebuild_activators);
+		activator->SetPosition(rebuild_activators);
 		ScriptedActivityComponent::owner->GetZoneInstance()->objectsManager->RegisterObject(activator);
+		ScriptedActivityComponent::owner->GetZoneInstance()->objectsManager->Construct(activator);
 	}
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
@@ -205,7 +215,7 @@ public:
 				factory->Write(rebuild_activators.x);
 				factory->Write(rebuild_activators.y);
 				factory->Write(rebuild_activators.z);
-				factory->Write(false);
+				factory->Write(true);
 			}
 		}
 

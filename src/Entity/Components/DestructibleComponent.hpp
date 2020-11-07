@@ -306,7 +306,7 @@ public:
 			}
 
 			// Remove
-			owner->Remove();
+			owner->InstantiateRemoval();
 
 			// Cancle anything else
 			return;

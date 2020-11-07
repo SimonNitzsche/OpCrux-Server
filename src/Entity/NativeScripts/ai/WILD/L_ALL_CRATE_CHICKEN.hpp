@@ -18,7 +18,7 @@ public:
 				GM::Die nmsg; nmsg.killerID = self->GetObjectID(); nmsg.killType = Enums::EKillType::SILENT;
 				GameMessages::Broadcast(self, nmsg);
 				self->OnDie(self, &nmsg);
-				self->Remove();
+				self->InstantiateRemoval();
 			}
 		}
 	}

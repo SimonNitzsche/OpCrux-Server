@@ -293,8 +293,8 @@ public:
 	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded& msg) {
 		GM::PlayerReady nmsg;
 		auto Instance = this->owner->GetZoneInstance();
-		//GameMessages::Send(Instance, this->clientAddress, Instance->zoneControlObject->GetObjectID(), nmsg);
-		//GameMessages::Send(Instance, this->clientAddress, this->owner->GetObjectID(), nmsg);
+		GameMessages::Send(Instance, this->clientAddress, Instance->zoneControlObject->GetObjectID(), nmsg);
+		GameMessages::Send(Instance, this->clientAddress, this->owner->GetObjectID(), nmsg);
 	}
 
 

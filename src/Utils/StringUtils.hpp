@@ -204,6 +204,20 @@ namespace StringUtils {
 		}
 		return output;
 	}
+	inline std::list<std::string> StringVectorToStringList(std::vector<std::string> input) {
+		std::list<std::string> output = {};
+		for (int i = 0; i < input.size(); ++i) {
+			output.push_back(input.at(i));
+		}
+		return output;
+	}
+	inline std::list<std::u16string> WStringVectorToWStringList(std::vector<std::u16string> input) {
+		std::list<std::u16string> output = {};
+		for (int i = 0; i < input.size(); ++i) {
+			output.push_back(input.at(i));
+		}
+		return output;
+	}
 
 	inline std::u16string to_u16string(std::string input) {
 		return std::u16string(input.begin(), input.end());

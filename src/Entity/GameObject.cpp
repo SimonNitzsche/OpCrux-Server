@@ -176,7 +176,7 @@ void Entity::GameObject::Update() {
 		oPair.second->Update();
 
 	if (maxAge != 0LL && std::int64_t(::time(0)) >= std::int64_t(maxAge)) {
-		this->Remove();
+		this->InstantiateRemoval();
 	}
 }
 
@@ -406,8 +406,8 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 		factory->Write(children.size() != 0);
 		if (children.size() != 0) {
 			factory->Write<std::uint16_t>(children.size());
-			for (int i = 0; i < children.size(); ++i) {
-				factory->Write<std::uint64_t>(children.at(i)->objectID);
+			for (auto it = children.begin(); it != children.end(); ++it) {
+				factory->Write<std::uint64_t>((*it)->objectID);
 			}
 		}
 	}
@@ -451,7 +451,13 @@ void Entity::GameObject::AddChild(GameObject * child) {
 }
 
 void Entity::GameObject::RemoveChild(Entity::GameObject* child) {
-	children.erase(std::remove(children.begin(), children.end(), child));
+	auto it = children.end();
+	if(children.size() != 0)
+		it = std::find(children.begin(), children.end(), child);
+	if (it != children.end())
+		children.erase(it);
+	else
+		Logger::log("WRLD", "Couldn't remove child from object.", LogType::ERR);
 	child->SetParent(nullptr);
 	baseDataDirty = true;
 	objectDirty = true;
@@ -476,10 +482,11 @@ bool Entity::GameObject::IsWithinGroup(std::u16string groupName) {
 	return false;
 }
 
-void Entity::GameObject::Remove() {
-	// Destruct and remove from list
-	if (this == nullptr) return;
+void Entity::GameObject::InstantiateRemoval() {
 	this->GetZoneInstance()->objectsManager->Destruct(this);
+}
+
+void Entity::GameObject::Remove() {
 
 	// Notify spawner of deletion
 	if (spawner != nullptr) {
@@ -493,7 +500,7 @@ void Entity::GameObject::Remove() {
 
 	// Delete children
 	for (Entity::GameObject* child : children) {
-		child->Remove();
+		child->InstantiateRemoval();
 	}
 
 	// Remove me
@@ -507,7 +514,7 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	// TODO: Populate base data
 	std::u16string groupWstr;
 	LDF_GET_VAL_FROM_COLLECTION(groupWstr, collection, u"groupID", u"");
-	this->groups = StringUtils::splitWString(groupWstr, u';');
+	this->groups = StringUtils::WStringVectorToWStringList(StringUtils::splitWString(groupWstr, u';'));
 
 	if (this->LOT != 176) {
 		// Add Componets custom

@@ -67,10 +67,10 @@ namespace Entity {
 			float scale = 1.0f;
 
 			// The Children of this object.
-			std::vector<GameObject *> children;
+			std::list<GameObject*> children = {};
 
 			// Groups the object is in.
-			std::vector<std::u16string> groups;
+			std::list<std::u16string> groups = {};
 
 			// The Components assigned to this object.
 			std::unordered_map<std::uint32_t, IEntityComponent*> components;
@@ -275,7 +275,15 @@ namespace Entity {
 			*/
 			bool IsWithinGroup(std::u16string groupName);
 
+            /*
+				Use this one to remove an object.
+				Everything else will be taken care of.
+            */
+            void InstantiateRemoval();
+
 			/*
+				INTERNAL USE ONLY
+				DO NOT CALL THIS ONE!!!!!
 				Completely remove object
 			*/
 			void Remove();

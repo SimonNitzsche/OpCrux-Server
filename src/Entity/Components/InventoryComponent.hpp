@@ -159,7 +159,7 @@ public:
 		for (auto it = inventory.begin(); it != inventory.end(); ++it) {
 			for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
 				Entity::GameObject* itmObj = objMan->GetObjectByID(it2->second.objectID);
-				itmObj->Remove();
+				itmObj->InstantiateRemoval();
 			}
 		}
 	}

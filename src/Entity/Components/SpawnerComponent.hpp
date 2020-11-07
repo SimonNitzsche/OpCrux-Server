@@ -131,7 +131,8 @@ public:
 		LDF_GET_VAL_FROM_COLLECTION(noAutoSpawn, collection, u"no_auto_spawn", false);
 		LDF_GET_VAL_FROM_COLLECTION(noTimedSpawn, collection, u"no_timed_spawn", true);
 		LDF_GET_VAL_FROM_COLLECTION(respawnTime, collection, u"respawn", CacheWorldConfig::GetDefaultRespawnTime());
-		if (respawnTime == 0.0f) respawnTime = CacheWorldConfig::GetDefaultRespawnTime();
+		// Commented out for QBs
+		// if (respawnTime == 0.0f &&  ) respawnTime = CacheWorldConfig::GetDefaultRespawnTime();
 		LDF_GET_VAL_FROM_COLLECTION(respawnVolume, collection, u"respawnVol", false);
 		LDF_GET_VAL_FROM_COLLECTION(respawnVolumeName, collection, u"respawnVolName", u"");
 
@@ -183,7 +184,7 @@ public:
 		//spawnedObject->SetParent(this->owner);
 
 		// Set Spawner
-		spawnedObject->SetSpawner(this->owner, -1);
+		spawnedObject->SetSpawner(this->owner, 0);
 
 		// Set Position/Rotation
 		spawnedObject->SetPosition(originPos);

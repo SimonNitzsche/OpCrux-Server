@@ -102,17 +102,19 @@ void ObjectsManager::Destruct(Entity::GameObject * object) {
 }
 
 void ObjectsManager::OnUpdate() {
+	// Check for garbage
+	while (object_garbage.size() != 0) {
+		auto it = object_garbage.begin();
+		object_list.at(*it)->Remove();
+		object_list.erase(*it);
+		object_garbage.erase(it);
+	}
+
 	// Call update
 	for (auto it = object_list.begin(); it != object_list.end(); ++it) {
 		if (it->second->GetObjectID() == it->first && it->second != nullptr)
 			it->second->Update();
 	}
-
-	// Check for garbage
-	for (auto it = object_garbage.begin(); it != object_garbage.end(); ++it) {
-		object_list.erase(*it);
-	}
-	object_garbage.clear();
 
 	// Check dirty
 	for (auto oPair : object_list)
