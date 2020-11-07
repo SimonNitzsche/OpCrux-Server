@@ -248,7 +248,7 @@ void BridgeMasterServer::ClientWorldAuth(SystemAddress systemAddress, ClientSess
 
 	packet->Write(true); // Is World?
 
-	packet->Write(RakNet::RakString(systemAddress.ToString(true)));
+	StringUtils::writeStringToBitStream(packetPTR, std::string(systemAddress.ToString(true)));
 	clSession.Serialize(packetPTR);
 	
 	Logger::log("Bridge", "Send Client logon");

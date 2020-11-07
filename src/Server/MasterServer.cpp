@@ -261,8 +261,10 @@ void MasterServer::Listen() {
 
 								// Make sure currentInstance is the same instance as the one the user is leaving from
 								// Otherwise the session could be gone before being on the new instance while transfer
-								if ((*it)->currentInstance->port != serverPortFromDisconnect) break;
-								if ((*it)->sessionState == ClientSessionMRState::IN_TRANSFER) break;
+								if ((*it)->currentInstance != nullptr) {
+									if ((*it)->currentInstance->port != serverPortFromDisconnect) break;
+									if ((*it)->sessionState == ClientSessionMRState::IN_TRANSFER) break;
+								}
 
 								Logger::log("MASTER", "User ended playsession for account " + std::to_string((*it)->accountID));
 								delete (*it);
