@@ -36,7 +36,7 @@ private:
 		6 = Incomplete
 	*/
 	std::uint32_t qbState = 0;
-	bool qbSuccess = false;
+	bool qbResetEffect = false;
 	bool qbEnabled = true;
 	std::float_t timeSinceStartOfBuild = 0.0f;
 	std::float_t timeOfPausedRebuilds = 0.0f;
@@ -98,17 +98,31 @@ public:
 		// When completed
 		else if (qbState == 2) {
 			auto doResetTime = buildCompleteTime + std::uint32_t(resetTime);
+
+			//Reset indicated
+			if (qbResetEffect)
+				doResetTime += std::uint32_t(timeSmash);
+
 			auto now = ::time(0);
 
 			// indicate resetting
-			if (now > doResetTime) {
-				GM::RebuildNotifyState msg; 
-				msg.player = buildingPlayer->GetObjectID(); 
+			if (!qbResetEffect && now > doResetTime) {
+				qbResetEffect = true;
+
+				this->_isDirtyFlag = true;
+				this->owner->SetDirty();
+			}
+
+			// reset
+			else if (qbResetEffect && now > doResetTime) {
+				GM::RebuildNotifyState msg;
+				msg.player = buildingPlayer->GetObjectID();
 				msg.iPrevState = qbState;
 				msg.iState = (qbState = 4);
-				GameMessages::Broadcast(this->owner, msg); 
-				//this->_isDirtyFlag = true;
-				//this->owner->SetDirty();
+				GameMessages::Broadcast(this->owner, msg);
+
+				this->_isDirtyFlag = true;
+				this->owner->SetDirty();
 
 				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
 			}
@@ -148,8 +162,6 @@ public:
 		LDF_GET_VAL_FROM_COLLECTION(resetTime, collection, u"rebuild_reset_time", CacheRebuildComponent::GetResetTime(cacheRow));
 		LDF_GET_VAL_FROM_COLLECTION(timeSmash, collection, u"tmeSmsh", CacheRebuildComponent::GetTimeBeforeSmash(cacheRow));
 
-		resetTime = 5.f;
-
 		std::u16string wRebuildPos;
 		LDF_GET_VAL_FROM_COLLECTION(wRebuildPos, collection, u"rebuild_activators", u"NULL");
 		std::vector<std::u16string> vecPos = StringUtils::splitWString(wRebuildPos, 0x001f);
@@ -183,7 +195,7 @@ public:
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
 			factory->Write<std::uint32_t>(qbState);
-			factory->Write(qbSuccess);
+			factory->Write(qbResetEffect);
 			factory->Write(qbEnabled);
 			timeSinceStartOfBuild = ::time(0) - buildStartTime;
 			factory->Write<std::float_t>(timeSinceStartOfBuild);
