@@ -7,7 +7,7 @@
 struct BehaviorTacArc : AbstractAggregateBehavior {
 
 	bool hitSomething = false;
-	bool unknownEnvironmentBit = false;
+	bool bBlocked = false;
 	std::vector<DataTypes::LWOOBJID> targets = {};
 
 	void UnCast(SkillComponent* comp, std::int32_t behaviorID, RakNet::BitStream* bs) {
@@ -20,12 +20,20 @@ struct BehaviorTacArc : AbstractAggregateBehavior {
 		}
 		else {
 			bs->Read(hitSomething);
-			if (hitSomething) {
-				bool checkEnv = (1.0f == CacheBehaviorParameter::GetParameterValue(behaviorID, "check_env"));
-				if (checkEnv) {
-					bs->Read(unknownEnvironmentBit);
-				}
 
+			bool checkEnv = (1.0f == CacheBehaviorParameter::GetParameterValue(behaviorID, "check_env"));
+			if (checkEnv) {
+				bs->Read(bBlocked);
+
+				if (bBlocked) {
+					std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "blocked_action");
+					StartUnCast(comp, nextID, bs);
+					return;
+				}
+			}
+
+			if (hitSomething) {
+				
 				targets.clear();
 				std::uint32_t tmpNumberOfTargets; bs->Read(tmpNumberOfTargets);
 				targets.reserve(tmpNumberOfTargets);
@@ -41,27 +49,11 @@ struct BehaviorTacArc : AbstractAggregateBehavior {
 				}
 			}
 			else {
-				std::int32_t blockedAction = CacheBehaviorParameter::GetParameterValue(behaviorID, "blocked_action");
-				bool bBlockedAction = (0.0f <= blockedAction);
-				if (bBlockedAction) {
-					bool blocked; bs->Read(blocked);
-					if (blocked) {
-						std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "blocked_action");
-						StartUnCast(comp, nextID, bs);
-					}
-					else {
-						std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "miss action");
-						StartUnCast(comp, nextID, bs);
-					}
-				}
-				else {
-					std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "miss action");
-					StartUnCast(comp, nextID, bs);
-				}
+				std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "miss action");
+				StartUnCast(comp, nextID, bs);
 			}
-		}
-
 		
+		}
 	}
 };
 #endif

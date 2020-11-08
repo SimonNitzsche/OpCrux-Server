@@ -14,9 +14,19 @@ using namespace DataTypes;
 */
 
 class StatsComponent : public IEntityComponent {
-private:
-	bool _useCustomParameters = false;
-	std::uint32_t parameters[9] {0,0,0,0,0,0,0,0,0};
+public:
+	bool _buffsDirty = true;
+	struct StatBuffs {
+		std::uint32_t buff_0=100;
+		std::uint32_t buff_1=100;
+		std::uint32_t buff_2=100;
+		std::uint32_t buff_3=100;
+		std::uint32_t buff_4=100;
+		std::uint32_t buff_5=100;
+		std::uint32_t buff_6=100;
+		std::uint32_t buff_7=100;
+		std::uint32_t buff_8=100;
+	} buffs;
 
 public:
 	struct Attributes {
@@ -56,18 +66,18 @@ public:
 		
 		// Parameters
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			_useCustomParameters = true;
-			factory->Write(_useCustomParameters);
-			if (_useCustomParameters) {
-				factory->Write<std::uint32_t>(parameters[0]);
-				factory->Write<std::uint32_t>(parameters[1]);
-				factory->Write<std::uint32_t>(parameters[2]);
-				factory->Write<std::uint32_t>(parameters[3]);
-				factory->Write<std::uint32_t>(parameters[4]);
-				factory->Write<std::uint32_t>(parameters[5]);
-				factory->Write<std::uint32_t>(parameters[6]);
-				factory->Write<std::uint32_t>(parameters[7]);
-				factory->Write<std::uint32_t>(parameters[8]);
+			_buffsDirty = true;
+			factory->Write(_buffsDirty);
+			if (_buffsDirty) {
+				factory->Write<std::uint32_t>(buffs.buff_0);
+				factory->Write<std::uint32_t>(buffs.buff_1);
+				factory->Write<std::uint32_t>(buffs.buff_2);
+				factory->Write<std::uint32_t>(buffs.buff_3);
+				factory->Write<std::uint32_t>(buffs.buff_4);
+				factory->Write<std::uint32_t>(buffs.buff_5);
+				factory->Write<std::uint32_t>(buffs.buff_6);
+				factory->Write<std::uint32_t>(buffs.buff_7);
+				factory->Write<std::uint32_t>(buffs.buff_8);
 			}
 		}
 

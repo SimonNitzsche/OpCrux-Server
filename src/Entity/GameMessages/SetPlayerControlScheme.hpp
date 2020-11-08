@@ -1,9 +1,9 @@
-#ifndef __ENTITY__GM__SetJetPackMode_HPP__
-#define __ENTITY__GM__SetJetPackMode_HPP__
+#ifndef __ENTITY__GM__SetPlayerControlScheme_HPP__
+#define __ENTITY__GM__SetPlayerControlScheme_HPP__
 #include "Entity/GameMessages.hpp"
 
 namespace GM {
-	struct SetJetPackMode : GMBase {
+	struct SetPlayerControlScheme : GMBase {
 
 		inline constexpr static Enums::EGameMessageID GetID() {
 			return Enums::EGameMessageID::SET_PLAYER_CONTROL_SCHEME;
@@ -13,7 +13,7 @@ namespace GM {
 		bool bSwitchCam = true;
 		std::int32_t iScheme = 0;
 
-		SetJetPackMode() : GMBase() {}
+		SetPlayerControlScheme() : GMBase() {}
 
 		void Serialize(RakNet::BitStream* bs) {
 			GM_VAR_SERIALIZE(bs, bDelayCamSwtichIfInCinematic);

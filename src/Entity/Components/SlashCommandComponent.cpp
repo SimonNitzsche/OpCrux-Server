@@ -192,6 +192,41 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 			Reply(Response::NoArguements, sender);
 		}
 	})
+	.Case(u"/testbuff", [&]() {
+		if (command.find(u" ") != std::u16string::npos) {
+			if (accountGMLevel >= 5) {
+				DataTypes::LWOOBJID targetOBJID = sender->GetObjectID();
+				auto buffIndex = std::stoi(StringUtils::to_string(args[1]));
+				auto buffValue = std::stoi(StringUtils::to_string(args[2]));
+
+				Entity::GameObject* go = owner->GetZoneInstance()->objectsManager->GetObjectByID(targetOBJID);
+				
+				StatsComponent* destComp = go->GetComponent<StatsComponent>();
+				
+				switch (buffIndex) {
+				case 0: destComp->buffs.buff_0 = buffValue; break;
+				case 1: destComp->buffs.buff_1 = buffValue; break;
+				case 2: destComp->buffs.buff_2 = buffValue; break;
+				case 3: destComp->buffs.buff_3 = buffValue; break;
+				case 4: destComp->buffs.buff_4 = buffValue; break;
+				case 5: destComp->buffs.buff_5 = buffValue; break;
+				case 6: destComp->buffs.buff_6 = buffValue; break;
+				case 7: destComp->buffs.buff_7 = buffValue; break;
+				case 8: destComp->buffs.buff_8 = buffValue; break;
+				}
+
+				destComp->_buffsDirty = true;
+				go->SetDirty();
+
+			}
+			else {
+				Reply(Response::RankTooLow, sender);
+			}
+		}
+		else {
+			Reply(Response::NoArguements, sender);
+		}
+	})
 	.Default([&]() {
 		std::stringstream ss;
 		ss << "Unknown Command \"";

@@ -11,7 +11,7 @@ public:
 	bool isDirty = false;
 	DataTypes::LWOOBJID subkey;
 	bool useOptionalParts = false;
-	std::u16string assembly;
+	std::u16string assemblyPartLOTs;
 
 	static constexpr int GetTypeID() { return 61; }
 
@@ -24,7 +24,7 @@ public:
 					factory->Write(subkey);
 				}
 				factory->Write(useOptionalParts);
-				StringUtils::writeWStringToBitStream<std::uint16_t>(factory, assembly);
+				StringUtils::writeWStringToBitStream<std::uint16_t>(factory, assemblyPartLOTs);
 			}
 		}
 	}
@@ -36,7 +36,7 @@ public:
 	}
 
 	void SetAssembly(std::u16string _assembly) {
-		assembly = _assembly;
+		assemblyPartLOTs = _assembly;
 		isDirty = true;
 		owner->SetDirty();
 	}
