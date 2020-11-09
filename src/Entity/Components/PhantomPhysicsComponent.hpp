@@ -13,6 +13,8 @@
 #include "bullet3-2.89/src/btBulletCollisionCommon.h"
 #include "bullet3-2.89/src/BulletCollision/CollisionDispatch/btGhostObject.h"
 
+#include "Entity/GameObject.hpp"
+
 using namespace DataTypes;
 
 class PhantomPhysicsComponent : public IEntityComponent {
@@ -91,74 +93,6 @@ public:
 		_isDirtyFlagEffects = true;
 	}
 
-	void PhysicUpdate() {
-		/*
-			Since we don't have propper physic detection yet,
-			we will currently use a sphere with the radius of 1 times scale,
-			since the default collision object is a 2x2x2 box, if a hkx file is missing.
-		*/
-
-		// Get own position
-		Vector3 pos = Vector3::zero();
-		ControllablePhysicsComponent * contPhysComp = owner->GetComponent<ControllablePhysicsComponent>();
-		if (contPhysComp) {
-			pos = contPhysComp->GetPosition();
-		}
-		else {
-			SimplePhysicsComponent * simpPhysComp = owner->GetComponent<SimplePhysicsComponent>();
-			if (simpPhysComp)
-				pos = simpPhysComp->GetPosition();
-			else
-				return;
-		}
-
-		// Cleanup removed objects
-		for (int i = 0; i < enteredObjects.size(); ++i) {
-			if (!enteredObjects.at(i)) {
-				owner->OnOffCollisionPhantom(enteredObjects.at(i));
-				enteredObjects.erase(enteredObjects.begin() + i);
-			}
-		}
-
-		for (auto o : this->owner->GetZoneInstance()->objectsManager->GetObjects()) {
-			// we can assume, the object has a controllable physics object, otherwise it can't move.
-			ControllablePhysicsComponent * objectPhysicsComponent = o->GetComponent<ControllablePhysicsComponent>();
-			if (!objectPhysicsComponent || objectPhysicsComponent == nullptr) continue;
-			Vector3 position = Vector3::zero();
-			position = objectPhysicsComponent->GetPosition();
-
-			float difference = Vector3::Distance(pos, position);
-
-			// Check if exists in list.
-			bool isInside = std::find(enteredObjects.begin(), enteredObjects.end(), o) != enteredObjects.end();
-			if (isInside) {
-				// Object in list, check if left
-
-				// Look for matching radii
-				if (difference > owner->GetScale()*2) {
-					// Message object left.
-					owner->OnOffCollisionPhantom(o);
-					auto it2 = std::find(enteredObjects.begin(), enteredObjects.end(), o);
-					if (it2 != enteredObjects.end())
-						enteredObjects.erase(it2);
-				}
-			}
-			else {
-				// Object not in list, check if entered
-
-				// Look for matching radii
-				if (difference <= owner->GetScale()*2) {
-					// Message object joined.
-					auto it2 = std::find(enteredObjects.begin(), enteredObjects.end(), o);
-					if (it2 != enteredObjects.end()) continue;
-					enteredObjects.push_back(o);
-					// OnCollisionPhantom
-					owner->OnCollisionPhantom(o);
-				}
-			}
-		}
-	}
-
 	void OnCollisionPhantom(Entity::GameObject * object) {
 
 	}
@@ -189,6 +123,8 @@ public:
 	DataTypes::Quaternion GetRotation() {
 		return rotation;
 	}
+
+	void PhysicUpdate();
 
 };
 

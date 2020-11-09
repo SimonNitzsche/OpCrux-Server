@@ -22,6 +22,7 @@ public:
 	void UnRegisterObject(Entity::GameObject * object);
 	Entity::GameObject * GetObjectByID(DataTypes::LWOOBJID objID);
 	std::vector<Entity::GameObject*> GetObjects();
+    std::vector<Entity::GameObject*> GetControllableObjects();
 	std::vector<Entity::GameObject*> GetObjectsInGroup(std::u16string groupName);
 	void Construct(DataTypes::LWOOBJID objID, SystemAddress addr = UNASSIGNED_SYSTEM_ADDRESS);
 	void Construct(Entity::GameObject * object, SystemAddress addr = UNASSIGNED_SYSTEM_ADDRESS);

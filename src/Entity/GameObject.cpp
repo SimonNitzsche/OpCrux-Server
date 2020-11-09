@@ -191,9 +191,10 @@ void Entity::GameObject::Tick() {
 
 IEntityComponent* Entity::GameObject::GetComponentByType(int id) {
 	if (id == -1) throw new std::runtime_error("Invalid Component Type (-1)!");
-	auto it = components.find(id);
-	if(it != components.end())
-		return it->second;
+	auto cend = components.end();
+	for(auto it = components.begin(); it != cend; ++it)
+		if(it->first == id)
+			return it->second;
 	return nullptr;
 }
 
@@ -722,7 +723,8 @@ void Entity::GameObject::Possess(Entity::GameObject* other) {
 }
 
 void Entity::GameObject::OnCollisionPhantom(Entity::GameObject * other) {
-	Logger::log("WRLD", "OnCollisionPhantom");
+	if(other->GetLOT() == 1)
+		Logger::log("WRLD", "OnCollisionPhantom");
 	for (auto component : this->components) {
 		if (component.second != nullptr) {
 			component.second->OnCollisionPhantom(other);
@@ -731,7 +733,8 @@ void Entity::GameObject::OnCollisionPhantom(Entity::GameObject * other) {
 }
 
 void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
-	Logger::log("WRLD", "OnOffCollisionPhantom");
+	if(other->GetLOT() == 1)
+		Logger::log("WRLD", "OnOffCollisionPhantom");
 	for (auto component : this->components) {
 		if (component.second != nullptr) {
 			component.second->OnOffCollisionPhantom(other);

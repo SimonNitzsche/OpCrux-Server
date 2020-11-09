@@ -195,6 +195,10 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 					spawnerComp->originPos = objT.spawnPos->pos;
 					spawnerComp->originRot = objT.spawnPos->rot;
 				}
+				else {
+					go->SetPosition(objT.spawnPos->pos);
+					go->SetRotation(objT.spawnPos->rot);
+				}
 				go->isSerializable = false;
 
 				go->SetScale(*objT.scale);

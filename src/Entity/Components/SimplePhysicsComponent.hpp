@@ -6,6 +6,8 @@
 #include "DataTypes/Vector3.hpp"
 #include "DataTypes/Quaternion.hpp"
 
+#include "Entity/GameObject.hpp"
+
 using namespace DataTypes;
 
 class SimplePhysicsComponent : public IEntityComponent {

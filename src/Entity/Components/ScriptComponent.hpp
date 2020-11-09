@@ -45,6 +45,7 @@ private:
 	std::shared_ptr<NativeScript> instance;
 
 	// Include native scripts
+#include "Entity/NativeScripts/02_server/Map/General/L_TOUCH_MISSION_UPDATE_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp"
@@ -58,6 +59,7 @@ private:
 #include "Entity/NativeScripts/ScriptComponent_1021_script_name__removed.hpp"
 	const std::unordered_map<std::string, script_factory> factories{
 		{"TestScript", []() -> script_ptr {return std::make_shared<TestScript>(); }},
+		{"scripts\\02_server\\Map\\General\\L_TOUCH_MISSION_UPDATE_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__02SERVER__MAP__GENERAL__L_TOUCH_MISSION_UPDATE_SERVER>(); }},
 		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }},
 		{"scripts\\ai\\AG\\L_AG_IMAG_SMASHABLE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_IMAG_SMASHABLE>(); }},
 		{"scripts\\ai\\AG\\L_AG_SHIP_PLAYER_SHOCK_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER>(); }},
@@ -77,6 +79,12 @@ private:
 public:
 
 	ScriptComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
+
+	inline bool bHasScriptLoaded() {
+		if (instance)
+			return true;
+		return false;
+	}
 
 	static constexpr int GetTypeID() { return 5; }
 
@@ -141,6 +149,11 @@ public:
 	void OnDie(Entity::GameObject* sender, GM::Die* msg) {
 		if (instance)
 			instance->onDie(owner, *msg);
+	}
+
+	void OnCollisionPhantom(Entity::GameObject* sender) {
+		if (instance)
+			instance->onCollisionPhantom(owner, sender);
 	}
 
 	std::vector<Entity::GameObject *> objectsInProximity = {};

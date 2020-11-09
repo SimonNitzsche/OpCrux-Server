@@ -11,6 +11,8 @@
 //#include "FileTypes/HKXFile/Classes/hkRootLevelContainer.hpp"
 
 #include "GameCache/PhysicsComponent.hpp"
+#include "Entity/GameObject.hpp"
+#include "Server/WorldServer.hpp"
 
 using namespace DataTypes;
 

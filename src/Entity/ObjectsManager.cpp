@@ -1,6 +1,7 @@
 #include "Entity/ObjectsManager.hpp"
 
 #include "bullet3-2.89/src/btBulletDynamicsCommon.h"
+#include <Entity\Components\ControllablePhysicsComponent.hpp>
 
 ObjectsManager::ObjectsManager()
 {
@@ -43,6 +44,14 @@ std::vector<Entity::GameObject*> ObjectsManager::GetObjects() {
 	for (auto oPair : object_list)
 		if (object_garbage.size() == 0 || std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end())
 			out.push_back(oPair.second);
+	return out;
+}
+
+std::vector<Entity::GameObject*> ObjectsManager::GetControllableObjects() {
+	std::vector<Entity::GameObject*> out;
+	for (auto oPair : object_list)
+			if(oPair.second->GetComponent<ControllablePhysicsComponent>() != nullptr)
+				out.push_back(oPair.second);
 	return out;
 }
 
