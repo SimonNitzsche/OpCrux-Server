@@ -140,69 +140,68 @@ public:
 	}
 
 	void OnMissionDialogueOK(Entity::GameObject * sender, GM::MissionDialogueOK & msg) {
-			Logger::log("WRLD", "Triggered MissionDialogueOK.");
+		Logger::log("WRLD", "Triggered MissionDialogueOK.");
 			
-			if (!Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, msg.missionID)) {
-				auto mis = Database::AddMission(sender->GetObjectID() & 0xFFFFFFFF, msg.missionID);
-				{
-					GM::NotifyMission gm;
-					gm.missionID = mis.missionID;
-					gm.missionState = mis.state;
-					GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
-				}
+		if (!Database::HasMission(sender->GetObjectID() & 0xFFFFFFFF, msg.missionID)) {
+			auto mis = Database::AddMission(sender->GetObjectID() & 0xFFFFFFFF, msg.missionID);
+			{
+				GM::NotifyMission gm;
+				gm.missionID = mis.missionID;
+				gm.missionState = mis.state;
+				GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
 			}
-			else {
-				auto mis = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, msg.missionID);
-				if (msg.bIsComplete && (mis.state == 4 || mis.state == 12)) {
-					mis.state = 8;
-					Database::UpdateMission(mis);
-					GM::NotifyMission gm;
-					gm.missionID = mis.missionID;
-					gm.missionState = mis.state;
-					gm.sendingRewards = true;
-					GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
-					MissionManager::SendMissionRewards(sender, mis);
-					gm.sendingRewards = false;
-					GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
+		}
+		else {
+			auto mis = Database::GetMission(sender->GetObjectID() & 0xFFFFFFFF, msg.missionID);
+			if (msg.bIsComplete && (mis.state == 4 || mis.state == 12)) {
+				mis.state = 8;
+				Database::UpdateMission(mis);
+				GM::NotifyMission gm;
+				gm.missionID = mis.missionID;
+				gm.missionState = mis.state;
+				gm.sendingRewards = true;
+				GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
+				MissionManager::SendMissionRewards(sender, mis);
+				gm.sendingRewards = false;
+				GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
 
-					// Try to offer next mission.
-					auto responderObj = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.responder);
-					if (responderObj != nullptr) {
-						GM::RequestUse requestUseMSG;
-						requestUseMSG.bIsMultiInteractUse = false;
-						requestUseMSG.objectID = msg.responder;
-						requestUseMSG.user = sender;
-						responderObj->OnRequestUse(sender, requestUseMSG);
-						/*MissionOfferComponent* misOfferComp = responderObj->GetComponent<MissionOfferComponent>();
-						if (misOfferComp != nullptr) {
-							GM::RequestUse requestUseMSG;
-							requestUseMSG.bIsMultiInteractUse = false;
-							requestUseMSG.objectID = responder;
-							requestUseMSG.user = sender;
-							misOfferComp->OnRequestUse(sender, &requestUseMSG);
-						}*/
-					}
-				}
-			}
-
-			// Entity::GameObject* targetObject = sender->GetZoneInstance()->objectsManager->GetObjectByID(objectID);
-			/*if (targetObject)
-				targetObject->OnRequestUse(sender, this);
-			else
-				Logger::log("WRLD", "RequestUse: Unable to find object " + std::to_string(objectID), LogType::ERR);*/
-
-			// Make sure next mission gets offered on completion.
-			if (Database::HasMission(sender->GetObjectID().getPureID(), msg.missionID)) {
-				std::int32_t missionState = Database::GetMission(sender->GetObjectID().getPureID(), msg.missionID).state;
-				if (missionState == 8 || missionState == 9) {
+				// Try to offer next mission.
+				auto responderObj = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.responder);
+				if (responderObj != nullptr) {
 					GM::RequestUse requestUseMSG;
 					requestUseMSG.bIsMultiInteractUse = false;
-					requestUseMSG.objectID = owner->GetObjectID();
-					this->OnRequestUse(sender, requestUseMSG);
+					requestUseMSG.objectID = msg.responder;
+					requestUseMSG.user = sender;
+					responderObj->OnRequestUse(sender, requestUseMSG);
+					/*MissionOfferComponent* misOfferComp = responderObj->GetComponent<MissionOfferComponent>();
+					if (misOfferComp != nullptr) {
+						GM::RequestUse requestUseMSG;
+						requestUseMSG.bIsMultiInteractUse = false;
+						requestUseMSG.objectID = responder;
+						requestUseMSG.user = sender;
+						misOfferComp->OnRequestUse(sender, &requestUseMSG);
+					}*/
 				}
 			}
-	}
+		}
 
+		// Entity::GameObject* targetObject = sender->GetZoneInstance()->objectsManager->GetObjectByID(objectID);
+		/*if (targetObject)
+			targetObject->OnRequestUse(sender, this);
+		else
+			Logger::log("WRLD", "RequestUse: Unable to find object " + std::to_string(objectID), LogType::ERR);*/
+
+		// Make sure next mission gets offered on completion.
+		if (Database::HasMission(sender->GetObjectID().getPureID(), msg.missionID)) {
+			std::int32_t missionState = Database::GetMission(sender->GetObjectID().getPureID(), msg.missionID).state;
+			if (missionState == 8 || missionState == 9) {
+				GM::RequestUse requestUseMSG;
+				requestUseMSG.bIsMultiInteractUse = false;
+				requestUseMSG.objectID = owner->GetObjectID();
+				this->OnRequestUse(sender, requestUseMSG);
+			}
+		}
+	}
 };
 
 #endif

@@ -65,6 +65,7 @@ namespace GM {
 	class UnEquipInventory;
 	class SetTooltipFlag;
 	class SetGhostReferencePosition;
+	class RespondToMission;
 };
 
 /* set x true if x or construction */

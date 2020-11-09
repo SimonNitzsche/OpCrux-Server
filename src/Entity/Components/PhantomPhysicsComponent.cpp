@@ -60,11 +60,6 @@ void PhantomPhysicsComponent::PhysicUpdate() {
 				// OnCollisionPhantom
 				owner->OnCollisionPhantom(o);
 			}
-			else {
-				if (o->GetLOT() == 1 && owner->GetLOT() == 5652) {
-					Logger::log("TEST", "Missed diff by " + std::to_string(difference), LogType::UNEXPECTED);
-				}
-			}
 		}
 	}
 }

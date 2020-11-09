@@ -10,15 +10,17 @@ namespace GM {
 		}
 
 		std::int32_t missionID;
-		std::int32_t missionState;
-		bool sendingRewards = false;
+		DataTypes::LWOOBJID playerID;
+		DataTypes::LWOOBJID receiver;
+		std::int32_t rewardItem = -1;
 
 		RespondToMission() {}
 
-		void Serialize(RakNet::BitStream* bs) {
-			GM_VAR_SERIALIZE(bs, missionID);
-			GM_VAR_SERIALIZE(bs, missionState);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, sendingRewards, false);
+		void Deserialize(RakNet::BitStream* bs) {
+			GM_VAR_DESERIALIZE(bs, missionID);
+			GM_VAR_DESERIALIZE(bs, playerID);
+			GM_VAR_DESERIALIZE(bs, receiver);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, rewardItem, -1);
 		}
 	};
 }

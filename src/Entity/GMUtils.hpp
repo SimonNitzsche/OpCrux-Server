@@ -41,50 +41,49 @@
 #define GM_MAKE_COMPONENT_DECLARE(name) virtual void On##name(Entity::GameObject * sender, GM::name & msg) {}
 
 #define GM_MAKE_LIST_CLIENT(mfun) \
-	mfun(BuildExitConfirmation);\
+	mfun(BuildExitConfirmation); \
 	mfun(BuildModeSet);\
+	mfun(CancelRailMovement);\
+	mfun(DoneArrangingWithItem);\
+	mfun(EquipInventory);\
 	mfun(FireEventServerSide);\
 	mfun(HasBeenCollected);\
 	mfun(MissionDialogueOK);\
+	mfun(ModifyGhostingDistance);\
+	mfun(ModularAssemblyNIFCompleted);\
+	mfun(ModularBuildFinish);\
 	mfun(ModuleAssemblyQueryData);\
 	mfun(NotifyClientFlagChange);\
+	mfun(NotifyServerLevelProcessingComplete);\
+	mfun(ParseChatMessage);\
 	mfun(PickupCurrency);\
 	mfun(PickupItem);\
 	mfun(PlayEmote);\
 	mfun(PlayerLoaded);\
 	mfun(PopEquippedItemsState);\
+	mfun(ReadyForUpdates);\
 	mfun(RebuildCancel);\
+	mfun(ReportBug);\
 	mfun(RequestDie);\
 	mfun(RequestLinkedMission);\
+	mfun(RequestPlatformResync);\
 	mfun(RequestResurrect);\
 	mfun(RequestSmashPlayer);\
 	mfun(RequestUse);\
-	mfun(StartBuildingWithItem);\
-	mfun(StartSkill);\
-	mfun(SyncSkill);\
+	mfun(RespondToMission);\
 	mfun(ServerTerminateInteraction);\
 	mfun(SetBuildMode);\
 	mfun(SetFlag);\
-	mfun(TerminateInteraction);\
-	mfun(SetTooltipFlag);\
 	mfun(SetGhostReferencePosition);\
-	mfun(ReadyForUpdates);\
-	mfun(NotifyServerLevelProcessingComplete);\
+	mfun(SetJetPackMode);\
+	mfun(SetTooltipFlag);\
+	mfun(StartBuildingWithItem);\
+	mfun(StartSkill);\
+	mfun(SyncSkill);\
+	mfun(Teleport);\
+	mfun(TerminateInteraction);\
 	mfun(ToggleGhostReferenceOverride);\
 	mfun(ToggleSendingPositionUpdates);\
-	mfun(ModularBuildFinish);\
-	mfun(ModularAssemblyNIFCompleted);\
-	mfun(ParseChatMessage);\
-	mfun(RequestPlatformResync);\
-	mfun(EquipInventory);\
-	mfun(SetJetPackMode);\
-	mfun(Teleport);\
-	mfun(ModifyGhostingDistance);\
-	mfun(CancelRailMovement);\
-	mfun(ReportBug);\
-	mfun(DoneArrangingWithItem);\
-	mfun(UnEquipInventory);
-
-// 	mfun(BuildExitConfirmation);
+	mfun(UnEquipInventory); 
 #endif
 

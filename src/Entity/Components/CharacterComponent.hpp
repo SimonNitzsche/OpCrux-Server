@@ -346,6 +346,12 @@ public:
 			owner->GetComponentByType(17)->OnEquipInventory(sender, nmsg);
 		}
 	}
+
+	void OnRespondToMission(Entity::GameObject* sender, GM::RespondToMission& msg) {
+		auto model = Database::GetMission(sender->GetObjectID().getPureID(), msg.missionID);
+		model.chosenReward = msg.rewardItem;
+		Database::UpdateMission(model);
+	}
 };
 
 #endif
