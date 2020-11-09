@@ -15,9 +15,9 @@
 
 /* Maybe replace this in future. */
 struct InventoryItemStack {
-	std::int32_t LOT;
-	DataTypes::LWOOBJID objectID;
-	DataTypes::LWOOBJID subkey;
+	std::int32_t LOT = -1;
+	DataTypes::LWOOBJID objectID = 0ULL;
+	DataTypes::LWOOBJID subkey = 0ULL;
 	std::uint32_t quantity = 1;
 	std::uint32_t tab = 0;
 	bool equip = false;
@@ -297,6 +297,31 @@ public:
 
 		// We couldn't find the item
 		return false;
+	}
+
+	inline InventoryItemStack GetItem(std::uint32_t LOT) {
+		auto targetTab = GetTabForLOT(LOT);
+
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
+		if (itemCompID == -1) return InventoryItemStack();
+
+		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		if (static_cast<std::string>(equipLocation) == "") return  InventoryItemStack();
+
+		auto tabIt = inventory.find(targetTab);
+
+		// We do not have tab, unable to equip
+		if (tabIt == inventory.end()) return InventoryItemStack();
+
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.LOT == LOT) {
+				// We found it!
+				return it->second;
+			}
+		}
+
+		// We couldn't find the item
+		return InventoryItemStack();
 	}
 
 	inline bool EquipItem(std::uint32_t LOT) {

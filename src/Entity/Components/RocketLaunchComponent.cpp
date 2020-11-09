@@ -1,13 +1,15 @@
 #include "RocketLaunchComponent.hpp"
 #include <Utils\LDFUtils.hpp>
 #include "Entity/GameMessages.hpp"
+#include <Entity\Components\InventoryComponent.hpp>
 
 void RocketLaunchComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg) {
 
 	GM::FireEventClientSide fecs;
 	fecs.args = u"RocketEquipped";
 	fecs.senderID = sender->GetObjectID();
-	fecs.object = 1152921504606847016;
+	InventoryComponent* invComp = sender->GetComponent<InventoryComponent>();
+	fecs.object = invComp->GetItem(6416).objectID;
 
 	GameMessages::Broadcast(owner, fecs);
 
