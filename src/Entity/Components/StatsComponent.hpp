@@ -30,13 +30,13 @@ public:
 
 public:
 	struct Attributes {
-		std::uint32_t currentHealth;
+		std::int32_t currentHealth;
 		std::float_t dupMaxHealth;
-		std::uint32_t currentArmor;
+		std::int32_t currentArmor;
 		std::float_t dupMaxArmor;
-		std::uint32_t currentImagination;
+		std::int32_t currentImagination;
 		std::float_t dupMaxImagination;
-		std::uint32_t damageAbsorptionPoints;
+		std::int32_t damageAbsorptionPoints;
 		bool immunity=false;
 		bool isGMImmune=false;
 		bool isShielded=false;
