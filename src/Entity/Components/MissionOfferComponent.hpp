@@ -65,6 +65,7 @@ public:
 
 						GameMessages::Send(sender, owner->GetObjectID(), missionOffer);
 						GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
+						GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
 						return;
 					}
 				}
@@ -122,6 +123,7 @@ public:
 					
 					GameMessages::Send(sender, owner->GetObjectID(), missionOffer);
 					GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
+					GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
 					return;
 				}
 			}
@@ -132,6 +134,7 @@ public:
 			missionOffer.offerer = missionOfferGiver.offerer = owner->GetObjectID();
 
 			GameMessages::Send(sender, owner->GetObjectID(), missionOffer);
+			GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
 			GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
 		}
 	}

@@ -18,10 +18,10 @@ struct InventoryItemStack {
 	std::int32_t LOT;
 	DataTypes::LWOOBJID objectID;
 	DataTypes::LWOOBJID subkey;
-	std::uint32_t quantity=1;
-	std::uint32_t tab=0;
-	bool equip=false;
-	bool bound=false;
+	std::uint32_t quantity = 1;
+	std::uint32_t tab = 0;
+	bool equip = false;
+	bool bound = false;
 	LDFCollection metadata;
 };
 
@@ -32,8 +32,8 @@ private:
 
 
 public:
-	typedef 
-	std::map<std::uint32_t, InventoryItemStack> InventoryTab;
+	typedef
+		std::map<std::uint32_t, InventoryItemStack> InventoryTab;
 
 	std::map<std::uint32_t, InventoryTab> inventory;
 
@@ -43,7 +43,7 @@ public:
 		BRICKS = 2,
 		TEMPORARY_ITEMS = 4,
 		MODELS = 5,
-		TEMPORARY_MODELS= 6,
+		TEMPORARY_MODELS = 6,
 		BEHAVIORS = 7,
 		PROPERTY_DEEDS = 8,
 		HIDDEN = 12,
@@ -164,7 +164,7 @@ public:
 		}
 	}
 
-	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Inventory Component Serialization */
 		_isDirtyFlagEquippedItems = true;
 		factory->Write(_isDirtyFlagEquippedItems);
@@ -176,8 +176,8 @@ public:
 				factory->Write<std::uint64_t>(equippedItems.at(i).objectID);
 				factory->Write<std::int32_t>(equippedItems.at(i).LOT);
 				factory->Write(equippedItems.at(i).subkey != 0ULL);
-				if(equippedItems.at(i).subkey != 0ULL)
-				/**/factory->Write<std::int64_t>(equippedItems.at(i).subkey);
+				if (equippedItems.at(i).subkey != 0ULL)
+					/**/factory->Write<std::int64_t>(equippedItems.at(i).subkey);
 				factory->Write(true);
 				/**/factory->Write<std::uint32_t>(equippedItems.at(i).quantity);
 				factory->Write(true);
@@ -212,49 +212,49 @@ public:
 	inline std::int32_t GetDefaultTabForInventoryType(std::int32_t invType) {
 		switch (invType) {
 			// Items
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			case 9:
-			case 13:
-			case 14:
-			case 15:
-			case 16:
-			case 17:
-			case 20:
-			case 23: {
-				return 0;
-			}
-			// Bricks
-			case 1: {
-				return 2;
-			}
-			// Models
-			case 12:
-			case 19:
-			case 21:
-			case 22: {
-				return 5;
-			}
-			// Behaviors
-			case 10: {
-				return 7;
-			}
-			// Property
-			case 11: {
-				return 8;
-			}
-			// Mission (HIDDEN)
-			case 18: {
-				return 12;
-			}
-			default: {
-				return 0;
-			}
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+		case 13:
+		case 14:
+		case 15:
+		case 16:
+		case 17:
+		case 20:
+		case 23: {
+			return 0;
+		}
+			   // Bricks
+		case 1: {
+			return 2;
+		}
+			  // Models
+		case 12:
+		case 19:
+		case 21:
+		case 22: {
+			return 5;
+		}
+			   // Behaviors
+		case 10: {
+			return 7;
+		}
+			   // Property
+		case 11: {
+			return 8;
+		}
+			   // Mission (HIDDEN)
+		case 18: {
+			return 12;
+		}
+		default: {
+			return 0;
+		}
 		}
 	}
 
@@ -309,10 +309,10 @@ public:
 		if (static_cast<std::string>(equipLocation) == "") return false;
 
 		auto tabIt = inventory.find(targetTab);
-		
+
 		// We do not have tab, unable to equip
 		if (tabIt == inventory.end()) return false;
-	
+
 		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
 			if (it->second.LOT == LOT) {
 				// We found it!
@@ -525,7 +525,7 @@ public:
 
 		// Get Item coponent row
 		auto itemCompRow = CacheItemComponent::getRow(itemCompID);
-		
+
 		// Check if row is found
 		if (!itemCompRow.isValid()) return -1;
 
@@ -614,10 +614,10 @@ public:
 
 		AddItem(item->GetLOT(), incCount, item->GetPosition());
 	}
-	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3()) {
+	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}) {
 		std::uint32_t nextTabAndSlot = GetNextFreeSlot(itemLOT);
 
-		std::uint32_t tab  = (nextTabAndSlot & 0xFFFF0000) >> 16;
+		std::uint32_t tab = (nextTabAndSlot & 0xFFFF0000) >> 16;
 		std::uint32_t slot = (nextTabAndSlot & 0x0000FFFF);
 
 		std::uint32_t overflowCount = 0;
@@ -649,7 +649,7 @@ public:
 			// We have an item there
 			if (slotIt != tabIt->second.end()) {
 				useStacking = true;
-				
+
 				// inc stack
 				slotIt->second.quantity += incCount;
 
@@ -671,7 +671,7 @@ public:
 			itemStack.LOT = itemLOT;
 			itemStack.equip = false;
 			itemStack.bound = false;
-			itemStack.subkey = 0ULL;
+			itemStack.subkey = iSubKey;
 			itemStack.quantity = 1;
 			itemStack.tab = tab;
 			if (owner->GetLOT() == 1) {
@@ -680,10 +680,14 @@ public:
 			else {
 				itemStack.objectID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++);
 			}
-			itemStack.metadata = LDFCollection();
+			itemStack.metadata = metadata;
 
-			// TODO: Subkey stuff
-			// TODO: metadata stuff
+			// Subkey stuff
+			// TODO: More specific for pets and such
+			itemStack.subkey = iSubKey;
+
+			// metadata stuff
+			itemStack.metadata = metadata;
 
 			// Add item to player
 			if (tabIt != inventory.end()) {
@@ -737,7 +741,7 @@ public:
 			GameMessages::Send(owner, owner->GetObjectID(), addItemGM);
 		}
 
-		if(overflowCount > 0)
+		if (overflowCount > 0)
 			AddItem(itemLOT, overflowCount, sourcePos);
 
 		// TODO: Implement Skill Casting

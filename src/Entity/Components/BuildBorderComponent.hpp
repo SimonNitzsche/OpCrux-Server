@@ -19,6 +19,8 @@ public:
 
 	void OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem& msg);
 
+    void OnModularBuildFinish(Entity::GameObject* sender, GM::ModularBuildFinish& msg);
+
 };
 
 #endif

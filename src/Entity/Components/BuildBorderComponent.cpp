@@ -53,3 +53,23 @@ void BuildBorderComponent::OnStartBuildingWithItem(Entity::GameObject* sender, G
 
 	GameMessages::Broadcast(sender, myMsg);
 }
+
+void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::ModularBuildFinish& msg) {
+
+
+	auto invComp = sender->GetComponent<InventoryComponent>();
+
+	std::string buildString = "";
+	for (auto it = msg.modules.begin(); it != msg.modules.end(); ++it) {
+		if (buildString.size() != 0) buildString += "+";
+		buildString += "1:" + std::to_string(*it);
+	}
+	LDFCollection metadata = { LDF_COLLECTION_INIT_ENTRY(u"assemblyPartLOTs", std::u16string(buildString.begin(), buildString.end())) };
+
+	auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(Database::DBCOUNTERID::PLAYER));
+
+	if (msg.count == 3) {
+		// Rocket
+		invComp->AddItem(6416, 1U, owner->GetPosition(), subkey, metadata);
+	}
+}

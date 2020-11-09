@@ -56,6 +56,7 @@
 #include "Entity/GameMessages/NotifyRacingClient.hpp"
 #include "Entity/Components/RacingControlComponent.hpp"
 #include "Entity/Components/MinigameComponent.hpp"
+#include <Entity\Components\ScriptComponent.hpp>
 
 using namespace Exceptions;
 
@@ -175,6 +176,9 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 		if (zoneControlLOT == 0) zoneControlLOT = 2365;
 		this->zoneControlObject = new Entity::GameObject(this, zoneControlLOT);
 		this->zoneControlObject->SetObjectID(0x3FFFFFFFFFFE);
+		std::int32_t zoneScriptID = CacheZoneTable::GetScriptID(zone);
+		if (zoneScriptID != -1)
+			this->zoneControlObject->AddComponent<ScriptComponent>(zoneScriptID);
 		objectsManager->RegisterObject(this->zoneControlObject);
 		this->zoneControlObject->Finish();
 
@@ -539,12 +543,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Client load complete ZoneID: " + std::to_string(zoneID) + " MapInstance: " + std::to_string(mapInstance) + " MapClone: " + std::to_string(mapClone));
 
-				
-				/*Entity::GameObject * testStromling = new Entity::GameObject(this, 4712);
-				testStromling->SetObjectID(288334496658198693ULL); // Random ID
-				ControllablePhysicsComponent * scpComp = (ControllablePhysicsComponent*)testStromling->GetComponentByID(1);
-				scpComp->SetPosition(luZone->spawnPos->pos);
-				scpComp->SetRotation(Quaternion(0,0,0,0));*/
 
 				Logger::log("WRLD", "Construct player");
 				replicaManager->AddParticipant(clientSession->systemAddress);
@@ -589,14 +587,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					auto charInfo = charComp->GetCharInfo();
 					charInfo.lastWorld = luZone->zoneID;
 					Database::UpdateChar(charInfo);
-				}
-
-				
-				if (zoneID == 1203) {
-					// Racing tests, remove in future!
-
-					playerObject->SetPosition(DataTypes::Vector3(-1457.71f, 2794.0f, -351.61f));
-
 				}
 
 				Logger::log("WRLD", "Sending serialization");

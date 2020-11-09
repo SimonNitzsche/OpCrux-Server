@@ -24,13 +24,13 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 				model = Database::GetMission(msg.responder.getPureID(), 664);
 			}
 
-			model.state = 2;
-
 			GM::NotifyMissionTask taskNotify;
 			taskNotify.missionID = 664;
 			taskNotify.taskMask = 2;
-			taskNotify.updates = {1.0f};
+			taskNotify.updates = { 1.0f };
 			GameMessages::Send(player, player->GetObjectID(), taskNotify);
+
+			model.state = 2;
 
 			GM::NotifyMission misNotify;
 			misNotify.missionID = model.missionID;
@@ -45,6 +45,11 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 
 			misNotify.sendingRewards = true;
 			GameMessages::Send(player, player->GetObjectID(), misNotify);
+
+			GM::NotifyClientFlagChange flagGM;
+			flagGM.bFlag = true;
+			flagGM.iFlagID = 66;
+			GameMessages::Send(player, player->GetObjectID(), flagGM);
 		}
 	}
 };

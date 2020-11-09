@@ -287,6 +287,11 @@ public:
 		throw new std::runtime_error("Unknown LDF Type.");
 	}
 
+	inline std::string& GetValueAsString() {
+		auto tmp = GetValueAsWString();
+		return std::string(tmp.begin(), tmp.end());
+	}
+
 	~LDFEntry() {
 	}
 };

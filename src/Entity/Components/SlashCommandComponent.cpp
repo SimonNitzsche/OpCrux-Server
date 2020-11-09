@@ -170,6 +170,22 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 			Reply(Response::NoArguements, sender);
 		}
 	})
+	.Case(u"/setimag", [&]() {
+		if (command.find(u" ") != std::u16string::npos) {
+			if (accountGMLevel >= 5) {
+				DataTypes::LWOOBJID targetOBJID = sender->GetObjectID();
+				auto imag = StringUtils::StringToInt(StringUtils::to_string(args[1]));
+
+				sender->SetImagination(imag);
+			}
+			else {
+				Reply(Response::RankTooLow, sender);
+			}
+		}
+		else {
+			Reply(Response::NoArguements, sender);
+		}
+	})
 	.Case(u"/getlot", [&]() {
 		if (command.find(u" ") != std::u16string::npos) {
 			if (accountGMLevel >= 5) {

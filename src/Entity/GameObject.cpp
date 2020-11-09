@@ -520,6 +520,10 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 		// Add Componets custom
 		/* Script Component */ {
 			std::u16string customScript = u"";
+			LDF_GET_VAL_FROM_COLLECTION(customScript, collection, u"custom_script_client", u"");
+			if (customScript != u"") {
+				this->AddComponent<ScriptComponent>(-1);
+			}
 			LDF_GET_VAL_FROM_COLLECTION(customScript, collection, u"custom_script_server", u"");
 			if (customScript != u"") {
 				this->AddComponent<ScriptComponent>(-1);
@@ -821,7 +825,16 @@ std::string Entity::GameObject::GenerateXML() {
 						if (it2->subkey != 0) {
 							ss << " sk=\"" << it2->subkey << "\"";
 						}
-						ss << "/>";
+						ss << ">";
+
+						auto it3 = it2->metadata.find(u"assemblyPartLOTs");
+						if (it3 != it2->metadata.end()) {
+							auto wstrVal = it3->second.GetValueAsWString();
+							auto strVal = std::string(wstrVal.begin(), wstrVal.end());
+							ss << "<x ma=\"" << std::uint32_t(it3->second.type) << ":" << strVal << "\" />";
+						}
+
+						ss << "</i>";
 					}
 					ss << "</in>";
 				}

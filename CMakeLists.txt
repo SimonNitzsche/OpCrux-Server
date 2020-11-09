@@ -374,7 +374,7 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp"  "src/Configuration/ConfGeneral.hpp" "src/Entity/Components/SlashCommandComponent.cpp" "src/Entity/GameMessages/SetPlayerControlScheme.hpp") 
+	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp"  "src/Configuration/ConfGeneral.hpp" "src/Entity/Components/SlashCommandComponent.cpp" "src/Entity/GameMessages/SetPlayerControlScheme.hpp" "src/Entity/Components/RocketLaunchComponent.cpp" "src/Entity/GameMessages/TransferToZone.hpp" "src/Entity/GameMessages/TransferToZoneCheckedIM.hpp") 
 	
 
 

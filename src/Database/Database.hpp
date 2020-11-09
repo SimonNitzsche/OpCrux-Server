@@ -203,7 +203,8 @@ public:
 		const char* query;
 		switch (dbCounterID) {
 		case DBCOUNTERID::STATIC:
-			query = "SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='STATIC';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='STATIC';";
+			// STATIC == PLAYER!
+			query = "SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='STATIC';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='PLAYER';";
 			break;
 		case DBCOUNTERID::PLAYER:
 			query = "SELECT counter FROM OPCRUX_CD.dbo.IDCounter WHERE type='PLAYER';UPDATE OPCRUX_CD.dbo.IDCounter SET counter=(counter+1) WHERE type='PLAYER';";

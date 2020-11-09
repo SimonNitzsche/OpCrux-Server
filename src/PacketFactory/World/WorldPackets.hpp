@@ -145,8 +145,8 @@ namespace PacketFactory {
 			ldfEntries.emplace_back(u"name", go->GetName());
 			ldfEntries.emplace_back(u"accountID", std::int64_t(clientSession->accountID));
 
-			//std::string& xmlFN = go->GetNameStr() + ".xml";
-			//FileUtils::SaveTextFile(xmlFN, go->GenerateXML());
+			std::string& xmlFN = go->GetNameStr() + ".xml";
+			FileUtils::SaveTextFile(xmlFN, go->GenerateXML());
 
 			std::int64_t levelid = clientSession->currentZone.zoneID | (clientSession->currentZone.zoneInstance << 16) | (clientSession->currentZone.zoneClone << 32);
 			ldfEntries.emplace_back(u"levelid", levelid);
