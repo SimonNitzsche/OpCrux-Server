@@ -308,6 +308,9 @@ public:
 			// Remove
 			owner->InstantiateRemoval();
 
+			// Update Missions
+			MissionManager::LaunchTaskEvent(EMissionTask::KILL, this->owner, caster->GetObjectID(), this->owner->GetLOT());
+
 			// Cancle anything else
 			return;
 		}

@@ -112,8 +112,46 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
         switch (taskType)
         {
-        case Enums::EMissionTask::KILL:
-            break;
+        case Enums::EMissionTask::KILL: {
+			for (auto it = currentMissions.begin(); it != currentMissions.end(); ++it) {
+				auto missionModel = *it;
+
+
+				auto missionTasksProgress = StringUtils::splitString(it->progress, '|');
+				auto updateTasks = possibleMissions.at(it->missionID);
+				auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
+
+				for (int i = 0; i < missionTasksProgress.size(); ++i) {
+
+					auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
+					if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
+
+						auto iTarget = updateVal;
+						updateVal = 1;
+
+						//if (CacheMissionTasks::GetTarget(cacheMissionTasksRow) != caster->GetLOT()) continue;
+						if (CacheMissionTasks::GetTargetValue(cacheMissionTasksRow) < std::stoi(missionTasksProgress.at(i)) + updateVal) continue;
+
+						std::string strTargetGroup = CacheMissionTasks::GetTargetGroup(cacheMissionTasksRow);
+						auto listTargetGroup = StringUtils::splitString(strTargetGroup, ',');
+						listTargetGroup.push_back(std::to_string(CacheMissionTasks::GetTarget(cacheMissionTasksRow)));
+						std::string strTarget = std::to_string(iTarget);
+						for (auto testSkill : listTargetGroup) {
+
+							if (testSkill != strTarget) continue;
+
+							missionTasksProgress.at(i) = std::to_string(std::stoi(missionTasksProgress.at(i)) + updateVal);
+							UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
+							break;
+						}
+					}
+				}
+
+				missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
+				updateMissions.push_back(missionModel);
+			}
+			break;
+		}
         case Enums::EMissionTask::SCRIPT: {
 			for (auto it = currentMissions.begin(); it != currentMissions.end(); ++it) {
 				auto missionModel = *it;
