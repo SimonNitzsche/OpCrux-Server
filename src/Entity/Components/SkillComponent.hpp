@@ -12,6 +12,7 @@
 #include "GameCache/BehaviorTemplate.hpp"
 #include "GameCache/BehaviorTemplateName.hpp"
 #include "GameCache/SkillBehavior.hpp"
+#include "GameCache/ObjectSkills.hpp"
 
 
 using namespace DataTypes;
@@ -63,10 +64,10 @@ public:
 	static constexpr int GetTypeID() { return 9; }
 
 	void Awake() {
-		
+
 	}
 
-	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Skill Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 			factory->Write(true);
@@ -76,7 +77,7 @@ public:
 		}
 	}
 
-	inline void OnStartSkill(Entity::GameObject * sender, GM::StartSkill & msg) {
+	inline void OnStartSkill(Entity::GameObject* sender, GM::StartSkill& msg) {
 		parameters = SkillStackParameters();
 
 		currentSkill = msg.skillID;
@@ -105,10 +106,12 @@ public:
 		}
 		GameMessages::Broadcast(this->owner, echoGM, true);
 
+		MissionManager::LaunchTaskEvent(EMissionTask::USE_SKILL, sender, sender->GetObjectID(), currentSkill);
+
 		UnCast(msg.sBitStream);
 	}
 
-	inline void OnSyncSkill(Entity::GameObject* sender, GM::SyncSkill & msg) {
+	inline void OnSyncSkill(Entity::GameObject* sender, GM::SyncSkill& msg) {
 		parameters.bDone = msg.bDone;
 		parameters.uiBehvaiorHandle = msg.uiBehaviorHandle;
 		parameters.uiSkillHandle = msg.uiSkillHandle;
@@ -140,6 +143,29 @@ public:
 		mutex_behaviorHandles.unlock();
 	}
 
+	inline void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {
+		// Add skills
+		Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.itemToEquip);
+		if (item == nullptr) return;
+
+		auto rm = CacheObjectSkills::getRow(item->GetLOT());
+		auto rf = rm.flatIt();
+		for (auto r : rf) {
+			//if (CacheObjectSkills::GetCastOnType(r) == 0 /*Use*/) {
+			GM::AddSkill addSkillGM;
+			addSkillGM.skillID = CacheObjectSkills::GetSkillID(r);
+			addSkillGM.castType = CacheObjectSkills::GetCastOnType(r);
+			addSkillGM.AICombatWeight = CacheObjectSkills::GetAICombatWeight(r);
+			addSkillGM.slotID = 0;
+			GameMessages::Broadcast(sender, addSkillGM);
+			//}
+		}
+	}
+
+	inline void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
+		// Remove skills
+	}
+
 };
 
 #include "Entity/Components/SkillComponent/AbstractAggregateBehavior.hpp"
@@ -148,7 +174,7 @@ public:
 void SkillComponent::UnCast(const std::string sBitStream, long behaviorID) {
 	currentStackDepth = 0;
 	RakNet::BitStream bs = RakNet::BitStream(reinterpret_cast<unsigned char*>(const_cast<char*>(sBitStream.c_str())), sBitStream.size(), false);
-	if(behaviorID <= 0) behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
+	if (behaviorID <= 0) behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
 	AbstractAggregateBehavior::StartUnCast(this, behaviorID, &bs);
 }
 

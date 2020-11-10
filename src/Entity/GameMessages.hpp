@@ -101,6 +101,7 @@ public:
 // Define by include
 #include "Entity/GameMessages/ActivityStart.hpp"
 #include "Entity/GameMessages/AddItemToInventoryClientSync.hpp"
+#include "Entity/GameMessages/AddSkill.hpp"
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
 #include "Entity/GameMessages/BuildExitConfirmation.hpp"
 #include "Entity/GameMessages/BuildModeSet.hpp"

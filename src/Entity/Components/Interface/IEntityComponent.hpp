@@ -15,6 +15,7 @@ namespace Entity {
 #include "Entity/GMUtils.hpp"
 
 namespace GM {
+	class AddSkill;
 	class BuildExitConfirmation;
 	class BuildModeSet;
 	class CancelRailMovement;
