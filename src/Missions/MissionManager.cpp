@@ -449,7 +449,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
             msg.sendingRewards = true;
             GameMessages::Send(playerObject, player, msg);
 
-            // TODO: Send rewards
+            // Send rewards
 
             msg.missionState = it->state;
             msg.sendingRewards = false;
@@ -538,7 +538,7 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
 	charComp->CheckLevelProgression();
     player->GetZoneInstance()->objectsManager->Serialize(player);
 
-    // TODO: Reward: Items
+    // Reward: Items
 
     // List <LOT, count>
     std::list<std::pair<std::int32_t, std::int32_t>> rewardItems = {
@@ -556,5 +556,24 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
         invComp->AddItem(rewItmIt->first, rewItmIt->second);
     }
 
-    // TODO: Reward: Emotes
+    // Reward: Emotes
+	std::list<std::int32_t> emotesToUnlock = {
+		CacheMissions::GetRewardEmote(missionRow),
+		CacheMissions::GetRewardEmote2(missionRow),
+		CacheMissions::GetRewardEmote3(missionRow),
+		CacheMissions::GetRewardEmote4(missionRow)
+	};
+
+	for (auto emote : emotesToUnlock) {
+		if (emote == -1) continue;
+
+		// Enable Emote on client
+		GM::SetEmoteLockState setEmoteLockStateGM;
+		setEmoteLockStateGM.bLock = false;
+		setEmoteLockStateGM.emoteID = emote;
+		GameMessages::Send(player, player->GetObjectID(), setEmoteLockStateGM);
+
+		// Save to database
+		Database::UnlockEmote(player->GetObjectID(), emote);
+	}
 }

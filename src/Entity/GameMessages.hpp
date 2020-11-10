@@ -159,6 +159,7 @@ public:
 #include "Entity/GameMessages/ServerTerminateInteraction.hpp"
 #include "Entity/GameMessages/SetBuildMode.hpp"
 #include "Entity/GameMessages/SetCurrency.hpp"
+#include "Entity/GameMessages/SetEmoteLockState.hpp"
 #include "Entity/GameMessages/SetGhostReferencePosition.hpp"
 #include "Entity/GameMessages/SetJetPackMode.hpp"
 #include "Entity/GameMessages/SetFlag.hpp"

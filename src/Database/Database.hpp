@@ -1138,5 +1138,36 @@ public:
 		odbc::ResultSetRef rs = stmt->executeQuery();
 		return statsID;
 	}
+
+	static void UnlockEmote(DataTypes::LWOOBJID playerID, std::int32_t emoteID) {
+
+		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT * FROM OPCRUX_GD.dbo.UnlockedEmotes WHERE playerID = ? AND emoteID = ?; IF @@ROWCOUNT=0 INSERT INTO OPCRUX_GD.dbo.UnlockedEmotes(playerID,emoteID) VALUES(?,?);");
+
+		// SELECT
+		stmt->setULong(1, playerID.getPureID());
+		stmt->setInt(2, emoteID);
+
+		// INSERT
+		stmt->setULong(3, playerID.getPureID());
+		stmt->setInt(4, emoteID);
+
+		odbc::ResultSetRef rs = stmt->executeQuery();
+	}
+
+	static std::list<std::int32_t> GetUnlockedEmotes(DataTypes::LWOOBJID playerID) {
+		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT emoteID FROM OPCRUX_GD.dbo.UnlockedEmotes WHERE playerID = ?;");
+
+		// SELECT
+		stmt->setULong(1, playerID.getPureID());
+
+		odbc::ResultSetRef rs = stmt->executeQuery();
+
+		std::list<std::int32_t> resultList = {};
+		while (rs->next()) {
+			resultList.push_back(*rs->getInt(1));
+		}
+
+		return resultList;
+	}
 };
 #endif // !__DATABASE_HPP__

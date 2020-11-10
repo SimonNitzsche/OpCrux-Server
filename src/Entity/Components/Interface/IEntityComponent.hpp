@@ -67,6 +67,7 @@ namespace GM {
 	class SetTooltipFlag;
 	class SetGhostReferencePosition;
 	class RespondToMission;
+	class SetEmoteLockState;
 };
 
 /* set x true if x or construction */

@@ -900,7 +900,10 @@ std::string Entity::GameObject::GenerateXML() {
 				// ss << "stt=\"768568;13644;4683;2376;11480;345;471;22;24177;13104;13678;1951641;78;11559;947;11012;17524;16499;693599;612;1673;63;439;48;392;22;15;\"";
 			ss << ">";
 			{
-				ss << "<ue></ue>";
+				ss << "<ue>";
+				auto unlockedEmotes = Database::GetUnlockedEmotes(objectID);
+				for (auto e : unlockedEmotes) ss << "<e id=\"" << e << "\"/>";
+				ss << "</ue>";
 				ss << "<vl></vl>";
 				ss << "<zs></zs>";
 			}
