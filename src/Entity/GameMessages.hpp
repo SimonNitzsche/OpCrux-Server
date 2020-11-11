@@ -181,5 +181,6 @@ public:
 #include "Entity/GameMessages/UpdatePlayerStatistic.hpp"
 #include "Entity/GameMessages/VehicleUnlockInput.hpp"
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
+#include "Entity/GameMessages/VendorStatusUpdate.hpp"
 
 #endif

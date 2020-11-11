@@ -352,6 +352,18 @@ public:
 		model.chosenReward = msg.rewardItem;
 		Database::UpdateMission(model);
 	}
+
+	void OnPlayEmote(Entity::GameObject* sender, GM::PlayEmote& msg) {
+		Entity::GameObject* target = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.targetID);
+		if (target == nullptr) target = sender;
+
+		// Sync
+		GM::EmotePlayed nmsg; nmsg.emoteID = msg.emoteID; nmsg.targetID = msg.targetID;
+		GameMessages::Broadcast(sender, nmsg);
+
+		// Mission Task
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::EMOTE, target, sender->GetObjectID().getPureID(), msg.emoteID);
+	}
 };
 
 #endif
