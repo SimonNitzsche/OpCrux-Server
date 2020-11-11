@@ -20,8 +20,6 @@ namespace GM {
 		}
 
 		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
-			Logger::log("WRLD", "Triggered PlayEmote.");
-			GM::EmotePlayed nmsg; nmsg.emoteID = emoteID; nmsg.targetID = targetID; nmsg.TriggerEvent(target, sender);
 		}
 	};
 }
