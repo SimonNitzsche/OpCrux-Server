@@ -265,9 +265,8 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 						if (CacheMissionTasks::GetTargetValue(cacheMissionTasksRow) < std::stoi(missionTasksProgress.at(i)) + 1) continue;
 
 
-						std::string strTargetGroup = CacheMissionTasks::GetTargetGroup(cacheMissionTasksRow);
+						std::string strTargetGroup = CacheMissionTasks::GetTaskParam1(cacheMissionTasksRow);
 						auto listTargetGroup = StringUtils::splitString(strTargetGroup, ',');
-						listTargetGroup.push_back(std::to_string(CacheMissionTasks::GetTarget(cacheMissionTasksRow)));
 						std::string strTarget = std::to_string(iTarget);
 						for (auto testTarget : listTargetGroup) {
 
@@ -356,23 +355,19 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
                             targetGroup.push_back(CacheMissionTasks::GetTarget(cacheMissionTasksRow));
                         }
 
-                        auto selectedBag = invComp->inventory.find(std::stoi(taskParam1));
 
-                        bool targetGroupResult = 0;
 
-                        // If we don't have the bag, we don't have the item
-                        if (selectedBag != invComp->inventory.end()) {
-
-                            // Go through inventory to check for item
-                            for (auto targetGroupIterator = targetGroup.begin(); targetGroupIterator != targetGroup.end(); ++targetGroupIterator) {
-                                for (auto slotIt = selectedBag->second.begin(); slotIt != selectedBag->second.end(); ++slotIt) {
-                                    if (slotIt->second.LOT == *targetGroupIterator) {
-                                        targetGroupResult += slotIt->second.quantity;
-                                    }
-                                }
-                            }
-                        }
-
+						std::int32_t targetGroupResult = 0;
+						for (auto selectedBag : invComp->inventory) {
+							// Go through inventory to check for item
+							for (auto targetGroupIterator = targetGroup.begin(); targetGroupIterator != targetGroup.end(); ++targetGroupIterator) {
+								for (auto slotIt = selectedBag.second.begin(); slotIt != selectedBag.second.end(); ++slotIt) {
+									if (slotIt->second.LOT == *targetGroupIterator) {
+										targetGroupResult += slotIt->second.quantity;
+									}
+								}
+							}
+						}
                         missionTasksProgress.at(i) = std::to_string(targetGroupResult);
 
                         UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));

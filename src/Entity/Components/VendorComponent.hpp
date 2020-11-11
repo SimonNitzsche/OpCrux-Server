@@ -6,6 +6,7 @@
 #include "GameCache/VendorComponent.hpp"
 
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
+#include <Entity\GameMessages\VendorTransactionResult.hpp>
 
 using namespace DataTypes;
 
@@ -37,13 +38,13 @@ public:
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) _isDirtyFlag = true;
+		//if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) _isDirtyFlag = true;
 		factory->Write(_isDirtyFlag);
 		if (_isDirtyFlag) {
 			factory->Write(isActive);
 			factory->Write(unknownBitB);
 		}
-		_isDirtyFlag = false;
+		//_isDirtyFlag = false;
 	}
 
 	void execVendorStatusUpdate(Entity::GameObject * sender) {
@@ -59,13 +60,58 @@ public:
 		GameMessages::Send(sender, owner->GetObjectID(), nmsg);
 	}
 
-	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
+	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse & msg) {
 		CharacterComponent * charComp = sender->GetComponent<CharacterComponent>();
 		if (charComp != nullptr) {
-			GameMessages::Send(owner->GetZoneInstance(), charComp->clientAddress, sender->GetObjectID(), GM::VendorOpenWindow());
+			GameMessages::Send(sender, owner->GetObjectID(), GM::VendorOpenWindow());
 			
 			execVendorStatusUpdate(sender);
 		}
+	}
+
+	void OnBuyFromVendor(Entity::GameObject* sender, GM::BuyFromVendor& msg) {
+		// Prepare response
+		GM::VendorTransactionResult response;
+		response.iResult = 3; // vendor purchase fail
+
+		// Get base cost
+		auto itemCompRow = CacheComponentsRegistry::getRowByType(msg.item, 11);
+		auto baseValue = CacheItemComponent::GetBaseValue(itemCompRow);
+
+		// Use multiplier to get real cost
+		std::float_t pieceValue = baseValue * buyScalar;
+
+		// Calculate buy price
+		std::int32_t sumValue = pieceValue * msg.count;
+
+		// Do boundary test (can player buy that much?)
+		auto charComp = sender->GetComponent<CharacterComponent>();
+		if (charComp != nullptr) {
+			auto charInfo = charComp->GetCharInfo();
+
+			if (charInfo.currency >= sumValue) {
+				// Remove currency
+				charInfo.currency -= sumValue;
+				Database::UpdateChar(charInfo);
+				charComp->InitCharInfo(charInfo);
+
+				// Add item
+				InventoryComponent* invComp = sender->GetComponent<InventoryComponent>();
+
+				if (invComp != nullptr) {
+					invComp->AddItem(msg.item, msg.count, DataTypes::Vector3(), 0ULL, {
+						LDF_COLLECTION_INIT_ENTRY(u"_Metric_Currency_Delta_Int", -sumValue),
+						LDF_COLLECTION_INIT_ENTRY(u"_Metric_Source_LOT_Int", owner->GetLOT())
+					});
+
+					// Respond success
+					response.iResult = 2; // vendor-purchase-success
+				}
+			}
+		}
+		
+		// respond 
+		GameMessages::Send(sender, owner->GetObjectID(), response);
 	}
 
 };

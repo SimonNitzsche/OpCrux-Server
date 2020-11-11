@@ -43,6 +43,7 @@
 #define GM_MAKE_LIST_CLIENT(mfun) \
 	mfun(BuildExitConfirmation); \
 	mfun(BuildModeSet);\
+	mfun(BuyFromVendor);\
 	mfun(CancelRailMovement);\
 	mfun(DoneArrangingWithItem);\
 	mfun(EquipInventory);\

@@ -105,6 +105,7 @@ public:
 #include "Entity/GameMessages/ArrivedAtDesiredWaypoint.hpp"
 #include "Entity/GameMessages/BuildExitConfirmation.hpp"
 #include "Entity/GameMessages/BuildModeSet.hpp"
+#include "Entity/GameMessages/BuyFromVendor.hpp"
 #include "Entity/GameMessages/CancelRailMovement.hpp"
 #include "Entity/GameMessages/Die.hpp"
 #include "Entity/GameMessages/DoneArrangingWithItem.hpp"
@@ -182,5 +183,6 @@ public:
 #include "Entity/GameMessages/VehicleUnlockInput.hpp"
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
 #include "Entity/GameMessages/VendorStatusUpdate.hpp"
+#include "Entity/GameMessages/VendorTransactionResult.hpp"
 
 #endif

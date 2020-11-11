@@ -67,7 +67,7 @@ public:
 	void InitCharInfo(DatabaseModels::Str_DB_CharInfo info) {
 		charInfo = info;
 
-		charStats = Database::GetCharStats(charInfo.statsID);
+		//charStats = Database::GetCharStats(charInfo.statsID);
 
 		StatsComponent* statsComp = this->owner->GetComponent<StatsComponent>();
 		if (statsComp != nullptr) {
@@ -362,7 +362,7 @@ public:
 		GameMessages::Broadcast(sender, nmsg);
 
 		// Mission Task
-		MissionManager::LaunchTaskEvent(Enums::EMissionTask::EMOTE, target, sender->GetObjectID().getPureID(), msg.emoteID);
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::EMOTE, target, sender->GetObjectID(), msg.emoteID);
 	}
 };
 

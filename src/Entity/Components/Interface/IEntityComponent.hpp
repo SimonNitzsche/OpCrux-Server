@@ -18,6 +18,7 @@ namespace GM {
 	class AddSkill;
 	class BuildExitConfirmation;
 	class BuildModeSet;
+	class BuyFromVendor;
 	class CancelRailMovement;
 	class Die;
 	class DoneArrangingWithItem;
