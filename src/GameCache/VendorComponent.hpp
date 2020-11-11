@@ -21,21 +21,10 @@ namespace CacheVendorComponent {
 		return FDB::RowInfo();
 	}
 
-	inline float GetBuyScalar(int32_t id) {
-		return *reinterpret_cast<float*>(getRow(id)/**/[1]/**/.getMemoryLocation());
-	}
-
-	inline float GetSellScalar(int32_t id) {
-		return *reinterpret_cast<float*>(getRow(id)/**/[2]/**/.getMemoryLocation());
-	}
-
-	inline float GetRefreshTimeSeconds(int32_t id) {
-		return *reinterpret_cast<float*>(getRow(id)/**/[3]/**/.getMemoryLocation());
-	}
-
-	inline int32_t GetLootMatrixIndex(int32_t id) {
-		return *reinterpret_cast<int32_t*>(getRow(id)/**/[4]/**/.getMemoryLocation());
-	}
+	CRUX_CACHE_ADD_COLUMN_GETTER(1, float, BuyScalar);
+	CRUX_CACHE_ADD_COLUMN_GETTER(2, float, SellScalar);
+	CRUX_CACHE_ADD_COLUMN_GETTER(3, float, RefreshTimeSeconds);
+	CRUX_CACHE_ADD_COLUMN_GETTER(4, std::int32_t, LootMatrixIndex);
 };
 
 #endif // !__GAMECACHE__VENDORCOMPONENT_HPP__
