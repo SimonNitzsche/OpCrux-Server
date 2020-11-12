@@ -47,6 +47,7 @@ private:
 	// Include native scripts
 #include "Entity/NativeScripts/02_server/Map/General/L_TOUCH_MISSION_UPDATE_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp"
+#include "Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp"
@@ -70,7 +71,8 @@ private:
 		{"scripts\\ai\\RACING\\TRACK_GF\\GF_RACE_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__RACING__TRACK_GF__GF_RACE_SERVER>(); }},
 		{"scripts\\ai\\WILD\\L_ALL_CRATE_CHICKEN.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__WILD__L_ALL_CRATE_CHICKEN>(); }},
 		{"ScriptComponent_952_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_0952_script_name__removed>(); }},
-		{"ScriptComponent_1021_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1021_script_name__removed>(); }}
+		{"ScriptComponent_1021_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1021_script_name__removed>(); }},
+		{"ScriptComponent_815_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_DARKLING_MECH>(); }}
 	};
 
 private:

@@ -492,6 +492,7 @@ bool HKXFile::Load(std::string& file) {
 }
 
 void HKX::HKXFile::TestStuff() {
+	return;
 	hkRootLevelContainer* rlc = this->rootLevelContainer;
 	rlc->GetPhysicsData();
 }

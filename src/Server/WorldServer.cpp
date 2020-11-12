@@ -215,6 +215,22 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				auto spawnerPath = reinterpret_cast<FileTypes::LUZ::LUZonePathSpawner*>(pathBase.second);
 				WorldServer* Instance = this;
 
+				auto* spawner = new Entity::GameObject(this, 176);
+				spawner->SetObjectID(spawnerPath->spawnerObjectID);
+
+				LDFCollection ldfCollectionSpawner = {
+					LDF_COLLECTION_INIT_ENTRY(u"respawn", spawnerPath->respawnTime),
+					LDF_COLLECTION_INIT_ENTRY(u"no_auto_spawn", !spawnerPath->activateSpawnerNetworkOnLoad),
+					LDF_COLLECTION_INIT_ENTRY(u"max_to_spawn", spawnerPath->maxToSpawn),
+					LDF_COLLECTION_INIT_ENTRY(u"number_to_maintain", spawnerPath->numberToMaintain),
+					LDF_COLLECTION_INIT_ENTRY(u"spawner_name", spawnerPath->pathName.ToString()),
+					LDF_COLLECTION_INIT_ENTRY(u"spawntemplate", std::int32_t(spawnerPath->spawnedLOT))
+				};
+
+				spawner->PopulateFromLDF(&ldfCollectionSpawner);
+				spawner->Finish();
+				objectsManager->RegisterObject(spawner);
+
 				if (spawnerPath->spawnedLOT == 0) continue;
 				if (!spawnerPath->activateSpawnerNetworkOnLoad) continue;
 
@@ -234,6 +250,8 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 					spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
 					//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
 
+					// Set Spawner
+					spawnedObject->SetSpawner(spawner, i);
 
 					// Populate LDF
 					spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->config);
@@ -311,10 +329,10 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				Logger::log("WRLD", "Received corrupt packet.", LogType::ERR);
 				PacketFactory::General::doDisconnect(rakServer, packet->systemAddress, EDisconnectReason::UNKNOWN_SERVER_ERROR);
 			}
-			catch (std::runtime_error * e) {
+			/*catch (std::runtime_error * e) {
 				Logger::log("WRLD", "[CRASH] " + std::string(e->what()), LogType::ERR);
 				throw std::runtime_error(*e);
-			}
+			}*/
 		}
 	}
 

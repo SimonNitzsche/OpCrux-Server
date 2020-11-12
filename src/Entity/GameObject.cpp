@@ -492,6 +492,9 @@ void Entity::GameObject::Remove() {
 	// Notify spawner of deletion
 	if (spawner != nullptr) {
 		spawner->GetComponent<SpawnerComponent>()->NotifyOfObjectRemoval(this);
+		GM::Die dieGM;
+		auto scriptComp = spawner->GetComponent<ScriptComponent>();
+		if(scriptComp != nullptr) scriptComp->OnDie(this, &dieGM);
 	}
 
 	// Detach parent/child

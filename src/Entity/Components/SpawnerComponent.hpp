@@ -47,6 +47,7 @@ private:
 	float respawnTime;
 	bool respawnVolume;
 	std::u16string respawnVolumeName;
+	std::u16string spawner_name;
 	DataTypes::Vector3 respawnPosition;
 	DataTypes::Quaternion respawnRotation;
 	bool spawnerActiveOnLoad=false;
@@ -149,6 +150,8 @@ public:
 
 		LDF_GET_VAL_FROM_COLLECTION(spawnerActiveOnLoad, collection, u"spawner_active_on_load", true);
 		LDF_GET_VAL_FROM_COLLECTION(spawnTemplate, collection, u"spawntemplate", -1);
+
+		LDF_GET_VAL_FROM_COLLECTION(spawner_name, collection, u"spawner_name", u"");
 	}
 
 	void SetLUZPath() {
@@ -157,6 +160,9 @@ public:
 
 	// Returns true on success and false on fail
 	bool Spawn(bool construct=true) {
+		// TODO: Properly implement networks
+		if (spawner_name != u"") return false;
+
 		WorldServer * Instance = this->owner->GetZoneInstance();
 		
 		// Create
