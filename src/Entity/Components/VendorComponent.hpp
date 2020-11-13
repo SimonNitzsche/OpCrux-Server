@@ -75,7 +75,8 @@ public:
 		response.iResult = 3; // vendor purchase fail
 
 		// Get base cost
-		auto itemCompRow = CacheComponentsRegistry::getRowByType(msg.item, 11);
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(msg.item, 11);
+		auto itemCompRow = CacheItemComponent::getRow(itemCompID);
 		auto baseValue = CacheItemComponent::GetBaseValue(itemCompRow);
 
 		// Use multiplier to get real cost
