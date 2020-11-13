@@ -67,6 +67,11 @@ public:
 				statsComponent = new StatsComponent(-1);
 			}
 		}
+
+		auto cacheRow = CacheRebuildComponent::getRow(GetComponentID());
+
+		ScriptedActivityComponent::activityID = CacheRebuildComponent::GetActivityID(cacheRow);
+
 	}
 
 	void Awake() {
@@ -93,6 +98,7 @@ public:
 
 				owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
 
+				CompleteActivity();
 				buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
 			}
 		}
@@ -165,11 +171,14 @@ public:
 		vlntDth=7:1
 		*/
 
+		ScriptedActivityComponent::PopulateFromLDF(collection);
+
 		auto cacheRow = CacheRebuildComponent::getRow(GetComponentID());
 
 		LDF_GET_VAL_FROM_COLLECTION(completionTime, collection, u"compTime", CacheRebuildComponent::GetCompleteTime(cacheRow));
 		LDF_GET_VAL_FROM_COLLECTION(resetTime, collection, u"rebuild_reset_time", CacheRebuildComponent::GetResetTime(cacheRow));
 		LDF_GET_VAL_FROM_COLLECTION(timeSmash, collection, u"tmeSmsh", CacheRebuildComponent::GetTimeBeforeSmash(cacheRow));
+		
 
 		std::u16string wRebuildPos;
 		LDF_GET_VAL_FROM_COLLECTION(wRebuildPos, collection, u"rebuild_activators", u"NULL");

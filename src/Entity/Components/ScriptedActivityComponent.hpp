@@ -8,6 +8,8 @@
 
 #include "DataTypes/LWOOBJID.hpp"
 
+#include "Missions/MissionManager.hpp"
+
 class ScriptedActivityComponent : public IEntityComponent {
 private:
 
@@ -16,6 +18,8 @@ private:
 	std::map<DataTypes::LWOOBJID, std::vector<std::float_t>> playerActivityData;
 
 public:
+
+	std::int32_t activityID = -1;
 
 	ScriptedActivityComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
@@ -65,9 +69,15 @@ public:
 		this->owner->SetDirty();
 	}
 
-	void PopulateFromLDF(LDFCollection collection) {
+	void PopulateFromLDF(LDFCollection * collection) {
 		// TODO
-		
+		LDF_GET_VAL_FROM_COLLECTION(activityID, collection, u"activityID", activityID);
+	}
+
+	void CompleteActivity() {
+		for (auto player : playerActivityData) {
+			MissionManager::LaunchTaskEvent(Enums::EMissionTask::WIN_ACTIVITY, owner, player.first, 1, activityID);
+		}
 	}
 
 };

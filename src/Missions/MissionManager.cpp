@@ -86,7 +86,7 @@ void MissionManager::GetAllNonMissionsThatAreMissingByTaskType(DataTypes::LWOOBJ
     }
 }
 
-void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameObject * caster, DataTypes::LWOOBJID player, std::int32_t updateVal) {
+void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameObject * caster, DataTypes::LWOOBJID player, std::int32_t updateVal, std::int32_t extraParam) {
     WorldServer* Instance = caster->GetZoneInstance();
     std::int64_t dbPlayerID = player.getPureID();
 
@@ -180,8 +180,39 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 			}
 			break;
 		}
-        case Enums::EMissionTask::WIN_ACTIVITY:
-            break;
+        case Enums::EMissionTask::WIN_ACTIVITY: {
+			for (auto it = currentMissions.begin(); it != currentMissions.end(); ++it) {
+				auto missionModel = *it;
+
+
+				auto missionTasksProgress = StringUtils::splitString(it->progress, '|');
+				auto updateTasks = possibleMissions.at(it->missionID);
+				auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
+
+				for (int i = 0; i < missionTasksProgress.size(); ++i) {
+
+					auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
+					if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
+
+						auto iTarget = extraParam;
+
+						//if (CacheMissionTasks::GetTarget(cacheMissionTasksRow) != caster->GetLOT()) continue;
+						if (CacheMissionTasks::GetTargetValue(cacheMissionTasksRow) < std::stoi(missionTasksProgress.at(i)) + updateVal) continue;
+
+						std::int32_t target = CacheMissionTasks::GetTarget(cacheMissionTasksRow);
+						
+						if (iTarget == target) {
+							missionTasksProgress.at(i) = std::to_string(std::stoi(missionTasksProgress.at(i)) + updateVal);
+							UpdateMissionTask(caster, playerObject, missionModel.missionID, 1 << (i + 1), std::stoi(missionTasksProgress.at(i)));
+						}
+					}
+				}
+
+				missionModel.progress = StringUtils::StringVectorToString(missionTasksProgress, '|');
+				updateMissions.push_back(missionModel);
+			}
+			break;
+		}
         case Enums::EMissionTask::COLLECTIBLE: {
             for (auto it = currentMissions.begin(); it != currentMissions.end(); ++it) {
                 auto missionModel = *it;
