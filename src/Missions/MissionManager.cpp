@@ -121,13 +121,13 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 				auto updateTasks = possibleMissions.at(it->missionID);
 				auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
 
+				auto iTarget = updateVal;
+				updateVal = 1;
+
 				for (int i = 0; i < missionTasksProgress.size(); ++i) {
 
 					auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
 					if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
-
-						auto iTarget = updateVal;
-						updateVal = 1;
 
 						//if (CacheMissionTasks::GetTarget(cacheMissionTasksRow) != caster->GetLOT()) continue;
 						if (CacheMissionTasks::GetTargetValue(cacheMissionTasksRow) < std::stoi(missionTasksProgress.at(i)) + updateVal) continue;
@@ -285,12 +285,14 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 				auto updateTasks = possibleMissions.at(it->missionID);
 				auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
 
+				auto iTarget = updateVal;
+				updateVal = 1;
+
 				for (int i = 0; i < missionTasksProgress.size(); ++i) {
 
 					auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
 					if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
-						auto iTarget = updateVal;
-						updateVal = 1;
+						
 
 						if (caster->GetLOT() != CacheMissionTasks::GetTarget(cacheMissionTasksRow)) continue;
 						if (CacheMissionTasks::GetTargetValue(cacheMissionTasksRow) < std::stoi(missionTasksProgress.at(i)) + 1) continue;
@@ -332,13 +334,13 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 				auto updateTasks = possibleMissions.at(it->missionID);
 				auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
 
+				auto skillID = extraParam;
+				updateVal = 1;
+
 				for (int i = 0; i < missionTasksProgress.size(); ++i) {
 
 					auto cacheMissionTasksRow = *std::next(cacheMissionTasks.begin(), i);
 					if (CacheMissionTasks::GetTaskType(cacheMissionTasksRow) == std::int32_t(taskType)) {
-
-						auto skillID = updateVal;
-						updateVal = 1;
 
 						//if (CacheMissionTasks::GetTarget(cacheMissionTasksRow) != caster->GetLOT()) continue;
 						if (CacheMissionTasks::GetTargetValue(cacheMissionTasksRow) < std::stoi(missionTasksProgress.at(i)) + updateVal) continue;

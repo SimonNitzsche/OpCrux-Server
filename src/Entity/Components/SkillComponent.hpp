@@ -106,7 +106,7 @@ public:
 		}
 		GameMessages::Broadcast(this->owner, echoGM, true);
 
-		MissionManager::LaunchTaskEvent(EMissionTask::USE_SKILL, sender, sender->GetObjectID(), currentSkill);
+		MissionManager::LaunchTaskEvent(EMissionTask::USE_SKILL, sender, sender->GetObjectID(), 1, currentSkill);
 
 		UnCast(msg.sBitStream);
 	}
@@ -143,10 +143,27 @@ public:
 		mutex_behaviorHandles.unlock();
 	}
 
+	std::int32_t GetHotbarSlotFromEquipLocation(std::string equipLocation) {
+		if (equipLocation == "special_r")
+			return 0;
+		if (equipLocation == "special_l")
+			return 1;
+		if (equipLocation == "clavicle")
+			return 2;
+		if (equipLocation == "hair" || equipLocation == "head")
+			return 3;
+		return 5;
+	}
+
 	inline void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {
 		// Add skills
 		Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.itemToEquip);
 		if (item == nullptr) return;
+
+		IEntityComponent* invComp = item->GetComponentByType(11);
+		if (invComp == nullptr) return;
+		auto strEquipLocation = CacheItemComponent::GetEquipLocation(invComp->GetComponentID());
+
 
 		auto rm = CacheObjectSkills::getRow(item->GetLOT());
 		auto rf = rm.flatIt();
@@ -156,7 +173,7 @@ public:
 			addSkillGM.skillID = CacheObjectSkills::GetSkillID(r);
 			addSkillGM.castType = CacheObjectSkills::GetCastOnType(r);
 			addSkillGM.AICombatWeight = CacheObjectSkills::GetAICombatWeight(r);
-			addSkillGM.slotID = 0;
+			addSkillGM.slotID = GetHotbarSlotFromEquipLocation(strEquipLocation);
 			GameMessages::Broadcast(sender, addSkillGM);
 			//}
 		}
