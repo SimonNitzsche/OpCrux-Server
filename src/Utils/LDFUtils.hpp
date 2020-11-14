@@ -101,6 +101,8 @@ public:
 			output += char16_t(0x003a); // :
 			output += entry->GetValueAsWString();
 		}
+		// Null terminator to make sure
+		//output += char16_t(0x0000);
 		return output;
 	}
 	static LDFCollection MakeCollectionFromLDFVector(std::vector<LDFEntry> & vec) {

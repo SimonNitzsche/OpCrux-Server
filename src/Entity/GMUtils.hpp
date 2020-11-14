@@ -49,6 +49,7 @@
 	mfun(EquipInventory);\
 	mfun(FireEventServerSide);\
 	mfun(HasBeenCollected);\
+	mfun(MatchRequest);\
 	mfun(MissionDialogueOK);\
 	mfun(ModifyGhostingDistance);\
 	mfun(ModularAssemblyNIFCompleted);\

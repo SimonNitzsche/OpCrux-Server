@@ -31,6 +31,7 @@ namespace GM {
 	class FinishArrangingWithItem;
 	class FireEventServerSide;
 	class HasBeenCollected;
+	class MatchRequest;
 	class MissionDialogueOK;
 	class ModifyGhostingDistance;
 	class ModularAssemblyNIFCompleted;

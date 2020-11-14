@@ -31,6 +31,10 @@ private:
 	
 	enum class WorldTransitionState : std::uint8_t {IN_WORLD, ENTERING_WORLD, LEAVING_WORLD} worldTransitionState = WorldTransitionState::ENTERING_WORLD;
 
+	struct MatchLobby {
+		std::int32_t t_0_activityID = 0;
+		std::int32_t t_1_lobbyReady = 0;
+	} matchLobby;
 
 public:
 	SystemAddress clientAddress = UNASSIGNED_SYSTEM_ADDRESS;
@@ -363,6 +367,66 @@ public:
 
 		// Mission Task
 		MissionManager::LaunchTaskEvent(Enums::EMissionTask::EMOTE, target, sender->GetObjectID(), msg.emoteID);
+	}
+
+	void OnMatchRequest(Entity::GameObject* sender, GM::MatchRequest& msg) {
+		GM::MatchResponse response;
+		
+		response.response = 0;
+
+		std::list<GM::MatchUpdate> updates = {};
+
+		if (msg.type == 0) {
+			matchLobby.t_0_activityID = msg.value;
+
+			GM::MatchUpdate update00;
+
+			update00.type = 0;
+			update00.data = {
+				LDF_COLLECTION_INIT_ENTRY(u"player", owner->GetObjectID()),
+				LDF_COLLECTION_INIT_ENTRY(u"playerName", owner->GetName())
+			};
+			updates.push_back(update00);
+
+			update00.type = 3;
+			update00.data = {
+				LDF_COLLECTION_INIT_ENTRY(u"time", 60.0f)
+			};
+			updates.push_back(update00);
+
+		}
+
+		else if (msg.type == 1) {
+			matchLobby.t_1_lobbyReady = msg.value;
+
+			GM::MatchUpdate update00;
+
+			update00.type = 5;
+			update00.data = {
+				LDF_COLLECTION_INIT_ENTRY(u"player", owner->GetObjectID())
+			};
+			//updates.push_back(update00);
+
+			update00.type = 4;
+			update00.data = {
+				LDF_COLLECTION_INIT_ENTRY(u"time", 5.0f),
+			};
+			updates.push_back(update00);
+
+			ClientSession * clSession = owner->GetZoneInstance()->sessionManager.GetSession(owner->GetObjectID());
+			ZoneInfo zi;
+
+			zi.zoneID = 1101;
+
+			masterServerBridge->ClientRequestMapChange(*clSession, zi);
+		}
+
+		GameMessages::Send(owner, owner->GetObjectID(), response);
+
+		for (auto update : updates) {
+			GameMessages::Send(owner, owner->GetObjectID(), update);
+		}
+
 	}
 };
 
