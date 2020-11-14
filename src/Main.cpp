@@ -356,6 +356,12 @@ void TestPhysics() {
 }
 
 int main(int argc, char* argv[]) {
+#ifdef _DEBUG
+	Logger::log("MAIN", "Server is running in Debug");
+#else
+	Logger::log("MAIN", "Server is running in Release");
+#endif
+
 	FileUtils::ChangeDirectory();
 	Configuration::ConfigurationManager::Load();
 	ServerInfo::init();
