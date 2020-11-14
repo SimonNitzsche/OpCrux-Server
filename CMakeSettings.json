@@ -4,16 +4,21 @@
 			"name": "x64-Release",
 			"generator": "Ninja",
 			"configurationType": "Release",
-			"inheritEnvironments": [ "msvc_x64_x64" ],
-			"buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
-			"installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
+			"buildRoot": "${projectDir}\\out\\build\\${name}",
+			"installRoot": "${projectDir}\\out\\install\\${name}",
 			"cmakeCommandArgs": "",
 			"buildCommandArgs": "-v",
 			"ctestCommandArgs": "",
+			"inheritEnvironments": [ "msvc_x64_x64" ],
 			"variables": [
 				{
 					"name": "BUILD_SHARED_LIBS",
-					"value": "True",
+					"value": "False",
+					"type": "BOOL"
+				},
+				{
+					"name": "USE_MSVC_RUNTIME_LIBRARY_DLL",
+					"value": "False",
 					"type": "BOOL"
 				}
 			]

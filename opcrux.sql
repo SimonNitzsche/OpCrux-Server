@@ -19,8 +19,8 @@ CREATE TABLE [dbo].[Characters](
 	[positionX] [float] NOT NULL,
 	[positionY] [float] NOT NULL,
 	[positionZ] [float] NOT NULL,
-	[shirtObjectID] [int] NOT NULL,
-	[pantsObjectID] [int] NOT NULL,
+	[shirtObjectID] [bigint] NOT NULL,
+	[pantsObjectID] [bigint] NOT NULL,
 	[uScore] [int] NOT NULL,
 	[uLevel] [int] NOT NULL,
 	[currency] [int] NOT NULL,
@@ -103,6 +103,11 @@ CREATE TABLE [dbo].[Missions] (
 	[repeatCount] [int],
 	[time] [bigint],
 	[chosenReward] [int]
+) ON [PRIMARY]
+GO
+CREATE TABLE [dbo].[UnlockedEmotes] (
+	[playerID] [bigint],
+	[emoteID] [int]
 ) ON [PRIMARY]
 GO
 
