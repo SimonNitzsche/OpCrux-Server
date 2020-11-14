@@ -105,6 +105,11 @@ CREATE TABLE [dbo].[Missions] (
 	[chosenReward] [int]
 ) ON [PRIMARY]
 GO
+CREATE TABLE [dbo].[UnlockedEmotes] (
+	[playerID] [bigint],
+	[emoteID] [int]
+) ON [PRIMARY]
+GO
 
 USE OPCRUX_AD;
 CREATE TABLE [dbo].[Accounts](
