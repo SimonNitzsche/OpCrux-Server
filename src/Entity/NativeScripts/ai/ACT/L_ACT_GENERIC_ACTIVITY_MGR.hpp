@@ -5,6 +5,8 @@
 #include "Entity/GameObject.hpp"
 #include "Entity/NativeScript.hpp"
 
+#include "Entity/Components/MinigameComponent.hpp"
+
 class NATIVESCRIPT__AI__ACT__L_ACT_GENERIC_ACTIVITY_MGR : public NativeScript {
 	
 public:
@@ -63,6 +65,22 @@ public:
 	//    end
 	//
 	//end
+	void UpdatePlayer(Entity::GameObject* self, Entity::GameObject* player, bool removePlayer = false) {
+		ScriptedActivityComponent* actComp = self->GetComponent<ScriptedActivityComponent>();
+		if(actComp == nullptr) actComp = self->GetComponent<MinigameComponent>();
+
+		if (removePlayer) {
+			// -- remove the user
+			actComp->RemovePlayerFromActivity(player->GetObjectID());
+		}
+		else {
+			// -- add the new user
+			actComp->AddPlayerToActivity(player->GetObjectID());
+
+			// -- start the activity for the new user
+			InitialActivityScore(self, player, 0);
+		}
+	}
 	//
 	//----------------------------------------------------------------
 	//-- Stores the start time for the player in the activity and
@@ -71,6 +89,13 @@ public:
 	//function InitialActivityScore(self, player, scoreVar)
 	//    self:SetActivityUserData{ userID = player, typeIndex = 0, value = tonumber(scoreVar) }
 	//end
+	void InitialActivityScore(Entity::GameObject* self, Entity::GameObject* player, std::float_t scoreVal) {
+		ScriptedActivityComponent* actComp = self->GetComponent<ScriptedActivityComponent>();
+		if (actComp == nullptr) actComp = self->GetComponent<MinigameComponent>();
+
+		actComp->SetActivityUserData(player, 0, scoreVal);
+	}
+
 	//
 	//----------------------------------------------------------------
 	//-- adds the valueVar to the existing value of the index for the 
@@ -81,6 +106,14 @@ public:
 	//    --print(newValue)
 	//    self:SetActivityUserData{ userID = player, typeIndex = valueIndex, value = newValue }    
 	//end
+	void UpdateActivityValue(Entity::GameObject* self, Entity::GameObject* player, int valueIndex, std::float_t valueVar) {
+		ScriptedActivityComponent* actComp = self->GetComponent<ScriptedActivityComponent>();
+		if (actComp == nullptr) actComp = self->GetComponent<MinigameComponent>();
+
+		auto newValue = actComp->GetActivityUserData(player, valueIndex) + valueVar;
+
+		actComp->SetActivityUserData(player, valueIndex, newValue);
+	}
 	//
 	//----------------------------------------------------------------
 	//-- Stores a vaariable for the player in the activity
@@ -88,6 +121,12 @@ public:
 	//function SetActivityValue(self, player, valueIndex, valueVar)
 	//    self:SetActivityUserData{ userID = player, typeIndex = valueIndex, value = tonumber(valueVar) }
 	//end
+	void SetActivityValue(Entity::GameObject* self, Entity::GameObject* player, int valueIndex, std::float_t valueVar) {
+		ScriptedActivityComponent* actComp = self->GetComponent<ScriptedActivityComponent>();
+		if (actComp == nullptr) actComp = self->GetComponent<MinigameComponent>();
+
+		actComp->SetActivityUserData(player, valueIndex, valueVar);
+	}
 	//
 	//----------------------------------------------------------------
 	//-- Gets the value of the activity index for the player
@@ -95,6 +134,12 @@ public:
 	//function GetActivityValue(self, player, valueIndex)
 	//    return self:GetActivityUserData{ userID = player, typeIndex = valueIndex}.outValue
 	//end
+	std::float_t GetActivityValue(Entity::GameObject* self, Entity::GameObject* player, int valueIndex) {
+		ScriptedActivityComponent* actComp = self->GetComponent<ScriptedActivityComponent>();
+		if (actComp == nullptr) actComp = self->GetComponent<MinigameComponent>();
+
+		return actComp->GetActivityUserData(player, valueIndex);
+	}
 	//
 	//----------------------------------------------------------------
 	//-- StopActivity message

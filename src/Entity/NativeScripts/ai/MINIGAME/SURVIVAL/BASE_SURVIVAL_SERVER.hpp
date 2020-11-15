@@ -7,7 +7,8 @@
 #include "Entity/NativeScripts/ai/ACT/L_ACT_GENERIC_ACTIVITY_MGR.hpp"
 
 class NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER : public NATIVESCRIPT__AI__ACT__L_ACT_GENERIC_ACTIVITY_MGR {
-
+	friend class NativeScript;
+	friend class NATIVESCRIPT__AI__ACT__L_ACT_GENERIC_ACTIVITY_MGR;
 public:
 
 	//--------------------------------------------------------------
@@ -50,7 +51,24 @@ public:
 		std::map<std::string, std::list<std::list<int>>> randMobSet = {};
 	} tMobSets;
 	//local tSpawnerNetworks = {}
+	struct NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks_SpawnerNetworkSet_SpawnerNetwork {
+		std::list<std::u16string> spawnerName;
+		std::u16string spawnerNum;
+		bool bIsLocked;
+		bool bIsActive;
+	};
+	struct NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks_SpawnerNetworkSet {
+		std::u16string set = u"";
+		std::list<NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks_SpawnerNetworkSet_SpawnerNetwork> networks;
+	};
+	struct NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks {
+		NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks_SpawnerNetworkSet baseNetworks;
+		NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks_SpawnerNetworkSet randNetworks;
+		NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks_SpawnerNetworkSet rewardNetworks;
+		NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks_SpawnerNetworkSet smashNetworks;
+	} tSpawnerNetworks;
 	//local missionsToUpdate = {}
+	std::map<std::int32_t, std::int32_t> missionsToUpdate = {};
 	//
 	//--============================================================
 	//-- Script only local variables
@@ -63,6 +81,16 @@ public:
 	//    iRewardTick = 1,        -- number of rewards given
 	//    iNumberOfPlayers = 0,	-- number of players given from ZoneLoadedInfo
 	//}
+
+	struct NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_gGamestate {
+		std::list<std::string> tPlayers = {};				// -- players who have entered the game
+		std::list<std::string> tWaitingPlayers = {};			// -- players who haven't accepted yet
+		int iTotalSpawned = 0;									// -- total number of spawned mobs
+		int iWaveNum = 1;										// -- current wave number
+		int iRewardTick = 1;									// -- number of rewards given
+		int iNumberOfPlayers = 0;								// -- number of players given from ZoneLoadedInfo
+	} gGamestate;
+
 	//--//////////////////////////////////////////////////////////////////////////////////
 	//
 	//-- helper function that prints out a variable to the log
@@ -106,6 +134,11 @@ public:
 	//        self:SetVar('SurvivalStartupComplete', true)
 	//    end
 	//end
+	void basePlayerReady(Entity::GameObject* self, GM::PlayerReady msg, void* newMsg) {
+		if (!self->GetVar(u"SurvivalStartupComplete")) {
+			self->SetVar(u"SurvivalStartupComplete", true);
+		}
+	}
 	//
 	//----------------------------------------------------------------
 	//-- Startup of the object
@@ -121,6 +154,13 @@ public:
 	//--    dumpVar('tSpawnerNetworks', tSpawnerNetworks, ' ')
 	//--    print('*****************************************************')
 	//end
+	void baseStartup(Entity::GameObject* self, void* newMsg) {
+		self->SetVar(u"playersAccepted", 0);
+		self->SetVar(u"playersReady", false);
+		
+		ScriptedActivityComponent* minigameComp = self->GetComponent<ScriptedActivityComponent>();
+		minigameComp->MiniGameSetParameters({ LDF_COLLECTION_INIT_ENTRY(u"numTeams", 1), LDF_COLLECTION_INIT_ENTRY(u"playersPerTeam", 4) });
+	}
 	//
 	//function playerConfirmed(self)
 	//    local playersConfirmed = {}
@@ -187,6 +227,46 @@ public:
 	//        playerID:SetImagination{imagination = playerID:GetMaxImagination{}.imagination}
 	//    end         
 	//end
+	void basePlayerLoaded(Entity::GameObject* self, GM::PlayerLoaded msg, void* newMsg) {
+		//  -- adding the players to the gGamestate tables
+		gGamestate.tPlayers.push_back(std::to_string(msg.playerID));
+		gGamestate.tWaitingPlayers.push_back(std::to_string(msg.playerID));
+
+		// -- adding player to mini game team
+		//    self:MiniGameAddPlayer{playerID = msg.playerID}    
+		//    self:MiniGameSetTeam{playerID = msg.playerID, teamID = 1}
+		//    --print('my team is ' .. self:MiniGameGetTeam{ playerID = msg.playerID}.teamID)
+		// -- setting up player ui
+		self->SetNetworkedVar(u"Define_Player_To_UI", std::to_string(msg.playerID));
+		
+		// -- freeze the player movement/controls
+		if (!self->GetNetworkedVar(u"wavesStarted")) {
+			// -- updating the scoreboard for the new players
+			self->SetNetworkedVar(u"Update_ScoreBoard_Players", gGamestate.tPlayers);
+
+			self->SetNetworkedVar(u"Show_ScoreBoard", true);
+		}
+		//        
+		//    -- move players to correct spawn locations
+		SetPlayerSpawnPoints(self);  
+
+		GameMessages::Send(self->GetZoneInstance()->objectsManager->GetObjectByID(msg.playerID), msg.playerID, GM::PlayerSetCameraCyclingMode());
+
+		if (!self->GetNetworkedVar(u"wavesStarted")) {
+			// playerConfirmed(self)
+		}
+		else {
+			auto playerID = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.playerID);
+			if (playerID == nullptr) return;
+			UpdatePlayer(self, playerID);
+			// GetLeaderboardData(self, playerID, self:GetActivityID().activityID, 50)
+			// --set player stats to max
+			// playerID:SetHealth{health = playerID:GetMaxHealth{}.health}
+			// --print('max health = ' .. playerID:GetMaxHealth{}.health)
+			// playerID:SetArmor{armor = playerID:GetMaxArmor{}.armor}
+			// playerID:SetImagination{imagination = playerID:GetMaxImagination{}.imagination}
+		}
+	}
 	//
 	//----------------------------------------------------------------
 	//-- Player has exited the map
@@ -317,6 +397,17 @@ public:
 	//    tSpawnerNetworks = passedSpawnerNetworks
 	//    missionsToUpdate = passedMissionsToUpdate
 	//end
+
+	void setGameVariables(NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_gConstants passedConstants,
+						  NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tMobSets passedMobSets,
+						  NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tSpawnerNetworks passedSpawnerNetworks,
+						  std::map<std::int32_t, std::int32_t> passedMissionsToUpdate) {
+		gConstants = passedConstants;
+		tMobSets = passedMobSets;
+		tSpawnerNetworks = passedSpawnerNetworks;
+		missionsToUpdate = passedMissionsToUpdate;
+	}
+
 	//----------------------------------------------------------------
 	//-- Custom function: Checks to see if all players have accepted,
 	//-- if they have then the game is started.
@@ -449,6 +540,30 @@ public:
 	//        end 
 	//    end
 	//end
+
+	void SetPlayerSpawnPoints(Entity::GameObject* self) {
+		int i = 0;
+		for (auto it = gGamestate.tPlayers.begin(); it != gGamestate.tPlayers.end(); ++it) {
+			++i;
+			auto playerID = self->GetZoneInstance()->objectsManager->GetObjectByID(std::stoull(*it));
+
+			if (playerID == nullptr) return;
+
+			auto spawnObj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(StringUtils::to_u16string("P" + std::to_string(i) + "_Spawn")).at(0);
+			if (spawnObj) {
+				auto pos = spawnObj->GetPosition();
+				auto rot = spawnObj->GetRotation();
+
+				GM::Teleport tele;
+				tele.pos = pos;
+				tele.rotation = rot;
+				tele.bSetRotation = true;
+				GameMessages::Send(playerID, playerID->GetObjectID(), tele);
+			}
+			
+		}
+	}
+
 	//
 	//----------------------------------------------------------------
 	//-- Custom function: Happens when all players have died, this 

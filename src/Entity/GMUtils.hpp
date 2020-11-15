@@ -62,6 +62,7 @@
 	mfun(PickupItem);\
 	mfun(PlayEmote);\
 	mfun(PlayerLoaded);\
+	mfun(PlayerReady); \
 	mfun(PopEquippedItemsState);\
 	mfun(ReadyForUpdates);\
 	mfun(RebuildCancel);\

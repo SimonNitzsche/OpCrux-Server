@@ -134,51 +134,23 @@ namespace PacketFactory {
 			returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EWorldPacketID::CLIENT_LOGIN_REQUEST);
 			returnBS.Write(returnBSHead);
 			//Data
-			RakNet::BitStream outerWrapperBS;
 
-			RakNet::BitStream contentWrapperBS;
-			
-			std::vector<LDFEntry> ldfEntries;
-			ldfEntries.emplace_back(u"template", std::int32_t(go->GetLOT()));
-			ldfEntries.emplace_back(u"objid", clientSession->actorID);
-			ldfEntries.emplace_back(u"xmlData", go->GenerateXML());
-			ldfEntries.emplace_back(u"name", go->GetName());
-			ldfEntries.emplace_back(u"accountID", std::int64_t(clientSession->accountID));
-
-			std::string& xmlFN = go->GetNameStr() + ".xml";
-			FileUtils::SaveTextFile(xmlFN, go->GenerateXML());
+			// std::string& xmlFN = go->GetNameStr() + ".xml";
+			// FileUtils::SaveTextFile(xmlFN, go->GenerateXML());
 
 			std::int64_t levelid = clientSession->currentZone.zoneID | (clientSession->currentZone.zoneInstance << 16) | (clientSession->currentZone.zoneClone << 32);
-			ldfEntries.emplace_back(u"levelid", levelid);
 
-			contentWrapperBS.Write(std::uint32_t(ldfEntries.size()));
-			for (auto entry : ldfEntries) {
-					StringUtils::writeWStringToBitStream<std::uint8_t>(&contentWrapperBS, entry.key, true);
-				contentWrapperBS.Write<std::uint8_t>(entry.type);
-				entry.WriteToBitstream(&contentWrapperBS);
-			}
 
-			bool isContentCompressed = false;
-			outerWrapperBS.Write<std::uint8_t>(isContentCompressed);
-			if (isContentCompressed) {
-				// TODO
-				// [u32] size of uncompressed data
-				// [u32] size of compressed data
-			}
+			LDFCollection ldfEntries = {
+				LDF_COLLECTION_INIT_ENTRY(u"template", std::int32_t(go->GetLOT())),
+				LDF_COLLECTION_INIT_ENTRY(u"objid", clientSession->actorID),
+				LDF_COLLECTION_INIT_ENTRY(u"xmlData", go->GenerateXML()),
+				LDF_COLLECTION_INIT_ENTRY(u"name", go->GetName()),
+				LDF_COLLECTION_INIT_ENTRY(u"accountID", std::int64_t(clientSession->accountID)),
+				LDF_COLLECTION_INIT_ENTRY(u"levelid", levelid)
+			};
 
-			//char * cwbsd; int cwbsl;
-			//contentWrapperBS.Read(cwbsd, cwbsl);
-			//outerWrapperBS.Write(cwbsd, cwbsl);
-			std::string contentWrapperData((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
-			outerWrapperBS.Write((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
-
-			// Write
-			returnBS.Write<std::uint32_t>(outerWrapperBS.GetNumberOfBytesUsed());
-			//char * owbsd; int owbsl;
-			//outerWrapperBS.Read(owbsd, owbsl);
-			//returnBS.Write(owbsd, owbsl);
-			std::string outerWrapperData((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
-			returnBS.Write((char*)outerWrapperBS.GetData(), outerWrapperBS.GetNumberOfBytesUsed());
+			LDFUtils::SerializeCollection(returnBS, ldfEntries);
 
 			char * finalPtr = (char*)returnBS.GetData();
 

@@ -298,7 +298,9 @@ public:
 		GM::PlayerReady nmsg;
 		auto Instance = this->owner->GetZoneInstance();
 		GameMessages::Send(Instance, this->clientAddress, Instance->zoneControlObject->GetObjectID(), nmsg);
+		Instance->zoneControlObject->OnPlayerReady(this->owner, nmsg);
 		GameMessages::Send(Instance, this->clientAddress, this->owner->GetObjectID(), nmsg);
+		Instance->zoneControlObject->OnPlayerLoaded(this->owner, msg);
 	}
 
 

@@ -133,6 +133,37 @@ public:
 
 		return MakeLDFEntryFromWStringData(key, type, typeDefined ? valFinal : type_val.at(0));
 	}
+
+	static void SerializeCollection(RakNet::BitStream & bs, LDFCollection & collection) {
+		RakNet::BitStream outerWrapperBS;
+		RakNet::BitStream contentWrapperBS;
+		contentWrapperBS.Write(std::uint32_t(collection.size()));
+		for (auto it = collection.begin(); it != collection.end(); ++it) {
+			StringUtils::writeWStringToBitStream<std::uint8_t>(&contentWrapperBS, it->second.key, true);
+			contentWrapperBS.Write<std::uint8_t>(it->second.type);
+			it->second.WriteToBitstream(&contentWrapperBS);
+		}
+
+		bool isContentCompressed = false;
+		outerWrapperBS.Write<std::uint8_t>(isContentCompressed);
+		if (isContentCompressed) {
+			// TODO
+			// [u32] size of uncompressed data
+			// [u32] size of compressed data
+		}
+
+		//char * cwbsd; int cwbsl;
+		//contentWrapperBS.Read(cwbsd, cwbsl);
+		//outerWrapperBS.Write(cwbsd, cwbsl);
+		std::string contentWrapperData((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
+		outerWrapperBS.Write((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
+
+		// Write
+		bs.Write<std::uint32_t>(outerWrapperBS.GetNumberOfBytesUsed());
+
+		std::string outerWrapperData((char*)contentWrapperBS.GetData(), contentWrapperBS.GetNumberOfBytesUsed());
+		bs.Write((char*)outerWrapperBS.GetData(), outerWrapperBS.GetNumberOfBytesUsed());
+	}
 };
 
 #endif 

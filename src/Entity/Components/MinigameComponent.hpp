@@ -4,8 +4,6 @@
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "Entity/Components/ScriptedActivityComponent.hpp"
 
-using namespace DataTypes;
-
 class MinigameComponent : public ScriptedActivityComponent {
 	friend class ScriptedActivityComponent;
 private:

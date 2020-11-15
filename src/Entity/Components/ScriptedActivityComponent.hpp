@@ -69,6 +69,36 @@ public:
 		this->owner->SetDirty();
 	}
 
+	void SetActivityUserData(Entity::GameObject* userID, int typeIndex, std::float_t value) {
+		SetActivityUserData(userID->GetObjectID(), typeIndex, value);
+	}
+
+	void SetActivityUserData(DataTypes::LWOOBJID userID, int typeIndex, std::float_t value) {
+		if (typeIndex > 10) return;
+		for (auto it = playerActivityData.begin(); it != playerActivityData.end(); ++it) {
+			if (it->first == userID) {
+				it->second.at(typeIndex) = value;
+				return;
+			}
+		}
+
+		_componentDirty = true;
+		owner->SetDirty();
+	}
+
+	std::float_t GetActivityUserData(Entity::GameObject* userID, int typeIndex) {
+		return GetActivityUserData(userID->GetObjectID(), typeIndex);
+	}
+
+	std::float_t GetActivityUserData(DataTypes::LWOOBJID userID, int typeIndex) {
+		if (typeIndex > 10) return 0.0f;
+		for (auto it = playerActivityData.begin(); it != playerActivityData.end(); ++it) {
+			if (it->first == userID) {
+				return it->second.at(typeIndex);
+			}
+		}
+	}
+
 	void PopulateFromLDF(LDFCollection * collection) {
 		// TODO
 		LDF_GET_VAL_FROM_COLLECTION(activityID, collection, u"activityID", activityID);
@@ -78,6 +108,10 @@ public:
 		for (auto player : playerActivityData) {
 			MissionManager::LaunchTaskEvent(Enums::EMissionTask::WIN_ACTIVITY, owner, player.first, 1, activityID);
 		}
+	}
+
+	void MiniGameSetParameters(LDFCollection parameters) {
+
 	}
 
 };

@@ -134,6 +134,16 @@ public:
 		}
 	}
 
+	void OnPlayerReady(Entity::GameObject* sender, GM::PlayerReady& msg) {
+		if (instance)
+			instance->onPlayerReady(owner, msg);
+	}
+
+	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded& msg) {
+		if (instance)
+			instance->onPlayerLoaded(owner, msg);
+	}
+
 	void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK & msg) {
 		if (instance)
 			instance->onMissionDialogueOK(owner, msg);
@@ -244,7 +254,11 @@ public:
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Script Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write(false);
+			LDFCollection netConf = owner->GetNetworkedConfig();
+			factory->Write(netConf.size() != 0);
+			if (netConf.size() != 0) {
+				LDFUtils::SerializeCollection(*factory, netConf);
+			}
 		}
 	}
 

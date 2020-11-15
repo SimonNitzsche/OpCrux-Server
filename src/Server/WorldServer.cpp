@@ -535,29 +535,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Logger::log("WRLD", "Received Game Message ID #" + std::to_string(messageID));
 				
-				// StartSkill, we use it currently for debugging purpose.
-				// Following code logs the nearest object around the player when punching.
-				if (messageID == 0x77) {
-					Entity::GameObject * player = objectsManager->GetObjectByID(objectID);
-					DataTypes::Vector3 playerPos = player->GetPosition();
-					float nearestDistance = INFINITY;
-					Entity::GameObject * nearestObject = nullptr;
-					for (auto obj : objectsManager->GetObjects()) {
-						if (obj != player) {
-							DataTypes::Vector3 objPos;
-							objPos = obj->GetPosition();
-
-							float distance = Vector3::Distance(playerPos, objPos);
-							if (distance < nearestDistance) {
-								nearestDistance = distance;
-								nearestObject = obj;
-							}
-						}
-					}
-
-					Logger::log("WRLD", "Nearest Object is " + (std::string)CacheObjects::GetName(nearestObject->GetLOT()) + " with LOT " + std::to_string(nearestObject->GetLOT()) + " as " + std::to_string((std::uint64_t)nearestObject->GetObjectID()));
-				}
-
 				break;
 			}
 			case EWorldPacketID::CLIENT_LEVEL_LOAD_COMPLETE: {

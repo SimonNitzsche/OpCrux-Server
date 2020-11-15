@@ -26,6 +26,8 @@ public:
 	virtual void onFireEventServerSide(Entity::GameObject * self, GM::FireEventServerSide msg) {}
 	virtual void onDie(Entity::GameObject* self, GM::Die msg) {}
 	virtual void onCollisionPhantom(Entity::GameObject* self, Entity::GameObject * other) {}
+	virtual void onPlayerReady(Entity::GameObject* self, GM::PlayerReady msg) {}
+	virtual void onPlayerLoaded(Entity::GameObject* self, GM::PlayerLoaded msg) {}
 
 	// Helper functions
 	void print(std::string text) {

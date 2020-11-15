@@ -44,6 +44,7 @@ namespace GM {
 	class PickupItem;
 	class PlayEmote;
 	class PlayerLoaded;
+	class PlayerReady;
 	class PopEquippedItemsState;
 	class ReadyForUpdates;
 	class RebuildCancel;
