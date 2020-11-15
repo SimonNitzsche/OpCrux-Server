@@ -118,10 +118,14 @@ public:
 	}
 
 	void LoadScript() {
+		// Only load script once.
+		if (instance)
+			return;
+
 		if (scriptName != "") {
 			if (factories.find(scriptName) != factories.end()) {
 				instance = factories.at(scriptName)();
-				Logger::log("WRLD", "Loaded script \"" + scriptName + "\" sucessfully.", LogType::PASSED);
+				Logger::log("WRLD", "Loaded script \"" + scriptName + "\" sucessfully. LOT " + std::to_string(owner->GetLOT()), LogType::PASSED);
 			}
 			else {
 				Logger::log("WRLD", "Unable to load script \"" + scriptName + "\": Script not found.", LogType::WARN);

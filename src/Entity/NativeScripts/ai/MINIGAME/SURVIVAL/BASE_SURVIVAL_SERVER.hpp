@@ -3,7 +3,6 @@
 
 #include <string>
 #include "Entity/GameObject.hpp"
-#include "Entity/NativeScript.hpp"
 
 #include "Entity/NativeScripts/ai/ACT/L_ACT_GENERIC_ACTIVITY_MGR.hpp"
 
@@ -26,7 +25,30 @@ public:
 	//--//////////////////////////////////////////////////////////////////////////////////
 	//
 	//local gConstants = {}
-	//local tMobSets = {}
+	struct NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_gConstants {
+		int acceptedDelay;			//-- how long to wait after one person has presed start to start the match
+		int startDelay;             //-- how long to wait after all the players have accepted before starting the game.
+		int waveTime;               //-- how often to spawn a new wave of mobs
+		int rewardInterval;         //-- how many waves to wait to drop a reward and give the player a gConstants.coolDownTime
+		int coolDownTime;           //-- how long to wait between waves of gConstants.rewardInterval
+		int startMobSet2;           //-- wave number to start spawning set 2
+		int startMobSet3;           //-- wave number to start spawning set 3
+		int unlockNetwork3;
+		bool bUseMobLots;
+		int iLotPhase;
+
+		std::list<int> baseMobsStartTierAt = {};   //-- wave number to start spawning tier mobs    
+		std::list<int> randMobsStartTierAt = {};   //-- wave number to start spawning tier mobs
+
+		int returnZone;          //-- map number the player will return to on exit
+		DataTypes::Vector3 returnLoc; //-- {x,y,z} location that the player will be teleported to in the returnZone on exit
+	} gConstants;
+	//local tMobSets = {}    
+	struct NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER_tMobSets {
+		std::map<std::string, std::list<int>> mobLots = {};
+		std::map<std::string, std::list<std::list<int>>> baseMobSet = {};
+		std::map<std::string, std::list<std::list<int>>> randMobSet = {};
+	} tMobSets;
 	//local tSpawnerNetworks = {}
 	//local missionsToUpdate = {}
 	//

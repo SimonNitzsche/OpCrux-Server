@@ -185,6 +185,10 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 		// TODO: Move this to somewhere else
 		for (const auto& scene : luZone->scenes) {
 			for (auto objT : scene.scene.objectsChunk.objects) {
+
+				// If we are the same LOT as zoneObject, continue
+				if (*objT.LOT == this->zoneControlObject->GetLOT()) continue;
+
 				auto* go = new Entity::GameObject(this, *objT.LOT);
 				go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ 70368744177664ULL | *objT.objectID));
 				LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
@@ -214,6 +218,9 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 			if (pathBase.second->pathType == FileTypes::LUZ::LUZonePathType::Spawner) {
 				auto spawnerPath = reinterpret_cast<FileTypes::LUZ::LUZonePathSpawner*>(pathBase.second);
 				WorldServer* Instance = this;
+
+				// If we are the same LOT as zoneObject, continue
+				if (spawnerPath->spawnedLOT == Instance->zoneControlObject->GetLOT()) continue;
 
 				auto* spawner = new Entity::GameObject(this, 176);
 				spawner->SetObjectID(spawnerPath->spawnerObjectID);

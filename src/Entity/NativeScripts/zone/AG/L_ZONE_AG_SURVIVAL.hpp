@@ -44,6 +44,27 @@ public:
 	//    returnZone = 1100,          -- map number the player will return to on exit
 	//    returnLoc = { x = 125, y = 376, z = -175} -- {x,y,z} location that the player will be teleported to in the returnZone on exit
 	//}
+
+	NATIVESCRIPT__ZONE__AG__L_ZONE_AG_SURVIVAL() : NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER() {
+		{
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.acceptedDelay = 60;			//-- how long to wait after one person has presed start to start the match
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.startDelay = 2;             //-- how long to wait after all the players have accepted before starting the game.
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.waveTime = 7;               //-- how often to spawn a new wave of mobs
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.rewardInterval = 5;         //-- how many waves to wait to drop a reward and give the player a gConstants.coolDownTime
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.coolDownTime = 10;          //-- how long to wait between waves of gConstants.rewardInterval
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.startMobSet2 = 5;           //-- wave number to start spawning set 2
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.startMobSet3 = 15;          //-- wave number to start spawning set 3
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.unlockNetwork3 = 10;
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.bUseMobLots = true;
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.iLotPhase = 1;
+
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.baseMobsStartTierAt = { 8, 13, 18, 23, 28, 32, };   //-- wave number to start spawning tier mobs    
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.randMobsStartTierAt = { 2, 10, 15, 20, 25, 30, };   //-- wave number to start spawning tier mobs
+
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.returnZone = 1100;          //-- map number the player will return to on exit
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::gConstants.returnLoc = { 125, 376, -175 }; //-- {x,y,z} location that the player will be teleported to in the returnZone on exit
+		}
+
 	//--============================================================
 	//
 	//-- Mob Sets
@@ -78,7 +99,36 @@ public:
 	//            tier5 = { {0, 1, 2},{0, 1, 2},{0, 1, 2},{0, 1, 3},{0, 1, 3} },
 	//            tier6 = { {0, 2, 3},{0, 2, 3},{0, 2, 3},{0, 2, 3},{0, 2, 3} },
 	//    },
-	//}    
+	//}
+
+		{
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::tMobSets.mobLots = {
+				 {"MobA", {6351, 8088, 8089}},
+				 {"MobB", {6668, 8090, 8091}},
+				 {"MobC", {6454, 8096, 8097}},
+			};
+			// -- these will always spawn *************************************************************************
+			// -- ** format ** tier# = {{Mob1, Mob2, Mob3},}, 
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::tMobSets.baseMobSet = {
+				{"tier1", { {3, 0, 0}, }},
+	            {"tier2", { {2, 1, 0}, }},
+	            {"tier3", { {4, 1, 0}, }},
+	            {"tier4", { {1, 2, 0}, }},
+	            {"tier5", { {0, 1, 1}, }},
+	            {"tier6", { {0, 2, 2}, }},
+			};
+
+			// -- randomly pick from these sets to spawn along with the base set **********************************
+			// -- ** format ** tier# = {{Mob1, Mob2, Mob3},{Mob1, Mob2, Mob3},{Mob1, Mob2, Mob3},{Mob1, Mob2, Mob3},{Mob1, Mob2, Mob3}}, 
+			NATIVESCRIPT__AI__MINIGAME__SURVIVAL__BASE_SURVIVAL_SERVER::tMobSets.randMobSet = {
+	            {"tier1", { {4, 0, 0},{4, 0, 0},{4, 0, 0},{4, 0, 0},{3, 1, 0} }},
+	            {"tier2", { {4, 1, 0},{4, 1, 0},{4, 1, 0},{4, 1, 0},{2, 1, 1} }},
+	            {"tier3", { {1, 2, 0},{1, 2, 0},{1, 2, 0},{1, 2, 0},{0, 1, 1} }},
+	            {"tier4", { {1, 2, 1},{1, 2, 1},{1, 2, 1},{0, 2, 1},{0, 2, 2} }},
+	            {"tier5", { {0, 1, 2},{0, 1, 2},{0, 1, 2},{0, 1, 3},{0, 1, 3} }},
+	            {"tier6", { {0, 2, 3},{0, 2, 3},{0, 2, 3},{0, 2, 3},{0, 2, 3} }},
+			};
+		}
 	//--============================================================
 	//
 	//-- Spawn Networks 
@@ -161,6 +211,8 @@ public:
 	//							[1598] = 300,
 	//							[1865] = 180}
 	//
+	}
+
 	//--============================================================
 	//-- Game messages sent to the BASE_SURVIVAL_SERVER.lua file, these
 	//-- must be in this script. Only change to add custom functionality, 
