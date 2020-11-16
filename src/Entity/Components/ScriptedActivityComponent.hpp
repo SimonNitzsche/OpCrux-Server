@@ -99,6 +99,9 @@ public:
 		}
 	}
 
+	void Update() {
+	}
+
 	void PopulateFromLDF(LDFCollection * collection) {
 		// TODO
 		LDF_GET_VAL_FROM_COLLECTION(activityID, collection, u"activityID", activityID);

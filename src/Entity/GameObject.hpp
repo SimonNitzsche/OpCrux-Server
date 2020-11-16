@@ -91,6 +91,7 @@ namespace Entity {
 
 		LDFCollection configData;
 		LDFCollection configDataShared;
+		LDFCollection configDataSharedQueue;
 
 		LDFCollection customConfig;
 	public:
@@ -447,9 +448,13 @@ namespace Entity {
 				configDataShared.insert({ key, LDFEntry(key, data) });
 			}
 
-			GM::ScriptNetworkVarUpdate gmupdate;
-			gmupdate.tableOfVars = { LDF_COLLECTION_INIT_ENTRY(key, data) };
-			GameMessages::Broadcast(this, gmupdate);
+			auto it3 = configDataSharedQueue.find(key);
+			if (it3 != configDataSharedQueue.end()) {
+				it3->second = LDFEntry(key, data);
+			}
+			else {
+				configDataSharedQueue.insert({ key, LDFEntry(key, data) });
+			}
 		}
 
 		template<typename T>
@@ -465,12 +470,16 @@ namespace Entity {
 				else {
 					configDataShared.insert({ newKey, LDFEntry(newKey, *it2) });
 				}
-				gmupdate.tableOfVars = {};
-				gmupdate.tableOfVars.insert(LDF_COLLECTION_INIT_ENTRY(newKey, *it2));
+
+				auto it3 = configDataSharedQueue.find(newKey);
+				if (it3 != configDataSharedQueue.end()) {
+					it3->second = LDFEntry(newKey, *it2);
+				}
+				else {
+					configDataSharedQueue.insert({ newKey, LDFEntry(newKey, *it2) });
+				}
 				++i;
 			}
-
-			GameMessages::Broadcast(this, gmupdate);
 		}
 
 		void SetProximityRadius(std::string name, float radius);

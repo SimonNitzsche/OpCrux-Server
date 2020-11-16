@@ -180,7 +180,27 @@ public:
 	//    
 	//    self:SetNetworkVar('PlayerConfirm_ScoreBoard', playersConfirmed)
 	//end
-	//
+	
+	void playerConfirmed(Entity::GameObject* self) {
+		std::list<std::string> playersConfirmed = {};
+
+		for (auto it = gGamestate.tPlayers.begin(); it != gGamestate.tPlayers.end(); ++it) {
+			bool bPass = false;
+			for (auto it2 = gGamestate.tWaitingPlayers.begin(); it2 != gGamestate.tWaitingPlayers.end(); ++it2) {
+				if (*it2 == *it) {
+					bPass = true;
+					break;
+				}
+			}
+
+			if (!bPass) {
+				playersConfirmed.push_back(*it);
+			}
+		}
+
+		self->SetNetworkedVar(u"PlayerConfirm_ScoreBoard", playersConfirmed);
+	}
+
 	//----------------------------------------------------------------
 	//-- Player has loaded into the map
 	//----------------------------------------------------------------
@@ -253,7 +273,7 @@ public:
 		GameMessages::Send(self->GetZoneInstance()->objectsManager->GetObjectByID(msg.playerID), msg.playerID, GM::PlayerSetCameraCyclingMode());
 
 		if (!self->GetNetworkedVar(u"wavesStarted")) {
-			// playerConfirmed(self)
+			playerConfirmed(self);
 		}
 		else {
 			auto playerID = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.playerID);

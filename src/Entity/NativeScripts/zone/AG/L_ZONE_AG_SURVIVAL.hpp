@@ -324,6 +324,7 @@ public:
 	//    baseStartup(self, newMsg)
 	//end
 	void onStartup(Entity::GameObject* self) {
+		self->SetNetworkedVar(u"NumberOfPlayers", 1LL);
 		setGameVariables(gConstants, tMobSets, tSpawnerNetworks, missionsToUpate);
 		baseStartup(self, nullptr);
 	}
@@ -346,6 +347,10 @@ public:
 	//end
 	void onPlayerLoaded(Entity::GameObject* self, GM::PlayerLoaded msg) {
 		basePlayerLoaded(self, msg, nullptr);
+
+
+		// TODO: Remove in future:
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::SCRIPT, self, msg.playerID, 1, 479);
 	}
 	//
 	//----------------------------------------------------------------

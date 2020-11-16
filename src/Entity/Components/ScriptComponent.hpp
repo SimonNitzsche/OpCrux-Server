@@ -255,8 +255,11 @@ public:
 		/* TODO: Script Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 			LDFCollection netConf = owner->GetNetworkedConfig();
-			factory->Write(netConf.size() != 0);
-			if (netConf.size() != 0) {
+
+			bool hasNetConf = netConf.begin() != netConf.end();
+
+			factory->Write(hasNetConf);
+			if (hasNetConf) {
 				LDFUtils::SerializeCollection(*factory, netConf);
 			}
 		}

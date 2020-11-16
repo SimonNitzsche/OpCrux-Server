@@ -175,6 +175,14 @@ void Entity::GameObject::Update() {
 	for (auto oPair : components)
 		oPair.second->Update();
 
+	if (configDataSharedQueue.begin() != configDataSharedQueue.end()) {
+		GM::ScriptNetworkVarUpdate nvu;
+		nvu.tableOfVars = configDataSharedQueue;
+		configDataSharedQueue.clear();
+		configDataSharedQueue = {};
+		GameMessages::Broadcast(this, nvu);
+	}
+
 	if (maxAge != 0LL && std::int64_t(::time(0)) >= std::int64_t(maxAge)) {
 		this->InstantiateRemoval();
 	}

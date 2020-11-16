@@ -233,7 +233,7 @@ public:
 
 			if (worldTransitionState == WorldTransitionState::ENTERING_WORLD) {
 				// TODO: Rocket Info
-				std::u16string rocketBuild = u"1:9746;1:9747;1:9748;";
+				std::u16string rocketBuild = u"";// u"1:9746;1:9747;1:9748;";
 				StringUtils::writeWStringToBitStream<std::uint16_t>(factory, rocketBuild);
 			}
 		}
@@ -295,12 +295,12 @@ public:
 	}
 
 	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded& msg) {
-		GM::PlayerReady nmsg;
+		GM::PlayerReady nmsg; 
 		auto Instance = this->owner->GetZoneInstance();
-		GameMessages::Send(Instance, this->clientAddress, Instance->zoneControlObject->GetObjectID(), nmsg);
-		Instance->zoneControlObject->OnPlayerReady(this->owner, nmsg);
-		GameMessages::Send(Instance, this->clientAddress, this->owner->GetObjectID(), nmsg);
 		Instance->zoneControlObject->OnPlayerLoaded(this->owner, msg);
+		GameMessages::Send(owner, this->owner->GetObjectID(), nmsg);
+		GameMessages::Send(owner, Instance->zoneControlObject->GetObjectID(), nmsg);
+		Instance->zoneControlObject->OnPlayerReady(this->owner, nmsg);
 	}
 
 

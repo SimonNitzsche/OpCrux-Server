@@ -14,6 +14,8 @@ namespace GM {
 
 		void Serialize(RakNet::BitStream* bs) {
 			GM_VAR_SERIALIZE_LDF(bs, tableOfVars);
+
+			Logger::log("DEBUG", "SetNetworkVar: " + StringUtils::to_string(LDFUtils::PackCollectionToWString(tableOfVars)));
 		}
 	};
 }
