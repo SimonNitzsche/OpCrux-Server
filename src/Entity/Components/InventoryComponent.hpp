@@ -305,8 +305,8 @@ public:
 		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
 		if (itemCompID == -1) return InventoryItemStack();
 
-		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
-		if (static_cast<std::string>(equipLocation) == "") return  InventoryItemStack();
+		//auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		//if (static_cast<std::string>(equipLocation) == "") return  InventoryItemStack();
 
 		auto tabIt = inventory.find(targetTab);
 
@@ -785,6 +785,34 @@ public:
 	void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
 		this->UnEquipItem(msg.itemToUnEquip);
 		sender->GetComponentByType(4)->OnUnEquipInventory(sender, msg);
+	}
+
+	void OnClientItemConsumed(Entity::GameObject* sender, GM::ClientItemConsumed& msg) {
+		GM::UseItemResult resultMsg;
+		resultMsg.m_ItemTemplateID = -1;
+
+		// Use while to emulate sub with return
+		while (true) {
+			Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.item);
+
+			if (item == nullptr) break;
+
+			resultMsg.m_ItemTemplateID = item->GetLOT();
+
+			auto stack = GetItem(item->GetLOT());
+
+			if (stack.LOT != item->GetLOT()) break;
+
+			if (stack.objectID != item->GetObjectID()) break;
+
+			// TODO: Remove on castOnType 3
+
+			resultMsg.m_UseItemResult = true;
+			MissionManager::LaunchTaskEvent(EMissionTask::USE_ITEM, item, owner->GetObjectID(), 1, stack.LOT);
+			break;
+		}
+
+		GameMessages::Send(sender, owner->GetObjectID(), resultMsg);
 	}
 };
 

@@ -20,6 +20,7 @@ namespace GM {
 	class BuildModeSet;
 	class BuyFromVendor;
 	class CancelRailMovement;
+	class ClientItemConsumed;
 	class Die;
 	class DoneArrangingWithItem;
 	class EquipInventory;

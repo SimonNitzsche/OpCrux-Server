@@ -45,6 +45,7 @@
 	mfun(BuildModeSet);\
 	mfun(BuyFromVendor);\
 	mfun(CancelRailMovement);\
+	mfun(ClientItemConsumed);\
 	mfun(DoneArrangingWithItem);\
 	mfun(EquipInventory);\
 	mfun(FireEventServerSide);\
