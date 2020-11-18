@@ -23,6 +23,7 @@ struct AbstractAggregateBehavior {
 #include "Entity/Components/SkillComponent/BehaviorInterrupt.hpp"
 #include "Entity/Components/SkillComponent/BehaviorKnockback.hpp"
 #include "Entity/Components/SkillComponent/BehaviorMovementSwitch.hpp"
+#include "Entity/Components/SkillComponent/BehaviorSpawnObject.hpp"
 #include "Entity/Components/SkillComponent/BehaviorStun.hpp"
 #include "Entity/Components/SkillComponent/BehaviorTacArc.hpp"
 
@@ -149,6 +150,12 @@ void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBeha
 		// Attack Delay
 		BehaviorAttackDelay bAttackDelay = BehaviorAttackDelay();
 		bAttackDelay.UnCast(comp, nextBehavior, bs);
+		break;
+	}
+	case eBehaviorTemplate::SPAWN_OBJECT: {
+		// Spawn Object
+		BehaviorSpawnObject bSpawnObject = BehaviorSpawnObject();
+		bSpawnObject.UnCast(comp, nextBehavior, bs);
 		break;
 	}
 	case eBehaviorTemplate::CHAIN: {

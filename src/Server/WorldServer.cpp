@@ -315,32 +315,30 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 		/*if (debugRenderer != nullptr) {
 			debugRenderer->Paint();
 		}*/
-		while (ServerInfo::bRunning) {
-			try {
-				// RakNet likes to crash in debug mode.
-				// Skip packet if unable tro read
-				packet = rakServer->Receive();
-			}
-			catch (...) {
-				break;
-			}
-
-			if (packet == nullptr) break;
-
-			try {
-				m_lock.lock();
-				handlePacket(rakServer, reinterpret_cast<LUPacket*>(packet));
-				m_lock.unlock();
-			}
-			catch (NetException::CorruptPacket e) {
-				Logger::log("WRLD", "Received corrupt packet.", LogType::ERR);
-				PacketFactory::General::doDisconnect(rakServer, packet->systemAddress, EDisconnectReason::UNKNOWN_SERVER_ERROR);
-			}
-			/*catch (std::runtime_error * e) {
-				Logger::log("WRLD", "[CRASH] " + std::string(e->what()), LogType::ERR);
-				throw std::runtime_error(*e);
-			}*/
+		try {
+			// RakNet likes to crash in debug mode.
+			// Skip packet if unable tro read
+			packet = rakServer->Receive();
 		}
+		catch (...) {
+			continue;
+		}
+
+		if (packet == nullptr) continue;
+
+		try {
+			m_lock.lock();
+			handlePacket(rakServer, reinterpret_cast<LUPacket*>(packet));
+			m_lock.unlock();
+		}
+		catch (NetException::CorruptPacket e) {
+			Logger::log("WRLD", "Received corrupt packet.", LogType::ERR);
+			PacketFactory::General::doDisconnect(rakServer, packet->systemAddress, EDisconnectReason::UNKNOWN_SERVER_ERROR);
+		}
+		/*catch (std::runtime_error * e) {
+			Logger::log("WRLD", "[CRASH] " + std::string(e->what()), LogType::ERR);
+			throw std::runtime_error(*e);
+		}*/
 	}
 
 	// QUIT

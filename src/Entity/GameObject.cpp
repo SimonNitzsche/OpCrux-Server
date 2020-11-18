@@ -521,6 +521,9 @@ void Entity::GameObject::Remove() {
 
 void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	
+	if (collection == nullptr)
+		collection = &configData;
+
 	configData = *collection;
 
 	// TODO: Populate base data
