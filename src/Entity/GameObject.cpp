@@ -478,6 +478,10 @@ void Entity::GameObject::SetParent(GameObject * parent) {
 	objectDirty = true;
 }
 
+Entity::GameObject* Entity::GameObject::GetParentObject() {
+	return this->parent;
+}
+
 void Entity::GameObject::SetSpawner(GameObject * spawner, std::uint32_t spawnerNodeID) {
 	this->spawner = spawner;
 	this->spawner_node = spawnerNodeID;

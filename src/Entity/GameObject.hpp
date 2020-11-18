@@ -268,6 +268,11 @@ namespace Entity {
 		void SetParent(GameObject* parent);
 
 		/*
+			Gets the parent object
+		*/
+		Entity::GameObject* GetParentObject();
+
+		/*
 			Sets the spawner object
 		*/
 		void SetSpawner(GameObject* spawner, std::uint32_t spawnerNodeID);

@@ -203,6 +203,18 @@ public:
 		this->owner->OnDie(this->owner, &msgDie);
 	}
 
+	void ForcefullyPerformRequestDie(Entity::GameObject* sender, GM::RequestDie& msg) {
+		statsComponent->attributes.isSmashable = true;
+
+		statsComponent->attributes.currentHealth = 0;
+		statsComponent->attributes.currentArmor = 0;
+
+		auto caster = owner->GetZoneInstance()->objectsManager->GetObjectByID(msg.lootOwnerID);
+		if (caster == nullptr) caster = sender;
+
+		PerformDamageRequest(caster, 0xFFFFFFFF);
+	}
+
 	void PerformDamageRequest(Entity::GameObject* caster, std::uint32_t damage) {
 		// We are not smashable
 		if (!statsComponent->attributes.isSmashable) return;
