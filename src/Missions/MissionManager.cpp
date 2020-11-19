@@ -649,7 +649,11 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
 
     bool isChoiceReward = CacheMissions::GetIsChoiceReward(missionRow);
     for (auto rewItmIt = rewardItems.begin(); rewItmIt != rewardItems.end(); ++rewItmIt) {
-        if (rewItmIt->first == -1 || rewItmIt->second <= 0) continue;
+
+		// For some reason, count 0 is a default to be count 1
+		if (rewItmIt->second == 0) rewItmIt->second = 1;
+        
+		if (rewItmIt->first == -1 || rewItmIt->second <= 0) continue;
         if (isChoiceReward && (mission.chosenReward == -1 || mission.chosenReward != rewItmIt->first)) continue;
 
         invComp->AddItem(rewItmIt->first, rewItmIt->second);
