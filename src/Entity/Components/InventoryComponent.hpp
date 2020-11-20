@@ -8,6 +8,8 @@
 #include "GameCache/InventoryComponent.hpp"
 #include "GameCache/ItemComponent.hpp"
 #include "Missions/MissionManager.hpp"
+#include "Database/Database.hpp"
+#include "Entity/GameMessages.hpp"
 
 /*
 	TODO: This component is currently only implemented for static inventory, change this in future.
@@ -16,13 +18,30 @@
 /* Maybe replace this in future. */
 struct InventoryItemStack {
 	std::int32_t LOT = -1;
+	DataTypes::LWOOBJID ownerID = 0ULL;
 	DataTypes::LWOOBJID objectID = 0ULL;
 	DataTypes::LWOOBJID subkey = 0ULL;
 	std::uint32_t quantity = 1;
+	std::uint32_t slot = 0;
 	std::uint32_t tab = 0;
 	bool equip = false;
 	bool bound = false;
 	LDFCollection metadata;
+
+	DatabaseModels::ItemModel toDBModel() {
+		ItemModel model;
+		model.templateID = LOT;
+		model.objectID = objectID;
+		model.subkey = subkey;
+		model.count = quantity;
+		model.slot = slot;
+		model.tab = tab;
+		model.attributes.SetEquipped(equip);
+		model.attributes.SetBound(bound);
+		model.metadata = metadata;
+		model.ownerID = ownerID;
+		return model;
+	}
 };
 
 class InventoryComponent : public IEntityComponent {
@@ -129,6 +148,8 @@ public:
 					itemStack.metadata = it->metadata;
 					itemStack.subkey = it->subkey;
 					itemStack.tab = it->tab;
+					itemStack.ownerID = it->ownerID;
+					itemStack.slot = it->slot;
 
 					Entity::GameObject* itmObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
 					itmObj->SetObjectID(itemStack.objectID);
@@ -538,7 +559,15 @@ public:
 		// Dont save thinking hat!
 		if (stack.LOT == 6068) return;
 
-		// TODO
+		// Check if we need to remove item or update it.
+		if (stack.quantity == 0) {
+			// Remove
+			Database::RemoveItemFromInventory(stack.objectID);
+		}
+		else {
+			// Update
+			Database::UpdateItemFromInventory(stack.toDBModel());
+		}
 	}
 
 	inline std::int32_t GetTabForLOT(std::uint32_t LOT) {
@@ -777,6 +806,97 @@ public:
 		//itemModel.
 		//Database::AddItemToInventory(itemModel);
 		// TODO: GM::AddItemToClientSync
+	}
+
+	void RemoveItem(std::uint32_t itemLot, std::uint32_t amountToRemove = 1) {
+		auto targetTab = GetTabForLOT(itemLot);
+
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(itemLot, 11);
+		if (itemCompID == -1) return;
+
+		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		if (static_cast<std::string>(equipLocation) == "") return;
+
+		auto tabIt = inventory.find(targetTab);
+		if (tabIt == inventory.end()) return;
+
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.LOT == itemLot) {
+				if (it->second.quantity - amountToRemove <= 0) {
+					Database::RemoveItemFromInventory(it->second.objectID);
+				}
+				else {
+					DatabaseModels::ItemModel itemModel;
+					itemModel.attributes.SetEquipped(it->second.equip);
+					itemModel.attributes.SetBound(it->second.bound);
+					itemModel.count = it->second.quantity - amountToRemove;
+					itemModel.metadata = it->second.metadata;
+					itemModel.objectID = it->second.objectID;
+					itemModel.ownerID = this->owner->GetObjectID().getPureID();
+					itemModel.slot = Database::GetSlotOfItemStack(it->second.objectID);
+					itemModel.subkey = it->second.subkey;
+					itemModel.tab = it->second.tab;
+					itemModel.templateID = it->second.LOT;
+					Database::UpdateItemFromInventory(itemModel);
+				}
+
+				GM::RemoveItemFromInventory gm;
+				gm.Confirmed = true;
+				gm.DeleteItem = true;
+				gm.OutSuccess = false;
+				gm.ItemType = -1;
+				gm.InventoryType = it->second.tab;
+				gm.ForceDeletion = true;
+				gm.Item = it->second.objectID;
+				gm.TotalItems = it->second.quantity - amountToRemove;
+
+				GameMessages::Send(owner, owner->GetObjectID(), gm);
+			}
+		}
+
+		return;
+	}
+
+	void RemoveItem2(std::uint32_t itemLOT, std::uint32_t amount = 1) {
+
+		// at this point amount will be used as amountLeft
+		// use while to get all stacks
+		while (amount != 0) {
+			// Get the stack
+			InventoryItemStack stack = GetItem(itemLOT);
+
+			// the stack doesn't exist, no item with the LOT left
+			if (stack.LOT != itemLOT) break;
+
+			// Get the safe amount to reduce on the stack
+			auto reduceAmount = min(stack.quantity, amount);
+
+			// keep track of amount reduced
+			amount -= reduceAmount;
+
+			// Reduce the stack quantity
+			stack.quantity -= reduceAmount;
+
+			// Save stack
+			SaveStack(stack);
+
+			// Try to unequip item if equipped
+			UnEquipItem(stack.objectID);
+
+			// Tell client
+			GM::RemoveItemFromInventory removeItemMsg;
+			removeItemMsg.Confirmed = true;
+			removeItemMsg.DeleteItem = true;
+			removeItemMsg.OutSuccess = false;
+			removeItemMsg.ItemType = -1;
+			removeItemMsg.InventoryType = stack.tab;
+			removeItemMsg.ForceDeletion = true;
+			removeItemMsg.Item = stack.objectID;
+			removeItemMsg.Delta = reduceAmount;
+			removeItemMsg.TotalItems = stack.quantity;
+
+			GameMessages::Send(owner, owner->GetObjectID(), removeItemMsg);
+		}
 	}
 
 	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {

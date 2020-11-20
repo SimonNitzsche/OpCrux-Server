@@ -386,3 +386,5 @@ lib/
 services/CruxAuthService/res/ssl/
 
 *.pem
+
+cmake-build-debug/
