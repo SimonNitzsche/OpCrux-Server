@@ -1170,18 +1170,18 @@ public:
 		return resultList;
 	}
 
-	static void RemoveItemFromInventory(DataTypes::LWOOBJID stackID) {
+	static void RemoveItemFromInventory(std::uint64_t stackID) {
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("DELETE FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
 
-		stmt->setULong(1, stackID.getPureID());
+		stmt->setULong(1, stackID);
 
-		odbc::ResultSetRef rs = stmt->executeQuery();
+		stmt->executeUpdate();
 	}
 	
-	static int GetSlotOfItemStack(DataTypes::LWOOBJID stackID) {
+	static int GetSlotOfItemStack(std::uint64_t stackID) {
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT * FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
 
-		stmt->setULong(1, stackID.getPureID());
+		stmt->setULong(1, stackID);
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
 

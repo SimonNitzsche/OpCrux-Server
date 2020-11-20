@@ -2,6 +2,7 @@
 #include "Entity/GameObject.hpp"
 
 #include "Entity/NativeScripts/02_server/Equipment/L_MAESTROM_EXTRACTICATOR_SERVER.hpp"
+#include "Entity/NativeScripts/02_server/Map/AG/L_AG_CAGED_BRICKS_SERVER.hpp"
 #include "Entity/NativeScripts/02_server/Map/General/L_TOUCH_MISSION_UPDATE_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp"
@@ -20,6 +21,7 @@
 const std::unordered_map<std::string, script_factory> ScriptComponent::factories = {
 		{"TestScript", []() -> script_ptr {return std::make_shared<TestScript>(); }},
 		{"ScriptComponent_1582_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__02SERVER__EQUIPMENT__L_MAESTROM_EXTRACTICATOR_SERVER>(); }},
+		{"ScriptComponent_1586_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__02_SERVER__MAP__AG__L_AG_CAGED_BRICKS_SERVER>(); }},
 		{"scripts\\02_server\\Map\\General\\L_TOUCH_MISSION_UPDATE_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__02SERVER__MAP__GENERAL__L_TOUCH_MISSION_UPDATE_SERVER>(); }},
 		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }},
 		{"scripts\\ai\\AG\\L_AG_IMAG_SMASHABLE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_IMAG_SMASHABLE>(); }},
