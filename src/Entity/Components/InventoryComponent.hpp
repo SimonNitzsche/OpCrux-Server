@@ -779,6 +779,55 @@ public:
 		// TODO: GM::AddItemToClientSync
 	}
 
+	void RemoveItem(std::uint32_t itemLot, std::uint32_t amountToRemove = 1) {
+		auto targetTab = GetTabForLOT(itemLot);
+
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(itemLot, 11);
+		if (itemCompID == -1) return;
+
+		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
+		if (static_cast<std::string>(equipLocation) == "") return;
+
+		auto tabIt = inventory.find(targetTab);
+		if (tabIt == inventory.end()) return;
+
+		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+			if (it->second.LOT == itemLot) {
+				if (it->second.quantity - amountToRemove <= 0) {
+					Database::RemoveItemFromInventory(it->second.objectID);
+				}
+				else {
+					DatabaseModels::ItemModel itemModel;
+					itemModel.attributes.SetEquipped(it->second.equip);
+					itemModel.attributes.SetBound(it->second.bound);
+					itemModel.count = it->second.quantity - amountToRemove;
+					itemModel.metadata = it->second.metadata;
+					itemModel.objectID = it->second.objectID;
+					itemModel.ownerID = this->owner->GetObjectID().getPureID();
+					itemModel.slot = Database::GetSlotOfItemStack(it->second.objectID);
+					itemModel.subkey = it->second.subkey;
+					itemModel.tab = it->second.tab;
+					itemModel.templateID = it->second.LOT;
+					Database::UpdateItemFromInventory(itemModel);
+				}
+
+				GM::RemoveItemFromInventory gm;
+				gm.Confirmed = true;
+				gm.DeleteItem = true;
+				gm.OutSuccess = false;
+				gm.ItemType = -1;
+				gm.InventoryType = it->second.tab;
+				gm.ForceDeletion = true;
+				gm.Item = it->second.objectID;
+				gm.TotalItems = it->second.quantity - amountToRemove;
+
+				GameMessages::Send(owner, owner->GetObjectID(), gm);
+			}
+		}
+
+		return;
+	}
+
 	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {
 		this->EquipItem(msg.itemToEquip);
 	}

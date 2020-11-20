@@ -10,6 +10,8 @@
 #include "Enums/EDisconnectReason.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/EPackets.hpp"
+#include "Enums/EInventoryType.hpp"
+#include "Enums/EItemType.hpp"
 
 #include "Utils/StringUtils.hpp"
 
@@ -153,6 +155,7 @@ public:
 #include "Entity/GameMessages/RebuildCancel.hpp"
 #include "Entity/GameMessages/RebuildNotifyState.hpp"
 #include "Entity/GameMessages/ReportBug.hpp"
+#include "Entity/GameMessages/RemoveItemFromInventory.hpp"
 #include "Entity/GameMessages/RequestDie.hpp"
 #include "Entity/GameMessages/RequestLinkedMission.hpp"
 #include "Entity/GameMessages/RequestResurrect.hpp"

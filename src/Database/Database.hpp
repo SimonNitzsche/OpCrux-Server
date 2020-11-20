@@ -1169,5 +1169,25 @@ public:
 
 		return resultList;
 	}
+
+	static void RemoveItemFromInventory(DataTypes::LWOOBJID stackID) {
+		odbc::PreparedStatementRef stmt = conn->prepareStatement("DELETE FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
+
+		stmt->setULong(1, stackID.getPureID());
+
+		odbc::ResultSetRef rs = stmt->executeQuery();
+	}
+	
+	static int GetSlotOfItemStack(DataTypes::LWOOBJID stackID) {
+		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT * FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
+
+		stmt->setULong(1, stackID.getPureID());
+
+		odbc::ResultSetRef rs = stmt->executeQuery();
+
+		if (rs->next()) {
+			return *rs->getInt(5);
+		}
+	}
 };
 #endif // !__DATABASE_HPP__

@@ -49,6 +49,7 @@ namespace GM {
 	class PopEquippedItemsState;
 	class ReadyForUpdates;
 	class RebuildCancel;
+	class RemoveItemFromInventory;
 	class ReportBug;
 	class RequestDie;
 	class RequestLinkedMission;

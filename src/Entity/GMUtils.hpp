@@ -88,6 +88,7 @@
 	mfun(TerminateInteraction);\
 	mfun(ToggleGhostReferenceOverride);\
 	mfun(ToggleSendingPositionUpdates);\
-	mfun(UnEquipInventory); 
+	mfun(UnEquipInventory);\
+	mfun(RemoveItemFromInventory);
 #endif
 

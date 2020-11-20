@@ -44,6 +44,20 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 			Reply(Response::RankTooLow, sender);
 		}
 	})
+	.Case(u"/removeItem", [&]() {
+		if (command.find(u" ") != std::u16string::npos) {
+			if (accountGMLevel >= 5) {
+				InventoryComponent* inventory = sender->GetComponent<InventoryComponent>();
+				inventory->RemoveItem(std::stoi(StringUtils::to_string(args[1])), 2);
+			}
+			else {
+				Reply(Response::RankTooLow, sender);
+			}
+		}
+		else {
+			Reply(Response::NoArguements, sender);
+		}
+	})
 	.Case(u"/fly", [&]() {
 		if (command.find(u" ") != std::u16string::npos) {
 			if (accountGMLevel >= 5) {
