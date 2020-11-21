@@ -1,5 +1,6 @@
 #include "SlashCommandComponent.hpp"
 #include "InventoryComponent.hpp"
+#include "CharacterComponent.hpp"
 #include "GameCache/ZoneTable.hpp"
 
 void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::ParseChatMessage& msg) {
@@ -43,6 +44,11 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 		else {
 			Reply(Response::RankTooLow, sender);
 		}
+	})
+	.Case(u"/togglepvp", [&]() {
+		auto comp = sender->GetComponent<CharacterComponent>();
+		comp->TogglePvP();
+		Reply(u"Toggled PvP", sender);
 	})
 	.Case(u"/removeItem", [&]() {
 		if (command.find(u" ") != std::u16string::npos) {

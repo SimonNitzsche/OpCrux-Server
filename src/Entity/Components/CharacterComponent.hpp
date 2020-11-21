@@ -27,7 +27,8 @@ private:
 	Entity::GameObject* mountedObject = nullptr;
 
 	Enums::EGameActivity gameActivity = Enums::EGameActivity::NONE;
-		
+
+	bool pvp = false;
 	
 	enum class WorldTransitionState : std::uint8_t {IN_WORLD, ENTERING_WORLD, LEAVING_WORLD} worldTransitionState = WorldTransitionState::ENTERING_WORLD;
 
@@ -61,6 +62,16 @@ public:
 
 	void SetActivity(Enums::EGameActivity activity) {
 		gameActivity = activity;
+		this->owner->SetDirty();
+	}
+
+	void TogglePvP() {
+		if (pvp) {
+			pvp = false;
+		}
+		else {
+			pvp = true;
+		}
 		this->owner->SetDirty();
 	}
 
@@ -241,7 +252,7 @@ public:
 		// TODO: Additional flags
 		factory->Write(true);
 
-		factory->Write(false); // PVP Enabled?
+		factory->Write(this->pvp); // PVP Enabled?
 
 		//std::uint8_t GMLevel = Database::GetAccountGMLevel(charInfo.accountID);
 		//if (GMLevel > 0) {
