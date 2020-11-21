@@ -175,12 +175,26 @@ public:
 			addSkillGM.AICombatWeight = CacheObjectSkills::GetAICombatWeight(r);
 			addSkillGM.slotID = GetHotbarSlotFromEquipLocation(strEquipLocation);
 			GameMessages::Broadcast(sender, addSkillGM);
+
+			// On Equip
+			if (addSkillGM.castType == 1) {
+				ServerStartSkill(addSkillGM.skillID, addSkillGM.castType);
+			}
 			//}
 		}
 	}
 
 	inline void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
 		// Remove skills
+	}
+
+	inline void ServerStartSkill(std::uint32_t skillID, std::int32_t castType) {
+		GM::StartSkill startSkillGM;
+		startSkillGM.skillID = skillID;
+		startSkillGM.iCastType = castType;
+		startSkillGM.uiSkillHandle = ++parameters.uiSkillHandle;
+		startSkillGM.sBitStream = "";
+		owner->OnStartSkill(owner, startSkillGM);
 	}
 
 };
