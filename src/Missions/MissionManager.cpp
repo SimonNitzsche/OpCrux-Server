@@ -415,10 +415,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
                         auto targetGroup = StringUtils::StringVectorToIntList(StringUtils::splitString(CacheMissionTasks::GetTargetGroup(cacheMissionTasksRow), ','));
 
-                        if (targetGroup.size() == 0) {
-                            targetGroup.push_back(CacheMissionTasks::GetTarget(cacheMissionTasksRow));
-                        }
-
+                        targetGroup.push_back(CacheMissionTasks::GetTarget(cacheMissionTasksRow));
 
 
 						std::int32_t targetGroupResult = 0;
