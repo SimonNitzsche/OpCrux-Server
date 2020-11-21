@@ -306,8 +306,15 @@ public:
 
 		auto tabIt = inventory.find(targetTab);
 
-		// We do not have tab, unable to equip
-		if (tabIt == inventory.end()) return false;
+		// We do not have tab
+		if (tabIt == inventory.end()) {
+			// Let's also look for temporary
+			targetTab = targetTab == 0 ? 4 : 6;
+			tabIt = inventory.find(targetTab);
+			// We really do not have it
+			if (tabIt == inventory.end())
+				return false;
+		}
 
 		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
 			if (it->second.LOT == LOT) {
@@ -320,8 +327,8 @@ public:
 		return false;
 	}
 
-	inline InventoryItemStack GetItem(std::uint32_t LOT) {
-		auto targetTab = GetTabForLOT(LOT);
+	inline InventoryItemStack GetItem(std::uint32_t LOT, bool temporary = false) {
+		auto targetTab = GetTabForLOT(LOT, temporary);
 
 		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
 		if (itemCompID == -1) return InventoryItemStack();
@@ -331,8 +338,15 @@ public:
 
 		auto tabIt = inventory.find(targetTab);
 
-		// We do not have tab, unable to equip
-		if (tabIt == inventory.end()) return InventoryItemStack();
+		// We do not have tab
+		if (tabIt == inventory.end()) {
+			// Let's also look for temporary
+			targetTab = targetTab == 0 ? 4 : 6;
+			tabIt = inventory.find(targetTab);
+			// We really do not have it
+			if (tabIt == inventory.end())
+				return InventoryItemStack();
+		}
 
 		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
 			if (it->second.LOT == LOT) {
@@ -341,9 +355,15 @@ public:
 			}
 		}
 
+		if (!temporary) {
+			// We couldn't find it permanentely, let's look for temporary
+			return GetItem(LOT, true);
+		}
+
 		// We couldn't find the item
 		return InventoryItemStack();
 	}
+
 
 	inline bool EquipItem(std::uint32_t LOT) {
 		auto targetTab = GetTabForLOT(LOT);
@@ -357,30 +377,18 @@ public:
 		auto tabIt = inventory.find(targetTab);
 
 		// We do not have tab, unable to equip
-		if (tabIt == inventory.end()) return false;
+		if (tabIt == inventory.end()) {
+			// Let's also look for temporary
+			targetTab = targetTab == 0 ? 4 : 6;
+			tabIt = inventory.find(targetTab);
+			// We really do not have it
+			if (tabIt == inventory.end())
+				return false;
+		}
 
 		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
 			if (it->second.LOT == LOT) {
-				// We found it!
-
-				// We're already equipped!
-				if (it->second.equip) return false;
-
-				// Make sure we have nothing equipped on the location
-				this->UnEquipLocation(equipLocation);
-
-				// Equip it.
-				it->second.equip = true;
-
-				// Save equip
-				this->SaveStack(it->second);
-
-				// Sync equip.
-				this->_isDirtyFlagEquippedItems = true;
-				this->owner->SetDirty();
-
-				// We're done
-				return true;
+				return EquipItem(it->second.objectID);
 			}
 		}
 
@@ -394,41 +402,67 @@ public:
 
 		std::int32_t LOT = objItemToEquip->GetLOT();
 
-		auto targetTab = GetTabForLOT(LOT);
-
 		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
 		if (itemCompID == -1) return false;
 
 		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
 		if (static_cast<std::string>(equipLocation) == "") return false;
 
-		auto tabIt = inventory.find(targetTab);
 
-		// We do not have tab, unable to equip
-		if (tabIt == inventory.end()) return false;
+		for (auto tabIt = inventory.begin(); tabIt != inventory.end(); ++tabIt) {
+			auto targetTab = GetTabForLOT(LOT);
+			for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
+				if (it->second.objectID == itemToEquip) {
+					// We found it!
 
-		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
-			if (it->second.objectID == itemToEquip) {
-				// We found it!
+					// We're already equipped!
+					if (it->second.equip) return false;
 
-				// We're already equipped!
-				if (it->second.equip) return false;
+					// Make sure we have nothing equipped on the location
+					this->UnEquipLocation(equipLocation);
 
-				// Make sure we have nothing equipped on the location
-				this->UnEquipLocation(equipLocation);
+					// Equip it.
+					it->second.equip = true;
 
-				// Equip it.
-				it->second.equip = true;
+					// Save equip
+					this->SaveStack(it->second);
 
-				// Save equip
-				this->SaveStack(it->second);
+					// Sync equip.
+					this->_isDirtyFlagEquippedItems = true;
+					this->owner->SetDirty();
 
-				// Sync equip.
-				this->_isDirtyFlagEquippedItems = true;
-				this->owner->SetDirty();
+					// Sub-items
+					auto subitems = StringUtils::StringVectorToIntList(StringUtils::splitString(CacheItemComponent::GetSubItems(itemCompID), ','));
+					for (auto subitem : subitems) {
+						// Get subitem stack
+						auto subItemStack = GetItem(subitem);
 
-				// We're done
-				return true;
+						// Do we have item?
+						if (subItemStack.LOT != subitem) {
+							// We don't so let's add it
+							AddItem(subitem, 1U, DataTypes::Vector3(), 0ULL, {}, true);
+							// Do we have it now?
+							subItemStack = GetItem(subitem);
+							if (subItemStack.LOT != subitem) {
+								// Nope, it can't be added.
+								continue;
+							}
+						}
+
+						// Alright, now equip our subitem
+						if (!EquipItem(subItemStack.objectID))
+							Logger::log("WRLD", "Couldn't equip subItem LOT " + std::to_string(subItemStack.LOT));
+
+						GM::EquipInventory eqInvGM;
+						eqInvGM.itemToEquip = subItemStack.objectID;
+						owner->OnEquipInventory(owner, eqInvGM);
+					}
+
+					Logger::log("WRLD", "Equipped LOT " + std::to_string(it->second.LOT));
+
+					// We're done
+					return true;
+				}
 			}
 		}
 
@@ -481,8 +515,14 @@ public:
 
 		auto tabIt = inventory.find(targetTab);
 
-		// We do not have tab, unable to equip
-		if (tabIt == inventory.end()) return false;
+		// We do not have tab, unable to unequip
+		if (tabIt == inventory.end()) {
+			// Let's also look for temporary
+			targetTab = targetTab == 0 ? 4 : 6;
+			tabIt = inventory.find(targetTab);
+			// We really do not have it
+			if (tabIt == inventory.end()) return false;
+		}
 
 		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
 			if (it->second.LOT == LOT) {
@@ -526,8 +566,14 @@ public:
 
 		auto tabIt = inventory.find(targetTab);
 
-		// We do not have tab, unable to equip
-		if (tabIt == inventory.end()) return false;
+		// We do not have tab, unable to unequip
+		if (tabIt == inventory.end()) {
+			// Let's also look for temporary
+			targetTab = targetTab == 0 ? 4 : 6;
+			tabIt = inventory.find(targetTab);
+			// We really do not have it
+			if (tabIt == inventory.end()) return false;
+		}
 
 		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
 			if (it->second.objectID == itemToUnEquip) {
@@ -559,6 +605,9 @@ public:
 		// Dont save thinking hat!
 		if (stack.LOT == 6068) return;
 
+		// Dont save temporary item or temporary model
+		if (stack.tab == 4 || stack.tab == 6) return;
+
 		// Check if we need to remove item or update it.
 		if (stack.quantity == 0) {
 			// Remove
@@ -570,7 +619,7 @@ public:
 		}
 	}
 
-	inline std::int32_t GetTabForLOT(std::uint32_t LOT) {
+	inline std::int32_t GetTabForLOT(std::uint32_t LOT, bool temporary = false) {
 		// Get Item component ID
 		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
 
@@ -587,7 +636,13 @@ public:
 		std::int32_t invType = CacheItemComponent::GetItemType(itemCompRow);
 
 		// Get tab
-		return GetDefaultTabForInventoryType(invType);
+		auto defaultTab = GetDefaultTabForInventoryType(invType);
+
+		if (temporary) {
+			return defaultTab == 0 ? 4 : 6;
+		}
+
+		return defaultTab;
 	}
 
 	inline std::int32_t GetStackSizeForLOT(std::uint32_t LOT) {
@@ -614,9 +669,9 @@ public:
 
 		When failed returns 0xFFFFFFFF
 	*/
-	inline std::uint32_t GetNextFreeSlot(std::uint32_t LOT) {
+	inline std::uint32_t GetNextFreeSlot(std::uint32_t LOT, bool temporary = false) {
 		// Get Tab
-		std::int32_t tab = GetTabForLOT(LOT);
+		std::int32_t tab = GetTabForLOT(LOT, temporary);
 		// Check if tab exists
 		if (tab == -1) return 0xFFFFFFFF;
 
@@ -668,8 +723,8 @@ public:
 
 		AddItem(item->GetLOT(), incCount, item->GetPosition());
 	}
-	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}) {
-		std::uint32_t nextTabAndSlot = GetNextFreeSlot(itemLOT);
+	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}, bool subItem = false) {
+		std::uint32_t nextTabAndSlot = GetNextFreeSlot(itemLOT, subItem);
 
 		std::uint32_t tab = (nextTabAndSlot & 0xFFFF0000) >> 16;
 		std::uint32_t slot = (nextTabAndSlot & 0x0000FFFF);
@@ -728,7 +783,7 @@ public:
 			itemStack.subkey = iSubKey;
 			itemStack.quantity = 1;
 			itemStack.tab = tab;
-			if (owner->GetLOT() == 1) {
+			if (owner->GetLOT() == 1 && tab != 4 && tab != 6) { // player and not temporary item and not temporary model
 				itemStack.objectID = (1ULL << 60) | Database::reserveCountedID(Database::DBCOUNTERID::PLAYER);
 			}
 			else {
@@ -753,6 +808,17 @@ public:
 			}
 		}
 
+		// Check if object is registered or not
+		Entity::GameObject* itemObj = owner->GetZoneInstance()->objectsManager->GetObjectByID(itemStack.objectID);
+		if (itemObj == nullptr) {
+			itemObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
+			itemObj->SetObjectID(itemStack.objectID);
+			itemObj->PopulateFromLDF(&itemStack.metadata);
+			itemObj->SetIsServerOnly();
+			itemObj->Finish();
+			owner->GetZoneInstance()->objectsManager->RegisterObject(itemObj);
+		}
+
 		// Sync with DB and client.
 		if (owner->GetLOT() == 1) {
 			DatabaseModels::ItemModel itemModel;
@@ -768,13 +834,15 @@ public:
 			itemModel.templateID = itemStack.LOT;
 
 			// Sync with db
-			if (useStacking) {
-				Database::UpdateItemFromInventory(itemModel);
-				//Logger::log("WRLD", "Update item DB");
-			}
-			else {
-				Database::AddItemToInventory(itemModel);
-				//Logger::log("WRLD", "Add item DB");
+			if (itemModel.tab != 4 && tab != 6) { // If not temporary item and not temporary model
+				if (useStacking) {
+					Database::UpdateItemFromInventory(itemModel);
+					//Logger::log("WRLD", "Update item DB");
+				}
+				else {
+					Database::AddItemToInventory(itemModel);
+					//Logger::log("WRLD", "Add item DB");
+				}
 			}
 			MissionManager::LaunchTaskEvent(Enums::EMissionTask::GATHER, owner, owner->GetObjectID());
 
