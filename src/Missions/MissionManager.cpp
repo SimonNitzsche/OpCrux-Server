@@ -27,6 +27,9 @@ std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> MissionManager::Get
             if (taskType == Enums::EMissionTask::GATHER) {
                 c_target = 0;
             }
+			if (taskType == Enums::EMissionTask::WIN_ACTIVITY) {
+				c_target = 0;
+			}
 
 			if (c_target == target || c_target <= 0) {
 				std::int32_t c_taskType = CacheMissionTasks::GetTaskType(rowInfo);
