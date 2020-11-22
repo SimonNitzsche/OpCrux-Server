@@ -416,6 +416,22 @@ namespace Entity {
 			return static_cast<T>(static_cast<LDFEntry>(GetVarEntry(key)));
 		}
 
+		template<typename T = LDFEntry>
+		std::list<T, std::allocator<T>> GetVarTList(std::u16string key) {
+			std::list<T> result = {};
+			
+			int index = 1;
+
+			while (true) {
+				std::u16string newKey = key + StringUtils::to_u16string(std::to_string(index++));
+				if (configData.find(newKey) == configData.end())
+					break;
+				result.push_back(static_cast<T>(static_cast<LDFEntry>(configData.at(newKey))));
+			}
+
+			return result;
+		}
+
 		template<typename T>
 		void SetVar(std::u16string key, T data) {
 			auto it = configData.find(key);
@@ -424,6 +440,15 @@ namespace Entity {
 			}
 			else {
 				configData.insert({ key, LDFEntry(key, data) });
+			}
+		}
+
+		template<typename T>
+		void SetVar(std::u16string key, std::list<T, std::allocator<T>> data) {
+			int index = 1;
+			for (auto elem : data) {
+				auto newkey = key + StringUtils::to_u16string(std::to_string(index++));
+				SetVar<T>(newkey, elem);
 			}
 		}
 
