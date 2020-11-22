@@ -1,4 +1,4 @@
-#ifndef __ENTITY__NATIVESCRIPTS__AI__AG__L_AG_FANS_HPP__
+﻿#ifndef __ENTITY__NATIVESCRIPTS__AI__AG__L_AG_FANS_HPP__
 #define __ENTITY__NATIVESCRIPTS__AI__AG__L_AG_FANS_HPP__
 
 #include <string>
@@ -61,14 +61,12 @@ public:
 		toggleFX(self);
 	}
 
-	//function onOnHit(self, msg)
-	//    --print('died')    
-	//    if self:GetVar('isOn') then
-	//        toggleFX(self, true)
-	//    end    
-	//    self:SetVar('isAlive', false)
-	//end
-
+	void onDie(Entity::GameObject * self, GM::Die msg) {
+		if (self->GetVar(u"isOn")) {
+			toggleFX(self, true);
+		}
+		self->SetVar(u"isAlive", false);
+	}
 };
 #endif
 
