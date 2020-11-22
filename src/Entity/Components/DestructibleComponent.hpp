@@ -210,6 +210,7 @@ public:
 		statsComponent->attributes.currentArmor = 0;
 
 		auto caster = owner->GetZoneInstance()->objectsManager->GetObjectByID(msg.lootOwnerID);
+		if (caster == nullptr) caster = owner->GetZoneInstance()->objectsManager->GetObjectByID(msg.killerID);
 		if (caster == nullptr) caster = sender;
 
 		PerformDamageRequest(caster, 0xFFFFFFFF);
@@ -287,7 +288,7 @@ public:
 			{
 				{
 					GM::DropClientLoot msg;
-					msg.iCurrency = GetCurrencyDrop(lootOwner->GetComponent<CharacterComponent>()->GetLevel());
+					msg.iCurrency = GetCurrencyDrop(lootOwner->GetLOT() == 1 ? lootOwner->GetComponent<CharacterComponent>()->GetLevel() : 0);
 					msg.owner = lootOwner->GetObjectID();
 					msg.sourceObj = owner->GetObjectID();
 					msg.spawnPosition = owner->GetPosition();
