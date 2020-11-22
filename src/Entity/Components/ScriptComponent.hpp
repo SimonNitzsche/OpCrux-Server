@@ -143,6 +143,11 @@ public:
 			instance->onCollisionPhantom(owner, sender);
 	}
 
+	void FireEvent(GM::FireEventServerSide msg) {
+		if (instance)
+			instance->onFireEvent(owner, msg);
+	}
+
 	std::vector<Entity::GameObject *> objectsInProximity = {};
 	std::unordered_map<std::string, std::pair<float, std::vector<Entity::GameObject *>>> proximityRadii;
 

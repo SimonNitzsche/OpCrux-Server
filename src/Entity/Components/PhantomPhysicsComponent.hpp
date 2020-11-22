@@ -110,6 +110,12 @@ public:
 		owner->SetDirty();
 	}
 
+	void SetEffectStatus(bool status) {
+		physEffectActive = status;
+		_isDirtyFlagEffects = true;
+		owner->SetDirty();
+	}
+
 	DataTypes::Vector3 GetPosition() {
 		return position;
 	}

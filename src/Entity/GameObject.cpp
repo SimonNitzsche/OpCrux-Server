@@ -158,7 +158,7 @@ void Entity::GameObject::Finish() {
 Entity::GameObject::~GameObject() {
 	for (auto reference : components) {
 		if (reference.second) {
-			delete[] reference.second;
+			delete reference.second;
 		}
 	}
 }
@@ -804,6 +804,13 @@ void Entity::GameObject::PlayNDAudioEmitter(std::string guid) {
 
 	GameMessages::Send(this->Instance, UNASSIGNED_SYSTEM_ADDRESS, this->objectID, msg);
 }
+
+void Entity::GameObject::NotifyTriggerEvent(std::string eventName) {
+	auto triggerComponent = this->GetComponent<TriggerComponent>();
+	if (triggerComponent == nullptr) return;
+	triggerComponent->HandleEvent(eventName, this);
+}
+
 
 std::string Entity::GameObject::GenerateXML() {
 	std::stringstream ss;

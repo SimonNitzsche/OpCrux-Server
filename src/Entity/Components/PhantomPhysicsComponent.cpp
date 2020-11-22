@@ -1,5 +1,6 @@
 #include "PhantomPhysicsComponent.hpp"
 #include "ScriptComponent.hpp"
+#include "SwitchComponent.hpp"
 
 void PhantomPhysicsComponent::PhysicUpdate() {
 	/*
@@ -11,9 +12,13 @@ void PhantomPhysicsComponent::PhysicUpdate() {
 
 	// Have script attached?
 	// If not discard
+	bool discard = false;
 	ScriptComponent* scriptComp = owner->GetComponent<ScriptComponent>();
-	if (scriptComp == nullptr) return;
-	if (!scriptComp->bHasScriptLoaded()) return;
+	if (scriptComp == nullptr) discard = true;
+	else if (!scriptComp->bHasScriptLoaded()) discard = true;
+	SwitchComponent* switchComp = owner->GetComponent<SwitchComponent>();
+	if (switchComp != nullptr) discard = false;
+	if (discard) return;
 
 	// Cleanup removed objects
 	for (int i = 0; i < enteredObjects.size(); ++i) {

@@ -5,6 +5,8 @@
 
 #include "FileTypes/LVLFile/TriggerFile.hpp"
 
+#include "ScriptComponent.hpp"
+
 class TriggerComponent : public IEntityComponent {
 private:
 	ZoneTrigger trigger{};
@@ -132,61 +134,92 @@ private:
 				"true" to activate and add to world, "false" to deactivate and remove from the world
 		*/
 		
-		if (zCommand->id == "SetPhysicsVolumeEffect") {
+		// Get target(s)
+		std::list<Entity::GameObject*> targets = {};
+		if (zCommand->target == "self") {
+			targets = { owner };
+		}
+		else if (zCommand->target == "target") {
+			targets = { invoker };
+		}
+		else if (zCommand->target == "objGroup") {
+			auto src = owner->GetZoneInstance()->objectsManager->GetObjectsInGroup(StringUtils::to_u16string(zCommand->targetName));
+			targets.resize(src.size());
+			for (auto tar : src) targets.push_back(tar);
+		}
 
-			/*
-				SetPhysicsVolumeEffect
-					["Push", "Attract", "Repulse", "Gravity", "Friction"],[amount],(direction x, y, z),("True" or "False")(min distance)(max distance)
-			*/
+		for (auto targetObject : targets) {
+			if (targetObject == nullptr) continue;
+			if (zCommand->id == "SetPhysicsVolumeEffect") {
 
-			PhantomPhysicsComponent * phantomPhysicsComponent = owner->GetComponent<PhantomPhysicsComponent>();
+				/*
+					SetPhysicsVolumeEffect
+						["Push", "Attract", "Repulse", "Gravity", "Friction"],[amount],(direction x, y, z),("True" or "False")(min distance)(max distance)
+				*/
 
-			if (phantomPhysicsComponent) {
-				phantomPhysicsComponent->SetEffectDirty();
+				PhantomPhysicsComponent* phantomPhysicsComponent = targetObject->GetComponent<PhantomPhysicsComponent>();
 
-				std::string effectTypeStr = zCommand->args.at(0);
-				
-					 if (effectTypeStr == "Push") { phantomPhysicsComponent->physEffectType = 0; }
-				else if (effectTypeStr == "Attract") { phantomPhysicsComponent->physEffectType = 1; }
-				else if (effectTypeStr == "Repulse") { phantomPhysicsComponent->physEffectType = 2; }
-				else if (effectTypeStr == "Gravity") { phantomPhysicsComponent->physEffectType = 3; }
-				else if (effectTypeStr == "Friction") { phantomPhysicsComponent->physEffectType = 4; }
+				if (phantomPhysicsComponent) {
+					phantomPhysicsComponent->SetEffectDirty();
 
-				std::float_t effectAmount = std::stof(zCommand->args.at(1));
-				phantomPhysicsComponent->physEffectAmount = effectAmount;
-				if (zCommand->args.size() >= 5) {
-					std::float_t dirX = std::stof(zCommand->args.at(2));
-					std::float_t dirY = std::stof(zCommand->args.at(3));
-					std::float_t dirZ = std::stof(zCommand->args.at(4));
-					phantomPhysicsComponent->SetEffectDirection(DataTypes::Vector3(dirX, dirY, dirZ));
+					std::string effectTypeStr = zCommand->args.at(0);
+
+					if (effectTypeStr == "Push") { phantomPhysicsComponent->physEffectType = 0; }
+					else if (effectTypeStr == "Attract") { phantomPhysicsComponent->physEffectType = 1; }
+					else if (effectTypeStr == "Repulse") { phantomPhysicsComponent->physEffectType = 2; }
+					else if (effectTypeStr == "Gravity") { phantomPhysicsComponent->physEffectType = 3; }
+					else if (effectTypeStr == "Friction") { phantomPhysicsComponent->physEffectType = 4; }
+
+					std::float_t effectAmount = std::stof(zCommand->args.at(1));
+					phantomPhysicsComponent->physEffectAmount = effectAmount;
+					if (zCommand->args.size() >= 5) {
+						std::float_t dirX = std::stof(zCommand->args.at(2));
+						std::float_t dirY = std::stof(zCommand->args.at(3));
+						std::float_t dirZ = std::stof(zCommand->args.at(4));
+						phantomPhysicsComponent->SetEffectDirection(DataTypes::Vector3(dirX, dirY, dirZ));
+					}
+
+					if (zCommand->args.size() >= 6) {
+						bool enabled = zCommand->args.at(5) == "True" || zCommand->args.at(5) == "true" || zCommand->args.at(5) == "1";
+						phantomPhysicsComponent->physEffectActive = enabled;
+					}
+					else {
+						phantomPhysicsComponent->physEffectActive = true;
+					}
+
+					phantomPhysicsComponent->physEffectUseDistance = false;
+					/*if (zCommand->args.size() >= 7) {
+						phantomPhysicsComponent->physEffectUseDistance = true;
+						std::float_t effectMin = std::stof(zCommand->args.at(6));
+						phantomPhysicsComponent->physEffectMinDistance = effectMin;
+					}
+
+					if (zCommand->args.size() >= 8) {
+						std::float_t effectMax = std::stof(zCommand->args.at(7));
+						phantomPhysicsComponent->physEffectMinDistance = effectMax;
+					}*/
 				}
+			}
 
-				if (zCommand->args.size() >= 6) {
-					bool enabled = zCommand->args.at(5) == "True" || zCommand->args.at(5) == "true" || zCommand->args.at(5) == "1";
-					phantomPhysicsComponent->physEffectActive = enabled;
-				}
-				else {
-					phantomPhysicsComponent->physEffectActive = true;
-				}
+			else if (zCommand->id == "fireEvent") {
+				GM::FireEventServerSide msg;
+				msg.senderID = owner->GetObjectID();
+				msg.args = u"";
 
-				phantomPhysicsComponent->physEffectUseDistance = false;
-				/*if (zCommand->args.size() >= 7) {
-					phantomPhysicsComponent->physEffectUseDistance = true;
-					std::float_t effectMin = std::stof(zCommand->args.at(6));
-					phantomPhysicsComponent->physEffectMinDistance = effectMin;
-				}
+				for (const auto& a : zCommand->args) msg.args += (msg.args.size() == 0 ? u"" : u";") + StringUtils::to_u16string(a);
 
-				if (zCommand->args.size() >= 8) {
-					std::float_t effectMax = std::stof(zCommand->args.at(7));
-					phantomPhysicsComponent->physEffectMinDistance = effectMax;
-				}*/
+				auto scriptComp = targetObject->GetComponent<ScriptComponent>();
+				if (scriptComp != nullptr)
+					scriptComp->FireEvent(msg);
+			}
+
+			else {
+				Logger::log("WRLD", "Unrecognized trigger command: " + zCommand->id, LogType::WARN);
 			}
 		}
-
-		else {
-			Logger::log("WRLD", "Unrecognized trigger command: " + zCommand->id, LogType::WARN);
-		}
 	}
+
+public:
 
 	void HandleEvent(std::string eventID, Entity::GameObject * invoker) {
 		if (trigger.enabled) {

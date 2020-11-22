@@ -58,14 +58,13 @@ std::vector<Entity::GameObject*> ObjectsManager::GetControllableObjects() {
 std::vector<Entity::GameObject*> ObjectsManager::GetObjectsInGroup(std::u16string groupName, DataTypes::LWOOBJID ignoreSelf, bool ignoreSpawners) {
 	std::vector<Entity::GameObject*> out;
 	for (auto oPair : object_list) {
-		if (object_garbage.size() == 0 || std::find(object_garbage.begin(), object_garbage.end(), oPair.first) == object_garbage.end()) {
-			if (oPair.second->IsWithinGroup(groupName)) {
+		if (oPair.second->IsWithinGroup(groupName)) {
 
-				if (ignoreSelf != 0ULL && oPair.second->GetObjectID() == ignoreSelf) continue;
-				if (ignoreSpawners && oPair.second->GetLOT() == 176) continue;
+			if (ignoreSelf != 0ULL && oPair.second->GetObjectID() == ignoreSelf) continue;
+			if (ignoreSpawners && oPair.second->GetLOT() == 176) continue;
+			if (oPair.second == nullptr) continue;
 
-				out.push_back(oPair.second);
-			}
+			out.push_back(oPair.second);
 		}
 	}
 	return out;

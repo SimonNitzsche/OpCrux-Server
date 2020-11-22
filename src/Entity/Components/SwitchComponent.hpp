@@ -32,12 +32,8 @@ public:
 
 	void OnCollisionPhantom(Entity::GameObject * other) {
 		if (peopleOnIt == 0) {
-			// We don't want to activate if it's activated.
-			if (bToggled) return;
-			// Activate
-			bToggled = true;
-			// Tell object needs serialization
-			owner->SetDirty();
+			Activate();
+			deactivateAt = ServerInfo::uptime() + 100000;
 		}
 		++peopleOnIt;
 	}
@@ -47,9 +43,8 @@ public:
 			--peopleOnIt;
 			if (peopleOnIt == 0) {
 				// Set Deactivation Timestamp
-				// deactivateAt = ServerInfo::uptime() + switch_reset_time;
-				bToggled = false;
-				owner->SetDirty();
+				deactivateAt = ServerInfo::uptime() + switch_reset_time;
+				//Deactivate();
 			}
 		}
 	}
@@ -70,7 +65,7 @@ public:
 
 	void Update() {
 		if (!bToggled) return;
-		//if (ServerInfo::uptime() > deactivateAt) Deactivate();
+		if (ServerInfo::uptime() > deactivateAt) Deactivate();
 	}
 
 	void Activate() {
@@ -78,10 +73,11 @@ public:
 		if (bToggled) return;
 		// Activate
 		bToggled = true;
-		// Set Deactivation Timestamp
-		deactivateAt = ServerInfo::uptime() + switch_reset_time;
 		// Tell object needs serialization
 		owner->SetDirty();
+		// Trigger trigger
+		owner->NotifyTriggerEvent("OnActivated");
+		
 	}
 
 	void Deactivate() {
@@ -91,6 +87,9 @@ public:
 		bToggled = false;
 		// Tell object needs serialization
 		owner->SetDirty();
+		// Trigger trigger
+		owner->NotifyTriggerEvent("OnDectivated");
+		owner->NotifyTriggerEvent("OnDeactivated");
 	}
 };
 

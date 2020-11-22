@@ -489,6 +489,7 @@ namespace Entity {
 
 		void SetProximityRadius(std::string name, float radius);
 		void PlayNDAudioEmitter(std::string guid);
+		void NotifyTriggerEvent(std::string eventName);
 	};
 }
 

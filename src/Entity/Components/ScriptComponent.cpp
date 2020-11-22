@@ -6,6 +6,7 @@
 #include "Entity/NativeScripts/02_server/Map/General/L_TOUCH_MISSION_UPDATE_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp"
+#include "Entity/NativeScripts/ai/AG/L_AG_FANS.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp"
@@ -24,6 +25,7 @@ const std::unordered_map<std::string, script_factory> ScriptComponent::factories
 		{"ScriptComponent_1586_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__02_SERVER__MAP__AG__L_AG_CAGED_BRICKS_SERVER>(); }},
 		{"scripts\\02_server\\Map\\General\\L_TOUCH_MISSION_UPDATE_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__02SERVER__MAP__GENERAL__L_TOUCH_MISSION_UPDATE_SERVER>(); }},
 		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }},
+		{"scripts\\ai\\AG\\L_AG_FANS.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_FANS>(); }},
 		{"scripts\\ai\\AG\\L_AG_IMAG_SMASHABLE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_IMAG_SMASHABLE>(); }},
 		{"scripts\\ai\\AG\\L_AG_SHIP_PLAYER_SHOCK_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER>(); }},
 		{"scripts\\ai\\AG\\L_AG_SHIP_SHAKE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_SHAKE>(); }},

@@ -48,6 +48,14 @@ namespace StringUtils {
 		return true;
 	};
 
+	inline bool replace(std::u16string& str, const std::u16string& from, const std::u16string& to) {
+		size_t start_pos = str.find(from);
+		if (start_pos == std::string::npos)
+			return false;
+		str.replace(start_pos, from.length(), to);
+		return true;
+	};
+
 	template<class T>
 	inline std::u16string readWStringFromBitStream(RakNet::BitStream * bitstream) {
 		std::uint32_t size; bitstream->Read<T>(size);
