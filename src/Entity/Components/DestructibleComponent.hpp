@@ -308,11 +308,13 @@ public:
 					msg.lootID = it->objectID;
 					GameMessages::Send(lootOwner, msg.sourceObj, msg);
 
+					Logger::log("WRLD", "Dropped loot " + std::to_string(std::uint64_t(msg.lootID)) + " with LOT " + std::to_string(msg.itemTemplate));
+
 					Entity::GameObject * droppedLoot = new Entity::GameObject(owner->GetZoneInstance(), msg.itemTemplate);
 					droppedLoot->SetObjectID(msg.lootID);
 					ItemComponent * lootItemComp = droppedLoot->GetComponent<ItemComponent>();
 					owner->GetZoneInstance()->objectsManager->RegisterObject(droppedLoot);
-					droppedLoot->SetMaxAge(2);
+					droppedLoot->SetMaxAge(120);
 					droppedLoot->Finish();
 				}
 			}

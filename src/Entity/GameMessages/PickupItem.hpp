@@ -24,6 +24,9 @@ namespace GM {
 			if (lootObject != nullptr && player != nullptr) {
 				player->PickupLoot(lootObject);
 			}
+			else {
+				Logger::log("WRLD", "PickupItem: Unable to pickup unknown object " + std::to_string(std::uint64_t(lootObjectID)), LogType::WARN);
+			}
 		}
 	};
 }
