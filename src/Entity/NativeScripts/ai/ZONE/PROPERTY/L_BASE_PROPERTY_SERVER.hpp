@@ -46,12 +46,12 @@ public:
 		if (propertyOwner != 0ULL)
 			rented = true;
 
-		Enity::GameObject* player = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.playerID);
-		self->SetVar(u"IsInternal",
-			#ifdef DEBUG true 
-			#else false
+		Entity::GameObject* player = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.playerID);
+		#ifdef DEBUG
+		self->SetVar(u"IsInternal", true);
+		#else
+		self->SetVar(u"IsInternal", false);
 		#endif
-		);
 
 		// if the property is rented, delete all the objects that may be on the property
 		if (rented) {
@@ -75,7 +75,7 @@ public:
 		// if the property hasnt been rented, then assume that this is the players property to rent (if this is broken, it is through code)
 		else {
 			// flag for if the player has defeated the maelstrom property yet
-			bool defeatedflag = player->GetFlag(std::stoi(StringUtils::to_string(*Flags.at(u"defeatedProperty")))).begin()));
+			bool defeatedflag = player->GetFlag(std::stoi(StringUtils::to_string(*Flags.at(u"defeatedProperty").begin())));
 			// tell the client script that the property is not rented
 			self->SetNetworkedVar(u"unclaimed", true);
 			
