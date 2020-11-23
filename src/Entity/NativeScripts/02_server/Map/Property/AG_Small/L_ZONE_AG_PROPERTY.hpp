@@ -92,5 +92,82 @@ class NATIVESCRIPT__02SERVER__MAP__PROPERTY__AG_SMALL__L_ZONE_AG_PROPERTY : publ
 	void onStartup(Entity::GameObject* self) {
 		setGameVariables(Group, Spawners, Flags);
 	}
+
+	// activates the spawner for the maelstrom spots
+	void SpawnSpots(Entity::GameObject* self) {
+		// activate all the ROF Targets
+		for (auto v : Spawners.at(u"ROF_Targets")) {
+			ActivateSpawner(self, v);
+		}
+
+		// activate the landing target
+		ActivateSpawner(self, *Spawners.at(u"Land_Target").begin());
+	}
+
+	// deactive the spawner for the maelstrom spots and then delete them
+	void KillSpots(Entity::GameObject* self) {
+	
+	}
+
+	// activates the spawner for the Spider Boss crashed rocket
+	void SpawnCrashedRocket(Entity::GameObject* self) {
+		// activate all the rocket crash parts
+		for (auto v : Spawners.at(u"SpiderRocket")) {
+			ActivateSpawner(self, v);
+		}
+	}
+
+	// deactives the spawners for the Spider Boss crashed rocket and
+	// then delete them
+	void KillCrashedRocket(Entity::GameObject* self) {
+		// deactivate all the rocket crash parts
+		for (auto v : Spawners.at(u"SpiderRocket")) {
+			DeactivateSpawner(self, v);
+			DestroySpawner(self, v);
+		}
+	}
+
+	// turns all the maelstrom on if the player hasn't defeated the maelstrom for this property yet
+	virtual void StartMaelstrom(Entity::GameObject* self, Entity::GameObject* player) {
+		
+		// activate the Spider Boss spawner and build all the necessary sensor objects
+		ActivateSpawner(self, *Spawners.at(u"Enemy").begin());
+		
+		for (auto v : Spawners.at(u"BossSensors")) {
+			ActivateSpawner(self, v);
+		}
+
+		if (Spawners.find(u"BehaviorObjs") != Spawners.end()) {
+			for (auto v : Spawners.at(u"BehaviorObjs")) {
+				ActivateSpawner(self, v);
+			}
+		}
+
+		// activate the spawner for the fx
+		ActivateSpawner(self, *Spawners.at(u"FXManager").begin());
+		// activate the spawner for the mountain emitter
+		ActivateSpawner(self, *Spawners.at(u"Spider_Scream").begin());
+		// activate the spawner for the eggs
+		ActivateSpawner(self, *Spawners.at(u"SpiderEggs").begin());
+		// activate the spawner for the rocks
+		ActivateSpawner(self, *Spawners.at(u"Rocks").begin());
+
+		// activate the rocket crash parts
+		SpawnCrashedRocket(self);
+
+		if (Spawners.find(u"AmbientFX") != Spawners.end()) {
+			for (auto v : Spawners.at(u"AmbientFX")) {
+				DeactivateSpawner(self, v);
+				DestroySpawner(self, v);
+				ResetSpawner(self, v);
+			}
+		}
+
+		startTornadoFX(self);
+
+		// notify the client to change the env settings
+		{GM::NotifyClientObject nmsg; nmsg.name = u"maelstromSkyOn"; GameMessages::Send(player, self->GetObjectID(), nmsg); }
+
+	}
 };
 #endif 

@@ -20,6 +20,8 @@
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/PhantomPhysicsComponent.hpp"
 
+#include "FileTypes/LUZFile/LUZone.hpp"
+
 using namespace DataTypes;
 
 class SpawnerComponent : public IEntityComponent {
@@ -54,6 +56,9 @@ private:
 	std::int32_t spawnTemplate;
 	bool networkSpawner=false;
 	std::deque<std::uint64_t> respawnTasks = {};
+	bool is_network_spawner;
+	FileTypes::LUZ::LUZonePathSpawner* spawnerPath = nullptr;
+	std::int32_t lastSpawnIndex = -1;
 public:
 	DataTypes::Vector3 originPos;
 	DataTypes::Quaternion originRot;
@@ -68,7 +73,13 @@ public:
 	}
 
 	void Awake() {
-		if (spawnerActiveOnLoad) {
+		if (is_network_spawner) {
+			spawnerPath = GetSpawnerPath(spawner_name);
+			if (spawnerPath != nullptr)
+				lastSpawnIndex = 0;
+		}
+
+		if (spawnerActiveOnLoad && !noAutoSpawn) {
 			Spawn(false);
 		}
 	}
@@ -152,6 +163,8 @@ public:
 		LDF_GET_VAL_FROM_COLLECTION(spawnTemplate, collection, u"spawntemplate", -1);
 
 		LDF_GET_VAL_FROM_COLLECTION(spawner_name, collection, u"spawner_name", u"");
+
+		LDF_GET_VAL_FROM_COLLECTION(is_network_spawner, collection, u"is_network_spawner", false);
 	}
 
 	void SetLUZPath() {
@@ -161,17 +174,51 @@ public:
 	// Returns true on success and false on fail
 	bool Spawn(bool construct=true) {
 		// TODO: Properly implement networks
-		if (spawner_name != u"") return false;
+		return SpawnObject(0, construct);
 
-		WorldServer * Instance = this->owner->GetZoneInstance();
 		
+	}
+
+	FileTypes::LUZ::LUZonePathSpawner* GetSpawnerPath(std::u16string spawnerName) {
+		auto Instance = owner->GetZoneInstance();
+		auto it = Instance->luZone->paths.find(spawnerName);
+		if (it == Instance->luZone->paths.end()) {
+			return nullptr;
+		}
+		if (it->second->pathType != FileTypes::LUZ::LUZonePathType::Spawner) {
+			Logger::log("WRLD", "Spawner path \"" + StringUtils::to_string(spawnerName) + " is not a spawner!");
+			return nullptr;
+		}
+		return static_cast<FileTypes::LUZ::LUZonePathSpawner *>(it->second);
+	}
+
+	bool SpawnObject(std::int32_t index, bool construct = true) {
+		WorldServer* Instance = this->owner->GetZoneInstance();
+
+		auto spawnPos = originPos;
+		auto spawnRot = originRot;
+
+		LDFCollection spawnCollection = ldfCache;
+
+		if (spawnerPath == nullptr && spawner_name != u"") {
+			int c = 3;
+		}
+
+		if (spawnerPath != nullptr) {
+			// We are spawner path
+			auto wp = spawnerPath->waypoints.at(index);
+			spawnPos = wp->position;
+			spawnRot = wp->rotation;
+			spawnCollection = wp->config;
+		}
+
 		// Create
-		Entity::GameObject * spawnedObject = new Entity::GameObject(Instance, spawnTemplate);
-		
-		
+		Entity::GameObject* spawnedObject = new Entity::GameObject(Instance, spawnTemplate);
+
+
 		if (!spawnedObject->isSerializable) {
 			// Spawn Error Object
-			delete[] spawnedObject;
+			delete spawnedObject;
 			spawnedObject = new Entity::GameObject(Instance, 1845);
 
 		}
@@ -184,17 +231,17 @@ public:
 		spawnedObject->SetScale(this->owner->GetScale());
 
 		// Populate LDF
-		spawnedObject->PopulateFromLDF(&ldfCache);
+		spawnedObject->PopulateFromLDF(&spawnCollection);
 
 		// Set Parent
 		//spawnedObject->SetParent(this->owner);
 
 		// Set Spawner
-		spawnedObject->SetSpawner(this->owner, 0);
+		spawnedObject->SetSpawner(this->owner, index);
 
 		// Set Position/Rotation
-		spawnedObject->SetPosition(originPos);
-		spawnedObject->SetRotation(originRot);
+		spawnedObject->SetPosition(spawnPos);
+		spawnedObject->SetRotation(spawnRot);
 
 		spawnedObject->Finish();
 
@@ -206,11 +253,19 @@ public:
 			Instance->objectsManager->Construct(spawnedObject);
 
 
-		
+
 
 		return true;
 	}
+	
+	std::u16string GetName() {
+		return spawner_name;
+	}
 
+	void SpawnerActivate() {
+		Logger::log("WRLD", "SpawnerActivate() for \"" + StringUtils::to_string(spawner_name) + "\"");
+		Spawn(true);
+	}
 };
 
 #endif

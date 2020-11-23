@@ -132,6 +132,7 @@ public:
 #include "Entity/GameMessages/ModularAssemblyNIFCompleted.hpp"
 #include "Entity/GameMessages/ModuleAssemblyQueryData.hpp"
 #include "Entity/GameMessages/NotifyClientFlagChange.hpp"
+#include "Entity/GameMessages/NotifyClientObject.hpp"
 #include "Entity/GameMessages/NotifyMission.hpp"
 #include "Entity/GameMessages/NotifyMissionTask.hpp"
 #include "Entity/GameMessages/NotifyServerLevelProcessingComplete.hpp"

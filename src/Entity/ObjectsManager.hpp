@@ -6,6 +6,7 @@
 #include "Entity/GameObject.hpp"
 
 class WorldServer;
+class SpawnerComponent;
 
 class ObjectsManager {
 private:
@@ -33,6 +34,7 @@ public:
 	void Destruct(Entity::GameObject * object);
 	void OnUpdate();
 	void OnPhysicsUpdate();
+	SpawnerComponent* GetSpawnerByName(std::u16string spawnerName);
 	~ObjectsManager() {}
 };
 

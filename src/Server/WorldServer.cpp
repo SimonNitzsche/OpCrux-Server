@@ -231,53 +231,13 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 					LDF_COLLECTION_INIT_ENTRY(u"max_to_spawn", spawnerPath->maxToSpawn),
 					LDF_COLLECTION_INIT_ENTRY(u"number_to_maintain", spawnerPath->numberToMaintain),
 					LDF_COLLECTION_INIT_ENTRY(u"spawner_name", spawnerPath->pathName.ToString()),
+					LDF_COLLECTION_INIT_ENTRY(u"is_network_spawner", true),
 					LDF_COLLECTION_INIT_ENTRY(u"spawntemplate", std::int32_t(spawnerPath->spawnedLOT))
 				};
 
 				spawner->PopulateFromLDF(&ldfCollectionSpawner);
 				spawner->Finish();
 				objectsManager->RegisterObject(spawner);
-
-				if (spawnerPath->spawnedLOT == 0) continue;
-				if (!spawnerPath->activateSpawnerNetworkOnLoad) continue;
-
-				for (int i = 0; i < spawnerPath->numberToMaintain && i < spawnerPath->waypoints.size(); ++i) {
-					// Create
-					auto* spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
-
-
-					if (!spawnedObject->isSerializable) {
-						// Spawn Error Object
-						delete spawnedObject;
-						spawnedObject = new Entity::GameObject(Instance, 1845);
-
-					}
-
-					// Set ObjectID
-					spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
-					//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
-
-					// Set Spawner
-					spawnedObject->SetSpawner(spawner, i);
-
-					// Populate LDF
-					spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->config);
-
-					// Set Position/Rotation
-					auto* controllablePhysicsComponent = spawnedObject->GetComponent<ControllablePhysicsComponent>();
-					if (controllablePhysicsComponent != nullptr) {
-						controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->position);
-						controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->rotation);
-					}
-					auto* simplePhysicsComponent = spawnedObject->GetComponent<SimplePhysicsComponent>();
-					if (simplePhysicsComponent != nullptr) {
-						simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->position);
-						simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->rotation);
-					}
-
-					// Register
-					Instance->objectsManager->RegisterObject(spawnedObject);
-				}
 			}
 		}
 

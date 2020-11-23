@@ -387,9 +387,8 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 		factory->Write(spawner != nullptr);
 		if (spawner != nullptr) { factory->Write(spawner->objectID); }
 		
-		factory->Write(false); // disable commented out below
-		//factory->Write(spawner_node != 0xFFFFFFFF);
-		//if (spawner_node != 0xFFFFFFFF) { factory->Write(spawner_node); }
+		factory->Write(spawner_node != 0xFFFFFFFF);
+		if (spawner_node != 0xFFFFFFFF) { factory->Write(spawner_node); }
 
 		// Object Scale
 		factory->Write(true);
