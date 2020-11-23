@@ -87,5 +87,10 @@ class NATIVESCRIPT__02SERVER__MAP__PROPERTY__AG_SMALL__L_ZONE_AG_PROPERTY : publ
 
 		basePlayerLoaded(self, msg);
 	}
+
+	// TODO: This is only temporary.
+	void onStartup(Entity::GameObject* self) {
+		setGameVariables(Group, Spawners, Flags);
+	}
 };
 #endif 

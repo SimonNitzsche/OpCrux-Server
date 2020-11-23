@@ -62,10 +62,10 @@ public:
 	static constexpr int GetTypeID() { return 5; }
 
 	void OnEnable() {
-		std::uint32_t compID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 5);
+		std::uint32_t compID = GetComponentID();
 		scriptName = CacheScriptComponent::GetScriptName(compID);
 
-		if (scriptName == ("ScriptComponent_" + std::to_string(compID) + "_script_name__removed") && factories.find(scriptName) == factories.end()) {
+		if (/*scriptName == ("ScriptComponent_" + std::to_string(compID) + "_script_name__removed") && */factories.find(scriptName) == factories.end()) {
 			scriptName = "";
 		}
 	}
