@@ -632,6 +632,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Received unknown packet containing: " + std::to_string(*reinterpret_cast<std::int32_t*>(pack)));
 				break;
 			}
+			case (Enums::EWorldPacketID)30: {
+				// This packet should kick if the client decides to spam it but it appears to be triggered in AGS atm so there is no point in adding the trigger
+			}
 
 			default:
 				Logger::log("WRLD", "Received unknown packetID "+std::to_string(packetHeader.packetID));
