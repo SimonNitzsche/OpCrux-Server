@@ -13,13 +13,20 @@ public:
 
 	static constexpr int GetTypeID() { return 114; }
 
-	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg);
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg);
 
-	void OnSetBuildMode(Entity::GameObject* sender, GM::SetBuildMode& msg);
+	void OnSetBuildMode(Entity::GameObject* sender, GM::SetBuildMode* msg);
 
-	void OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem& msg);
+	void OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem* msg);
 
-    void OnModularBuildFinish(Entity::GameObject* sender, GM::ModularBuildFinish& msg);
+    void OnModularBuildFinish(Entity::GameObject* sender, GM::ModularBuildFinish* msg);
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(BuildBorderComponent, GM::RequestUse, OnRequestUse);
+		REGISTER_OBJECT_MESSAGE_HANDLER(BuildBorderComponent, GM::SetBuildMode, OnSetBuildMode);
+		REGISTER_OBJECT_MESSAGE_HANDLER(BuildBorderComponent, GM::StartBuildingWithItem, OnStartBuildingWithItem);
+		REGISTER_OBJECT_MESSAGE_HANDLER(BuildBorderComponent, GM::ModularBuildFinish, OnModularBuildFinish);
+	}
 
 };
 

@@ -31,16 +31,16 @@ private:
 	Vector3 velocity = Vector3::zero();
 	Vector3 angularVelocity = Vector3::zero();
 
-	bool __unk__0;
-		float __unk__1;
-		float __unk__2;
-	bool __unk__3;
-		float __unk__4;
-		bool __unk__5;
-	bool __unk__6;
-		bool __unk__7;
-			float __unk__8;
-			bool __unk__9;
+	bool __unk__0=false;
+		float __unk__1=0;
+		float __unk__2=0;
+	bool __unk__3=false;
+		float __unk__4=0;
+		bool __unk__5=false;
+	bool __unk__6=false;
+		bool __unk__7=false;
+			float __unk__8=0;
+			bool __unk__9=false;
 public:
 
 	ControllablePhysicsComponent(std::int32_t componentID) : IEntityComponent(componentID) {}

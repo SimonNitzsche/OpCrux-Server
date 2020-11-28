@@ -5,6 +5,9 @@
 #define GM_DESERIALIZE_SWITCH_CASE(name)\
 	case name::GetID(): {name msg = name(); msg.Deserialize(bs); msg.TriggerEvent(senderObject, targetObject); targetObject->On##name(senderObject, msg); break;}
 
+#define GM_DESERIALIZE_SWITCH_CASE_DYNAMIC(name)\
+	case name::GetID(): {name msg = name(); msg.Deserialize(bs); targetObject->OnMessage(senderObject, name::GetID(), &msg); break;}
+
 #define GM_VAR_DESERIALIZE_STRING(bs, parameter)  {parameter = StringUtils::readStringFromBitStream<std::uint32_t>(bs);}
 #define GM_VAR_DESERIALIZE_WSTRING(bs, parameter) {parameter = StringUtils::readWStringFromBitStream<std::uint32_t>(bs);}
 #define GM_VAR_DESERIALIZE(bs, parameter) {bs->Read(parameter);}

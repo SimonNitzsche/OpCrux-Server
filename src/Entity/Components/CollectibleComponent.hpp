@@ -54,6 +54,10 @@ public:
 		LDF_GET_VAL_FROM_COLLECTION(collectibleID, collection, u"collectible_id", -1);
 	}
 
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(CollectibleComponent, GM::HasBeenCollected, OnHasBeenCollected);
+	}
+
 };
 
 #endif

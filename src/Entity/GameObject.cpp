@@ -10,6 +10,8 @@
 
 #include <rapidxml/rapidxml.hpp>
 
+#include "Entity/GMBase.hpp"
+
 //using namespace Entity::Components::Interface;
 #define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T) {COMP_T * comp = this->GetComponent<COMP_T>(); if(comp != nullptr) { /*Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"...");*/ comp->Serialize(factory, packetType);}}
 #define COMPONENT_ONADD_SWITCH_CASE(COMP_T) {\
@@ -18,6 +20,7 @@
 		components.insert(std::make_pair(COMP_T::GetTypeID(), comp));\
 		comp->SetOwner(this); \
 		comp->OnEnable();\
+		comp->RegisterMessageHandlers();\
 		/*Logger::log("WRLD", "Added Component "+std::string(#COMP_T)+"!");*/\
 		if(comp == nullptr) {\
 			throw new std::runtime_error(std::string(#COMP_T)+" resultet into a nullptr.");\
@@ -768,10 +771,10 @@ void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {
 
 #include "GameCache/MissionTasks.hpp"
 
-GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DEFINE);
+//GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DEFINE);
 
 void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
-	for (auto i : components) i.second->OnDie(sender, msg);
+	for (auto i : components) i.second->OnMessage(sender, msg->GetID(), msg);
 }
 
 
@@ -808,6 +811,11 @@ void Entity::GameObject::NotifyTriggerEvent(std::string eventName) {
 	auto triggerComponent = this->GetComponent<TriggerComponent>();
 	if (triggerComponent == nullptr) return;
 	triggerComponent->HandleEvent(eventName, this);
+}
+
+void Entity::GameObject::OnMessage(Entity::GameObject* rerouteID, std::uint32_t msgID, GM::GMBase* msg) {
+	for (auto comp : components)
+		comp.second->OnMessage(rerouteID, msgID, msg);
 }
 
 

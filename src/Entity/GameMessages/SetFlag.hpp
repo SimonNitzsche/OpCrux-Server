@@ -18,11 +18,6 @@ namespace GM {
 			GM_VAR_DESERIALIZE(bs, bFlag);
 			GM_VAR_DESERIALIZE(bs, iFlagID);
 		}
-
-		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-			if (target == nullptr) target = sender;
-			target->OnSetFlag(sender, *this);
-		}
 	};
 }
 

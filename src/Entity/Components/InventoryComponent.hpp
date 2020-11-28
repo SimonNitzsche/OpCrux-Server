@@ -455,7 +455,7 @@ public:
 
 						GM::EquipInventory eqInvGM;
 						eqInvGM.itemToEquip = subItemStack.objectID;
-						owner->OnEquipInventory(owner, eqInvGM);
+						owner->OnMessage(owner, eqInvGM.GetID(), &eqInvGM);
 					}
 
 					Logger::log("WRLD", "Equipped LOT " + std::to_string(it->second.LOT));
@@ -972,7 +972,7 @@ public:
 	}
 	void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
 		this->UnEquipItem(msg.itemToUnEquip);
-		sender->GetComponentByType(4)->OnUnEquipInventory(sender, msg);
+		sender->GetComponentByType(4)->OnMessage(sender, msg.GetID(), &msg);
 	}
 
 	void OnClientItemConsumed(Entity::GameObject* sender, GM::ClientItemConsumed& msg) {

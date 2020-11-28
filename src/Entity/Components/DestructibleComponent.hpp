@@ -330,6 +330,10 @@ public:
 			return;
 		}
 	}
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(DestructibleComponent, GM::RequestDie, OnRequestDie);
+	}
 };
 
 

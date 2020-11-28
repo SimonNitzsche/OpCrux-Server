@@ -16,9 +16,9 @@ void GameMessages::Deserialize(WorldServer * Instance, ClientSession * session, 
 	}
 
 	switch (msgID) {
-		GM_MAKE_LIST_CLIENT(GM_DESERIALIZE_SWITCH_CASE);
+		GM_MAKE_LIST_CLIENT(GM_DESERIALIZE_SWITCH_CASE_DYNAMIC);
 	default: {
-		std::stringstream ss; ss << std::hex << msgID;
+		std::stringstream ss; ss << std::hex << msgID << " (dynamic)";
 		Logger::log("WRLD", "Tried to deserialize unhandled GM #" + std::to_string(msgID) + ", 0x" + ss.str(), LogType::WARN);
 	}
 	}

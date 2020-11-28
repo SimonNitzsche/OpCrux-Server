@@ -3,7 +3,7 @@
 #include "Entity/GameMessages/RequestUse.hpp"
 #include "Entity/Components/InventoryComponent.hpp"
 
-void BuildBorderComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg) {
+void BuildBorderComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
 	// Get inventory
 
 	GM::StartArrangingWithItem myMsg;
@@ -14,7 +14,7 @@ void BuildBorderComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestU
 	GameMessages::Broadcast(sender, myMsg);
 }
 
-void BuildBorderComponent::OnSetBuildMode(Entity::GameObject* sender, GM::SetBuildMode& msg) {
+void BuildBorderComponent::OnSetBuildMode(Entity::GameObject* sender, GM::SetBuildMode* msg) {
 	auto invComp = sender->GetComponent<InventoryComponent>();
 
 	if (msg.bStart) {
@@ -33,7 +33,7 @@ void BuildBorderComponent::OnSetBuildMode(Entity::GameObject* sender, GM::SetBui
 	}
 }
 
-void BuildBorderComponent::OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem& msg) {
+void BuildBorderComponent::OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem* msg) {
 	// Check if thinking hat, if not return
 	if (msg.sourceLOT != thinkingHatLOT) return;
 
@@ -54,7 +54,7 @@ void BuildBorderComponent::OnStartBuildingWithItem(Entity::GameObject* sender, G
 	GameMessages::Broadcast(sender, myMsg);
 }
 
-void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::ModularBuildFinish& msg) {
+void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::ModularBuildFinish* msg) {
 
 
 	auto invComp = sender->GetComponent<InventoryComponent>();
