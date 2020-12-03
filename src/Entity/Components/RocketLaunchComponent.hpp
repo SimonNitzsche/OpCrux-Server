@@ -22,11 +22,13 @@ public:
 
 	static constexpr int GetTypeID() { return 67; }
 
-	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg);
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse * msg);
 
-	void OnFireEventServerSide(Entity::GameObject* sender, GM::FireEventServerSide& msg);
+	void OnFireEventServerSide(Entity::GameObject* sender, GM::FireEventServerSide * msg);
 
 	void PopulateFromLDF(LDFCollection* collection);
+
+	void RegisterMessageHandlers();
 
 };
 

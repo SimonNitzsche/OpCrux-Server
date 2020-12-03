@@ -3,6 +3,8 @@
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
+#include "Entity/GameMessages/ModuleAssemblyQueryData.hpp"
+
 class ModuleAssemblyComponent : public IEntityComponent {
 public:
 
@@ -41,14 +43,17 @@ public:
 		owner->SetDirty();
 	}
 
-	void onModuleAssemblyQueryData() {
+	void onModuleAssemblyQueryData(Entity::GameObject * sender, GM::ModuleAssemblyQueryData * msg) {
 		// TODO: Load from db.
 		std::u16string ma = u"1:8129;1:8130;1:13513;1:13512;1:13515;1:13516;1:13514;";
 		this->SetAssembly(ma);
 
-		{ GM::ModuleAssemblyDBDataForClient msg; msg.assemblyID = 0; msg.blob = ma; GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, msg); }
+		{ GM::ModuleAssemblyDBDataForClient nmsg; nmsg.assemblyID = 0; nmsg.blob = ma; GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, nmsg); }
 	}
 
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(ModuleAssemblyComponent, GM::ModuleAssemblyQueryData, onModuleAssemblyQueryData);
+	}
 };
 
 #endif

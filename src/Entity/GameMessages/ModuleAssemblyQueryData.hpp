@@ -2,8 +2,6 @@
 #define __ENTITY__GM__ModuleAssemblyQueryData_HPP__
 #include "Entity/GameMessages.hpp"
 
-#include "Entity/Components/ModuleAssemblyComponent.hpp"
-
 namespace GM {
 	struct ModuleAssemblyQueryData : GMBase {
 
@@ -13,10 +11,6 @@ namespace GM {
 
 		ModuleAssemblyQueryData() {}
 		
-		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-			auto moduleAssemblyComp = target->GetComponent<ModuleAssemblyComponent>();
-			moduleAssemblyComp->onModuleAssemblyQueryData();
-		}
 	};
 }
 

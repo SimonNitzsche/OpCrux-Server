@@ -189,16 +189,16 @@ public:
 		return (rand() % randMax) + CacheCurrencyTable::GetMinValue(usingRow);
 	}
 
-	void OnRequestDie(Entity::GameObject* sender, GM::RequestDie & msg) {
+	void OnRequestDie(Entity::GameObject* sender, GM::RequestDie * msg) {
 		GM::Die msgDie;
 		msgDie.bSpawnLoot = true;
-		msgDie.deathType = msg.deathType;
-		msgDie.directionRelative_AngleXZ = msg.directionRelative_AngleXZ;
-		msgDie.directionRelative_AngleY = msg.directionRelative_AngleY;
-		msgDie.directionRelative_Force = msg.directionRelative_Force;
-		msgDie.killType = msg.killType;
-		msgDie.killerID = msg.killerID;
-		msgDie.lootOwnerID = msg.lootOwnerID;
+		msgDie.deathType = msg->deathType;
+		msgDie.directionRelative_AngleXZ = msg->directionRelative_AngleXZ;
+		msgDie.directionRelative_AngleY = msg->directionRelative_AngleY;
+		msgDie.directionRelative_Force = msg->directionRelative_Force;
+		msgDie.killType = msg->killType;
+		msgDie.killerID = msg->killerID;
+		msgDie.lootOwnerID = msg->lootOwnerID;
 		GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, msgDie);
 		this->owner->OnDie(this->owner, &msgDie);
 	}

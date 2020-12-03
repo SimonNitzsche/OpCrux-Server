@@ -17,7 +17,7 @@ void BuildBorderComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestU
 void BuildBorderComponent::OnSetBuildMode(Entity::GameObject* sender, GM::SetBuildMode* msg) {
 	auto invComp = sender->GetComponent<InventoryComponent>();
 
-	if (msg.bStart) {
+	if (msg->bStart) {
 		// auto equip hat
 		if (!invComp->hasEquipped(thinkingHatLOT)) {
 			// We do no have it equipped, auto equip
@@ -35,7 +35,7 @@ void BuildBorderComponent::OnSetBuildMode(Entity::GameObject* sender, GM::SetBui
 
 void BuildBorderComponent::OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem* msg) {
 	// Check if thinking hat, if not return
-	if (msg.sourceLOT != thinkingHatLOT) return;
+	if (msg->sourceLOT != thinkingHatLOT) return;
 
 	// Get inventory
 	auto invComp = sender->GetComponent<InventoryComponent>();
@@ -60,7 +60,7 @@ void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::
 	auto invComp = sender->GetComponent<InventoryComponent>();
 
 	std::string buildString = "";
-	for (auto it = msg.modules.begin(); it != msg.modules.end(); ++it) {
+	for (auto it = msg->modules.begin(); it != msg->modules.end(); ++it) {
 		if (buildString.size() != 0) buildString += "+";
 		buildString += "1:" + std::to_string(*it);
 	}
@@ -68,7 +68,7 @@ void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::
 
 	auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(Database::DBCOUNTERID::PLAYER));
 
-	if (msg.count == 3) {
+	if (msg->count == 3) {
 		// Rocket
 		invComp->AddItem(6416, 1U, owner->GetPosition(), subkey, metadata);
 	}

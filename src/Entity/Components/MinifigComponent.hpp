@@ -21,10 +21,13 @@ public:
 
 	static constexpr int GetTypeID() { return 35; }
 
-	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg) {
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
 		MissionManager::LaunchTaskEvent(Enums::EMissionTask::TALK_TO_NPC, owner, sender->GetObjectID());
 	}
 
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(MinifigComponent, GM::RequestUse, OnRequestUse);
+	}
 };
 
 #endif

@@ -967,21 +967,21 @@ public:
 		}
 	}
 
-	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {
-		this->EquipItem(msg.itemToEquip);
+	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory* msg) {
+		this->EquipItem(msg->itemToEquip);
 	}
-	void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
-		this->UnEquipItem(msg.itemToUnEquip);
-		sender->GetComponentByType(4)->OnMessage(sender, msg.GetID(), &msg);
+	void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory* msg) {
+		this->UnEquipItem(msg->itemToUnEquip);
+		sender->GetComponentByType(4)->OnMessage(sender, msg->GetID(), msg);
 	}
 
-	void OnClientItemConsumed(Entity::GameObject* sender, GM::ClientItemConsumed& msg) {
+	void OnClientItemConsumed(Entity::GameObject* sender, GM::ClientItemConsumed* msg) {
 		GM::UseItemResult resultMsg;
 		resultMsg.m_ItemTemplateID = -1;
 
 		// Use while to emulate sub with return
 		while (true) {
-			Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.item);
+			Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->item);
 
 			if (item == nullptr) break;
 
@@ -1001,6 +1001,12 @@ public:
 		}
 
 		GameMessages::Send(sender, owner->GetObjectID(), resultMsg);
+	}
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::EquipInventory, OnEquipInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UnEquipInventory, OnUnEquipInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::ClientItemConsumed, OnClientItemConsumed);
 	}
 };
 

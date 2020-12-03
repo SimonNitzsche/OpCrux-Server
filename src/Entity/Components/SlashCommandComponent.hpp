@@ -21,7 +21,11 @@ public:
 
 	static constexpr int GetTypeID() { return 90; }
 
-	void OnParseChatMessage(Entity::GameObject* sender, GM::ParseChatMessage& msg);
+	void OnParseChatMessage(Entity::GameObject* sender, GM::ParseChatMessage * msg);
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(SlashCommandComponent, GM::ParseChatMessage, OnParseChatMessage);
+	}
 
 private:
 	enum class Response {RankTooLow = 1, NoCommand = 2, NoArguements = 3,};

@@ -3,6 +3,8 @@
 
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 
+#include "Entity/GameMessages/RequestUse.hpp"
+
 class BuildBorderComponent : public IEntityComponent {
 public:
 
