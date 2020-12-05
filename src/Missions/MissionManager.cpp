@@ -535,7 +535,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 
                 GM::NotifyMissionTask tMsg;
                 tMsg.missionID = it->missionID;
-
+				GameMessages::Send(playerObject, player, tMsg);
             }
 
             /*
