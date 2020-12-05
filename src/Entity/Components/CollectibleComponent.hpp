@@ -35,9 +35,9 @@ public:
 		}
 	}
 
-	void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected & msg) {
+	void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected * msg) {
 		Logger::log("WRLD", "Collectible " + std::to_string(collectibleID) + " has been collected.");
-		MissionManager::LaunchTaskEvent(Enums::EMissionTask::COLLECTIBLE, owner, msg.playerID, collectibleID);
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::COLLECTIBLE, owner, msg->playerID, collectibleID);
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
@@ -52,6 +52,10 @@ public:
 
 	void PopulateFromLDF(LDFCollection * collection) {
 		LDF_GET_VAL_FROM_COLLECTION(collectibleID, collection, u"collectible_id", -1);
+	}
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(CollectibleComponent, GM::HasBeenCollected, OnHasBeenCollected);
 	}
 
 };

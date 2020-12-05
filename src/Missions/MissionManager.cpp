@@ -64,7 +64,7 @@ void MissionManager::UpdateMissionTask(Entity::GameObject * sender, Entity::Game
     GameMessages::Send(player, player->GetObjectID(), msgNotifyMissionTask);
 }
 
-void MissionManager::GetAllNonMissionsThatAreMissingByTaskType(DataTypes::LWOOBJID player, std::map<int32_t, std::map<std::int32_t, std::int32_t>> *  selection, std::list<DatabaseModels::MissionModel> * currentMissions) {
+void MissionManager::GetAllNonMissionsThatAreMissingByTaskType(Entity::GameObject * player, std::map<int32_t, std::map<std::int32_t, std::int32_t>> *  selection, std::list<DatabaseModels::MissionModel> * currentMissions) {
     std::list<std::int32_t> missionFixups = {};
 
     for (auto it1 = selection->begin(); it1 != selection->end(); ++it1) {
@@ -85,7 +85,7 @@ void MissionManager::GetAllNonMissionsThatAreMissingByTaskType(DataTypes::LWOOBJ
 
     for (auto it = missionFixups.begin(); it != missionFixups.end(); ++it) {
         Logger::log("WRLD", "Adding mission " + std::to_string(*it));
-        currentMissions->push_back(Database::AddMission(player.getPureID(), *it));
+        currentMissions->push_back(Database::AddMission(player->GetZoneInstance()->GetDBConnection(), player->GetObjectID().getPureID(), *it));
     }
 }
 
@@ -109,9 +109,9 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
             possibleMissionsOM.push_back(it->first);
         }
 
-        auto currentMissions = Database::GetAllMissionsByIDsAndStates(dbPlayerID, possibleMissionsOM, { 2, 4, 10 });
+        auto currentMissions = Database::GetAllMissionsByIDsAndStates(caster->GetZoneInstance()->GetDBConnection(), dbPlayerID, possibleMissionsOM, { 2, 4, 10 });
     
-        GetAllNonMissionsThatAreMissingByTaskType(player, &possibleMissions, &currentMissions);
+        GetAllNonMissionsThatAreMissingByTaskType(playerObject, &possibleMissions, &currentMissions);
 
         switch (taskType)
         {
@@ -555,7 +555,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
             GameMessages::Send(Instance, Instance->sessionManager.GetSession(player)->systemAddress, player, msg);
         }
 
-        Database::UpdateMission(*it);
+        Database::UpdateMission(playerObject->GetZoneInstance()->GetDBConnection(), *it);
     }
 }
 
@@ -633,7 +633,7 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
     // TODO: Reward: MaxModel
     
     charComp->InitCharInfo(charInfo);
-    Database::UpdateChar(charInfo);
+    Database::UpdateChar(player->GetZoneInstance()->GetDBConnection(), charInfo);
 	charComp->CheckLevelProgression();
     player->GetZoneInstance()->objectsManager->Serialize(player);
 
@@ -677,6 +677,6 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
 		GameMessages::Send(player, player->GetObjectID(), setEmoteLockStateGM);
 
 		// Save to database
-		Database::UnlockEmote(player->GetObjectID(), emote);
+		Database::UnlockEmote(player->GetZoneInstance()->GetDBConnection(), player->GetObjectID(), emote);
 	}
 }

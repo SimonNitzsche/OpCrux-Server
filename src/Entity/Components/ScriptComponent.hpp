@@ -62,10 +62,10 @@ public:
 	static constexpr int GetTypeID() { return 5; }
 
 	void OnEnable() {
-		std::uint32_t compID = CacheComponentsRegistry::GetComponentID(owner->GetLOT(), 5);
+		std::uint32_t compID = GetComponentID();
 		scriptName = CacheScriptComponent::GetScriptName(compID);
 
-		if (scriptName == ("ScriptComponent_" + std::to_string(compID) + "_script_name__removed") && factories.find(scriptName) == factories.end()) {
+		if (/*scriptName == ("ScriptComponent_" + std::to_string(compID) + "_script_name__removed") && */factories.find(scriptName) == factories.end()) {
 			scriptName = "";
 		}
 	}
@@ -103,24 +103,24 @@ public:
 		}
 	}
 
-	void OnPlayerReady(Entity::GameObject* sender, GM::PlayerReady& msg) {
+	void OnPlayerReady(Entity::GameObject* sender, GM::PlayerReady* msg) {
 		if (instance)
-			instance->onPlayerReady(owner, msg);
+			instance->onPlayerReady(owner, *msg);
 	}
 
-	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded& msg) {
+	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded* msg) {
 		if (instance)
-			instance->onPlayerLoaded(owner, msg);
+			instance->onPlayerLoaded(owner, *msg);
 	}
 
-	void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK & msg) {
+	void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK * msg) {
 		if (instance)
-			instance->onMissionDialogueOK(owner, msg);
+			instance->onMissionDialogueOK(owner, *msg);
 	}
 
-	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse & msg) {
+	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 		if (instance)
-			instance->onUse(owner, msg);
+			instance->onUse(owner, *msg);
 	}
 
 	void OnTimerDone(std::pair<std::u16string, long long> timer) {
@@ -128,9 +128,9 @@ public:
 			instance->onTimerDone(owner, TimerDone(timer.first));
 	}
 
-	void OnFireEventServerSide(Entity::GameObject * sender, GM::FireEventServerSide & msg) {
+	void OnFireEventServerSide(Entity::GameObject * sender, GM::FireEventServerSide * msg) {
 		if (instance)
-			instance->onFireEventServerSide(owner, msg);
+			instance->onFireEventServerSide(owner, *msg);
 	}
 
 	void OnDie(Entity::GameObject* sender, GM::Die* msg) {
@@ -237,6 +237,15 @@ public:
 				LDFUtils::SerializeCollection(*factory, netConf);
 			}
 		}
+	}
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::PlayerReady, OnPlayerReady);
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::PlayerLoaded, OnPlayerLoaded);
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::MissionDialogueOK, OnMissionDialogueOK);
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::RequestUse, OnRequestUse);
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::FireEventServerSide, OnFireEventServerSide);
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::Die, OnDie);
 	}
 
 };

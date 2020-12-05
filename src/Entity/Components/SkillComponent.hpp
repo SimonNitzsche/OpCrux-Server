@@ -63,6 +63,13 @@ public:
 
 	static constexpr int GetTypeID() { return 9; }
 
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(SkillComponent, GM::StartSkill, OnStartSkill);
+		REGISTER_OBJECT_MESSAGE_HANDLER(SkillComponent, GM::SyncSkill, OnSyncSkill);
+		REGISTER_OBJECT_MESSAGE_HANDLER(SkillComponent, GM::EquipInventory, OnEquipInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(SkillComponent, GM::UnEquipInventory, OnUnEquipInventory);
+	}
+
 	void Awake() {
 
 	}
@@ -77,47 +84,47 @@ public:
 		}
 	}
 
-	inline void OnStartSkill(Entity::GameObject* sender, GM::StartSkill& msg) {
+	inline void OnStartSkill(Entity::GameObject* sender, GM::StartSkill* msg) {
 		parameters = SkillStackParameters();
 
-		currentSkill = msg.skillID;
-		currentHandle = msg.uiSkillHandle;
+		currentSkill = msg->skillID;
+		currentHandle = msg->uiSkillHandle;
 
-		parameters.bUsedMouse = msg.bUsedMouse;
-		parameters.fCasterLatency = msg.fCasterLatency;
-		parameters.iCastType = msg.iCastType;
-		parameters.lastClickedPosit = msg.lastClickedPosit;
-		parameters.optionalOriginatorID = msg.optionalOriginatorID;
-		parameters.optionalTargetID = msg.optionalTargetID;
-		parameters.originatorRot = msg.originatorRot;
-		parameters.uiSkillHandle = msg.uiSkillHandle;
+		parameters.bUsedMouse = msg->bUsedMouse;
+		parameters.fCasterLatency = msg->fCasterLatency;
+		parameters.iCastType = msg->iCastType;
+		parameters.lastClickedPosit = msg->lastClickedPosit;
+		parameters.optionalOriginatorID = msg->optionalOriginatorID;
+		parameters.optionalTargetID = msg->optionalTargetID;
+		parameters.originatorRot = msg->originatorRot;
+		parameters.uiSkillHandle = msg->uiSkillHandle;
 
 		GM::EchoStartSkill echoGM; {
-			echoGM.bUsedMouse = msg.bUsedMouse;
-			echoGM.fCasterLatency = msg.fCasterLatency;
-			echoGM.iCastType = msg.iCastType;
-			echoGM.lastClickedPosit = msg.lastClickedPosit;
-			echoGM.optionalOriginatorID = msg.optionalOriginatorID;
-			echoGM.optionalTargetID = msg.optionalTargetID;
-			echoGM.originatorRot = msg.originatorRot;
-			echoGM.sBitStream = msg.sBitStream;
-			echoGM.skillID = msg.skillID;
-			echoGM.uiSkillHandle = msg.uiSkillHandle;
+			echoGM.bUsedMouse = msg->bUsedMouse;
+			echoGM.fCasterLatency = msg->fCasterLatency;
+			echoGM.iCastType = msg->iCastType;
+			echoGM.lastClickedPosit = msg->lastClickedPosit;
+			echoGM.optionalOriginatorID = msg->optionalOriginatorID;
+			echoGM.optionalTargetID = msg->optionalTargetID;
+			echoGM.originatorRot = msg->originatorRot;
+			echoGM.sBitStream = msg->sBitStream;
+			echoGM.skillID = msg->skillID;
+			echoGM.uiSkillHandle = msg->uiSkillHandle;
 		}
 		GameMessages::Broadcast(this->owner, echoGM, true);
 
 		MissionManager::LaunchTaskEvent(EMissionTask::USE_SKILL, sender, sender->GetObjectID(), 1, currentSkill);
 
-		UnCast(msg.sBitStream);
+		UnCast(msg->sBitStream);
 	}
 
-	inline void OnSyncSkill(Entity::GameObject* sender, GM::SyncSkill& msg) {
-		parameters.bDone = msg.bDone;
-		parameters.uiBehvaiorHandle = msg.uiBehaviorHandle;
-		parameters.uiSkillHandle = msg.uiSkillHandle;
+	inline void OnSyncSkill(Entity::GameObject* sender, GM::SyncSkill* msg) {
+		parameters.bDone = msg->bDone;
+		parameters.uiBehvaiorHandle = msg->uiBehaviorHandle;
+		parameters.uiSkillHandle = msg->uiSkillHandle;
 
 		mutex_behaviorHandles.lock();
-		auto behaviorIDIt = behaviorHandles.find(msg.uiBehaviorHandle);
+		auto behaviorIDIt = behaviorHandles.find(msg->uiBehaviorHandle);
 		std::int32_t behaviorID = 0;
 		if (behaviorIDIt != behaviorHandles.end()) {
 			behaviorID = behaviorIDIt->second;
@@ -126,15 +133,15 @@ public:
 		mutex_behaviorHandles.unlock();
 
 		GM::EchoSyncSkill echoGM; {
-			echoGM.bDone = msg.bDone;
-			echoGM.sBitStream = msg.sBitStream;
-			echoGM.uiBehaviorHandle = msg.uiBehaviorHandle;
-			echoGM.uiSkillHandle = msg.uiSkillHandle;
+			echoGM.bDone = msg->bDone;
+			echoGM.sBitStream = msg->sBitStream;
+			echoGM.uiBehaviorHandle = msg->uiBehaviorHandle;
+			echoGM.uiSkillHandle = msg->uiSkillHandle;
 		}
 		GameMessages::Broadcast(this->owner, echoGM, true);
 
 		if (behaviorID <= 0) return;
-		UnCast(msg.sBitStream, behaviorID);
+		UnCast(msg->sBitStream, behaviorID);
 	}
 
 	inline void AddBehaviorHandle(std::uint32_t behaviorHandle, std::int32_t behaviorAction) {
@@ -155,9 +162,9 @@ public:
 		return 5;
 	}
 
-	inline void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory& msg) {
+	inline void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory* msg) {
 		// Add skills
-		Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.itemToEquip);
+		Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->itemToEquip);
 		if (item == nullptr) return;
 
 		IEntityComponent* invComp = item->GetComponentByType(11);
@@ -175,16 +182,16 @@ public:
 			addSkillGM.AICombatWeight = CacheObjectSkills::GetAICombatWeight(r);
 			addSkillGM.slotID = GetHotbarSlotFromEquipLocation(strEquipLocation);
 			GameMessages::Broadcast(sender, addSkillGM);
+			//}
 
 			// On Equip
 			if (addSkillGM.castType == 1) {
 				ServerStartSkill(addSkillGM.skillID, addSkillGM.castType);
 			}
-			//}
 		}
 	}
 
-	inline void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
+	inline void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory* msg) {
 		// Remove skills
 	}
 
@@ -194,7 +201,7 @@ public:
 		startSkillGM.iCastType = castType;
 		startSkillGM.uiSkillHandle = ++parameters.uiSkillHandle;
 		startSkillGM.sBitStream = "";
-		owner->OnStartSkill(owner, startSkillGM);
+		owner->OnMessage(owner, startSkillGM.GetID(), &startSkillGM);
 	}
 
 };

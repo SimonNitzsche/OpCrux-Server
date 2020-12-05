@@ -60,7 +60,7 @@ public:
 		GameMessages::Send(sender, owner->GetObjectID(), nmsg);
 	}
 
-	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse & msg) {
+	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
 		CharacterComponent * charComp = sender->GetComponent<CharacterComponent>();
 		if (charComp != nullptr) {
 			GameMessages::Send(sender, owner->GetObjectID(), GM::VendorOpenWindow());
@@ -69,13 +69,13 @@ public:
 		}
 	}
 
-	void OnBuyFromVendor(Entity::GameObject* sender, GM::BuyFromVendor& msg) {
+	void OnBuyFromVendor(Entity::GameObject* sender, GM::BuyFromVendor * msg) {
 		// Prepare response
 		GM::VendorTransactionResult response;
 		response.iResult = 3; // vendor purchase fail
 
 		// Get base cost
-		auto itemCompID = CacheComponentsRegistry::GetComponentID(msg.item, 11);
+		auto itemCompID = CacheComponentsRegistry::GetComponentID(msg->item, 11);
 		auto itemCompRow = CacheItemComponent::getRow(itemCompID);
 		auto baseValue = CacheItemComponent::GetBaseValue(itemCompRow);
 
@@ -83,7 +83,7 @@ public:
 		std::float_t pieceValue = baseValue * buyScalar;
 
 		// Calculate buy price
-		std::int32_t sumValue = pieceValue * msg.count;
+		std::int32_t sumValue = pieceValue * msg->count;
 
 		// Do boundary test (can player buy that much?)
 		auto charComp = sender->GetComponent<CharacterComponent>();
@@ -93,14 +93,14 @@ public:
 			if (charInfo.currency >= sumValue) {
 				// Remove currency
 				charInfo.currency -= sumValue;
-				Database::UpdateChar(charInfo);
+				Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 				charComp->InitCharInfo(charInfo);
 
 				// Add item
 				InventoryComponent* invComp = sender->GetComponent<InventoryComponent>();
 
 				if (invComp != nullptr) {
-					invComp->AddItem(msg.item, msg.count, DataTypes::Vector3(), 0ULL, {
+					invComp->AddItem(msg->item, msg->count, DataTypes::Vector3(), 0ULL, {
 						LDF_COLLECTION_INIT_ENTRY(u"_Metric_Currency_Delta_Int", -sumValue),
 						LDF_COLLECTION_INIT_ENTRY(u"_Metric_Source_LOT_Int", owner->GetLOT())
 					});
@@ -115,6 +115,10 @@ public:
 		GameMessages::Send(sender, owner->GetObjectID(), response);
 	}
 
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(VendorComponent, GM::RequestUse, OnRequestUse);
+		REGISTER_OBJECT_MESSAGE_HANDLER(VendorComponent, GM::BuyFromVendor, OnBuyFromVendor);
+	}
 };
 
 #endif

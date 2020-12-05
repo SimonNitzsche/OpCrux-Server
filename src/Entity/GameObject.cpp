@@ -10,6 +10,8 @@
 
 #include <rapidxml/rapidxml.hpp>
 
+#include "Entity/GMBase.hpp"
+
 //using namespace Entity::Components::Interface;
 #define SERIALIZE_COMPONENT_IF_ATTACHED(COMP_T) {COMP_T * comp = this->GetComponent<COMP_T>(); if(comp != nullptr) { /*Logger::log("WRLD", "Serializing "+std::string(#COMP_T)+"...");*/ comp->Serialize(factory, packetType);}}
 #define COMPONENT_ONADD_SWITCH_CASE(COMP_T) {\
@@ -18,6 +20,7 @@
 		components.insert(std::make_pair(COMP_T::GetTypeID(), comp));\
 		comp->SetOwner(this); \
 		comp->OnEnable();\
+		comp->RegisterMessageHandlers();\
 		/*Logger::log("WRLD", "Added Component "+std::string(#COMP_T)+"!");*/\
 		if(comp == nullptr) {\
 			throw new std::runtime_error(std::string(#COMP_T)+" resultet into a nullptr.");\
@@ -387,9 +390,8 @@ void Entity::GameObject::SerializeBaseData(RakNet::BitStream * factory, ReplicaT
 		factory->Write(spawner != nullptr);
 		if (spawner != nullptr) { factory->Write(spawner->objectID); }
 		
-		factory->Write(false); // disable commented out below
-		//factory->Write(spawner_node != 0xFFFFFFFF);
-		//if (spawner_node != 0xFFFFFFFF) { factory->Write(spawner_node); }
+		factory->Write(spawner_node != 0xFFFFFFFF);
+		if (spawner_node != 0xFFFFFFFF) { factory->Write(spawner_node); }
 
 		// Object Scale
 		factory->Write(true);
@@ -770,10 +772,10 @@ void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {
 
 #include "GameCache/MissionTasks.hpp"
 
-GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DEFINE);
+//GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DEFINE);
 
 void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
-	for (auto i : components) i.second->OnDie(sender, msg);
+	for (auto i : components) i.second->OnMessage(sender, msg->GetID(), msg);
 }
 
 
@@ -791,7 +793,7 @@ void Entity::GameObject::SetProximityRadius(std::string name, float radius) {
 			scriptComp->proximityRadii.insert({ name, { radius, {}} });
 		}
 		else {
-			throw new std::runtime_error("Radius already exists.");
+			Logger::log("WRLD", "SetProximityRadius: Radius already exists.", LogType::ERR);
 		}
 	}
 	else {
@@ -810,6 +812,11 @@ void Entity::GameObject::NotifyTriggerEvent(std::string eventName) {
 	auto triggerComponent = this->GetComponent<TriggerComponent>();
 	if (triggerComponent == nullptr) return;
 	triggerComponent->HandleEvent(eventName, this);
+}
+
+void Entity::GameObject::OnMessage(Entity::GameObject* rerouteID, std::uint32_t msgID, GM::GMBase* msg) {
+	for (auto comp : components)
+		comp.second->OnMessage(rerouteID, msgID, msg);
 }
 
 
@@ -839,7 +846,7 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<grps/>";
 			ss << "<items nn=\"1\">";
 			{
-				auto playerInventory = Database::GetFullInventory(GetObjectID().getPureID());
+				auto playerInventory = Database::GetFullInventory(GetZoneInstance()->GetDBConnection(), GetObjectID().getPureID());
 
 				for (auto it = playerInventory.begin(); it != playerInventory.end(); ++it) {
 
@@ -891,7 +898,7 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << "<char ";
 				//ss << "cm=\"" << std::to_string(0x7FFFFFFFFFFFFFFF) << "\" ";
 				ss << "cc=\"" << charInfo.currency << "\" ";
-				ss << "gm=\"" << Database::GetAccountGMLevel(charInfo.accountID) << "\" ";
+				ss << "gm=\"" << Database::GetAccountGMLevel(GetZoneInstance()->GetDBConnection(), charInfo.accountID) << "\" ";
 				// ss << "edit=\"" << 0 << "\" ";
 				// ss << "acct=\"" << charInfo.accountID << "\" ";
 				//ss << "llog=\"" << 1327707052 << "\"";
@@ -927,7 +934,7 @@ std::string Entity::GameObject::GenerateXML() {
 			ss << ">";
 			{
 				ss << "<ue>";
-				auto unlockedEmotes = Database::GetUnlockedEmotes(objectID);
+				auto unlockedEmotes = Database::GetUnlockedEmotes(GetZoneInstance()->GetDBConnection(), objectID);
 				for (auto e : unlockedEmotes) ss << "<e id=\"" << e << "\"/>";
 				ss << "</ue>";
 				ss << "<vl></vl>";
@@ -961,7 +968,7 @@ std::string Entity::GameObject::GenerateXML() {
 
 				ss << "<done>";
 				{
-					auto missionsDone = Database::GetAllMissionsByStates(objectID.getPureID(), { 8, 9 });
+					auto missionsDone = Database::GetAllMissionsByStates(GetZoneInstance()->GetDBConnection(), objectID.getPureID(), { 8, 9 });
 					for (auto it = missionsDone.begin(); it != missionsDone.end(); ++it) {
 						ss << "<m id=\"" << it->missionID << "\" cts=\"" << it->time << "\" cct=\"" << it->repeatCount << "\"/>";
 					}
@@ -969,7 +976,7 @@ std::string Entity::GameObject::GenerateXML() {
 				ss << "</done>";
 				ss << "<cur>";
 				{
-					auto missionsActive = Database::GetAllMissionsByStates(objectID.getPureID(), { 2, 4, 10, 12 });
+					auto missionsActive = Database::GetAllMissionsByStates(GetZoneInstance()->GetDBConnection(), objectID.getPureID(), { 2, 4, 10, 12 });
 					for (auto it = missionsActive.begin(); it != missionsActive.end(); ++it) {
 						ss << "<m id=\"" << it->missionID << "\">";
 						auto c_missionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();

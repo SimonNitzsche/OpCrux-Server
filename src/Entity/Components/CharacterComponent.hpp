@@ -66,12 +66,8 @@ public:
 	}
 
 	void TogglePvP() {
-		if (pvp) {
-			pvp = false;
-		}
-		else {
-			pvp = true;
-		}
+		// Toggle pvp
+		pvp = !pvp;
 		this->owner->SetDirty();
 	}
 
@@ -108,7 +104,7 @@ public:
 
 	void SetImagination(std::int32_t imag) {
 		charInfo.imagination = imag;
-		Database::UpdateChar(charInfo);
+		Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 	}
 
 	std::int32_t GetImagination() {
@@ -144,16 +140,16 @@ public:
 		}
 
 
-		Database::SetFlag(this->owner->GetObjectID(), chunkID, chunkData);
+		Database::SetFlag(owner->GetZoneInstance()->GetDBConnection(), this->owner->GetObjectID(), chunkID, chunkData);
 		GM::NotifyClientFlagChange clientResponse;
 		clientResponse.bFlag = value;
 		clientResponse.iFlagID = flagIndex;
 		GameMessages::Send(this->owner, this->owner->GetObjectID(), clientResponse);
 	}
 
-	void OnSetFlag(Entity::GameObject* sender, GM::SetFlag & msg) {
-		this->SetFlag(msg.iFlagID, msg.bFlag);
-		MissionManager::LaunchTaskEvent(Enums::EMissionTask::FLAG, sender, owner->GetObjectID(), msg.iFlagID);
+	void OnSetFlag(Entity::GameObject* sender, GM::SetFlag * msg) {
+		this->SetFlag(msg->iFlagID, msg->bFlag);
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::FLAG, sender, owner->GetObjectID(), msg->iFlagID);
 	}
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
@@ -302,39 +298,50 @@ public:
 		if (owner->GetComponent<SlashCommandComponent>() == nullptr)
 			owner->AddComponent<SlashCommandComponent>(0);
 
-		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
+		flags = Database::GetFlagChunks(owner->GetZoneInstance()->GetDBConnection(), owner->GetObjectID().getPureID());
 	}
 
-	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded& msg) {
+	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded* msg) {
+
+		GM::RestoreToPostLoadStats rtpls;
+		GameMessages::Send(owner, this->owner->GetObjectID(), rtpls);
+		PacketFactory::Chat::SendChatMessage(sender->GetZoneInstance()->zoneControlObject, 4, u"Player " + sender->GetName() + u" joined the game.");
+
 		GM::PlayerReady nmsg; 
 		auto Instance = this->owner->GetZoneInstance();
-		Instance->zoneControlObject->OnPlayerLoaded(this->owner, msg);
+		Instance->zoneControlObject->OnMessage(this->owner, msg->GetID(), msg);
 		GameMessages::Send(owner, this->owner->GetObjectID(), nmsg);
 		GameMessages::Send(owner, Instance->zoneControlObject->GetObjectID(), nmsg);
-		Instance->zoneControlObject->OnPlayerReady(this->owner, nmsg);
+		Instance->zoneControlObject->OnMessage(this->owner, nmsg.GetID(), &nmsg);
+
+		auto zoneControlObject = sender->GetZoneInstance()->zoneControlObject;
+		auto racingComp = zoneControlObject->GetComponent<RacingControlComponent>();
+		if (racingComp != nullptr) {
+			racingComp->msgPlayerAddedToWorldLocal(msg->playerID);
+		}
 	}
 
 
-	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg) {
-		Entity::GameObject * objectToUse = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(msg.objectID);
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
+		Entity::GameObject * objectToUse = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(msg->objectID);
 
 
 		// OnRequestUse is always received by the player and then redirected to the object internally
 		if (objectToUse != nullptr && objectToUse != this->owner) {
-			objectToUse->OnRequestUse(this->owner, msg);
+			objectToUse->OnMessage(this->owner, msg->GetID(), msg);
 		}
 	}
 
-	void OnPickupCurrency(Entity::GameObject* sender, GM::PickupCurrency& msg) {
-		if (DataTypes::Vector3::Distance(owner->GetPosition(), msg.position) <= 28.0f) {
+	void OnPickupCurrency(Entity::GameObject* sender, GM::PickupCurrency* msg) {
+		if (DataTypes::Vector3::Distance(owner->GetPosition(), msg->position) <= 28.0f) {
 			// TODO: Anti Cheat
-			charStats.TotalCurrencyCollected += msg.currency;
-			{GM::UpdatePlayerStatistic nmsg; nmsg.updateID = std::uint32_t(EStats::TotalCurrencyCollected); nmsg.updateValue = msg.currency; GameMessages::Send(owner, owner->GetObjectID(), nmsg);}
-			charInfo.currency += msg.currency;
+			charStats.TotalCurrencyCollected += msg->currency;
+			{GM::UpdatePlayerStatistic nmsg; nmsg.updateID = std::uint32_t(EStats::TotalCurrencyCollected); nmsg.updateValue = msg->currency; GameMessages::Send(owner, owner->GetObjectID(), nmsg);}
+			charInfo.currency += msg->currency;
 			
-			{GM::SetCurrency nmsg; nmsg.currency = charInfo.currency; nmsg.position = msg.position; nmsg.sourceType = 11; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
+			{GM::SetCurrency nmsg; nmsg.currency = charInfo.currency; nmsg.position = msg->position; nmsg.sourceType = 11; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
 
-			Database::UpdateChar(charInfo);
+			Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 		}
 	}
 
@@ -342,12 +349,12 @@ public:
 		std::int32_t level = CacheLevelProgrssionLookup::GetLevelByUScorePassed(charInfo.uScore);
 		if (level != charInfo.uScore) {
 			charInfo.uLevel = level;
-			Database::UpdateChar(charInfo);
+			Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 		}
 	}
 
-	void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory& msg) {
-		Entity::GameObject * itm = owner->GetZoneInstance()->objectsManager->GetObjectByID(msg.itemToUnEquip);
+	void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory* msg) {
+		Entity::GameObject * itm = owner->GetZoneInstance()->objectsManager->GetObjectByID(msg->itemToUnEquip);
 		if (itm == nullptr) return;
 		auto itmCompID = itm->GetComponentByType(11)->GetComponentID();
 		std::string equipLocation = CacheItemComponent::GetEquipLocation(itmCompID);
@@ -355,42 +362,42 @@ public:
 		if (equipLocation == "chest") {
 			GM::EquipInventory nmsg;
 			nmsg.itemToEquip = this->charInfo.shirtObjectID;
-			owner->GetComponentByType(17)->OnEquipInventory(sender, nmsg);
+			owner->GetComponentByType(17)->OnMessage(sender, nmsg.GetID(), &nmsg);
 		}
 		else if (equipLocation == "legs") {
 			GM::EquipInventory nmsg;
 			nmsg.itemToEquip = this->charInfo.pantsObjectID;
-			owner->GetComponentByType(17)->OnEquipInventory(sender, nmsg);
+			owner->GetComponentByType(17)->OnMessage(sender, nmsg.GetID(), &nmsg);
 		}
 	}
 
-	void OnRespondToMission(Entity::GameObject* sender, GM::RespondToMission& msg) {
-		auto model = Database::GetMission(sender->GetObjectID().getPureID(), msg.missionID);
-		model.chosenReward = msg.rewardItem;
-		Database::UpdateMission(model);
+	void OnRespondToMission(Entity::GameObject* sender, GM::RespondToMission* msg) {
+		auto model = Database::GetMission(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID().getPureID(), msg->missionID);
+		model.chosenReward = msg->rewardItem;
+		Database::UpdateMission(owner->GetZoneInstance()->GetDBConnection(), model);
 	}
 
-	void OnPlayEmote(Entity::GameObject* sender, GM::PlayEmote& msg) {
-		Entity::GameObject* target = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg.targetID);
+	void OnPlayEmote(Entity::GameObject* sender, GM::PlayEmote* msg) {
+		Entity::GameObject* target = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->targetID);
 		if (target == nullptr) target = sender;
 
 		// Sync
-		GM::EmotePlayed nmsg; nmsg.emoteID = msg.emoteID; nmsg.targetID = msg.targetID;
+		GM::EmotePlayed nmsg; nmsg.emoteID = msg->emoteID; nmsg.targetID = msg->targetID;
 		GameMessages::Broadcast(sender, nmsg);
 
 		// Mission Task
-		MissionManager::LaunchTaskEvent(Enums::EMissionTask::EMOTE, target, sender->GetObjectID(), msg.emoteID);
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::EMOTE, target, sender->GetObjectID(), msg->emoteID);
 	}
 
-	void OnMatchRequest(Entity::GameObject* sender, GM::MatchRequest& msg) {
+	void OnMatchRequest(Entity::GameObject* sender, GM::MatchRequest* msg) {
 		GM::MatchResponse response;
 		
 		response.response = 0;
 
 		std::list<GM::MatchUpdate> updates = {};
 
-		if (msg.type == 0) {
-			matchLobby.t_0_activityID = msg.value;
+		if (msg->type == 0) {
+			matchLobby.t_0_activityID = msg->value;
 
 			GM::MatchUpdate update00;
 
@@ -409,8 +416,8 @@ public:
 
 		}
 
-		else if (msg.type == 1) {
-			matchLobby.t_1_lobbyReady = msg.value;
+		else if (msg->type == 1) {
+			matchLobby.t_1_lobbyReady = msg->value;
 
 			GM::MatchUpdate update00;
 
@@ -440,6 +447,37 @@ public:
 			GameMessages::Send(owner, owner->GetObjectID(), update);
 		}
 
+	}
+
+	void OnRequestSmashPlayer(Entity::GameObject* sender, GM::RequestSmashPlayer* msg) {
+		Logger::log("WRLD", "Triggered RequestSmashPlayer.");
+		GM::Die dieMsg = GM::Die();
+		dieMsg.bClientDeath = true;
+		dieMsg.killerID = owner->GetObjectID();
+		dieMsg.lootOwnerID = owner->GetObjectID();
+		dieMsg.deathType = u"deaded";
+
+		GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, owner->GetObjectID(), dieMsg);
+	}
+
+	void OnRequestResurrect(Entity::GameObject* sender, GM::RequestResurrect* msg) {
+		Logger::log("WRLD", "Triggered RequestResurrect.");
+		GM::Resurrect resurrectMsg = GM::Resurrect();
+
+		GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, owner->GetObjectID(), resurrectMsg);
+	}
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::SetFlag, OnSetFlag);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PlayerLoaded, OnPlayerLoaded);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestUse, OnRequestUse);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PickupCurrency, OnPickupCurrency);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::UnEquipInventory, OnUnEquipInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RespondToMission, OnRespondToMission);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PlayEmote, OnPlayEmote);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::MatchRequest, OnMatchRequest);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestSmashPlayer, OnRequestSmashPlayer);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestResurrect, OnRequestResurrect);
 	}
 };
 

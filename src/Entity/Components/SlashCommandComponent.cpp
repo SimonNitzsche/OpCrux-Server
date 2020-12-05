@@ -3,13 +3,13 @@
 #include "CharacterComponent.hpp"
 #include "GameCache/ZoneTable.hpp"
 
-void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::ParseChatMessage& msg) {
+void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::ParseChatMessage * msg) {
 	// Check if we are a command, otherwise return
-	if (msg.wsString[0] != u'/') return;
+	if (msg->wsString[0] != u'/') return;
 
-	int accountGMLevel = Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(sender->GetObjectID()));
+	int accountGMLevel = Database::GetAccountGMLevel(owner->GetZoneInstance()->GetDBConnection(), Database::GetAccountIDFromMinifigOBJID(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID()));
 
-	std::u16string command = msg.wsString;
+	std::u16string command = msg->wsString;
 	std::vector<std::u16string> args = StringUtils::splitWString(command, { u' ' });
 	std::u16string message = u"";
 
@@ -160,7 +160,7 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 		}
 	})
 	.Case(u"/gmlevel", [&]() {
-		Reply(StringUtils::to_u16string(StringUtils::IntToString(Database::GetAccountGMLevel(Database::GetAccountIDFromMinifigOBJID(sender->GetObjectID())))), sender);
+		Reply(StringUtils::to_u16string(StringUtils::IntToString(Database::GetAccountGMLevel(owner->GetZoneInstance()->GetDBConnection(), Database::GetAccountIDFromMinifigOBJID(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID())))), sender);
 	})
 	.Case(u"/testmap", [&]() {
 		if (command.find(u" ") != std::u16string::npos) {

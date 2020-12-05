@@ -85,6 +85,8 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 	// TODO: Init Security
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
+	dbConnection = Database::Connect();
+
 	// Initializes SocketDescriptor
 	SocketDescriptor socketDescriptor((unsigned short)port, 0);
 	Logger::log("WRLD", "Starting world on port "+ std::to_string(port) + "...");
@@ -231,53 +233,13 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 					LDF_COLLECTION_INIT_ENTRY(u"max_to_spawn", spawnerPath->maxToSpawn),
 					LDF_COLLECTION_INIT_ENTRY(u"number_to_maintain", spawnerPath->numberToMaintain),
 					LDF_COLLECTION_INIT_ENTRY(u"spawner_name", spawnerPath->pathName.ToString()),
+					LDF_COLLECTION_INIT_ENTRY(u"is_network_spawner", true),
 					LDF_COLLECTION_INIT_ENTRY(u"spawntemplate", std::int32_t(spawnerPath->spawnedLOT))
 				};
 
 				spawner->PopulateFromLDF(&ldfCollectionSpawner);
 				spawner->Finish();
 				objectsManager->RegisterObject(spawner);
-
-				if (spawnerPath->spawnedLOT == 0) continue;
-				if (!spawnerPath->activateSpawnerNetworkOnLoad) continue;
-
-				for (int i = 0; i < spawnerPath->numberToMaintain && i < spawnerPath->waypoints.size(); ++i) {
-					// Create
-					auto* spawnedObject = new Entity::GameObject(Instance, spawnerPath->spawnedLOT);
-
-
-					if (!spawnedObject->isSerializable) {
-						// Spawn Error Object
-						delete spawnedObject;
-						spawnedObject = new Entity::GameObject(Instance, 1845);
-
-					}
-
-					// Set ObjectID
-					spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
-					//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
-
-					// Set Spawner
-					spawnedObject->SetSpawner(spawner, i);
-
-					// Populate LDF
-					spawnedObject->PopulateFromLDF(&spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->config);
-
-					// Set Position/Rotation
-					auto* controllablePhysicsComponent = spawnedObject->GetComponent<ControllablePhysicsComponent>();
-					if (controllablePhysicsComponent != nullptr) {
-						controllablePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->position);
-						controllablePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->rotation);
-					}
-					auto* simplePhysicsComponent = spawnedObject->GetComponent<SimplePhysicsComponent>();
-					if (simplePhysicsComponent != nullptr) {
-						simplePhysicsComponent->SetPosition(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->position);
-						simplePhysicsComponent->SetRotation(spawnerPath->waypoints.at(i % spawnerPath->waypoints.size())->rotation);
-					}
-
-					// Register
-					Instance->objectsManager->RegisterObject(spawnedObject);
-				}
 			}
 		}
 
@@ -450,7 +412,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				std::string sClientKey = std::string((const char*)wClientKey.c_str());
 				std::string sClientFDBChecksum = StringUtils::readBufferedStringFromBitStream(data);
 				ClientSession csFactory{};
-				csFactory.accountID = Database::GetAccountIDByClientName(std::string(wClientName.begin(), wClientName.end()));
+				csFactory.accountID = Database::GetAccountIDByClientName(GetDBConnection(), std::string(wClientName.begin(), wClientName.end()));
 				csFactory.sessionToken = wClientKey;
 				csFactory.systemAddress = packet->getSystemAddress();
 				csFactory.connectedServerPort = this->m_port;
@@ -462,7 +424,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				break;
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_LIST_REQUEST: {
-				PacketFactory::World::sendCharList(rakServer, clientSession);
+				PacketFactory::World::sendCharList(this, clientSession);
 				break;
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
@@ -499,9 +461,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				}
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
-				Database::CreateNewChar(clientSession->accountID, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+				Database::CreateNewChar(GetDBConnection(), clientSession->accountID, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 				
-				PacketFactory::World::sendCharList(rakServer, clientSession);
+				PacketFactory::World::sendCharList(this, clientSession);
 				
 				break;
 			}
@@ -556,12 +518,12 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				auto * charComp = playerObject->GetComponent<CharacterComponent>();
 				if (charComp != nullptr) {
 					charComp->clientAddress = clientSession->systemAddress;
-					DatabaseModels::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
+					DatabaseModels::Str_DB_CharInfo info = Database::GetChar(GetDBConnection(), clientSession->actorID.getPureID());
 					playerObject->SetPosition(luZone->spawnPos.pos);
 					playerObject->SetRotation(luZone->spawnPos.rot);
 
 					charComp->InitCharInfo(info);
-					charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
+					charComp->InitCharStyle(Database::GetCharStyle(GetDBConnection(), info.styleID));
 					charComp->CheckLevelProgression();
 				
 					auto* charDestComp = playerObject->GetComponent<DestructibleComponent>();
@@ -590,7 +552,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				if (charComp != nullptr) {
 					auto charInfo = charComp->GetCharInfo();
 					charInfo.lastWorld = luZone->zoneID;
-					Database::UpdateChar(charInfo);
+					Database::UpdateChar(GetDBConnection(), charInfo);
 				}
 
 				Logger::log("WRLD", "Sending serialization");
@@ -672,6 +634,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Received unknown packet containing: " + std::to_string(*reinterpret_cast<std::int32_t*>(pack)));
 				break;
 			}
+			case (Enums::EWorldPacketID)30: {
+				// This packet should kick if the client decides to spam it but it appears to be triggered in AGS atm so there is no point in adding the trigger
+			}
 
 			default:
 				Logger::log("WRLD", "Received unknown packetID "+std::to_string(packetHeader.packetID));
@@ -734,4 +699,5 @@ WorldServer::~WorldServer() {
 	if (overlappingPairCache) delete overlappingPairCache;
 	if (constraintSolver) delete constraintSolver;
 	if (dynamicsWorld) delete dynamicsWorld;
+	Database::Disconnect(GetDBConnection());
 }

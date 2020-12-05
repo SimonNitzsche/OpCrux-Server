@@ -9,6 +9,7 @@ class ObjectsManager;
 //#include "Rendering/DebugRenderer.hpp"
 
 #include "Misc/LWOTimer.hpp"
+#include "odbc-cpp-wrapper/src/odbc/Connection.h"
 
 class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
@@ -22,6 +23,7 @@ private:
 	std::vector<std::string> mf_MiddleNames = {};
 	std::vector<std::string> mf_LastNames = {};
 	std::uint16_t m_port;
+	odbc::ConnectionRef dbConnection;
 public:
 	SessionManager sessionManager;
 	ReplicaManager * replicaManager = nullptr;
@@ -48,6 +50,9 @@ public:
     void FinishClientTransfer(ClientSession clSession);
 	std::uint16_t GetZoneID();
 	inline std::uint16_t GetPort() { return m_port; }
+	odbc::ConnectionRef GetDBConnection() {
+		return dbConnection;
+	}
 	~WorldServer();
 };
 

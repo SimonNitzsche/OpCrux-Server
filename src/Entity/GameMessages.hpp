@@ -20,17 +20,8 @@
 #include "Entity/GameObject.hpp"
 #include "Utils/LDFUtils.hpp"
 
+#include "Entity/GMBase.hpp"
 #include "Entity/GMUtils.hpp"
-
-namespace GM {
-	struct GMBase {
-		GMBase() {}
-		static constexpr Enums::EGameMessageID GetID() { return (Enums::EGameMessageID)(-1); };
-		virtual void Deserialize(RakNet::BitStream* bs) {};
-		virtual void Serialize(RakNet::BitStream* bs) {};
-		virtual void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {};
-	};
-}
 
 class GameMessages {
 public:
@@ -132,6 +123,7 @@ public:
 #include "Entity/GameMessages/ModularAssemblyNIFCompleted.hpp"
 #include "Entity/GameMessages/ModuleAssemblyQueryData.hpp"
 #include "Entity/GameMessages/NotifyClientFlagChange.hpp"
+#include "Entity/GameMessages/NotifyClientObject.hpp"
 #include "Entity/GameMessages/NotifyMission.hpp"
 #include "Entity/GameMessages/NotifyMissionTask.hpp"
 #include "Entity/GameMessages/NotifyServerLevelProcessingComplete.hpp"

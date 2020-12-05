@@ -2,6 +2,7 @@
 
 #include "bullet3-2.89/src/btBulletDynamicsCommon.h"
 #include <Entity\Components\ControllablePhysicsComponent.hpp>
+#include "Entity/Components/SpawnerComponent.hpp"
 
 ObjectsManager::ObjectsManager()
 {
@@ -146,4 +147,17 @@ void ObjectsManager::OnPhysicsUpdate() {
 			}
 		}
 	}
+}
+
+SpawnerComponent* ObjectsManager::GetSpawnerByName(std::u16string spawnerName) {
+	SpawnerComponent* spawnerComp = nullptr;
+	for (auto object : object_list) {
+		spawnerComp = object.second->GetComponent<SpawnerComponent>();
+		if (spawnerComp != nullptr) {
+			if (spawnerComp->GetName() == spawnerName) {
+				return spawnerComp;
+			}
+		}
+	}
+	return nullptr;
 }

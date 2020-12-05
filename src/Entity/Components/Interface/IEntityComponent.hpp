@@ -8,12 +8,15 @@
 
 #include "GameCache/ComponentsRegistry.hpp"
 
+#include <unordered_map>
+#include <functional>
+
 namespace Entity {
 	class GameObject;
 }
 
 #include "Entity/GMUtils.hpp"
-
+#include "Entity/GMBase.hpp"
 namespace GM {
 	class AddSkill;
 	class BuildExitConfirmation;
@@ -75,6 +78,14 @@ namespace GM {
 	class SetEmoteLockState;
 };
 
+class IEntityComponent;
+
+using MessageHandler = void(*)(IEntityComponent *, Entity::GameObject*, GM::GMBase*);
+using MessageHandlerLambda = void(**)(IEntityComponent*, Entity::GameObject*, GM::GMBase*);
+//using MessageHandler = void(*)(Entity::GameObject*, Entity::GameObject*);
+
+
+
 /* set x true if x or construction */
 #define ENABLE_FLAG_ON_CONSTRUCTION(x) \
 x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
@@ -84,9 +95,30 @@ x = x || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 	/*
 		Components require to extend this class.
 	*/
+
+#define REGISTER_OBJECT_MESSAGE_HANDLER(ComponentName, GMName, callback) {\
+RegisterMessageHandler(this, GMName::GetID(), [](IEntityComponent* instanceContext, Entity::GameObject* rerouteID, GM::GMBase* msg)\
+	{ static_cast<ComponentName *>(instanceContext)->callback(rerouteID, static_cast<GMName*>(msg)); });}
+
+/*
+RegisterMessageHandler(
+	this,
+	GM::StartSkill::GetID(),
+	[](IEntityComponent* instanceContext, Entity::GameObject* rerouteID, GM::GMBase* msg) {
+		static_cast<SkillComponent*>(instanceContext)->DynamicTestOnStartSkill(rerouteID, static_cast<GM::StartSkill*>(msg));
+	}
+);
+*/
+
 class IEntityComponent {
 private:
 	std::int32_t componentID = -1;
+
+
+	std::unordered_map<std::uint32_t, std::tuple<IEntityComponent *, MessageHandler>> msgHandlers = {};
+
+	
+
 public:
 
 	// The Owner Game Object.
@@ -95,6 +127,7 @@ public:
 	std::int32_t GetComponentID() {
 		return componentID;
 	}
+
 
 	// Return the component type
 	static constexpr int GetTypeID() { return -1; };
@@ -126,8 +159,8 @@ public:
 
 
 	/* Game Messages */
-	GM_MAKE_LIST_CLIENT(GM_MAKE_COMPONENT_DECLARE);
-	virtual void OnDie(Entity::GameObject* sender, GM::Die* msg) {};
+	//GM_MAKE_LIST_CLIENT(GM_MAKE_COMPONENT_DECLARE);
+	//virtual void OnDie(Entity::GameObject* sender, GM::Die* msg) {};
 	//virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg) {};
 	//virtual void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg) {};
 	//virtual void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg) {};
@@ -145,6 +178,32 @@ public:
 	void SetOwner(Entity::GameObject* obj) {
 		owner = obj;
 	}
+
+	void OnMessage(Entity::GameObject* rerouteID, std::uint32_t msgID, GM::GMBase* msg) {
+
+		for (auto it = msgHandlers.begin(); it != msgHandlers.end(); ++it) {
+			if (it->first != msgID) continue;
+			
+			auto [context, handler] = it->second;
+			handler(context, rerouteID, msg);
+
+			
+
+			//auto test = OnMessage;
+
+
+			//(*this.*memFun)(rerouteID, msg);
+			//(*.*test2)(nullptr, nullptr);
+		}
+	}
+
+	void RegisterMessageHandler(IEntityComponent * this_00, std::uint32_t msgID, MessageHandler msgHandle) {
+		msgHandlers.insert(std::make_pair(msgID, std::make_tuple(this_00, msgHandle)));
+	}
+
+	// Called after OnEnable
+	// We use a seperate function to allow parent class handler stacking
+	virtual void RegisterMessageHandlers() {};
 
 };
 //}

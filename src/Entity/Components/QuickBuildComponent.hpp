@@ -232,7 +232,7 @@ public:
 		
 	}
 
-	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse & msg) {
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse * msg) {
 		// When active
 		if (qbState == 0) {
 			AddPlayerToActivity(sender->GetObjectID());
@@ -241,8 +241,8 @@ public:
 			buildStartTime = ::time(0);
 			buildingPlayer = sender;
 			playerStartImagination = sender->GetImagination();
-			{GM::EnableRebuild msg; msg.user = sender->GetObjectID(); msg.bEnable = true; msg.fDuration = completionTime; GameMessages::Broadcast(this->owner, msg); }
-			{GM::RebuildNotifyState msg; msg.player = sender->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 5); GameMessages::Broadcast(this->owner, msg); }
+			{GM::EnableRebuild nmsg; nmsg.user = sender->GetObjectID(); nmsg.bEnable = true; nmsg.fDuration = completionTime; GameMessages::Broadcast(this->owner, nmsg); }
+			{GM::RebuildNotifyState nmsg; nmsg.player = sender->GetObjectID(); nmsg.iPrevState = qbState; nmsg.iState = (qbState = 5); GameMessages::Broadcast(this->owner, nmsg); }
 
 			this->_isDirtyFlag = true;
 			this->owner->SetDirty();
@@ -251,16 +251,22 @@ public:
 
 	}
 
-	void OnServerTerminateInteraction(Entity::GameObject* sender, GM::ServerTerminateInteraction& msg) {
+	void OnServerTerminateInteraction(Entity::GameObject* sender, GM::ServerTerminateInteraction * msg) {
 		if (buildingPlayer != nullptr) {
 			buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
 		}
 	}
 
-	void OnRebuildCancel(Entity::GameObject* sender, GM::RebuildCancel& msg) {
+	void OnRebuildCancel(Entity::GameObject* sender, GM::RebuildCancel * msg) {
 		if (buildingPlayer != nullptr) {
 			buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
 		}
+	}
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(QuickbuildComponent, GM::RequestUse, OnRequestUse);
+		REGISTER_OBJECT_MESSAGE_HANDLER(QuickbuildComponent, GM::ServerTerminateInteraction, OnServerTerminateInteraction);
+		REGISTER_OBJECT_MESSAGE_HANDLER(QuickbuildComponent, GM::RebuildCancel, OnRebuildCancel);
 	}
 };
 

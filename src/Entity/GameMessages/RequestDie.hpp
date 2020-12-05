@@ -31,10 +31,6 @@ namespace GM {
 			GM_VAR_DESERIALIZE(bs, killerID);
 			GM_VAR_DESERIALIZE(bs, lootOwnerID);
 		}
-
-		inline void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-			target->OnRequestDie(sender, *this);
-		}
 	};
 }
 

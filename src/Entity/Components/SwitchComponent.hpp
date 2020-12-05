@@ -91,6 +91,10 @@ public:
 		owner->NotifyTriggerEvent("OnDectivated");
 		owner->NotifyTriggerEvent("OnDeactivated");
 	}
+
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(SwitchComponent, GM::RequestUse, OnRequestUse);
+	}
 };
 
 #endif

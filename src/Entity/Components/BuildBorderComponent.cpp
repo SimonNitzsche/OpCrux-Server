@@ -3,7 +3,7 @@
 #include "Entity/GameMessages/RequestUse.hpp"
 #include "Entity/Components/InventoryComponent.hpp"
 
-void BuildBorderComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestUse& msg) {
+void BuildBorderComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
 	// Get inventory
 
 	GM::StartArrangingWithItem myMsg;
@@ -14,10 +14,10 @@ void BuildBorderComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestU
 	GameMessages::Broadcast(sender, myMsg);
 }
 
-void BuildBorderComponent::OnSetBuildMode(Entity::GameObject* sender, GM::SetBuildMode& msg) {
+void BuildBorderComponent::OnSetBuildMode(Entity::GameObject* sender, GM::SetBuildMode* msg) {
 	auto invComp = sender->GetComponent<InventoryComponent>();
 
-	if (msg.bStart) {
+	if (msg->bStart) {
 		// auto equip hat
 		if (!invComp->hasEquipped(thinkingHatLOT)) {
 			// We do no have it equipped, auto equip
@@ -33,9 +33,9 @@ void BuildBorderComponent::OnSetBuildMode(Entity::GameObject* sender, GM::SetBui
 	}
 }
 
-void BuildBorderComponent::OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem& msg) {
+void BuildBorderComponent::OnStartBuildingWithItem(Entity::GameObject* sender, GM::StartBuildingWithItem* msg) {
 	// Check if thinking hat, if not return
-	if (msg.sourceLOT != thinkingHatLOT) return;
+	if (msg->sourceLOT != thinkingHatLOT) return;
 
 	// Get inventory
 	auto invComp = sender->GetComponent<InventoryComponent>();
@@ -54,21 +54,21 @@ void BuildBorderComponent::OnStartBuildingWithItem(Entity::GameObject* sender, G
 	GameMessages::Broadcast(sender, myMsg);
 }
 
-void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::ModularBuildFinish& msg) {
+void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::ModularBuildFinish* msg) {
 
 
 	auto invComp = sender->GetComponent<InventoryComponent>();
 
 	std::string buildString = "";
-	for (auto it = msg.modules.begin(); it != msg.modules.end(); ++it) {
+	for (auto it = msg->modules.begin(); it != msg->modules.end(); ++it) {
 		if (buildString.size() != 0) buildString += "+";
 		buildString += "1:" + std::to_string(*it);
 	}
 	LDFCollection metadata = { LDF_COLLECTION_INIT_ENTRY(u"assemblyPartLOTs", std::u16string(buildString.begin(), buildString.end())) };
 
-	auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(Database::DBCOUNTERID::PLAYER));
+	auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER));
 
-	if (msg.count == 3) {
+	if (msg->count == 3) {
 		// Rocket
 		invComp->AddItem(6416, 1U, owner->GetPosition(), subkey, metadata);
 	}

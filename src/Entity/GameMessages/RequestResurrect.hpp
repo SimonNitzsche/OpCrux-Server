@@ -16,12 +16,6 @@ namespace GM {
 
 		}
 
-		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
-			Logger::log("WRLD", "Triggered RequestResurrect.");
-			GM::Resurrect resurrectMsg = GM::Resurrect();
-
-			GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), resurrectMsg);
-		}
 	};
 }
 

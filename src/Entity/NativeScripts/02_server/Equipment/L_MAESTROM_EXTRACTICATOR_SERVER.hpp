@@ -44,7 +44,7 @@ public:
 
 				std::list<std::int32_t> missionIDList = missionIDs->second;
 				for (auto missionID = missionIDList.begin(); missionID != missionIDList.end(); ++missionID) {
-					auto missionstate = Database::GetMission(player->GetObjectID().getPureID(), *missionID).state;
+					auto missionstate = Database::GetMission(player->GetZoneInstance()->GetDBConnection(), player->GetObjectID().getPureID(), *missionID).state;
 					// Determine if the player is on the mission
 					if (missionstate == 2 || missionstate == 10) {
 						// The player is on the mission, collect the object
