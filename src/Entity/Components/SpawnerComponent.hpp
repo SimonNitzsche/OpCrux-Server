@@ -79,8 +79,10 @@ public:
 				lastSpawnIndex = 0;
 		}
 
-		if (spawnerActiveOnLoad && !noAutoSpawn) {
-			Spawn(false);
+		if (spawnerActiveOnLoad) {
+			if (!is_network_spawner || !noAutoSpawn) {
+				Spawn(false);
+			}
 		}
 	}
 
