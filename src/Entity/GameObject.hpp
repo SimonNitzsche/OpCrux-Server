@@ -388,7 +388,7 @@ namespace Entity {
 		//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }
 
 
-		GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DECLARE);
+		//GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DECLARE);
 
 		virtual void OnDie(Entity::GameObject* sender, GM::Die* msg);
 		/*virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg);

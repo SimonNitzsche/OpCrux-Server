@@ -375,6 +375,12 @@ public:
 		auto model = Database::GetMission(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID().getPureID(), msg->missionID);
 		model.chosenReward = msg->rewardItem;
 		Database::UpdateMission(owner->GetZoneInstance()->GetDBConnection(), model);
+
+		// also let the giver know.
+		auto receiver = owner->GetZoneInstance()->objectsManager->GetObjectByID(msg->receiver);
+		if (receiver != nullptr) {
+			receiver->OnMessage(receiver, msg->GetID(), msg);
+		}
 	}
 
 	void OnPlayEmote(Entity::GameObject* sender, GM::PlayEmote* msg) {

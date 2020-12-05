@@ -5,7 +5,7 @@
 #include "Entity/GameObject.hpp"
 #include "Entity/NativeScript.hpp"
 #include "Missions/MissionManager.hpp"
-#include "Entity/NativeScripts/ai/ZONE/PROPERTY/L_BASE_PROPERTY_SERVER.hpp"
+#include "Entity/NativeScripts/ZONE/PROPERTY/L_BASE_PROPERTY_SERVER.hpp"
 
 class NATIVESCRIPT__02SERVER__MAP__PROPERTY__AG_SMALL__L_ZONE_AG_PROPERTY : public NATIVESCRIPT__ZONE__PROPERTY__L_BASE_PROPERTY_SERVER {
 	const bool OwnerChecked = false;

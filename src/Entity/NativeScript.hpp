@@ -29,6 +29,7 @@ public:
 	virtual void onPlayerReady(Entity::GameObject* self, GM::PlayerReady msg) {}
 	virtual void onPlayerLoaded(Entity::GameObject* self, GM::PlayerLoaded msg) {}
 	virtual void onFireEvent(Entity::GameObject* self, GM::FireEventServerSide msg) {}
+	virtual void onRespondToMission(Entity::GameObject* self, GM::RespondToMission msg) {}
 
 	// Helper functions
 	void print(std::string text) {

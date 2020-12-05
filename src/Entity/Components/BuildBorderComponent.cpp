@@ -66,10 +66,18 @@ void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::
 	}
 	LDFCollection metadata = { LDF_COLLECTION_INIT_ENTRY(u"assemblyPartLOTs", std::u16string(buildString.begin(), buildString.end())) };
 
-	auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER));
-
 	if (msg->count == 3) {
 		// Rocket
-		invComp->AddItem(6416, 1U, owner->GetPosition(), subkey, metadata);
+		if (!invComp->HasItem(6416)) {
+			auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER));
+			invComp->AddItem(6416, 1U, owner->GetPosition(), subkey, metadata);
+		}
+
+		if (Database::HasMission(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID().getPureID(), 809)) {
+			auto mis = Database::GetMission(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID().getPureID(), 809);
+			if (mis.state == 2) {
+				MissionManager::LaunchTaskEvent(EMissionTask::SCRIPT, owner, sender->GetObjectID());
+			}
+		}
 	}
 }

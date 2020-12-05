@@ -170,6 +170,7 @@ public:
 #include "Entity/GameMessages/SetTooltipFlag.hpp"
 #include "Entity/GameMessages/StartArrangingWithItem.hpp"
 #include "Entity/GameMessages/StartBuildingWithItem.hpp"
+#include "Entity/GameMessages/StartCelebrationEffect.hpp"
 #include "Entity/GameMessages/StartSkill.hpp"
 #include "Entity/GameMessages/StopFXEffect.hpp"
 #include "Entity/GameMessages/SyncSkill.hpp"

@@ -148,6 +148,11 @@ public:
 			instance->onFireEvent(owner, msg);
 	}
 
+	void OnRespondToMission(Entity::GameObject* sender, GM::RespondToMission* msg) {
+		if (instance)
+			instance->onRespondToMission(sender, *msg);
+	}
+
 	std::vector<Entity::GameObject *> objectsInProximity = {};
 	std::unordered_map<std::string, std::pair<float, std::vector<Entity::GameObject *>>> proximityRadii;
 
@@ -246,6 +251,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::RequestUse, OnRequestUse);
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::FireEventServerSide, OnFireEventServerSide);
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::Die, OnDie);
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::RespondToMission, OnRespondToMission);
 	}
 
 };
