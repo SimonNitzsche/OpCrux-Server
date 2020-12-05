@@ -47,10 +47,10 @@
 #include "../include/bcrypt/crypt_blowfish.h"
 #include "../include/bcrypt/crypt_gensalt.h"
 #else
-#include "ow-crypt.h"
+#include "../include/bcrypt/ow-crypt.h"
 
-#include "crypt_blowfish.h"
-#include "crypt_gensalt.h"
+#include "../include/bcrypt/crypt_blowfish.h"
+#include "../include/bcrypt/crypt_gensalt.h"
 #endif
 
 #if defined(__GLIBC__) && defined(_LIBC)
