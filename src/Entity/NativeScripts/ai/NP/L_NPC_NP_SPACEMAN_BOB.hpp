@@ -16,12 +16,12 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 			Entity::GameObject* player = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.responder);
 
 			DatabaseModels::MissionModel model;
-			if (!Database::HasMission(msg.responder.getPureID(), 664)) {
-				model = Database::AddMission(msg.responder.getPureID(), 664);
+			if (!Database::HasMission(self->GetZoneInstance()->GetDBConnection(), msg.responder.getPureID(), 664)) {
+				model = Database::AddMission(self->GetZoneInstance()->GetDBConnection(), msg.responder.getPureID(), 664);
 				player->SetImagination(6);
 			}
 			else {
-				model = Database::GetMission(msg.responder.getPureID(), 664);
+				model = Database::GetMission(self->GetZoneInstance()->GetDBConnection(), msg.responder.getPureID(), 664);
 			}
 
 			GM::NotifyMissionTask taskNotify;
@@ -41,7 +41,7 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 			model.state = 8;
 			model.progress = "1";
 			misNotify.missionState = model.state;
-			Database::UpdateMission(model);
+			Database::UpdateMission(self->GetZoneInstance()->GetDBConnection(), model);
 
 			misNotify.sendingRewards = true;
 			GameMessages::Send(player, player->GetObjectID(), misNotify);

@@ -26,7 +26,7 @@ namespace PacketFactory {
 
 	namespace World {
 
-		inline void sendCharList(RakPeerInterface * rakServer, ClientSession * client) {
+		inline void sendCharList(WorldServer * Instance, ClientSession * client) {
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead{};
@@ -36,13 +36,13 @@ namespace PacketFactory {
 			returnBS.Write(returnBSHead);
 			//Data
 
-			std::vector<DatabaseModels::Str_DB_CharInfo> charsInfo = Database::GetChars(client->accountID);
+			std::vector<DatabaseModels::Str_DB_CharInfo> charsInfo = Database::GetChars(Instance->GetDBConnection(), client->accountID);
 			size_t count = charsInfo.size();
 			returnBS.Write<std::uint8_t>(count & 0xFF);
 			returnBS.Write<std::uint8_t>(0); // front char index
 
 			for (auto charInfo : charsInfo) {
-			    DatabaseModels::Str_DB_CharStyle charStyle = Database::GetCharStyle(charInfo.styleID);
+			    DatabaseModels::Str_DB_CharStyle charStyle = Database::GetCharStyle(Instance->GetDBConnection(), charInfo.styleID);
 				DataTypes::LWOOBJID objectID = DataTypes::LWOOBJID::makePlayerObjectID(charInfo.objectID);
 				returnBS.Write(objectID);
 				returnBS.Write<std::uint32_t>(charInfo.charIndex);
@@ -70,7 +70,7 @@ namespace PacketFactory {
 
 				// Inventory (Equipped Items)
 
-				auto inventory = Database::GetFullInventory(charInfo.objectID);
+				auto inventory = Database::GetFullInventory(Instance->GetDBConnection(), charInfo.objectID);
 
 				std::list<std::int32_t> equippedLOTs = {};
 
@@ -90,7 +90,7 @@ namespace PacketFactory {
 				Logger::log("WRLD", "Sent character " + charInfo.name);
 			}
 
-			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client->systemAddress, false);
+			Instance->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client->systemAddress, false);
 		}
 
 		inline void TestLoad(RakPeerInterface * rakServer, ClientSession * clientSession) {

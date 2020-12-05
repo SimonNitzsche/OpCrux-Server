@@ -51,6 +51,8 @@ AuthServer::AuthServer() : ILUServer() {
 	// TODO: Init Security
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
+	dbConnection = Database::Connect();
+
 	// Initializes SocketDescriptor
 	SocketDescriptor socketDescriptor(std::stoi(Configuration::ConfigurationManager::portsConf.GetStringVal("Auth","PORT")), 0);
 	Logger::log("AUTH", "Starting Auth...");
@@ -91,7 +93,7 @@ AuthServer::AuthServer() : ILUServer() {
 
 	rakServer->Shutdown(0);
 	RakNetworkFactory::DestroyRakPeerInterface(rakServer);
-	
+	Database::Disconnect(GetDBConnection());
 }
 
 void AuthServer::RequestMasterUserAuthConfirmation(SystemAddress systemAddress, std::uint64_t accountID) {
@@ -165,9 +167,9 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				
 
 				if (Configuration::ConfigurationManager::dbConf.GetStringVal("ExtAccountService", "ExtAccountService") == "FALSE") {
-					bool authSuccess = Database::IsLoginCorrect((char16_t*)name.c_str(), (char16_t*)pswd.c_str());
+					bool authSuccess = Database::IsLoginCorrect(dbConnection, (char16_t*)name.c_str(), (char16_t*)pswd.c_str());
 					if (authSuccess) {
-						std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
+						std::uint64_t accountID = Database::GetAccountIDByClientName(dbConnection, std::string(name.begin(), name.end()));
 						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
 						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 					}
@@ -177,7 +179,7 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				else {
 					bool authSuccess = MakeAccountAPICall("/auth", { {"username", std::string(name.begin(), name.end())}, {"password", std::string(pswd.begin(), pswd.end())} }) == "PASS";
 					if (authSuccess) {
-						std::uint64_t accountID = Database::GetAccountIDByClientName(std::string(name.begin(), name.end()));
+						std::uint64_t accountID = Database::GetAccountIDByClientName(dbConnection, std::string(name.begin(), name.end()));
 						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
 						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
 					}

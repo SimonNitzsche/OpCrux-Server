@@ -85,6 +85,8 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 	// TODO: Init Security
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
+	dbConnection = Database::Connect();
+
 	// Initializes SocketDescriptor
 	SocketDescriptor socketDescriptor((unsigned short)port, 0);
 	Logger::log("WRLD", "Starting world on port "+ std::to_string(port) + "...");
@@ -410,7 +412,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				std::string sClientKey = std::string((const char*)wClientKey.c_str());
 				std::string sClientFDBChecksum = StringUtils::readBufferedStringFromBitStream(data);
 				ClientSession csFactory{};
-				csFactory.accountID = Database::GetAccountIDByClientName(std::string(wClientName.begin(), wClientName.end()));
+				csFactory.accountID = Database::GetAccountIDByClientName(GetDBConnection(), std::string(wClientName.begin(), wClientName.end()));
 				csFactory.sessionToken = wClientKey;
 				csFactory.systemAddress = packet->getSystemAddress();
 				csFactory.connectedServerPort = this->m_port;
@@ -422,7 +424,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				break;
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_LIST_REQUEST: {
-				PacketFactory::World::sendCharList(rakServer, clientSession);
+				PacketFactory::World::sendCharList(this, clientSession);
 				break;
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
@@ -459,9 +461,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				}
 
 				//PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), EDisconnectReason::CHARACTER_CORRUPTION);
-				Database::CreateNewChar(clientSession->accountID, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+				Database::CreateNewChar(GetDBConnection(), clientSession->accountID, s_customName, genname, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 				
-				PacketFactory::World::sendCharList(rakServer, clientSession);
+				PacketFactory::World::sendCharList(this, clientSession);
 				
 				break;
 			}
@@ -516,12 +518,12 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				auto * charComp = playerObject->GetComponent<CharacterComponent>();
 				if (charComp != nullptr) {
 					charComp->clientAddress = clientSession->systemAddress;
-					DatabaseModels::Str_DB_CharInfo info = Database::GetChar(clientSession->actorID.getPureID());
+					DatabaseModels::Str_DB_CharInfo info = Database::GetChar(GetDBConnection(), clientSession->actorID.getPureID());
 					playerObject->SetPosition(luZone->spawnPos.pos);
 					playerObject->SetRotation(luZone->spawnPos.rot);
 
 					charComp->InitCharInfo(info);
-					charComp->InitCharStyle(Database::GetCharStyle(info.styleID));
+					charComp->InitCharStyle(Database::GetCharStyle(GetDBConnection(), info.styleID));
 					charComp->CheckLevelProgression();
 				
 					auto* charDestComp = playerObject->GetComponent<DestructibleComponent>();
@@ -550,7 +552,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				if (charComp != nullptr) {
 					auto charInfo = charComp->GetCharInfo();
 					charInfo.lastWorld = luZone->zoneID;
-					Database::UpdateChar(charInfo);
+					Database::UpdateChar(GetDBConnection(), charInfo);
 				}
 
 				Logger::log("WRLD", "Sending serialization");
@@ -697,4 +699,5 @@ WorldServer::~WorldServer() {
 	if (overlappingPairCache) delete overlappingPairCache;
 	if (constraintSolver) delete constraintSolver;
 	if (dynamicsWorld) delete dynamicsWorld;
+	Database::Disconnect(GetDBConnection());
 }

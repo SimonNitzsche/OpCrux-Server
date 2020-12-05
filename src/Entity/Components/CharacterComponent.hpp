@@ -104,7 +104,7 @@ public:
 
 	void SetImagination(std::int32_t imag) {
 		charInfo.imagination = imag;
-		Database::UpdateChar(charInfo);
+		Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 	}
 
 	std::int32_t GetImagination() {
@@ -140,7 +140,7 @@ public:
 		}
 
 
-		Database::SetFlag(this->owner->GetObjectID(), chunkID, chunkData);
+		Database::SetFlag(owner->GetZoneInstance()->GetDBConnection(), this->owner->GetObjectID(), chunkID, chunkData);
 		GM::NotifyClientFlagChange clientResponse;
 		clientResponse.bFlag = value;
 		clientResponse.iFlagID = flagIndex;
@@ -298,7 +298,7 @@ public:
 		if (owner->GetComponent<SlashCommandComponent>() == nullptr)
 			owner->AddComponent<SlashCommandComponent>(0);
 
-		flags = Database::GetFlagChunks(owner->GetObjectID().getPureID());
+		flags = Database::GetFlagChunks(owner->GetZoneInstance()->GetDBConnection(), owner->GetObjectID().getPureID());
 	}
 
 	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded* msg) {
@@ -330,7 +330,7 @@ public:
 			
 			{GM::SetCurrency nmsg; nmsg.currency = charInfo.currency; nmsg.position = msg->position; nmsg.sourceType = 11; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
 
-			Database::UpdateChar(charInfo);
+			Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 		}
 	}
 
@@ -338,7 +338,7 @@ public:
 		std::int32_t level = CacheLevelProgrssionLookup::GetLevelByUScorePassed(charInfo.uScore);
 		if (level != charInfo.uScore) {
 			charInfo.uLevel = level;
-			Database::UpdateChar(charInfo);
+			Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 		}
 	}
 
@@ -361,9 +361,9 @@ public:
 	}
 
 	void OnRespondToMission(Entity::GameObject* sender, GM::RespondToMission* msg) {
-		auto model = Database::GetMission(sender->GetObjectID().getPureID(), msg->missionID);
+		auto model = Database::GetMission(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID().getPureID(), msg->missionID);
 		model.chosenReward = msg->rewardItem;
-		Database::UpdateMission(model);
+		Database::UpdateMission(owner->GetZoneInstance()->GetDBConnection(), model);
 	}
 
 	void OnPlayEmote(Entity::GameObject* sender, GM::PlayEmote* msg) {

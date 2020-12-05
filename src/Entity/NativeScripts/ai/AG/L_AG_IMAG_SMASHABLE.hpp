@@ -12,7 +12,7 @@ public:
 	
 	void onDie(Entity::GameObject* self, GM::Die msg) {
 		
-		std::int32_t BobMissionStatus = Database::HasMission(msg.killerID.getPureID(), 173) ? Database::GetMission(msg.killerID.getPureID(), 173).state : 0;
+		std::int32_t BobMissionStatus = Database::HasMission(self->GetZoneInstance()->GetDBConnection(), msg.killerID.getPureID(), 173) ? Database::GetMission(self->GetZoneInstance()->GetDBConnection(), msg.killerID.getPureID(), 173).state : 0;
 
 		// If the spaceman bob mission is complete.
 		if (BobMissionStatus >= 8) {

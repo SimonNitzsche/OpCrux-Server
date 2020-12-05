@@ -134,7 +134,7 @@ public:
 
 	void Awake() {
 		if (owner->GetLOT() == 1) {
-			auto playerBags = Database::GetFullInventory(owner->GetObjectID().getPureID());
+			auto playerBags = Database::GetFullInventory(owner->GetZoneInstance()->GetDBConnection(), owner->GetObjectID().getPureID());
 			auto objMan = this->owner->GetZoneInstance()->objectsManager;
 			for (auto playerInv : playerBags) {
 				auto playerItems = playerInv.second;
@@ -611,11 +611,11 @@ public:
 		// Check if we need to remove item or update it.
 		if (stack.quantity == 0) {
 			// Remove
-			Database::RemoveItemFromInventory(stack.objectID);
+			Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.objectID);
 		}
 		else {
 			// Update
-			Database::UpdateItemFromInventory(stack.toDBModel());
+			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
 		}
 	}
 
@@ -784,7 +784,7 @@ public:
 			itemStack.quantity = 1;
 			itemStack.tab = tab;
 			if (owner->GetLOT() == 1 && tab != 4 && tab != 6) { // player and not temporary item and not temporary model
-				itemStack.objectID = (1ULL << 60) | Database::reserveCountedID(Database::DBCOUNTERID::PLAYER);
+				itemStack.objectID = (1ULL << 60) | Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER);
 			}
 			else {
 				itemStack.objectID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++);
@@ -836,11 +836,11 @@ public:
 			// Sync with db
 			if (itemModel.tab != 4 && tab != 6) { // If not temporary item and not temporary model
 				if (useStacking) {
-					Database::UpdateItemFromInventory(itemModel);
+					Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemModel);
 					//Logger::log("WRLD", "Update item DB");
 				}
 				else {
-					Database::AddItemToInventory(itemModel);
+					Database::AddItemToInventory(owner->GetZoneInstance()->GetDBConnection(), itemModel);
 					//Logger::log("WRLD", "Add item DB");
 				}
 			}
@@ -891,7 +891,7 @@ public:
 		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
 			if (it->second.LOT == itemLot) {
 				if (it->second.quantity - amountToRemove <= 0) {
-					Database::RemoveItemFromInventory(it->second.objectID);
+					Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), it->second.objectID);
 				}
 				else {
 					DatabaseModels::ItemModel itemModel;
@@ -901,11 +901,11 @@ public:
 					itemModel.metadata = it->second.metadata;
 					itemModel.objectID = it->second.objectID;
 					itemModel.ownerID = this->owner->GetObjectID().getPureID();
-					itemModel.slot = Database::GetSlotOfItemStack(it->second.objectID);
+					itemModel.slot = Database::GetSlotOfItemStack(owner->GetZoneInstance()->GetDBConnection(), it->second.objectID);
 					itemModel.subkey = it->second.subkey;
 					itemModel.tab = it->second.tab;
 					itemModel.templateID = it->second.LOT;
-					Database::UpdateItemFromInventory(itemModel);
+					Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemModel);
 				}
 
 				GM::RemoveItemFromInventory gm;

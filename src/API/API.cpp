@@ -191,7 +191,9 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 			}
 			else if (args[1] == "logincheck") {
 				if (args.size() > 3) {
-					bool result = Database::APILoginCheck(args[2], args[3]);
+					auto conn = Database::Connect();
+					bool result = Database::APILoginCheck(conn, args[2], args[3]);
+					Database::Disconnect(conn);
 					std::string msg = HandleJson(0, StringUtils::IntToString(int(result)), p);
 					mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
 					mg_printf(c, "%.*s", msg.length(), msg.c_str());

@@ -155,6 +155,7 @@ void BridgeMasterServer::ListenHandle() {
 
 	rakMasterClient->Shutdown(0);
 	RakNetworkFactory::DestroyRakPeerInterface(rakMasterClient);
+	Database::Disconnect(dbConn);
 }
 
 void BridgeMasterServer::Connect() {
@@ -168,6 +169,7 @@ void BridgeMasterServer::Connect() {
 	else {
 		throw std::runtime_error("Couldn't connect to Master Server.");
 	}
+	dbConn = Database::Connect();
 }
 
 void BridgeMasterServer::Listen() {
@@ -263,7 +265,7 @@ void BridgeMasterServer::ClientCharAuth(ClientSession * clientSession, std::uint
 		throw std::runtime_error("Not listening.");
 	}
 
-	Str_DB_CharInfo charInfo = Database::GetChar(charID & 0xFFFFFF);
+	Str_DB_CharInfo charInfo = Database::GetChar(dbConn, charID & 0xFFFFFF);
 
 	auto packet = PacketUtils::initPacket(ERemoteConnection::MASTER, static_cast<uint32_t>(EMasterPacketID::MSG_WORLD_NOTIFY_CHAR_SELECT));
 

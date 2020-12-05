@@ -21,7 +21,7 @@ public:
 		if (other->GetLOT() != 1) return;
 		print("Complete " + std::to_string(TouchCompleteID));
 
-		auto model = Database::GetMission(other->GetObjectID().getPureID(), 664);
+		auto model = Database::GetMission(self->GetZoneInstance()->GetDBConnection(), other->GetObjectID().getPureID(), 664);
 		if(model.state == 2)
 			MissionManager::LaunchTaskEvent(Enums::EMissionTask::SCRIPT, self, other->GetObjectID());
 	}

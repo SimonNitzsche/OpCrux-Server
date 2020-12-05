@@ -66,7 +66,7 @@ void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::
 	}
 	LDFCollection metadata = { LDF_COLLECTION_INIT_ENTRY(u"assemblyPartLOTs", std::u16string(buildString.begin(), buildString.end())) };
 
-	auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(Database::DBCOUNTERID::PLAYER));
+	auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER));
 
 	if (msg->count == 3) {
 		// Rocket

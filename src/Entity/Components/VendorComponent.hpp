@@ -93,7 +93,7 @@ public:
 			if (charInfo.currency >= sumValue) {
 				// Remove currency
 				charInfo.currency -= sumValue;
-				Database::UpdateChar(charInfo);
+				Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 				charComp->InitCharInfo(charInfo);
 
 				// Add item

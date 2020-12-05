@@ -15,6 +15,8 @@
 #include "Sessions/ClientSession.hpp"
 #include "DataTypes/ZoneInfo.hpp"
 
+#include "odbc-cpp-wrapper/src/odbc/Connection.h"
+
 class WorldServer;
 
 class BridgeMasterServer {
@@ -24,6 +26,7 @@ private:
 	std::string masterServerIP;
 	bool _connected = false;
 	bool _listening = false;
+	odbc::ConnectionRef dbConn;
 protected:
 	void ListenHandle();
 public:
