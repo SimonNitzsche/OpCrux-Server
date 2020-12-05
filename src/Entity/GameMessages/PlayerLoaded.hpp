@@ -32,15 +32,6 @@ namespace GM {
 			else
 				Logger::log("WRLD", "[" + sender->GetNameStr() + "] Unknown player " + std::to_string(playerID) + " loaded.");
 
-			GM::RestoreToPostLoadStats  rtpls;
-			GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), rtpls);
-			PacketFactory::Chat::SendChatMessage(sender->GetZoneInstance()->zoneControlObject, 4, u"Player " + sender->GetName() + u" joined the game.");
-
-			auto zoneControlObject = sender->GetZoneInstance()->zoneControlObject;
-			auto racingComp = zoneControlObject->GetComponent<RacingControlComponent>();
-			if (racingComp != nullptr) {
-				racingComp->msgPlayerAddedToWorldLocal(playerID);
-			}
 
 		}
 	};

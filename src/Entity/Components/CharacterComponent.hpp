@@ -302,12 +302,23 @@ public:
 	}
 
 	void OnPlayerLoaded(Entity::GameObject* sender, GM::PlayerLoaded* msg) {
+
+		GM::RestoreToPostLoadStats rtpls;
+		GameMessages::Send(owner, this->owner->GetObjectID(), rtpls);
+		PacketFactory::Chat::SendChatMessage(sender->GetZoneInstance()->zoneControlObject, 4, u"Player " + sender->GetName() + u" joined the game.");
+
 		GM::PlayerReady nmsg; 
 		auto Instance = this->owner->GetZoneInstance();
 		Instance->zoneControlObject->OnMessage(this->owner, msg->GetID(), msg);
 		GameMessages::Send(owner, this->owner->GetObjectID(), nmsg);
 		GameMessages::Send(owner, Instance->zoneControlObject->GetObjectID(), nmsg);
 		Instance->zoneControlObject->OnMessage(this->owner, nmsg.GetID(), &nmsg);
+
+		auto zoneControlObject = sender->GetZoneInstance()->zoneControlObject;
+		auto racingComp = zoneControlObject->GetComponent<RacingControlComponent>();
+		if (racingComp != nullptr) {
+			racingComp->msgPlayerAddedToWorldLocal(msg->playerID);
+		}
 	}
 
 
