@@ -498,6 +498,7 @@ bool Entity::GameObject::IsWithinGroup(std::u16string groupName) {
 }
 
 void Entity::GameObject::InstantiateRemoval() {
+	if (this == nullptr) return;
 	this->GetZoneInstance()->objectsManager->Destruct(this);
 }
 
