@@ -449,6 +449,24 @@ public:
 
 	}
 
+	void OnRequestSmashPlayer(Entity::GameObject* sender, GM::RequestSmashPlayer* msg) {
+		Logger::log("WRLD", "Triggered RequestSmashPlayer.");
+		GM::Die dieMsg = GM::Die();
+		dieMsg.bClientDeath = true;
+		dieMsg.killerID = owner->GetObjectID();
+		dieMsg.lootOwnerID = owner->GetObjectID();
+		dieMsg.deathType = u"deaded";
+
+		GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, owner->GetObjectID(), dieMsg);
+	}
+
+	void OnRequestResurrect(Entity::GameObject* sender, GM::RequestResurrect* msg) {
+		Logger::log("WRLD", "Triggered RequestResurrect.");
+		GM::Resurrect resurrectMsg = GM::Resurrect();
+
+		GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, owner->GetObjectID(), resurrectMsg);
+	}
+
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::SetFlag, OnSetFlag);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PlayerLoaded, OnPlayerLoaded);
@@ -458,6 +476,8 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RespondToMission, OnRespondToMission);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PlayEmote, OnPlayEmote);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::MatchRequest, OnMatchRequest);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestSmashPlayer, OnRequestSmashPlayer);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestResurrect, OnRequestResurrect);
 	}
 };
 
