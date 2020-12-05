@@ -97,7 +97,7 @@ void BridgeMasterServer::ListenHandle() {
 						WorldServer* remWs = WorldInstanceManager::GetInstance(sourcePort);
 
 
-						PacketFactory::World::TransferToWorld(remWs->rakServer, charIp, const_cast<char*>(processIp.ToString(false)), destinationPort, doAnouncment);
+						PacketFactory::World::TransferToWorld(remWs, charIp, const_cast<char*>(processIp.ToString(false)), destinationPort, doAnouncment);
 
 						break;
 					} 

@@ -179,7 +179,10 @@ namespace PacketFactory {
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
 		}
 
-		inline void TransferToWorld(RakPeerInterface* rakServer, SystemAddress clientSession, char* ipAddress, std::uint16_t portOrErrorCode, bool doAnnouncement = false) {
+		inline void TransferToWorld(WorldServer* Instance, SystemAddress clientSession, char* ipAddress, std::uint16_t portOrErrorCode, bool doAnnouncement = false) {
+
+			Entity::GameObject* playerObj = nullptr;
+
 			RakNet::BitStream returnBS;
 			// Head
 			LUPacketHeader returnBSHead;
@@ -194,6 +197,23 @@ namespace PacketFactory {
 				StringUtils::writeBufferedStringToBitStream(&returnBS, std::string(ipAddress));
 				returnBS.Write(portOrErrorCode);
 				returnBS.Write<std::uint8_t>(doAnnouncement);
+
+				auto s = Instance->sessionManager.GetSession(clientSession);
+				DataTypes::LWOOBJID objID = 0ULL;
+				if (s != nullptr) objID = s->actorID.getPureID();
+
+				for (auto object : Instance->objectsManager->GetObjects()) {
+					if(object->GetLOT() == 1 && object->GetObjectID().getPureID() == objID) {
+						playerObj = object;
+					}
+					else {
+						Instance->replicaManager->Destruct(object, clientSession, false);
+					}
+				}
+
+				if (playerObj != nullptr)
+					Instance->replicaManager->Destruct(playerObj, clientSession, false);
+
 			}
 			else {
 				// Error
@@ -204,7 +224,7 @@ namespace PacketFactory {
 			Logger::log("WORLD", "Sending world redirect to " + std::string(const_cast<const char*>(ipAddress)) + ":" + std::to_string(portOrErrorCode) + " for " + clientSession.ToString());
 
 			// Send
-			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession, false);
+			Instance->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession, false);
 		}
 	};
 
