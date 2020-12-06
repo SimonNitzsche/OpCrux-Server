@@ -332,6 +332,7 @@ public:
 			charInfo.health = *rs->getInt(20);
 			charInfo.imagination = *rs->getInt(21);
 			charInfo.armor = *rs->getInt(22);
+
 			return charInfo;
 		}
 
@@ -390,6 +391,29 @@ public:
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
 		return id;
+	}
+
+	static std::tuple< DatabaseModels::ItemModel, DatabaseModels::ItemModel> AddCharShirtAndPants(odbc::ConnectionRef conn, std::uint64_t ownerID, std::int32_t shirtObjectLOT, std::int32_t pantsObjectLOT) {
+		DatabaseModels::ItemModel shirtObject;
+		shirtObject.attributes.SetBound(true);
+		shirtObject.attributes.SetEquipped(true);
+		shirtObject.templateID = shirtObjectLOT;
+		shirtObject.slot = 0;
+		shirtObject.tab = 0;
+		shirtObject.count = 1;
+		shirtObject.subkey = 0;
+		shirtObject.ownerID = ownerID;
+		shirtObject.objectID = (1ULL << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
+
+		DatabaseModels::ItemModel pantsObject = shirtObject;
+		pantsObject.templateID = pantsObjectLOT;
+		pantsObject.objectID = (1ULL << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
+		pantsObject.slot = 1;
+
+		AddItemToInventory(conn, shirtObject);
+		AddItemToInventory(conn, pantsObject);
+
+		return std::make_tuple(shirtObject, pantsObject);
 	}
 
 	static unsigned long long CreateNewChar(odbc::ConnectionRef conn,
@@ -480,24 +504,7 @@ public:
 			unsigned long long objectID = reserveCountedID(conn, DBCOUNTERID::PLAYER);
 
 			// Create default shirt/pants objects
-			DatabaseModels::ItemModel shirtObject;
-			shirtObject.attributes.SetBound(true);
-			shirtObject.attributes.SetEquipped(true);
-			shirtObject.templateID = shirtObjectLOT;
-			shirtObject.slot = 0;
-			shirtObject.tab = 0;
-			shirtObject.count = 1;
-			shirtObject.subkey = 0;
-			shirtObject.ownerID = objectID;
-			shirtObject.objectID = (1ULL << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
-
-			DatabaseModels::ItemModel pantsObject = shirtObject;
-			pantsObject.templateID = pantsObjectLOT;
-			pantsObject.objectID = (1ULL << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
-			pantsObject.slot = 1;
-
-			AddItemToInventory(conn, shirtObject);
-			AddItemToInventory(conn, pantsObject);
+			auto shirtAndPants = AddCharShirtAndPants(conn, objectID, shirtObjectLOT, pantsObjectLOT);
 
 			// Create player
 			odbc::PreparedStatementRef stmt = conn->prepareStatement("SET IDENTITY_INSERT OPCRUX_GD.dbo.Characters ON;INSERT INTO OPCRUX_GD.dbo.Characters(objectID,accountID,charIndex,name,pendingName,styleID,statsID,lastWorld,lastInstance,lastClone,lastLog,positionX,positionY,positionZ,shirtObjectID,pantsObjectID,uScore,uLevel,currency,reputation,health,imagination,armor) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -516,8 +523,8 @@ public:
 			stmt->setFloat(12, position.x);
 			stmt->setFloat(13, position.y);
 			stmt->setFloat(14, position.z);
-			stmt->setULong(15, shirtObject.objectID);
-			stmt->setULong(16, pantsObject.objectID);
+			stmt->setULong(15, std::get<0>(shirtAndPants).objectID);
+			stmt->setULong(16, std::get<1>(shirtAndPants).objectID);
 			stmt->setInt(17, uScore);
 			stmt->setInt(18, uLevel);
 			stmt->setInt(19, currency);

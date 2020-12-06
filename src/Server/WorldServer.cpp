@@ -522,8 +522,76 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					playerObject->SetPosition(luZone->spawnPos.pos);
 					playerObject->SetRotation(luZone->spawnPos.rot);
 
+
+					auto charStyle = Database::GetCharStyle(GetDBConnection(), info.styleID);
+
+					// shirt and pants got deleted, make new!
+					if (info.shirtObjectID == 0ULL && info.pantsObjectID == 0ULL) {
+						bool err = false;
+						int shirtObjectLOT = 0;
+						{
+							FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
+							if (!rth.isRowHeaderValid()) throw new std::runtime_error("Invalid Row Header");
+							for (int i = 0; i < rth.getRowCount(); ++i) {
+								if (!rth.isValid(i)) continue;
+								try {
+									if (
+										*reinterpret_cast<uint32_t*>(rth[i]["itemType"].getMemoryLocation()) == 15 &&
+										*reinterpret_cast<uint32_t*>(rth[i]["color1"].getMemoryLocation()) == charStyle.chestColor &&
+										*reinterpret_cast<uint32_t*>(rth[i]["decal"].getMemoryLocation()) == charStyle.chest &&
+										*reinterpret_cast<uint32_t*>(rth[i]["isBOE"].getMemoryLocation()) == 1
+										) {
+
+										int componentID = *reinterpret_cast<uint32_t*>(rth[i][0].getMemoryLocation());
+										shirtObjectLOT = CacheComponentsRegistry::FindID(componentID, 11);
+										break;
+									}
+								}
+								catch (std::runtime_error e) {
+									Logger::log("Cache:ItemComponent", e.what(), LogType::ERR);
+								}
+							}
+							if (shirtObjectLOT == 0) {
+								Logger::log("DB-CreateNewChar", "Unable to find componentID for shirt.");
+								err = true;
+							}
+						}
+
+						int pantsObjectLOT = 0; {
+							FDB::RowTopHeader rth = Cache.getRows("ItemComponent");
+							for (int i = 0; i < rth.getRowCount(); ++i) {
+								if (!rth.isValid(i)) continue;
+								try {
+									if (
+										*reinterpret_cast<uint32_t*>(rth[i]["itemType"].getMemoryLocation()) == 7 &&
+										*reinterpret_cast<uint32_t*>(rth[i]["color1"].getMemoryLocation()) == charStyle.legs &&
+										*reinterpret_cast<uint32_t*>(rth[i]["isBOE"].getMemoryLocation()) == 1
+										) {
+										int componentID = *reinterpret_cast<uint32_t*>(rth[i][0].getMemoryLocation());
+										pantsObjectLOT = CacheComponentsRegistry::FindID(componentID, 11);
+										break;
+									}
+								}
+								catch (std::runtime_error e) {
+									Logger::log("Cache:ItemComponent", e.what(), LogType::ERR);
+								}
+							}
+							if (pantsObjectLOT == 0) {
+								Logger::log("DB-CreateNewChar", "Unable to find componentID for pants.");
+								err = true;
+							}
+						}
+
+						if (!err) {
+							auto shirtAndPants = Database::AddCharShirtAndPants(GetDBConnection(), playerObject->GetObjectID(), shirtObjectLOT, pantsObjectLOT);
+							info.shirtObjectID = std::get<0>(shirtAndPants).objectID;
+							info.pantsObjectID = std::get<1>(shirtAndPants).objectID;
+							Database::UpdateChar(GetDBConnection(), info);
+						}
+					}
+
 					charComp->InitCharInfo(info);
-					charComp->InitCharStyle(Database::GetCharStyle(GetDBConnection(), info.styleID));
+					charComp->InitCharStyle(charStyle);
 					charComp->CheckLevelProgression();
 				
 					auto* charDestComp = playerObject->GetComponent<DestructibleComponent>();
