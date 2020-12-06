@@ -211,8 +211,8 @@ namespace PacketFactory {
 					}
 				}
 
-				if (playerObj != nullptr)
-					Instance->replicaManager->Destruct(playerObj, clientSession, false);
+				/*if (playerObj != nullptr)
+					Instance->replicaManager->Destruct(playerObj, clientSession, false);*/
 
 			}
 			else {
