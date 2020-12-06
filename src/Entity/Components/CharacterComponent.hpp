@@ -103,7 +103,7 @@ public:
 	}
 
 	void SetImagination(std::int32_t imag) {
-		charInfo.imagination = imag;
+		//charInfo.imagination = imag; // TODO: imagination is imag as well as maxImag! WE NEED TO CHANGE THAT!
 		Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 	}
 
