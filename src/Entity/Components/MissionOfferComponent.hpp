@@ -58,6 +58,21 @@ public:
 				// If mission added
 				if (Database::HasMission(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID().getPureID(), missionID)) {
 					auto dbMission = Database::GetMission(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID().getPureID(), missionID);
+					
+					// Trouble caused by good LU dev ideas for NS vendors
+					if (msg->bIsMultiInteractUse && dbMission.state == 2) {
+						if (
+								(dbMission.missionID == 588 && owner->GetLOT() == 6633) || // assembly
+								(dbMission.missionID == 589 && owner->GetLOT() == 6634) || // venture
+								(dbMission.missionID == 590 && owner->GetLOT() == 6632) || // paradox
+								(dbMission.missionID == 591 && owner->GetLOT() == 6631)    // sentinel
+							)
+						{
+							dbMission.state = 4;
+							Database::UpdateMission(owner->GetZoneInstance()->GetDBConnection(), dbMission);
+						}
+					}
+
 					if (dbMission.state == 4 || dbMission.state == 12) {
 						missionOffer.missionID = missionOfferGiver.missionID = missionID;
 
