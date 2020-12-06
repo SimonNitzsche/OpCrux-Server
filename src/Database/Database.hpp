@@ -341,7 +341,7 @@ public:
 
 	static void UpdateChar(odbc::ConnectionRef conn, Str_DB_CharInfo charInfo) {
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=? WHERE objectID=?");
+		odbc::PreparedStatementRef stmt = conn->prepareStatement("UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=?,shirtObjectID=?,pantsObjectID=? WHERE objectID=?");
 
 		stmt->setString(1, charInfo.name);
 		stmt->setString(2, charInfo.pendingName);
@@ -359,8 +359,10 @@ public:
 		stmt->setInt(14, charInfo.health);
 		stmt->setInt(15, charInfo.imagination);
 		stmt->setInt(16, charInfo.armor);
+		stmt->setULong(17, charInfo.shirtObjectID);
+		stmt->setULong(18, charInfo.pantsObjectID);
 
-		stmt->setULong(17, charInfo.objectID);
+		stmt->setULong(19, charInfo.objectID);
 
 		size_t nAffectedRows = stmt->executeUpdate();
 	}
