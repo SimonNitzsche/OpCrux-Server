@@ -583,7 +583,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 						}
 
 						if (!err) {
-							auto shirtAndPants = Database::AddCharShirtAndPants(GetDBConnection(), playerObject->GetObjectID(), shirtObjectLOT, pantsObjectLOT);
+							auto shirtAndPants = Database::AddCharShirtAndPants(GetDBConnection(), playerObject->GetObjectID().getPureID(), shirtObjectLOT, pantsObjectLOT);
 							info.shirtObjectID = std::get<0>(shirtAndPants).objectID;
 							info.pantsObjectID = std::get<1>(shirtAndPants).objectID;
 							Database::UpdateChar(GetDBConnection(), info);

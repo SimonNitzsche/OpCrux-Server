@@ -402,7 +402,7 @@ public:
 		shirtObject.tab = 0;
 		shirtObject.count = 1;
 		shirtObject.subkey = 0;
-		shirtObject.ownerID = ownerID;
+		shirtObject.ownerID = ownerID & 0xFFFFFFFF;
 		shirtObject.objectID = (1ULL << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
 
 		DatabaseModels::ItemModel pantsObject = shirtObject;
