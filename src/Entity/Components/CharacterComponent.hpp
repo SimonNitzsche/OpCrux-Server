@@ -473,6 +473,18 @@ public:
 		GameMessages::Send(sender->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, owner->GetObjectID(), resurrectMsg);
 	}
 
+	void OnPickupItem(Entity::GameObject* sender, GM::PickupItem* msg) {
+		Entity::GameObject* lootObject = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->lootObjectID);
+		Entity::GameObject* player = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->playerID);
+
+		if (lootObject != nullptr && player != nullptr) {
+			player->PickupLoot(lootObject);
+		}
+		else {
+			Logger::log("WRLD", "PickupItem: Unable to pickup unknown object " + std::to_string(std::uint64_t(msg->lootObjectID)), LogType::WARN);
+		}
+	}
+
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::SetFlag, OnSetFlag);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PlayerLoaded, OnPlayerLoaded);
@@ -484,6 +496,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::MatchRequest, OnMatchRequest);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestSmashPlayer, OnRequestSmashPlayer);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestResurrect, OnRequestResurrect);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PickupItem, OnPickupItem);
 	}
 };
 
