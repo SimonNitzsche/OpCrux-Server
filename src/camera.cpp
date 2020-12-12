@@ -1,3 +1,5 @@
+#ifdef CAMERA
+
 #include "camera.h"
 #include <SDL/include/SDL.h>
 #include <DataTypes/Vector3.hpp>
@@ -177,3 +179,5 @@ bool camera::isMoved()
 {
 	return ismoved;
 }
+
+#endif

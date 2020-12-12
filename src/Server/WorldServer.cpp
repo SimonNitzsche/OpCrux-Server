@@ -56,7 +56,7 @@
 #include "Entity/GameMessages/NotifyRacingClient.hpp"
 #include "Entity/Components/RacingControlComponent.hpp"
 #include "Entity/Components/MinigameComponent.hpp"
-#include <Entity\Components\ScriptComponent.hpp>
+#include "Entity/Components/ScriptComponent.hpp"
 
 using namespace Exceptions;
 

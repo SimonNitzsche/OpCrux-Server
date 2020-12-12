@@ -324,7 +324,7 @@ public:
 	//    baseStartup(self, newMsg)
 	//end
 	void onStartup(Entity::GameObject* self) {
-		self->SetNetworkedVar(u"NumberOfPlayers", 1LL);
+		self->SetNetworkedVar(u"NumberOfPlayers", (std::int64_t)1);
 		setGameVariables(gConstants, tMobSets, tSpawnerNetworks, missionsToUpate);
 		baseStartup(self, nullptr);
 	}

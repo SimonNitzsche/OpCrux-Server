@@ -49,27 +49,26 @@ int givenWorldID = 2000;
 #include "DataTypes/LDF.hpp"
 #include "FileTypes/HKXFile/hkxFile.hpp"
 #include "Database/CacheImporter.hpp"
-
 #include "Server/Manager/WorldInstanceManager.hpp"
-
 #include <iostream>
-#include <SDL/include/SDL.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include "camera.h"
 #include <vector>
 #include <bullet3-2.89/src/btBulletDynamicsCommon.h> //<bullet/btBulletDynamicsCommon.h>	//you may need to change this
 
 //#include <glad/include/glad/glad.h>
 //#include <GLFW/glfw3.h>
 
-camera cam;
-GLUquadricObj* quad;
 std::vector<btRigidBody*> bodies;
 WorldServer* viewWs;
 AuthServer* authServer = nullptr;
 
+#ifdef CAMERA
 
+GLUquadricObj* quad;
+#include <SDL/include/SDL.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "camera.h"
+camera cam;
 btRigidBody* addSphere(WorldServer* ws, float rad, float x, float y, float z, float mass)
 {
 	btTransform t;	//position and rotation
@@ -352,8 +351,9 @@ void TestPhysics() {
 	}
 	SDL_Quit();
 	gluDeleteQuadric(quad);*/
-
 }
+
+#endif
 
 int main(int argc, char* argv[]) {
 #ifdef _DEBUG

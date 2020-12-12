@@ -4,25 +4,18 @@ project(OpCrux_Server)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-SET(USE_MSVC_RUNTIME_LIBRARY_DLL true)
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+	set(USE_MSVC_RUNTIME_LIBRARY_DLL true)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
 	add_definitions(-D_USE_MATH_DEFINES)
-endif()
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	add_compile_options(-g)
 	add_compile_options(-w)
 	add_compile_options(-fshort-wchar)
 	add_compile_options(-fpermissive)
 endif()
-
-set(BUILD_EXTRAS OFF)
-set(BUILD_CPU_DEMOS OFF)
-set(BUILD_OPENGL3_DEMOS OFF)
-set(BUILD_BULLET2_DEMOS OFF)
-set(BUILD_UNIT_TESTS OFF)
 
 add_subdirectory(libs)
 include_directories(include)
@@ -31,11 +24,7 @@ include_directories(libs/odbc-cpp-wrapper/src)
 include_directories(src)
 include_directories(tests)
 
-INCLUDE_DIRECTORIES(
-${BULLET_PHYSICS_SOURCE_DIR}/src
-)
-
-find_package(ODBC REQUIRED)
+include_directories(${BULLET_PHYSICS_SOURCE_DIR}/src)
 
 add_executable(OpCrux_Server
 	libs/glad/include/glad/glad.h
@@ -380,50 +369,57 @@ add_executable(OpCrux_Server
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp
-	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp"  "src/Configuration/ConfGeneral.hpp" "src/Entity/Components/SlashCommandComponent.cpp" "src/Entity/GameMessages/SetPlayerControlScheme.hpp" "src/Entity/Components/RocketLaunchComponent.cpp" "src/Entity/GameMessages/TransferToZone.hpp" "src/Entity/GameMessages/TransferToZoneCheckedIM.hpp" "src/Entity/Components/PhantomPhysicsComponent.cpp" "src/GameCache/ObjectSkills.hpp" "src/Entity/GameMessages/AddSkill.hpp" "src/Entity/GameMessages/SetEmoteLockState.hpp" "src/Entity/GameMessages/VendorStatusUpdate.hpp" "src/Entity/GameMessages/BuyFromVendor.hpp" "src/Entity/GameMessages/VendorTransactionResult.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp" "src/Entity/GameMessages/MatchRequest.hpp" "src/Entity/GameMessages/MatchUpdate.hpp" "src/Entity/NativeScripts/ai/ACT/L_ACT_GENERIC_ACTIVITY_MGR.hpp" "src/Entity/NativeScripts/ai/MINIGAME/SURVIVAL/BASE_SURVIVAL_SERVER.hpp" "src/Entity/NativeScripts/zone/AG/L_ZONE_AG_SURVIVAL.hpp" "src/Entity/GameMessages/ScriptNetworkVarUpdate.hpp" "src/Entity/GameMessages/PlayerSetCameraCyclingMode.hpp" "src/Entity/GameMessages/ClientItemConsumed.hpp" "src/Entity/GameMessages/UseItemResult.hpp" "src/Entity/Components/SkillComponent/BehaviorSpawnObject.hpp" "src/Entity/NativeScripts/02_server/Equipment/L_MAESTROM_EXTRACTICATOR_SERVER.hpp" "src/Entity/Components/ScriptComponent.cpp" "src/Entity/NativeScripts/02_server/Map/AG/L_AG_CAGED_BRICKS_SERVER.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_FANS.hpp" "src/Entity/NativeScripts/02_server/Map/AG/L_AG_MONUMENT_BIRDS.hpp" "src/Entity/NativeScripts/02_server/Map/Property/AG_Small/L_ZONE_AG_PROPERTY.hpp" "src/Entity/NativeScripts/zone/PROPERTY/L_BASE_PROPERTY_SERVER.hpp" "src/Entity/GameMessages/NotifyClientObject.hpp" "src/Entity/GMBase.hpp" "src/Entity/NativeScripts/ai/NS/L_NS_GET_FACTION_MISSION_SERVER.hpp" "src/Entity/GameMessages/StartCelebrationEffect.hpp" "src/Entity/Components/PackageComponent.hpp" "src/GameCache/PackageComponent.hpp") 
-	
+	src/Entity/GameMessages/PickupCurrency.hpp
+	src/Entity/GameMessages/UpdatePlayerStatistic.hpp
+	src/Entity/GameMessages/SetCurrency.hpp
+	src/Configuration/ConfGeneral.hpp
+	src/Entity/Components/SlashCommandComponent.cpp
+	src/Entity/GameMessages/SetPlayerControlScheme.hpp
+	src/Entity/Components/RocketLaunchComponent.cpp
+	src/Entity/GameMessages/TransferToZone.hpp
+	src/Entity/GameMessages/TransferToZoneCheckedIM.hpp
+	src/Entity/Components/PhantomPhysicsComponent.cpp
+	src/GameCache/ObjectSkills.hpp
+	src/Entity/GameMessages/AddSkill.hpp
+	src/Entity/GameMessages/SetEmoteLockState.hpp
+	src/Entity/GameMessages/VendorStatusUpdate.hpp
+	src/Entity/GameMessages/BuyFromVendor.hpp
+	src/Entity/GameMessages/VendorTransactionResult.hpp
+	src/Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp
+	src/Entity/GameMessages/MatchRequest.hpp
+	src/Entity/GameMessages/MatchUpdate.hpp
+	src/Entity/NativeScripts/ai/ACT/L_ACT_GENERIC_ACTIVITY_MGR.hpp
+	src/Entity/NativeScripts/ai/MINIGAME/SURVIVAL/BASE_SURVIVAL_SERVER.hpp
+	src/Entity/NativeScripts/zone/AG/L_ZONE_AG_SURVIVAL.hpp
+	src/Entity/GameMessages/ScriptNetworkVarUpdate.hpp
+	src/Entity/GameMessages/PlayerSetCameraCyclingMode.hpp
+	src/Entity/GameMessages/ClientItemConsumed.hpp
+	src/Entity/GameMessages/UseItemResult.hpp
+	src/Entity/Components/SkillComponent/BehaviorSpawnObject.hpp
+	src/Entity/NativeScripts/02_server/Equipment/L_MAESTROM_EXTRACTICATOR_SERVER.hpp
+	src/Entity/Components/ScriptComponent.cpp
+	src/Entity/NativeScripts/02_server/Map/AG/L_AG_CAGED_BRICKS_SERVER.hpp
+	src/Entity/NativeScripts/ai/AG/L_AG_FANS.hpp
+	src/Entity/NativeScripts/02_server/Map/AG/L_AG_MONUMENT_BIRDS.hpp
+	src/Entity/NativeScripts/02_server/Map/Property/AG_Small/L_ZONE_AG_PROPERTY.hpp
+	src/Entity/NativeScripts/zone/PROPERTY/L_BASE_PROPERTY_SERVER.hpp
+	src/Entity/GameMessages/NotifyClientObject.hpp
+	src/Entity/GMBase.hpp
+	src/Entity/NativeScripts/ai/NS/L_NS_GET_FACTION_MISSION_SERVER.hpp
+	src/Entity/GameMessages/StartCelebrationEffect.hpp
+	src/Entity/Components/PackageComponent.hpp
+	src/GameCache/PackageComponent.hpp
+	)
 
-
-set_property(TARGET glad PROPERTY CXX_STANDARD 98)
-set_property(TARGET json PROPERTY CXX_STANDARD 98)
-set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
-set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
-set_property(TARGET rapidxml PROPERTY CXX_STANDARD 98)
-ADD_DEFINITIONS(-DODBC_STATIC)
-
-SET(RuntimeLibrary "MSd_DynamicDebug")
+set(RuntimeLibrary "MSd_DynamicDebug")
 
 IF(WIN32)
 	SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Shared Libs" FORCE)
 ENDIF(WIN32)
 
-#some code to support OpenGL and Glew cross platform
-IF (WIN32)
-        INCLUDE_DIRECTORIES(
-             ${BULLET_PHYSICS_SOURCE_DIR}/btgui/OpenGLWindow/GlewWindows
-        )
-        ADD_DEFINITIONS(-DGLEW_STATIC)
-	LINK_LIBRARIES( ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} )
-ELSE(WIN32)
-        IF(APPLE)
-                find_library(COCOA NAMES Cocoa)
-                MESSAGE(${COCOA})
-                link_libraries(${COCOA} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
-
-        ELSE(APPLE)
-                INCLUDE_DIRECTORIES(
-                        ${BULLET_PHYSICS_SOURCE_DIR}/btgui/OpenGLWindow/GlewWindows
-                )
-                ADD_DEFINITIONS("-DGLEW_INIT_OPENGL11_FUNCTIONS=1")
-                ADD_DEFINITIONS("-DGLEW_STATIC")
-                ADD_DEFINITIONS("-DGLEW_DYNAMIC_LOAD_ALL_GLX_FUNCTIONS=1")
-
-                LINK_LIBRARIES(  pthread ${DL} )
-        ENDIF(APPLE)
-ENDIF(WIN32)
-
 if(WIN32)
 	target_link_libraries(OpCrux_Server
+		OpenGLWindow
 		wsock32
 		ws2_32
 		odbc32
@@ -432,21 +428,15 @@ if(WIN32)
 		../../../libs/SDL/lib/x64/SDL2
 		../../../libs/SDL/lib/x64/SDL2main
 	)
-endif()
-if(UNIX)
+	add_definitions(-DCAMERA)
+elseif (UNIX)
 	target_link_libraries(OpCrux_Server
 		pthread
 		odbc
-		GL
-		GLU
-		SDL2
-		SDL2main
 	)
 endif()
 
 target_link_libraries(OpCrux_Server
-	
-	OpenGLWindow
 	BulletDynamics
 	BulletCollision
 	LinearMath
@@ -463,5 +453,4 @@ target_link_libraries(OpCrux_Server
 	rapidxml
 	odbccpp_static
 )
-
 

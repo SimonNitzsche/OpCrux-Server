@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "readability-const-return-type"
 #include "ScriptComponent.hpp"
 #include "Entity/GameObject.hpp"
 
@@ -45,3 +47,4 @@ const std::unordered_map<std::string, script_factory> ScriptComponent::factories
 		{"ScriptComponent_1021_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1021_script_name__removed>(); }},
 		{"ScriptComponent_815_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_DARKLING_MECH>(); }}
 };
+#pragma clang diagnostic pop

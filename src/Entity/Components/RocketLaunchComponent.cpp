@@ -1,7 +1,7 @@
 #include "RocketLaunchComponent.hpp"
-#include <Utils\LDFUtils.hpp>
+#include "Utils/LDFUtils.hpp"
 #include "Entity/GameMessages.hpp"
-#include <Entity\Components\InventoryComponent.hpp>
+#include "Entity/Components/InventoryComponent.hpp"
 
 void AMF3U29(RakNet::BitStream* bs, std::uint32_t number) {
 	number = number & 0x1FFFFFFF;

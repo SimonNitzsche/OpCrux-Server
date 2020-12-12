@@ -6,7 +6,7 @@
 #include "GameCache/VendorComponent.hpp"
 
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
-#include <Entity\GameMessages\VendorTransactionResult.hpp>
+#include "Entity/GameMessages/VendorTransactionResult.hpp"
 
 using namespace DataTypes;
 

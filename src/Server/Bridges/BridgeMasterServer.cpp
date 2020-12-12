@@ -6,7 +6,7 @@
 #include "Utils/Logger.hpp"
 #include "Utils/PacketUtil.hpp"
 #include "Utils/ServerInfo.hpp"
-#include <Server\AuthServer.hpp>
+#include "Server/AuthServer.hpp"
 
 #include "Server/WorldServer.hpp"
 
