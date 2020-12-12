@@ -144,10 +144,10 @@ public:
 			+ ";";
 
         ListDrivers();
-		/*conn = env->createConnection();
+		conn = env->createConnection();
         conn->connect(connStrBuilder.c_str());
         conn->setAutoCommit(true);
-*/
+
         if (!conn->connected()) throw std::runtime_error("Failed to connect to database");
 
 		return conn;
