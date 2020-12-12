@@ -5,12 +5,6 @@
 
 #include "Entity/Components/ScriptComponent.hpp"
 
-struct TimerDone {
-	std::u16string name;
-
-	TimerDone(std::u16string name) : name(name) {}
-};
-
 class NativeScript {
 public:
 	virtual ~NativeScript() = default;
@@ -22,7 +16,7 @@ public:
 	virtual void onArrivedAtDesiredWaypoint(Entity::GameObject * self, GM::ArrivedAtDesiredWaypoint msg) {}
 	virtual void onMissionDialogueOK(Entity::GameObject* self, GM::MissionDialogueOK msg) {}
 	virtual void onUse(Entity::GameObject * self, GM::RequestUse msg) {};
-	virtual void onTimerDone(Entity::GameObject * self, TimerDone msg) {};
+	virtual void onTimerDone(Entity::GameObject * self, GM::TimerDone msg) {};
 	virtual void onFireEventServerSide(Entity::GameObject * self, GM::FireEventServerSide msg) {}
 	virtual void onDie(Entity::GameObject* self, GM::Die msg) {}
 	virtual void onCollisionPhantom(Entity::GameObject* self, Entity::GameObject * other) {}

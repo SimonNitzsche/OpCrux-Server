@@ -123,9 +123,9 @@ public:
 			instance->onUse(owner, *msg);
 	}
 
-	void OnTimerDone(std::pair<std::u16string, long long> timer) {
+	void OnTimerDone(Entity::GameObject * sender, GM::TimerDone * msg) {
 		if (instance)
-			instance->onTimerDone(owner, TimerDone(timer.first));
+			instance->onTimerDone(owner, *msg);
 	}
 
 	void OnFireEventServerSide(Entity::GameObject * sender, GM::FireEventServerSide * msg) {
@@ -252,6 +252,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::FireEventServerSide, OnFireEventServerSide);
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::Die, OnDie);
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::RespondToMission, OnRespondToMission);
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::TimerDone, OnTimerDone);
 	}
 
 };

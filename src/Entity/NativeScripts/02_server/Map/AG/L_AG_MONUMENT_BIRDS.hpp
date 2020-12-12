@@ -39,7 +39,7 @@ public:
 		}
 	}
 
-	void onTimerDone(Entity::GameObject* self, TimerDone msg) {
+	void onTimerDone(Entity::GameObject* self, GM::TimerDone msg) {
 		auto player = self->GetZoneInstance()->objectsManager->GetObjectByID(std::stoull(StringUtils::to_string(msg.name)));
 
 		if (player != nullptr)

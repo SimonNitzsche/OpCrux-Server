@@ -176,6 +176,7 @@ public:
 #include "Entity/GameMessages/SyncSkill.hpp"
 #include "Entity/GameMessages/TerminateInteraction.hpp"
 #include "Entity/GameMessages/Teleport.hpp"
+#include "Entity/GameMessages/TimerDone.hpp"
 #include "Entity/GameMessages/ToggleGhostReferenceOverride.hpp"
 #include "Entity/GameMessages/ToggleSendingPositionUpdates.hpp"
 #include "Entity/GameMessages/TransferToZone.hpp"

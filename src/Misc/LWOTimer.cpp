@@ -12,7 +12,9 @@ void LWOTimer::Update() {
 				// Time exceeded.
 				// Stop timer and trigger stop event.
 				timers.at(it1.first).erase(it2.first);
-				it1.first->GetComponent<ScriptComponent>()->OnTimerDone(it2);
+				GM::TimerDone msg;
+				msg.name = it2.first;
+				it1.first->CallMessage(msg, it1.first);
 				//timers.at(it1.first).erase(it1.second.find(it2.first));
 			}
 			else {

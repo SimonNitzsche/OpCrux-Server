@@ -36,7 +36,7 @@ public:
 
 		self->GetZoneInstance()->timer.AddTimerWithCancelMs(FXTime, u"FXTime", self);
 	}
-	void onTimerDone(Entity::GameObject * self, TimerDone msg) {
+	void onTimerDone(Entity::GameObject * self, GM::TimerDone msg) {
 		{ GM::StopFXEffect nmsg; nmsg.name = "console_sparks"; nmsg.TriggerEvent(self, self); }
 		self->SetVar(u"bActive", false);
 	}

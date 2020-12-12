@@ -12,7 +12,7 @@ public:
 		self->GetZoneInstance()->timer.AddTimerWithCancelMs(4200, u"KillRooster", self);
 	}
 
-	void onTimerDone(Entity::GameObject* self, TimerDone msg) {
+	void onTimerDone(Entity::GameObject* self, GM::TimerDone msg) {
 		if (msg.name == u"KillRooster") {
 			{
 				GM::Die nmsg; nmsg.killerID = self->GetObjectID(); nmsg.killType = Enums::EKillType::SILENT;

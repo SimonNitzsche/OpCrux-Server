@@ -188,7 +188,7 @@ public:
 
 	}
 
-	virtual void sendNotification(Entity::GameObject* self, Entity::GameObject* obj, std::u16string msgName, TimerDone timer) {
+	virtual void sendNotification(Entity::GameObject* self, Entity::GameObject* obj, std::u16string msgName, GM::TimerDone timer) {
 
 	}
 
@@ -227,7 +227,7 @@ public:
 		}
 	}
 
-	virtual void baseTimerDone(Entity::GameObject* self, TimerDone msg) {
+	virtual void baseTimerDone(Entity::GameObject* self, GM::TimerDone msg) {
 
 	}
 

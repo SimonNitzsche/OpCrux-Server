@@ -13,7 +13,7 @@ public:
 		self->GetZoneInstance()->timer.AddTimerWithCancelMs(5000, u"FloaterScale", self);
 	}
 
-	void onTimerDone(Entity::GameObject * self, TimerDone msg) {
+	void onTimerDone(Entity::GameObject * self, GM::TimerDone msg) {
 		if (msg.name == u"FloaterScale") {
 			// Type of objects called
 			int scaletype = 1 + rand() % ((5 + 1) - 1);  // Rand (1,5)

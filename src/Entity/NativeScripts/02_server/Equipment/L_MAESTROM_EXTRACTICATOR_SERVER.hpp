@@ -100,7 +100,7 @@ public:
 	//----------------------------------------------------------------
 	//-- Catch and process timer events
 	//----------------------------------------------------------------
-	void onTimerDone(Entity::GameObject* self, TimerDone msg) {
+	void onTimerDone(Entity::GameObject* self, GM::TimerDone msg) {
 		if (msg.name == u"RemoveSample") {
 			// Delete the object
 			self->InstantiateRemoval();

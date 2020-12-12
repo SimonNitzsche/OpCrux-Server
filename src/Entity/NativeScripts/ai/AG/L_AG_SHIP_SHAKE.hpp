@@ -38,7 +38,7 @@ public:
 		self->GetZoneInstance()->timer.AddTimerWithCancelMs(repTime * 1000, u"ShakeTimer", self);
 	}
 
-	void onTimerDone(Entity::GameObject * self, TimerDone msg) {
+	void onTimerDone(Entity::GameObject * self, GM::TimerDone msg) {
 		// check to make sure there is a message and the timer name is correct
 		Entity::GameObject * shipFXObj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"ShipFX").at(0);
 		Entity::GameObject * shipFX2Obj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"ShipFX2").at(0);
