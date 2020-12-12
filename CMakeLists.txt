@@ -438,7 +438,7 @@ if(WIN32)
 	)
 	add_definitions(-DCAMERA)
 elseif (UNIX)
-	target_link_libraries(OpCrux_Server	pthread)
+	target_link_libraries(OpCrux_Server	pthread	odbccpp)
 endif()
 
 target_link_libraries(OpCrux_Server

@@ -3,6 +3,7 @@
 
 class WorldServer;
 
+#include <cstdint>
 #include <stdlib.h>
 #include <unordered_map>
 
