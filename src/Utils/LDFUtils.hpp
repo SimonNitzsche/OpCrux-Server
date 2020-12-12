@@ -113,6 +113,7 @@ public:
 		return output;
 	}
 	static LDFEntry ReadEntryFromLUZWString(std::u16string key, std::u16string val) {
+		if (val == u"") val = u"1:";
 		std::vector<std::u16string> type_val = StringUtils::splitWString(val, 0x003a);
 		bool typeDefined = val.find(0x003a) != std::u16string::npos;
 		Enums::LDFType type = typeDefined ? (Enums::LDFType)std::stoi(StringUtils::to_string(type_val.at(0))) : Enums::LDFType::WSTRING;
