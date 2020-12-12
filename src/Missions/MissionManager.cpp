@@ -538,21 +538,27 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 				GameMessages::Send(playerObject, player, tMsg);
             }
 
-            /*
-                Mission completion
-            */
+			if ((it->state == 4 || it->state == 12) && !CacheMissions::GetIsMission(it->missionID)) {
+				/*
+				   Mission completion
+			   */
 
-            GM::NotifyMission msg;
-            msg.missionID = it->missionID;
-            msg.missionState = 0;
-            msg.sendingRewards = true;
-            GameMessages::Send(playerObject, player, msg);
+				GM::NotifyMission msg;
+				msg.missionID = it->missionID;
+				msg.missionState = 0;
+				msg.sendingRewards = true;
+				GameMessages::Send(playerObject, player, msg);
 
-            // Send rewards
+				// Send rewards
+				it->state = 8;
+				// Update state to 8 in the db, to prevent infinity loop
+				Database::UpdateMission(playerObject->GetZoneInstance()->GetDBConnection(), *it);
+				SendMissionRewards(playerObject, *it);
 
-            msg.missionState = it->state;
-            msg.sendingRewards = false;
-            GameMessages::Send(Instance, Instance->sessionManager.GetSession(player)->systemAddress, player, msg);
+				msg.missionState = it->state;
+				msg.sendingRewards = false;
+				GameMessages::Send(Instance, Instance->sessionManager.GetSession(player)->systemAddress, player, msg);
+			}
         }
 
         Database::UpdateMission(playerObject->GetZoneInstance()->GetDBConnection(), *it);

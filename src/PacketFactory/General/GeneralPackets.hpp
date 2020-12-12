@@ -52,6 +52,20 @@ namespace PacketFactory {
 			//Data
 			returnBS.Write(reason);
 
+			std::string disconnectString = "Unknown reason.";
+
+			switch (int(reason)) {
+			case 4: disconnectString = "Account signed in from another location"; break;
+			case 5: disconnectString = "Server Shutdown"; break;
+			case 6: disconnectString = "Server unable to load map"; break;
+			case 7: disconnectString = "Invalid Session Key"; break;
+			case 8: disconnectString = "Account Was Not In Pending List"; break;
+			case 9: disconnectString = "Character not found"; break;
+			case 10: disconnectString = "Character corruption"; break;
+			}
+
+			Logger::log("WRLD", "Disconnected player: " + disconnectString, LogType::WARN);
+
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, client, false);
 		}
 
