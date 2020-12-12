@@ -17,6 +17,10 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	add_compile_options(-fpermissive)
 endif()
 
+if(UNIX)
+set(OpenGL_GL_PREFERENCE GLVND)
+endif()
+
 add_subdirectory(libs)
 include_directories(include)
 include_directories(libs)
@@ -430,10 +434,7 @@ if(WIN32)
 	)
 	add_definitions(-DCAMERA)
 elseif (UNIX)
-	target_link_libraries(OpCrux_Server
-		pthread
-		odbc
-	)
+	target_link_libraries(OpCrux_Server	pthread odbccpp)
 endif()
 
 target_link_libraries(OpCrux_Server
