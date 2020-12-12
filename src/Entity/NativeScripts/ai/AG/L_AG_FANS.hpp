@@ -13,8 +13,7 @@ public:
 		self->SetVar(u"isOn", false);
 		self->SetVar(u"isAlive", true);
 		toggleFX(self);
-		{ GM::PlayFXEffect msg; msg.name = "fanOn"; msg.effectID = 495; msg.effectType = u"fanOn"; GameMessages::Broadcast(self, msg);
-		self->GetComponent<RenderComponent>()->PlayFXEffect(msg); }
+		{ GM::PlayFXEffect msg; msg.name = "fanOn"; msg.effectID = 495; msg.effectType = u"fanOn"; self->CallMessage(msg); }
 	}
 
 	void toggleFX(Entity::GameObject* self, bool isHit = false) {
