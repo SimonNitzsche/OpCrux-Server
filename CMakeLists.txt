@@ -21,6 +21,10 @@ if(UNIX)
 set(OpenGL_GL_PREFERENCE GLVND)
 endif()
 
+if (IS_RELEASE)
+add_definitions(-DRELEASE)
+endif()
+
 add_subdirectory(libs)
 include_directories(include)
 include_directories(libs)
@@ -434,7 +438,7 @@ if(WIN32)
 	)
 	add_definitions(-DCAMERA)
 elseif (UNIX)
-	target_link_libraries(OpCrux_Server	pthread odbccpp)
+	target_link_libraries(OpCrux_Server	pthread)
 endif()
 
 target_link_libraries(OpCrux_Server
@@ -452,6 +456,6 @@ target_link_libraries(OpCrux_Server
 	Mongoose
 	RakNet
 	rapidxml
-	odbccpp_static
+		odbccpp_static
 )
 

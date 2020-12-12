@@ -355,11 +355,19 @@ void TestPhysics() {
 
 #endif
 
-int main(int argc, char* argv[]) {
-#ifdef _DEBUG
-	Logger::log("MAIN", "Server is running in Debug");
+void SetTitle(const std::string& title) {
+#ifdef _WIN32
+    std::system("title " + title);
 #else
-	Logger::log("MAIN", "Server is running in Release");
+    std::cout << "\\033]0;" << title << "\\007";
+#endif
+}
+
+int main(int argc, char* argv[]) {
+#ifdef NDEBUG
+    Logger::log("MAIN", "Server is running in Release");
+#else
+    Logger::log("MAIN", "Server is running in Debug");
 #endif
 
 	FileUtils::ChangeDirectory();
@@ -368,10 +376,6 @@ int main(int argc, char* argv[]) {
 
 	std::string ipMaster = Configuration::ConfigurationManager::generalConf.GetStringVal("Master", "MASTERIP");
 	ServerInfo::SetAuthIP(Configuration::ConfigurationManager::generalConf.GetStringVal("Master", "AUTHIP"));
-	//std::string ipMaster = "foxsog.com";
-
-	std::string hf = "res/physics/env_nim_ag_puffytree.hkx";
-	HKX::HKXFile hkx; hkx.Load(hf);
 
 	Logger::log("MAIN", "Connecting to database...");
 	Database::Connect();
@@ -397,34 +401,24 @@ int main(int argc, char* argv[]) {
 
 	//std::uintptr_t * c = CreateCOPScene();
 
-#ifdef OPCRUX_PLATFORM_WIN32
-	std::system("title OpCrux Server (Standalone)");
-#endif
+    SetTitle("title OpCrux Server (Standalone)");
 	for (std::ptrdiff_t i = 0; i < argc; i++) {
 		std::string arg = std::string(argv[i]);
 		if (arg == "--master") {
 			MODE_SERVER = SERVERMODE::MASTER;
-#ifdef OPCRUX_PLATFORM_WIN32
-			std::system("title OpCrux Server (Master only)");
-#endif
+            SetTitle("title OpCrux Server (Master only)");
 		}
 		else if (arg == "--world") {
 			MODE_SERVER = SERVERMODE::WORLD;
-#ifdef OPCRUX_PLATFORM_WIN32
-			std::system("title OpCrux Server (World only)");
-#endif
+            SetTitle("title OpCrux Server (World only)");
 		}
 		else if (arg == "--auth") {
 			MODE_SERVER = SERVERMODE::AUTH;
-#ifdef OPCRUX_PLATFORM_WIN32
-			std::system("title OpCrux Server (Auth only)");
-#endif
+            SetTitle("title OpCrux Server (Auth only)");
 		}
 		else if (arg == "--ugcop") {
 			MODE_SERVER = SERVERMODE::UGCOP;
-#ifdef OPCRUX_PLATFORM_WIN32
-			std::system("title OpCrux Server (UGC only)");
-#endif
+            SetTitle("title OpCrux Server (UGC only)");
 		}
 		else if (arg == "--worldID" && i < argc) {
 			givenWorldID = std::stoi(argv[i + 1]);

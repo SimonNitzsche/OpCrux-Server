@@ -89,7 +89,7 @@ public:
 		ListDrivers();
 		Connect();
 		Disconnect();
-	}
+	}*/
 
 	static void ListDrivers() {
 		{
@@ -113,7 +113,7 @@ public:
 				if (ret == SQL_SUCCESS_WITH_INFO) printf("\tdata truncation\n");
 			}
 		}
-	}*/
+	}
 private:
 	//define handles and variables
 	//inline static SQLHANDLE sqlConnHandle;
@@ -143,9 +143,12 @@ public:
 			+ dbConf->GetStringVal("DBConnection", "DBPASS")\
 			+ ";";
 
-		conn = env->createConnection();
-		conn->connect(connStrBuilder.c_str());
-		conn->setAutoCommit(true);
+        ListDrivers();
+		/*conn = env->createConnection();
+        conn->connect(connStrBuilder.c_str());
+        conn->setAutoCommit(true);
+*/
+        if (!conn->connected()) throw std::runtime_error("Failed to connect to database");
 
 		return conn;
 	}
