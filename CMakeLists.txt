@@ -18,6 +18,12 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	add_compile_options(-fpermissive)
 endif()
 
+set(BUILD_EXTRAS OFF)
+set(BUILD_CPU_DEMOS OFF)
+set(BUILD_OPENGL3_DEMOS OFF)
+set(BUILD_BULLET2_DEMOS OFF)
+set(BUILD_UNIT_TESTS OFF)
+
 add_subdirectory(libs)
 include_directories(include)
 include_directories(libs)
