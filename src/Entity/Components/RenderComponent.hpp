@@ -21,7 +21,7 @@ public:
 		std::uint32_t effectID = 0;
 		std::u16string effectType = u"";
 		std::float_t priority = 1.0f;
-		std::int64_t secondary = 0ULL;
+		std::int64_t secondary = std::uint64_t(0);
 	};
 	std::list<PlayedEffect> effects = {};
 

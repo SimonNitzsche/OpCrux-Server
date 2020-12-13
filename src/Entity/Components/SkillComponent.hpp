@@ -22,12 +22,12 @@ struct SkillStackParameters {
 	std::float_t fCasterLatency = 0.0f;
 	std::int32_t iCastType = 0;
 	DataTypes::Vector3 lastClickedPosit = DataTypes::Vector3::zero();
-	DataTypes::LWOOBJID optionalOriginatorID = 0ULL;
-	DataTypes::LWOOBJID optionalTargetID = 0ULL;
+	DataTypes::LWOOBJID optionalOriginatorID = std::uint64_t(0);
+	DataTypes::LWOOBJID optionalTargetID = std::uint64_t(0);
 	DataTypes::Quaternion originatorRot = DataTypes::Quaternion();
 	std::uint32_t uiBehvaiorHandle = 0;
 	std::uint32_t uiSkillHandle = 0;
-	DataTypes::LWOOBJID currentTarget = 0ULL;
+	DataTypes::LWOOBJID currentTarget = std::uint64_t(0);
 	bool bDone = false;
 };
 

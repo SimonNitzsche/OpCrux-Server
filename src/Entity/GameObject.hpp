@@ -52,7 +52,7 @@ namespace Entity {
 		// The Timestamp this object was created on the server.
 		int64_t creationTimestamp;
 
-		int64_t maxAge = 0LL;
+		int64_t maxAge = std::uint64_t(0);
 
 		// The Spawner GameObject.
 		GameObject* spawner = nullptr;
@@ -374,7 +374,7 @@ namespace Entity {
 		/*
 			Quick function to create the test object.
 		*/
-		void Test() { objectID = 9ULL; LOT = 1234; name = u"TestName"; }
+		void Test() { objectID = std::uint64_t(9); LOT = 1234; name = u"TestName"; }
 
 		void Possess(Entity::GameObject* other);
 

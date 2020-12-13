@@ -82,27 +82,27 @@ enum class EStats {
 
 struct Str_DB_CharInfo {
 public: 
-	unsigned long accountID;
-	unsigned long long objectID;
+	std::uint32_t accountID;
+	std::uint64_t objectID;
 	unsigned char charIndex;
 	std::string name = "";
 	std::string pendingName = "";
-	unsigned int styleID;
-	unsigned int statsID;
-	unsigned short lastWorld;
-	unsigned short lastInstance;
-	unsigned int lastClone;
-	unsigned long long lastLog;
+	std::uint32_t styleID;
+	std::uint32_t statsID;
+	std::uint16_t lastWorld;
+	std::uint16_t lastInstance;
+	std::uint32_t lastClone;
+	std::uint64_t lastLog;
 	DataTypes::Vector3 position;
-	unsigned long long shirtObjectID;
-	unsigned long long pantsObjectID;
-	unsigned int uScore;
-	unsigned int uLevel;
-	unsigned int currency;
-	unsigned int reputation;
-	unsigned int health;
-	unsigned int imagination;
-	unsigned int armor;
+	std::uint64_t shirtObjectID;
+	std::uint64_t pantsObjectID;
+	std::uint32_t uScore;
+	std::uint32_t uLevel;
+	std::uint32_t currency;
+	std::uint32_t reputation;
+	std::uint32_t health;
+	std::uint32_t imagination;
+	std::uint32_t armor;
 	Str_DB_CharInfo() {
 		name = "";
 		pendingName = "";

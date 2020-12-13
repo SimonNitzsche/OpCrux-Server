@@ -26,19 +26,19 @@ appstart = clock();
 	}
 }
 
-long long ServerInfo::startupStamp() {
+std::int64_t ServerInfo::startupStamp() {
 	return StartupTime;
 }
 
-long long ServerInfo::uptime() {
+std::int64_t ServerInfo::uptime() {
 	return timestamp() - appstart/CLOCKS_PER_SEC;
 }
 
-long long ServerInfo::timestamp() {
+std::int64_t ServerInfo::timestamp() {
 	return (clock() / CLOCKS_PER_SEC);
 }
 
-long long ServerInfo::uptimeMs() {
+std::int64_t ServerInfo::uptimeMs() {
 	return ((clock()/CLOCKS_PER_SEC) - (appstart/CLOCKS_PER_SEC))*1000;
 }
 
@@ -46,11 +46,11 @@ float ServerInfo::uptime_normalized() {
 	return ServerInfo::uptime() * 0.001f;
 }
 
-long long ServerInfo::time_gone(long long uptime) {
+std::int64_t ServerInfo::time_gone(std::int64_t uptime) {
 	return uptime - appstart;
 }
 
-float ServerInfo::CompareTimes(long long startTime, long long endTime) {
+float ServerInfo::CompareTimes(std::int64_t startTime, std::int64_t endTime) {
 	return (endTime - startTime) * 0.001f;
 }
 

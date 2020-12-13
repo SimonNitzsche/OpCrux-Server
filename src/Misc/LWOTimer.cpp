@@ -2,7 +2,7 @@
 #include "Entity/Components/ScriptComponent.hpp"
 
 void LWOTimer::Update() {
-	long long currentTime = ServerInfo::uptimeMs();
+	std::int64_t currentTime = ServerInfo::uptimeMs();
 	for (auto it1 : timers) {
 		auto r1 = timers.at(it1.first);
 		for (auto it2 : r1) {
@@ -23,7 +23,7 @@ void LWOTimer::Update() {
 }
 
 void LWOTimer::AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::GameObject * object) {
-	if (timers.find(object) == timers.end()) timers.insert(std::pair<Entity::GameObject*, std::unordered_map<std::u16string, long long>>(object, {}));
+	if (timers.find(object) == timers.end()) timers.insert(std::pair<Entity::GameObject*, std::unordered_map<std::u16string, std::int64_t>>(object, {}));
 	if (object == nullptr) { return; }
 	if (timers.size() > 1000) { return; }
 	if (timeInMs > 100) {

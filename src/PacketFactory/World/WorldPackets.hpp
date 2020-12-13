@@ -62,7 +62,7 @@ namespace PacketFactory {
 				returnBS.Write(charStyle.eyebrowStyle);
 				returnBS.Write(charStyle.eyesStyle);
 				returnBS.Write(charStyle.mouthStyle);
-				returnBS.Write(0);
+				returnBS.Write<std::uint32_t>(0);
 				returnBS.Write(charInfo.lastWorld);
 				returnBS.Write(charInfo.lastInstance);
 				returnBS.Write(charInfo.lastClone);
@@ -199,7 +199,7 @@ namespace PacketFactory {
 				returnBS.Write<std::uint8_t>(doAnnouncement);
 
 				auto s = Instance->sessionManager.GetSession(clientSession);
-				DataTypes::LWOOBJID objID = 0ULL;
+				DataTypes::LWOOBJID objID = std::uint64_t(0);
 				if (s != nullptr) objID = s->actorID.getPureID();
 
 				for (auto object : Instance->objectsManager->GetObjects()) {

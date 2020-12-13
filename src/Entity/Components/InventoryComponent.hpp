@@ -18,9 +18,9 @@
 /* Maybe replace this in future. */
 struct InventoryItemStack {
 	std::int32_t LOT = -1;
-	DataTypes::LWOOBJID ownerID = 0ULL;
-	DataTypes::LWOOBJID objectID = 0ULL;
-	DataTypes::LWOOBJID subkey = 0ULL;
+	DataTypes::LWOOBJID ownerID = std::uint64_t(0);
+	DataTypes::LWOOBJID objectID = std::uint64_t(0);
+	DataTypes::LWOOBJID subkey = std::uint64_t(0);
 	std::uint32_t quantity = 1;
 	std::uint32_t slot = 0;
 	std::uint32_t tab = 0;
@@ -91,7 +91,7 @@ public:
 				throw new std::runtime_error("Invalid LOT: " + std::to_string(itemID));
 
 			Entity::GameObject* item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
-			item->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
+			item->SetObjectID(DataTypes::LWOOBJID((std::uint64_t(1) << 58) + std::uint64_t(104120439353844) + owner->GetZoneInstance()->spawnedObjectIDCounter++));
 			item->SetIsServerOnly();
 			owner->GetZoneInstance()->objectsManager->RegisterObject(item);
 
@@ -440,7 +440,7 @@ public:
 						// Do we have item?
 						if (subItemStack.LOT != subitem) {
 							// We don't so let's add it
-							AddItem(subitem, 1U, DataTypes::Vector3(), 0ULL, {}, true);
+							AddItem(subitem, 1U, DataTypes::Vector3(), std::uint64_t(0), {}, true);
 							// Do we have it now?
 							subItemStack = GetItem(subitem);
 							if (subItemStack.LOT != subitem) {
@@ -784,7 +784,7 @@ public:
 			itemStack.quantity = 1;
 			itemStack.tab = tab;
 			if (owner->GetLOT() == 1 && tab != 4 && tab != 6) { // player and not temporary item and not temporary model
-				itemStack.objectID = (1ULL << 60) | Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER);
+				itemStack.objectID = (std::uint64_t(1) << 60) | Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER);
 			}
 			else {
 				itemStack.objectID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++);

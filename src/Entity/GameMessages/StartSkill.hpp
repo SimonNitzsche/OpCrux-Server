@@ -23,12 +23,12 @@ namespace GM {
 		StartSkill() : GMBase() {}
 		void Deserialize(RakNet::BitStream * bs) {
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, bUsedMouse, false);
-			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, consumableItemID, 0ULL);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, consumableItemID, std::uint64_t(0));
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, fCasterLatency, 0);
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, iCastType, 0);
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, lastClickedPosit, DataTypes::Vector3());
 			GM_VAR_DESERIALIZE(bs, optionalOriginatorID);
-			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, optionalTargetID, 0ULL);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, optionalTargetID, std::uint64_t(0));
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, originatorRot, DataTypes::Quaternion());
 			GM_VAR_DESERIALIZE_STRING(bs, sBitStream);
 			GM_VAR_DESERIALIZE(bs, skillID);

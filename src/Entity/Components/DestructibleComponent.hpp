@@ -81,7 +81,7 @@ public:
 				ItemModel item;
 				item.templateID = itemID;
 				item.count = 1;
-				item.objectID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++);
+				item.objectID = DataTypes::LWOOBJID((std::uint64_t(1) << 58) + std::uint64_t(104120439353844) + owner->GetZoneInstance()->spawnedObjectIDCounter++);
 				item.ownerID = lootOwner->GetObjectID();
 
 				dropList.push_back(item);

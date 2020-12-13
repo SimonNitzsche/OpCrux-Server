@@ -21,7 +21,7 @@ public:
 		std::u16string myGroup = self->GetVar<std::u16string>(u"groupID");
 		StringUtils::replace(myGroup, u"%", u"");
 		StringUtils::replace(myGroup, u";", u"");
-		auto volumeGroup = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(myGroup, 0ULL, true);
+		auto volumeGroup = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(myGroup, std::uint64_t(0), true);
 
 		if (volumeGroup.begin() == volumeGroup.end() || !self->GetVar(u"isAlive")) return;
 
@@ -34,7 +34,7 @@ public:
 				self->SetVar(u"isOn", false);
 				if (!isHit) {
 					{GM::PlayAnimation nmsg; nmsg.animationID = u"trigger"; nmsg.bPlayImmediate = true;
-					GameMessages::Broadcast(self->GetZoneInstance()->objectsManager->GetObjectsInGroup(myGroup + u"fx", 0ULL, true).at(0), nmsg); }
+					GameMessages::Broadcast(self->GetZoneInstance()->objectsManager->GetObjectsInGroup(myGroup + u"fx", std::uint64_t(0), true).at(0), nmsg); }
 				}
 			}
 		}
@@ -48,7 +48,7 @@ public:
 				self->SetVar(u"isOn", true);
 				if (!isHit) {
 					{GM::PlayAnimation nmsg; nmsg.animationID = u"idle"; nmsg.bPlayImmediate = true;
-					GameMessages::Broadcast(self->GetZoneInstance()->objectsManager->GetObjectsInGroup(myGroup + u"fx", 0ULL, true).at(0), nmsg); }
+					GameMessages::Broadcast(self->GetZoneInstance()->objectsManager->GetObjectsInGroup(myGroup + u"fx", std::uint64_t(0), true).at(0), nmsg); }
 				}
 			}
 		}

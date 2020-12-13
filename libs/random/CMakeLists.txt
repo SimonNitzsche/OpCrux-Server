@@ -3,7 +3,7 @@
 # define the project
 project(effolkronium_random VERSION 1.3.1 LANGUAGES CXX)
 
-option(Random_BuildTests "Build the unit tests" ON)
+option(Random_BuildTests "Build the unit tests" OFF)
 
 # define project variables
 set(EFFOLKRONIUM_RANDOM_TARGET_NAME ${PROJECT_NAME})
