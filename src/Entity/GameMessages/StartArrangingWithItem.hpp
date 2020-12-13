@@ -10,13 +10,13 @@ namespace GM {
 		}
 
 		bool bFirstTime = true;
-		DataTypes::LWOOBJID buildAreaID = 0ULL;
+		DataTypes::LWOOBJID buildAreaID =std::uint64_t(0);
 		DataTypes::Vector3 buildStartPOS;
 		std::int32_t sourceBAG=0;
-		DataTypes::LWOOBJID sourceID=0ULL;
+		DataTypes::LWOOBJID sourceID=std::uint64_t(0);
 		std::uint32_t sourceLOT=-1;
 		std::int32_t sourceTYPE=0;
-		DataTypes::LWOOBJID targetID=0ULL;
+		DataTypes::LWOOBJID targetID=std::uint64_t(0);
 		std::uint32_t targetLOT=-1;
 		DataTypes::Vector3 targetPOS;
 		std::int32_t targetTYPE=0;

@@ -8,8 +8,8 @@ namespace GM {
 		std::int32_t lootType = 0;
 		DataTypes::Vector3 position;
 		std::int32_t sourceLOT = 0;
-		DataTypes::LWOOBJID sourceObject = 0ULL;
-		DataTypes::LWOOBJID sourceTradeID = 0ULL;
+		DataTypes::LWOOBJID sourceObject = std::uint64_t(0);
+		DataTypes::LWOOBJID sourceTradeID = std::uint64_t(0);
 		std::int32_t sourceType = 0;
 
 		inline constexpr static Enums::EGameMessageID GetID() {

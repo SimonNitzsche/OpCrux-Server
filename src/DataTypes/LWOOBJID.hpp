@@ -104,7 +104,7 @@ namespace DataTypes {
 			*/
 			std::uint64_t getPureID() {
 				// Return the pure ID.
-				return (this->data & 0x00FFFFFFFFFFFFFFULL);
+				return (this->data & std::uint64_t(0x00FFFFFFFFFFFFFF));
 			}
 
 			/*
@@ -124,7 +124,7 @@ namespace DataTypes {
 					return CATEGORY::GLOBAL;
 
 				// Check for Local obj id.
-				if ((flags & (1ULL << (57 - idSize))) && (flags & (1ULL << (45 - idSize))))
+				if ((flags & (std::uint64_t(1) << (57 - idSize))) && (flags & (std::uint64_t(1) << (45 - idSize))))
 					return CATEGORY::LOCAL;
 
 				// Check for Static obj id.

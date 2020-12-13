@@ -37,7 +37,7 @@ namespace PacketFactory {
 			//Data
 
 			std::vector<DatabaseModels::Str_DB_CharInfo> charsInfo = Database::GetChars(Instance->GetDBConnection(), client->accountID);
-			size_t count =  charsInfo.size();
+			size_t count = charsInfo.size();
 			returnBS.Write<std::uint8_t>(count & 0xFF);
 			returnBS.Write<std::uint8_t>(0); // front char index
 
