@@ -192,7 +192,7 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				if (*objT.LOT == this->zoneControlObject->GetLOT()) continue;
 
 				auto* go = new Entity::GameObject(this, *objT.LOT);
-				go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ 70368744177664ULL | *objT.objectID));
+				go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ std::uint64_t(70368744177664) | *objT.objectID));
 				LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
 
 				// If Spawner
@@ -526,7 +526,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					auto charStyle = Database::GetCharStyle(GetDBConnection(), info.styleID);
 
 					// shirt and pants got deleted, make new!
-					if (info.shirtObjectID == 0ULL && info.pantsObjectID == 0ULL) {
+					if (info.shirtObjectID == std::uint64_t(0) && info.pantsObjectID == std::uint64_t(0)) {
 						bool err = false;
 						int shirtObjectLOT = 0;
 						{
@@ -626,7 +626,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {
 					if (object_to_construct->isSerializable && !object_to_construct->GetIsServerOnly() && object_to_construct->GetComponent<CharacterComponent>() == nullptr /*&& object_to_construct->GetComponent<PetComponent>() == nullptr*/) {
-						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((std::uint64_t)object_to_construct->GetObjectID()));
 						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}
@@ -639,7 +639,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				
 				for (auto object_to_construct : objectsManager->GetObjects()) {
 					if (object_to_construct->GetObjectID() != playerObject->GetObjectID() && object_to_construct->isSerializable && (object_to_construct->GetComponent<CharacterComponent>() != nullptr /*|| object_to_construct->GetComponent<PetComponent>() != nullptr*/)) {
-						Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((std::uint64_t)object_to_construct->GetObjectID()));
 						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}

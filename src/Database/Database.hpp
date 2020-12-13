@@ -199,7 +199,7 @@ public:
 		P_STATS
 	};
 
-	static unsigned long long reserveCountedID(odbc::ConnectionRef conn, DBCOUNTERID dbCounterID) {
+	static std::uint64_t reserveCountedID(odbc::ConnectionRef conn, DBCOUNTERID dbCounterID) {
 
 		const char* query;
 		switch (dbCounterID) {
@@ -228,7 +228,7 @@ public:
 		return -1;
 	}
 
-	static int GetCharCount(odbc::ConnectionRef conn, unsigned long accountID) {
+	static int GetCharCount(odbc::ConnectionRef conn, std::uint32_t accountID) {
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT COUNT(objectID) FROM OPCRUX_GD.dbo.Characters WHERE accountID=?");
 		stmt->setUInt(1, accountID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
@@ -239,7 +239,7 @@ public:
 		return 0;
 	}
 
-	static Str_DB_CharStyle GetCharStyle(odbc::ConnectionRef conn, unsigned long styleID) {
+	static Str_DB_CharStyle GetCharStyle(odbc::ConnectionRef conn, std::uint32_t styleID) {
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle FROM OPCRUX_GD.dbo.CharacterStyles WHERE id=?");
 		stmt->setUInt(1, styleID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
@@ -265,7 +265,7 @@ public:
 		return {};
 	}
 
-	static std::vector<Str_DB_CharInfo> GetChars(odbc::ConnectionRef conn, unsigned long accountID) {
+	static std::vector<Str_DB_CharInfo> GetChars(odbc::ConnectionRef conn, std::uint32_t accountID) {
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT objectID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE accountID=? ORDER BY charIndex");
 		stmt->setUInt(1, accountID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
@@ -303,7 +303,7 @@ public:
 		return charsInfo;
 	}
 
-	static Str_DB_CharInfo GetChar(odbc::ConnectionRef conn, unsigned long long objectID) {
+	static Str_DB_CharInfo GetChar(odbc::ConnectionRef conn, std::uint64_t objectID) {
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE objectID=? ORDER BY charIndex");
 		stmt->setULong(1, objectID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
@@ -370,7 +370,7 @@ public:
 		size_t nAffectedRows = stmt->executeUpdate();
 	}
 
-	static unsigned long CreateCharStyle(odbc::ConnectionRef conn,
+	static std::uint32_t CreateCharStyle(odbc::ConnectionRef conn,
 		int headColor, int head, int chestColor, int chest,
 		int legs, int hairStyle, int hairColor, int leftHand,
 		int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
@@ -421,8 +421,8 @@ public:
 		return std::make_tuple(shirtObject, pantsObject);
 	}
 
-	static unsigned long long CreateNewChar(odbc::ConnectionRef conn,
-		unsigned long accountID, std::string customName, std::string genname, int headColor, int head, int chestColor, int chest,
+	static std::uint64_t CreateNewChar(odbc::ConnectionRef conn,
+		std::uint32_t accountID, std::string customName, std::string genname, int headColor, int head, int chestColor, int chest,
 		int legs, int hairStyle, int hairColor, int leftHand, int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
 	) {
 		// Get Char Count
@@ -435,7 +435,7 @@ public:
 			int lastWorld = 0;
 			int lastInstance = 0;
 			int lastClone = 0;
-			unsigned long long lastLog = 0;
+			std::uint64_t lastLog = 0;
 			DataTypes::Vector3 position = DataTypes::Vector3::zero();
 
 			int shirtObjectLOT = 0;
@@ -500,13 +500,13 @@ public:
 			int armor = 0;
 
 			// Create style
-			unsigned long styleID = CreateCharStyle(conn, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
+			std::uint32_t styleID = CreateCharStyle(conn, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 
 			// Create statistics
-			unsigned long statsID = CreateCharStats(conn, reserveCountedID(conn, DBCOUNTERID::P_STATS));
+			std::uint32_t statsID = CreateCharStats(conn, reserveCountedID(conn, DBCOUNTERID::P_STATS));
 
 			// Reserve objectID
-			unsigned long long objectID = reserveCountedID(conn, DBCOUNTERID::PLAYER);
+			std::uint64_t objectID = reserveCountedID(conn, DBCOUNTERID::PLAYER);
 
 			// Create default shirt/pants objects
 			auto shirtAndPants = AddCharShirtAndPants(conn, objectID, shirtObjectLOT, pantsObjectLOT);
@@ -546,7 +546,7 @@ public:
 		return -1;
 	}
 
-	static unsigned long GetAccountIDByClientName(odbc::ConnectionRef conn, std::string clientName) {
+	static std::uint32_t GetAccountIDByClientName(odbc::ConnectionRef conn, std::string clientName) {
 
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT id FROM OPCRUX_AD.dbo.Accounts WHERE username=?");
 
@@ -1038,7 +1038,7 @@ public:
 		return -1;
 	}
 
-	static int GetAccountGMLevel(odbc::ConnectionRef conn, unsigned long accountID) {
+	static int GetAccountGMLevel(odbc::ConnectionRef conn, std::uint32_t accountID) {
 
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT rank FROM OPCRUX_AD.dbo.Accounts WHERE id=?");
 
@@ -1053,7 +1053,7 @@ public:
 		return -1;
 	}
 
-	static Str_DB_CharStats GetCharStats(odbc::ConnectionRef conn, long charIndex) {
+	static Str_DB_CharStats GetCharStats(odbc::ConnectionRef conn, std::int32_t charIndex) {
 		// TODO: Actually implement stats
 		return {};
 
@@ -1129,7 +1129,7 @@ public:
 		return {};
 	}
 
-	static unsigned long CreateCharStats(odbc::ConnectionRef conn, long statsID) {
+	static std::uint32_t CreateCharStats(odbc::ConnectionRef conn, std::int32_t statsID) {
 		// TODO: Actually implement stats
 		return -1;
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStats ON;INSERT INTO OPCRUX_GD.dbo.CharacterStats (statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");

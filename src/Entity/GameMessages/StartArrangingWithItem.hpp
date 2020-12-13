@@ -25,7 +25,7 @@ namespace GM {
 
 		void Serialize(RakNet::BitStream* bs) {
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, bFirstTime, true);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, buildAreaID, 0ULL);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, buildAreaID, std::uint64_t(0));
 			GM_VAR_SERIALIZE(bs, buildStartPOS);
 			GM_VAR_SERIALIZE(bs, sourceBAG);
 			GM_VAR_SERIALIZE(bs, sourceID);

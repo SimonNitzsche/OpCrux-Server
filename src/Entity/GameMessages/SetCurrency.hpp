@@ -23,8 +23,8 @@ namespace GM {
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, lootType, 0);
 			GM_VAR_SERIALIZE(bs, position);
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, sourceLOT, 0);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, sourceObject, 0ULL);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, sourceTradeID, 0ULL);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, sourceObject, std::uint64_t(0));
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, sourceTradeID, std::uint64_t(0));
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, sourceType, 0);
 		}
 	};

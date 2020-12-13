@@ -14,7 +14,7 @@ struct BehaviorTacArc : AbstractAggregateBehavior {
 		SkillStackParameters ssParams = comp->GetParameters();
 		bool usePickedTarget = (1.0f == CacheBehaviorParameter::GetParameterValue(behaviorID, "use_picked_target"));
 	
-		if(usePickedTarget && ssParams.optionalTargetID != 0ULL) {
+		if(usePickedTarget && ssParams.optionalTargetID != std::uint64_t(0)) {
 			std::int32_t nextID = CacheBehaviorParameter::GetParameterValue(behaviorID, "action");
 			StartUnCast(comp, nextID, bs);
 		}

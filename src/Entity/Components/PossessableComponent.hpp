@@ -13,9 +13,9 @@ public:
 	static constexpr int GetTypeID() { return 108; }
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
-		factory->Write(driver != 0ULL);
-		if (driver != 0ULL) {
-			factory->Write(driver != 0ULL);
+		factory->Write(driver != std::uint64_t(0));
+		if (driver != std::uint64_t(0)) {
+			factory->Write(driver != std::uint64_t(0));
 			factory->Write(driver);
 			factory->Write(false);
 			factory->Write(false);

@@ -119,7 +119,7 @@ public:
 		//auto flagChunk = std::find(flags.begin(), flags.end(), flagIndex/64);
 		auto flagChunk = flags.find(flagIndex / 64);
 		if (flagChunk != flags.end()) {
-			return (flagChunk->second & (1ULL << (flagIndex % 64)));
+			return (flagChunk->second & (std::uint64_t(1) << (flagIndex % 64)));
 		}
 		return false;
 	}
@@ -131,11 +131,11 @@ public:
 		std::uint64_t chunkData;
 		auto flagChunk = flags.find(chunkID);
 		if (flagChunk != flags.end()) {
-			flagChunk->second ^= (-value ^ flagChunk->second) & (1ULL << (flagIndex % 64));
+			flagChunk->second ^= (-value ^ flagChunk->second) & (std::uint64_t(1) << (flagIndex % 64));
 			chunkData = flagChunk->second;
 		}
 		else {
-			chunkData = 1ULL << (flagIndex % 64);
+			chunkData = std::uint64_t(1) << (flagIndex % 64);
 			flags.insert({ chunkID, chunkData });
 		}
 

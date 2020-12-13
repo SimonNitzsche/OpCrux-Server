@@ -9,7 +9,7 @@ namespace GM {
 		std::string m_NDAudioEventGUID="";
 		std::string m_NDAudioMetaEventName = "";
 		bool m_Result = false;
-		DataTypes::LWOOBJID m_TargetObjectIDForNDAudioCallbackMessages = 0ULL;
+		DataTypes::LWOOBJID m_TargetObjectIDForNDAudioCallbackMessages = std::uint64_t(0);
 
 		inline constexpr static Enums::EGameMessageID GetID() {
 			return Enums::EGameMessageID::SERVER_PLAY_AUDIO_EMITTER;
@@ -21,12 +21,12 @@ namespace GM {
 		}
 
 		void Serialize(RakNet::BitStream * bs) {
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, m_NDAudioCallbackMessageData, 0LL);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, m_NDAudioEmitterID, 0LL);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, m_NDAudioCallbackMessageData, std::int64_t(0));
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, m_NDAudioEmitterID, std::int64_t(0));
 			GM_VAR_SERIALIZE(bs, m_NDAudioEventGUID);
 			GM_VAR_SERIALIZE(bs, m_NDAudioMetaEventName);
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, m_Result, false);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, m_TargetObjectIDForNDAudioCallbackMessages, 0ULL);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, m_TargetObjectIDForNDAudioCallbackMessages, std::uint64_t(0));
 		}
 
 		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {

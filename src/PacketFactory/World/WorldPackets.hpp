@@ -37,7 +37,7 @@ namespace PacketFactory {
 			//Data
 
 			std::vector<DatabaseModels::Str_DB_CharInfo> charsInfo = Database::GetChars(Instance->GetDBConnection(), client->accountID);
-			size_t count = charsInfo.size();
+			size_t count =  charsInfo.size();
 			returnBS.Write<std::uint8_t>(count & 0xFF);
 			returnBS.Write<std::uint8_t>(0); // front char index
 
@@ -62,7 +62,7 @@ namespace PacketFactory {
 				returnBS.Write(charStyle.eyebrowStyle);
 				returnBS.Write(charStyle.eyesStyle);
 				returnBS.Write(charStyle.mouthStyle);
-				returnBS.Write(0);
+				returnBS.Write<std::uint32_t>(0);
 				returnBS.Write(charInfo.lastWorld);
 				returnBS.Write(charInfo.lastInstance);
 				returnBS.Write(charInfo.lastClone);
@@ -199,7 +199,7 @@ namespace PacketFactory {
 				returnBS.Write<std::uint8_t>(doAnnouncement);
 
 				auto s = Instance->sessionManager.GetSession(clientSession);
-				DataTypes::LWOOBJID objID = 0ULL;
+				DataTypes::LWOOBJID objID = std::uint64_t(0);
 				if (s != nullptr) objID = s->actorID.getPureID();
 
 				for (auto object : Instance->objectsManager->GetObjects()) {
