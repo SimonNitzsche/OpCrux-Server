@@ -308,6 +308,9 @@ public:
 						nmsg.finalPosition = owner->GetPosition();
 						nmsg.itemTemplate = it->templateID;
 						nmsg.lootID = it->objectID;
+						
+						owner->CallMessage(nmsg, lootOwner);
+						
 						GameMessages::Send(lootOwner, nmsg.sourceObj, nmsg);
 
 						Logger::log("WRLD", "Dropped loot " + std::to_string(std::uint64_t(nmsg.lootID)) + " with LOT " + std::to_string(nmsg.itemTemplate));
@@ -337,7 +340,7 @@ public:
 
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(DestructibleComponent, GM::RequestDie, OnRequestDie);
-		//REGISTER_OBJECT_MESSAGE_HANDLER(DestructibleComponent, GM::Drop)
+		REGISTER_OBJECT_MESSAGE_HANDLER(DestructibleComponent, GM::DropClientLoot, OnDropLoot);
 	}
 };
 
