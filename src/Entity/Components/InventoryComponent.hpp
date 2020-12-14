@@ -403,15 +403,24 @@ public:
 
 	inline bool EquipItem(DataTypes::LWOOBJID itemToEquip) {
 		Entity::GameObject* objItemToEquip = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(itemToEquip);
-		if (objItemToEquip == nullptr) return false;
+		if (objItemToEquip == nullptr) {
+			Logger::log("WRLD", "Couldn't equip: Couldn't find equipment " + std::to_string(itemToEquip), LogType::ERR);
+			return false;
+		}
 
 		std::int32_t LOT = objItemToEquip->GetLOT();
 
 		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
-		if (itemCompID == -1) return false;
+		if (itemCompID == -1) {
+			Logger::log("WRLD", "Couldn't equip: itemComp is -1", LogType::ERR);
+			return false;
+		}
 
 		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
-		if (static_cast<std::string>(equipLocation) == "") return false;
+		if (static_cast<std::string>(equipLocation) == "") {
+			Logger::log("WRLD", "Couldn't equip: no equip location specified", LogType::ERR);
+			return false;
+		}
 
 
 		for (auto tabIt = inventory.begin(); tabIt != inventory.end(); ++tabIt) {
@@ -421,7 +430,10 @@ public:
 					// We found it!
 
 					// We're already equipped!
-					if (it->second.equip) return false;
+					if (it->second.equip) { 
+						Logger::log("WRLD", "Couldn't equip: already equipped", LogType::WARN);
+						return false;
+					}
 
 					// Make sure we have nothing equipped on the location
 					this->UnEquipLocation(equipLocation);
