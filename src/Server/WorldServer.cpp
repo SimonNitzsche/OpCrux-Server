@@ -238,7 +238,6 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				};
 
 				spawner->PopulateFromLDF(&ldfCollectionSpawner);
-				spawner->Finish();
 				objectsManager->RegisterObject(spawner);
 			}
 		}
