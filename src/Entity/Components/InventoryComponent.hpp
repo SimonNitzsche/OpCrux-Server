@@ -429,14 +429,14 @@ public:
 				if (it->second.objectID == itemToEquip) {
 					// We found it!
 
+					// Make sure we have nothing equipped on the location
+					this->UnEquipLocation(equipLocation);
+
 					// We're already equipped!
 					if (it->second.equip) { 
 						Logger::log("WRLD", "Couldn't equip: already equipped", LogType::WARN);
 						return false;
 					}
-
-					// Make sure we have nothing equipped on the location
-					this->UnEquipLocation(equipLocation);
 
 					// Equip it.
 					it->second.equip = true;
