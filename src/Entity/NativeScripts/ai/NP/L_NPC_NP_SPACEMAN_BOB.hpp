@@ -24,27 +24,8 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 				model = Database::GetMission(self->GetZoneInstance()->GetDBConnection(), msg.responder.getPureID(), 664);
 			}
 
-			GM::NotifyMissionTask taskNotify;
-			taskNotify.missionID = 664;
-			taskNotify.taskMask = 2;
-			taskNotify.updates = { 1.0f };
-			GameMessages::Send(player, player->GetObjectID(), taskNotify);
 
-			model.state = 2;
-
-			GM::NotifyMission misNotify;
-			misNotify.missionID = model.missionID;
-			misNotify.sendingRewards = true;
-			misNotify.missionState = 0;
-			GameMessages::Send(player, player->GetObjectID(), misNotify);
-
-			model.state = 8;
-			model.progress = "1";
-			misNotify.missionState = model.state;
-			Database::UpdateMission(self->GetZoneInstance()->GetDBConnection(), model);
-
-			misNotify.sendingRewards = true;
-			GameMessages::Send(player, player->GetObjectID(), misNotify);
+			MissionManager::LaunchTaskEvent(EMissionTask::SCRIPT, self, player->GetObjectID());
 
 			GM::NotifyClientFlagChange flagGM;
 			flagGM.bFlag = true;
