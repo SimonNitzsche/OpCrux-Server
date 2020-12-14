@@ -620,6 +620,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				if (charComp != nullptr) {
 					auto charInfo = charComp->GetCharInfo();
 					charInfo.lastWorld = luZone->zoneID;
+					charComp->InitCharInfo(charInfo);
 					Database::UpdateChar(GetDBConnection(), charInfo);
 				}
 
