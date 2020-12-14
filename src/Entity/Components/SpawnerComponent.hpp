@@ -113,7 +113,7 @@ public:
 	}
 
 	void AddRespawnTask() {
-		std::int64_t x = std::int64_t(::time(0)) + std::int64_t(respawnTime);
+		std::int64_t x = std::int64_t(::time(0)) + std::uint32_t(respawnTime);
 		this->respawnTasks.push_back(x);
 		//this->respawnTasks.push_back(::time(0));
 	}
@@ -201,10 +201,6 @@ public:
 		auto spawnRot = originRot;
 
 		LDFCollection spawnCollection = ldfCache;
-
-		if (spawnerPath == nullptr && spawner_name != u"") {
-			int c = 3;
-		}
 
 		if (spawnerPath != nullptr) {
 			// We are spawner path
