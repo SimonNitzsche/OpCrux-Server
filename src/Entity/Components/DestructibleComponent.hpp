@@ -57,7 +57,7 @@ public:
 
 			std::uniform_real_distribution<> dropCountDist(minToDrop, maxToDrop);
 
-			std::int32_t dropCount = dropChanceDist(RandomUtil::GetEngine());
+			std::int32_t dropCount = dropCountDist(RandomUtil::GetEngine());
 
 			std::int32_t lootTableIndex = CacheLootMatrix::GetLootTableIndex(*it);
 
@@ -66,7 +66,8 @@ public:
 				{return CacheLootTable::GetSortPriority(a) > CacheLootTable::GetSortPriority(b); });
 
 			for (int i = 0; i < dropCount; ++i) {
-				auto it2 = std::next(lootTableRows.begin(), (i % lootTableRows.size()));
+				std::uniform_real_distribution<> dropIndexDist(0, lootTableRows.size());
+				auto it2 = std::next(lootTableRows.begin(), dropIndexDist(RandomUtil::GetEngine()));
 
 				std::int32_t itemID = CacheLootTable::GetItemID(*it2);
 				bool isMisssionDrop = CacheLootTable::GetMissionDrop(*it2);
