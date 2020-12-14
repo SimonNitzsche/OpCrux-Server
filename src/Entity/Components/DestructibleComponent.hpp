@@ -40,6 +40,7 @@ public:
 
 		auto lootRowMain = CacheLootMatrix::getRow(lootMatrixIndex);
 		auto lootRows = lootRowMain.flatIt();
+		std::uniform_real_distribution<> dropChanceDist(0.0, 1.0);
 		for (auto it = lootRows.begin(); it != lootRows.end(); ++it) {
 			// Check if we have flag
 			std::int32_t flag = CacheLootMatrix::GetFlagID(*it);
@@ -48,15 +49,15 @@ public:
 			std::float_t chance = CacheLootMatrix::GetPercent(*it);
 
 			// Check if drop?
-			srand(::time(0));
-			if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) > chance) continue;
+			if (dropChanceDist(RandomUtil::GetEngine()) > chance) continue;
 
 			std::int32_t minToDrop = CacheLootMatrix::GetMinToDrop(*it);
 			std::int32_t maxToDrop = CacheLootMatrix::GetMaxToDrop(*it);
 			maxToDrop = minToDrop > maxToDrop ? minToDrop : maxToDrop;
 
-			srand(::time(0));
-			std::int32_t dropCount = rand() % maxToDrop + minToDrop;
+			std::uniform_real_distribution<> dropCountDist(minToDrop, maxToDrop);
+
+			std::int32_t dropCount = dropChanceDist(RandomUtil::GetEngine());
 
 			std::int32_t lootTableIndex = CacheLootMatrix::GetLootTableIndex(*it);
 
@@ -81,7 +82,7 @@ public:
 				ItemModel item;
 				item.templateID = itemID;
 				item.count = 1;
-				item.objectID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++);
+				item.objectID = owner->GetZoneInstance()->objectsManager->GenerateSpawnedID();
 				item.ownerID = lootOwner->GetObjectID();
 
 				dropList.push_back(item);
@@ -299,24 +300,19 @@ public:
 
 				auto itemLoot = GetLootDrop(lootOwner);
 				for (auto it = itemLoot.begin(); it != itemLoot.end(); ++it) {
-					GM::DropClientLoot msg;
-					msg.iCurrency = 0;
-					msg.owner = lootOwner->GetObjectID();
-					msg.sourceObj = owner->GetObjectID();
-					msg.spawnPosition = owner->GetPosition();
-					msg.finalPosition = owner->GetPosition();
-					msg.itemTemplate = it->templateID;
-					msg.lootID = it->objectID;
-					GameMessages::Send(lootOwner, msg.sourceObj, msg);
+					{
+						GM::DropClientLoot nmsg;
+						nmsg.iCurrency = 0;
+						nmsg.owner = lootOwner->GetObjectID();
+						nmsg.sourceObj = owner->GetObjectID();
+						nmsg.spawnPosition = owner->GetPosition();
+						nmsg.finalPosition = owner->GetPosition();
+						nmsg.itemTemplate = it->templateID;
+						nmsg.lootID = it->objectID;
+						GameMessages::Send(lootOwner, nmsg.sourceObj, nmsg);
 
-					Logger::log("WRLD", "Dropped loot " + std::to_string(std::uint64_t(msg.lootID)) + " with LOT " + std::to_string(msg.itemTemplate));
-
-					Entity::GameObject * droppedLoot = new Entity::GameObject(owner->GetZoneInstance(), msg.itemTemplate);
-					droppedLoot->SetObjectID(msg.lootID);
-					ItemComponent * lootItemComp = droppedLoot->GetComponent<ItemComponent>();
-					owner->GetZoneInstance()->objectsManager->RegisterObject(droppedLoot);
-					droppedLoot->SetMaxAge(120);
-					droppedLoot->Finish();
+						Logger::log("WRLD", "Dropped loot " + std::to_string(std::uint64_t(nmsg.lootID)) + " with LOT " + std::to_string(nmsg.itemTemplate));
+					}
 				}
 			}
 
@@ -331,8 +327,18 @@ public:
 		}
 	}
 
+	void OnDropLoot(Entity::GameObject* sender, GM::DropClientLoot* msg) {
+		Entity::GameObject* droppedLoot = new Entity::GameObject(owner->GetZoneInstance(), msg->itemTemplate);
+		droppedLoot->SetObjectID(msg->lootID);
+		ItemComponent* lootItemComp = droppedLoot->GetComponent<ItemComponent>();
+		owner->GetZoneInstance()->objectsManager->RegisterObject(droppedLoot);
+		droppedLoot->SetMaxAge(120);
+		droppedLoot->Finish();
+	}
+
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(DestructibleComponent, GM::RequestDie, OnRequestDie);
+		//REGISTER_OBJECT_MESSAGE_HANDLER(DestructibleComponent, GM::Drop)
 	}
 };
 

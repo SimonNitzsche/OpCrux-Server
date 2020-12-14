@@ -11,7 +11,7 @@ struct BehaviorSpawnObject : AbstractAggregateBehavior {
 		if (lotID == -1) return;
 		Entity::GameObject* spawnedObject = new Entity::GameObject(comp->owner->GetZoneInstance(), lotID);
 
-		spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + comp->owner->GetZoneInstance()->spawnedObjectIDCounter++));
+		spawnedObject->SetObjectID(comp->owner->GetZoneInstance()->objectsManager->GenerateSpawnedID());
 
 		spawnedObject->SetParent(comp->owner);
 

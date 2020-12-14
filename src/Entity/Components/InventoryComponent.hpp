@@ -91,7 +91,7 @@ public:
 				throw new std::runtime_error("Invalid LOT: " + std::to_string(itemID));
 
 			Entity::GameObject* item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
-			item->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++));
+			item->SetObjectID(owner->GetZoneInstance()->objectsManager->GenerateSpawnedID());
 			item->SetIsServerOnly();
 			owner->GetZoneInstance()->objectsManager->RegisterObject(item);
 
@@ -787,7 +787,7 @@ public:
 				itemStack.objectID = (1ULL << 60) | Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER);
 			}
 			else {
-				itemStack.objectID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++);
+				itemStack.objectID = owner->GetZoneInstance()->objectsManager->GenerateSpawnedID();
 			}
 			itemStack.metadata = metadata;
 

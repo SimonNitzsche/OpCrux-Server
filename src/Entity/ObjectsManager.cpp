@@ -161,3 +161,7 @@ SpawnerComponent* ObjectsManager::GetSpawnerByName(std::u16string spawnerName) {
 	}
 	return nullptr;
 }
+
+DataTypes::LWOOBJID ObjectsManager::GenerateSpawnedID() {
+	return DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + spawnedObjectIDCounter++);
+}
