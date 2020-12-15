@@ -73,7 +73,7 @@ public:
 		}
 
 		// Set ObjectID
-		myCar->SetObjectID(DataTypes::LWOOBJID((std::uint64_t(1) << 58) + std::uint64_t(104120439353844) + this->owner->GetZoneInstance()->spawnedObjectIDCounter++));
+		myCar->SetObjectID(owner->GetZoneInstance()->objectsManager->GenerateSpawnedID());
 
 		// Set Position/Rotation
 		//spawnedObject->SetPosition(DataTypes::Vector3(-1475.7, 794.0, -351.6));

@@ -238,7 +238,6 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				};
 
 				spawner->PopulateFromLDF(&ldfCollectionSpawner);
-				spawner->Finish();
 				objectsManager->RegisterObject(spawner);
 			}
 		}
@@ -620,6 +619,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				if (charComp != nullptr) {
 					auto charInfo = charComp->GetCharInfo();
 					charInfo.lastWorld = luZone->zoneID;
+					charComp->InitCharInfo(charInfo);
 					Database::UpdateChar(GetDBConnection(), charInfo);
 				}
 

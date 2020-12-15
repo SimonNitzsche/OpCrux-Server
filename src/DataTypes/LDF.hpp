@@ -131,7 +131,7 @@ public:
 
 	explicit operator std::float_t() const {
 		if (type == Enums::LDFType::UNASSIGNED_LDFTYPE) return 0;
-		if (type == Enums::LDFType::U32) return reinterpret_cast<std::uint32_t>(this);
+		if (type == Enums::LDFType::U32) return this->operator std::uint32_t();
 		if (type != Enums::LDFType::FLOAT) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<std::float_t*>(const_cast<char*>(data.c_str()));
 	}

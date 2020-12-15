@@ -73,7 +73,7 @@ public:
 						}
 					}
 
-					if (dbMission.state == 4 || dbMission.state == 12) {
+					if (dbMission.state == 4 || dbMission.state == 12 || dbMission.state == 2 || dbMission.state == 10 ) {
 						missionOffer.missionID = missionOfferGiver.missionID = missionID;
 
 						missionOffer.offerer = missionOfferGiver.offerer = msg->objectID;

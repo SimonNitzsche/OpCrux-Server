@@ -517,6 +517,17 @@ namespace Entity {
 		void NotifyTriggerEvent(std::string eventName);
 
 		void OnMessage(Entity::GameObject* rerouteID, std::uint32_t msgID, GM::GMBase* msg);
+
+		template<class T = GM::GMBase>
+		inline void CallMessage(T msg, Entity::GameObject* rerouteID = nullptr) {
+
+			Entity::GameObject* realReroute = rerouteID;
+			if (realReroute == nullptr) realReroute = this;
+
+			// TODO logic to sync with client
+
+			this->OnMessage(realReroute, msg.GetID(), &msg);
+		}
 	};
 }
 

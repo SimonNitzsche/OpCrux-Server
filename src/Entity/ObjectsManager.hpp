@@ -14,6 +14,7 @@ private:
 	ReplicaManager * RM = nullptr;
 	std::unordered_map<std::uint64_t, Entity::GameObject *> object_list;
 	std::list<std::uint64_t> object_garbage;
+	unsigned long long spawnedObjectIDCounter = 0;
 public:
 	ObjectsManager();
 	ObjectsManager(WorldServer * Instance);
@@ -35,6 +36,7 @@ public:
 	void OnUpdate();
 	void OnPhysicsUpdate();
 	SpawnerComponent* GetSpawnerByName(std::u16string spawnerName);
+    DataTypes::LWOOBJID GenerateSpawnedID();
 	~ObjectsManager() {}
 };
 

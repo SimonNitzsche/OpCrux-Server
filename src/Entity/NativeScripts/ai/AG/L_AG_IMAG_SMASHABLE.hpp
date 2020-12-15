@@ -20,7 +20,7 @@ public:
 			std::int32_t amount = rand() % 2 + 1;
 
 			for (int i = 0; i < amount; ++i) {
-				DataTypes::LWOOBJID newID = DataTypes::LWOOBJID((std::uint64_t(1) << 58) + std::uint64_t(104120439353844) + self->GetZoneInstance()->spawnedObjectIDCounter++);
+				DataTypes::LWOOBJID newID = self->GetZoneInstance()->objectsManager->GenerateSpawnedID();
 				{
 					GM::DropClientLoot nmsg; nmsg.itemTemplate = 935; nmsg.owner = msg.killerID; nmsg.lootID = newID; nmsg.sourceObj = self->GetObjectID();
 					GameMessages::Send(self->GetZoneInstance()->objectsManager->GetObjectByID(msg.killerID), self->GetObjectID(), nmsg);
@@ -59,7 +59,7 @@ public:
 				}
 
 				// Set ObjectID
-				spawnedObject->SetObjectID(DataTypes::LWOOBJID((std::uint64_t(1) << 58) + std::uint64_t(104120439353844) + Instance->spawnedObjectIDCounter++));
+				spawnedObject->SetObjectID(self->GetZoneInstance()->objectsManager->GenerateSpawnedID());
 				//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
 
 				LDFCollection config = {

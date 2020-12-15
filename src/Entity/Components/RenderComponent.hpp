@@ -48,23 +48,23 @@ public:
 		return CacheRenderComponent::GetRenderAsset(IEntityComponent::GetComponentID());
 	}
 
-	void PlayFXEffect(GM::PlayFXEffect msg) {
+	void OnPlayFXEffect(Entity::GameObject * sender, GM::PlayFXEffect * msg) {
 		// Make sure we don't play it yet
-		for (auto e : effects) if (e.effectName == msg.name) return;
+		for (auto e : effects) if (e.effectName == msg->name) return;
 
 		PlayedEffect eff;
-		eff.effectID = msg.effectID;
-		eff.effectName = msg.name;
-		eff.effectType = msg.effectType;
-		eff.priority = msg.priority;
-		eff.secondary = msg.secondary;
+		eff.effectID = msg->effectID;
+		eff.effectName = msg->name;
+		eff.effectType = msg->effectType;
+		eff.priority = msg->priority;
+		eff.secondary = msg->secondary;
 		effects.push_back(eff);
 	}
 
-	void StopFXEffect(GM::StopFXEffect msg) {
+	void OnStopFXEffect(Entity::GameObject * sender, GM::StopFXEffect * msg) {
 		auto it = effects.begin();
 		for (; it != effects.end(); ++it) {
-			if (it->effectName == msg.name) {
+			if (it->effectName == msg->name) {
 				break;
 			}
 		}
@@ -83,6 +83,10 @@ public:
 		}
 	}
 
+	void RegisterMessageHandlers() {
+		REGISTER_OBJECT_MESSAGE_HANDLER(RenderComponent, GM::PlayFXEffect, OnPlayFXEffect);
+		REGISTER_OBJECT_MESSAGE_HANDLER(RenderComponent, GM::StopFXEffect, OnStopFXEffect);
+	}
 };
 
 #endif

@@ -91,7 +91,7 @@ public:
 				throw new std::runtime_error("Invalid LOT: " + std::to_string(itemID));
 
 			Entity::GameObject* item = new Entity::GameObject(owner->GetZoneInstance(), itemID);
-			item->SetObjectID(DataTypes::LWOOBJID((std::uint64_t(1) << 58) + std::uint64_t(104120439353844) + owner->GetZoneInstance()->spawnedObjectIDCounter++));
+			item->SetObjectID(owner->GetZoneInstance()->objectsManager->GenerateSpawnedID());
 			item->SetIsServerOnly();
 			owner->GetZoneInstance()->objectsManager->RegisterObject(item);
 
@@ -133,7 +133,12 @@ public:
 	}
 
 	void Awake() {
-		if (owner->GetLOT() == 1) {
+		if (owner->GetObjectID() == 0ULL) {
+			Logger::log("HELP", "SOMETHING WENT WRONG!!! OWNER IS 0ULL!!! INVENTORY COMPONENT!!!", LogType::ERR);
+			throw;
+		}
+
+		if (owner->GetLOT() == 1 && owner->GetObjectID() != 0ULL) {
 			auto playerBags = Database::GetFullInventory(owner->GetZoneInstance()->GetDBConnection(), owner->GetObjectID().getPureID());
 			auto objMan = this->owner->GetZoneInstance()->objectsManager;
 			for (auto playerInv : playerBags) {
@@ -398,15 +403,24 @@ public:
 
 	inline bool EquipItem(DataTypes::LWOOBJID itemToEquip) {
 		Entity::GameObject* objItemToEquip = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(itemToEquip);
-		if (objItemToEquip == nullptr) return false;
+		if (objItemToEquip == nullptr) {
+			Logger::log("WRLD", "Couldn't equip: Couldn't find equipment " + std::to_string(itemToEquip), LogType::ERR);
+			return false;
+		}
 
 		std::int32_t LOT = objItemToEquip->GetLOT();
 
 		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
-		if (itemCompID == -1) return false;
+		if (itemCompID == -1) {
+			Logger::log("WRLD", "Couldn't equip: itemComp is -1", LogType::ERR);
+			return false;
+		}
 
 		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
-		if (static_cast<std::string>(equipLocation) == "") return false;
+		if (static_cast<std::string>(equipLocation) == "") {
+			Logger::log("WRLD", "Couldn't equip: no equip location specified", LogType::ERR);
+			return false;
+		}
 
 
 		for (auto tabIt = inventory.begin(); tabIt != inventory.end(); ++tabIt) {
@@ -415,11 +429,14 @@ public:
 				if (it->second.objectID == itemToEquip) {
 					// We found it!
 
-					// We're already equipped!
-					if (it->second.equip) return false;
-
 					// Make sure we have nothing equipped on the location
 					this->UnEquipLocation(equipLocation);
+
+					// We're already equipped!
+					if (it->second.equip) { 
+						Logger::log("WRLD", "Couldn't equip: already equipped", LogType::WARN);
+						return false;
+					}
 
 					// Equip it.
 					it->second.equip = true;
@@ -787,7 +804,7 @@ public:
 				itemStack.objectID = (std::uint64_t(1) << 60) | Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER);
 			}
 			else {
-				itemStack.objectID = DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + owner->GetZoneInstance()->spawnedObjectIDCounter++);
+				itemStack.objectID = owner->GetZoneInstance()->objectsManager->GenerateSpawnedID();
 			}
 			itemStack.metadata = metadata;
 

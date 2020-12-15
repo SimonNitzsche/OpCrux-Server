@@ -12,6 +12,7 @@ namespace Enums {
 		  UNKNOWN = Packets that did not shown on the packet logs.
 	*/
 	enum EGameMessageID : unsigned short {
+		
 		SERVER_TELEPORT = 19,
 		SET_PLAYER_CONTROL_SCHEME = 26,
 		SERVER_DROP_CLIENT_LOOT = 30,
@@ -64,6 +65,7 @@ namespace Enums {
 		SERVER_NOTIFY_MISSION = 254,
 		SERVER_NOTIFY_MISSION_TASK = 255,
 
+		INTERN_TIMER_DONE = 305,
 
 		SERVER_REBUILD_NOTIFY_STATE = 336,
 		SERVER_TOGGLE_INTERACTION_UPDATES = 356,

@@ -323,8 +323,10 @@ public:
 
 
 	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
+		msg->user = owner;
 		Entity::GameObject * objectToUse = this->owner->GetZoneInstance()->objectsManager->GetObjectByID(msg->objectID);
 
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::INTERACT, owner, sender->GetObjectID());
 
 		// OnRequestUse is always received by the player and then redirected to the object internally
 		if (objectToUse != nullptr && objectToUse != this->owner) {

@@ -113,7 +113,7 @@ public:
 	}
 
 	void AddRespawnTask() {
-		std::int64_t x = std::int64_t(::time(0)) + std::int64_t(respawnTime);
+		std::int64_t x = std::int64_t(::time(0)) + std::uint32_t(respawnTime);
 		this->respawnTasks.push_back(x);
 		//this->respawnTasks.push_back(::time(0));
 	}
@@ -202,10 +202,6 @@ public:
 
 		LDFCollection spawnCollection = ldfCache;
 
-		if (spawnerPath == nullptr && spawner_name != u"") {
-			int c = 3;
-		}
-
 		if (spawnerPath != nullptr) {
 			// We are spawner path
 			auto wp = spawnerPath->waypoints.at(index);
@@ -226,7 +222,7 @@ public:
 		}
 
 		// Set ObjectID
-		spawnedObject->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + Instance->spawnedObjectIDCounter++));
+		spawnedObject->SetObjectID(Instance->objectsManager->GenerateSpawnedID());
 		//spawnedObject->SetObjectID(DataTypes::LWOOBJID(288334496658198694ULL + Instance->spawnedObjectIDCounter++));
 
 		// Set Scale

@@ -207,7 +207,7 @@ namespace PacketFactory {
 						playerObj = object;
 					}
 					else {
-						Instance->replicaManager->Destruct(object, clientSession, false);
+						//Instance->replicaManager->Destruct(object, clientSession, false);
 					}
 				}
 

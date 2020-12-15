@@ -38,7 +38,6 @@ public:
 	btSequentialImpulseConstraintSolver* constraintSolver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	Entity::GameObject * zoneControlObject = nullptr;
-	unsigned long long spawnedObjectIDCounter=0;
 	LWOTimer timer;
 	std::mutex m_lock;
 public:

@@ -23,15 +23,6 @@ namespace GM {
 			GM_VAR_DESERIALIZE(bs, objectID);
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, secondary, true);
 		}
-
-		void TriggerEvent(Entity::GameObject * sender, Entity::GameObject * target) {
-			Logger::log("WRLD", "Triggered RequestUse.");
-			user = sender;
-			
-
-
-			MissionManager::LaunchTaskEvent(Enums::EMissionTask::INTERACT, target, sender->GetObjectID());
-		}
 	};
 }
 

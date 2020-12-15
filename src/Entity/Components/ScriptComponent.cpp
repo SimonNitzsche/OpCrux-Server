@@ -16,6 +16,7 @@
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_DEATH_TRIGGER.hpp"
+#include "Entity/NativeScripts/ai/FV/L_ACT_CANDLE.hpp"
 #include "Entity/NativeScripts/ai/NS/L_NS_GET_FACTION_MISSION_SERVER.hpp"
 #include "Entity/NativeScripts/ai/NP/L_NPC_NP_SPACEMAN_BOB.hpp"
 #include "Entity/NativeScripts/ai/RACING/TRACK_GF/GF_RACE_SERVER.hpp"
@@ -38,6 +39,7 @@ const std::unordered_map<std::string, script_factory> ScriptComponent::factories
 		{"scripts\\ai\\AG\\L_AG_SHIP_SHAKE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_SHAKE>(); }},
 		{"scripts\\ai\\AG\\L_AG_SPACE_STUFF.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SPACE_STUFF>();  }},
 		{"scripts\\ai\\AG\\L_AG_SHIP_PLAYER_DEATH_TRIGGER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_DEATH_TRIGGER>();  }},
+		{"ScriptComponent_1094_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__FV__L_ACT_CANDLE>(); }},
 		{"scripts\\ai\\NP\\L_NPC_NP_SPACEMAN_BOB.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB>();  }},
 		{"scripts\\ai\\NS\\L_NS_GET_FACTION_MISSION_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__NS__L_NS_GET_FACTION_MISSION_SERVER>(); }},
 		{"scripts\\ai\\RACING\\TRACK_GF\\GF_RACE_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__RACING__TRACK_GF__GF_RACE_SERVER>(); }},

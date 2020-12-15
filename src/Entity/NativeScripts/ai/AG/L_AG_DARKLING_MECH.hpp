@@ -11,7 +11,7 @@ public:
 
 	void onDie(Entity::GameObject* self, GM::Die msg) {
 		Entity::GameObject* turret = new Entity::GameObject(self->GetZoneInstance(), QuickbuildTurretLOT);
-		turret->SetObjectID(DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + self->GetZoneInstance()->spawnedObjectIDCounter++));
+		turret->SetObjectID(self->GetZoneInstance()->objectsManager->GenerateSpawnedID());
 
 		auto mypos = self->GetPosition();
 		auto posString = StringUtils::to_u16string(std::to_string(mypos.x)) + char16_t(0x001f) +
