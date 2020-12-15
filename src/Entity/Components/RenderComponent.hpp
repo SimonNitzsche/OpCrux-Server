@@ -87,7 +87,6 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(RenderComponent, GM::PlayFXEffect, OnPlayFXEffect);
 		REGISTER_OBJECT_MESSAGE_HANDLER(RenderComponent, GM::StopFXEffect, OnStopFXEffect);
 	}
-
 };
 
 #endif
