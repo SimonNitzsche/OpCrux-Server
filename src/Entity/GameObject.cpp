@@ -122,6 +122,10 @@ ReplicaReturnResult Entity::GameObject::Serialize(bool *sendTimestamp, RakNet::B
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::Deserialize(RakNet::BitStream *inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress) {
+	
+	// Disable serialization
+	this->isSerializable = false;
+	
 	return REPLICA_PROCESSING_DONE;
 }
 
