@@ -31,7 +31,7 @@
 
 using namespace std::chrono;
 
-std::vector<ILUServer *> virtualServerInstances;
+std::vector<ILUServer*> virtualServerInstances;
 
 enum class SERVERMODE : uint8_t { STANDALONE, MASTER, WORLD, AUTH, UGCOP } MODE_SERVER;
 
@@ -61,14 +61,13 @@ std::vector<btRigidBody*> bodies;
 WorldServer* viewWs;
 AuthServer* authServer = nullptr;
 
-#ifdef CAMERA_DEF
+#ifdef CAMERA
 
+GLUquadricObj* quad;
 #include <SDL/include/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "camera.h"
-
-GLUquadricObj* quad;
 camera cam;
 btRigidBody* addSphere(WorldServer* ws, float rad, float x, float y, float z, float mass)
 {
@@ -186,7 +185,7 @@ void renderCube(btRigidBody* rb)
 }
 
 
-void display(WorldServer * ws)
+void display(WorldServer* ws)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -213,14 +212,14 @@ void display(WorldServer * ws)
 			renderPlane(rb);
 		else if (rb->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE) {
 			auto colBig = std::hash<std::uint32_t>()((*it)->GetLOT());
-			renderSphere(rb,DataTypes::Vector3((colBig & 0xFF0000) >> 16, (colBig & 0x00FF00) >> 8, (colBig & 0x0000FF)));
+			renderSphere(rb, DataTypes::Vector3((colBig & 0xFF0000) >> 16, (colBig & 0x00FF00) >> 8, (colBig & 0x0000FF)));
 			btTransform t = rb->getWorldTransform();
 			//Logger::log("TEST", "Rendering sphere at " + std::to_string(t.getOrigin().x()) + " " + std::to_string(t.getOrigin().y()) + " " + std::to_string(t.getOrigin().z()));
 		}
 	}
 }
 
-void init(WorldServer * ws, float angle)
+void init(WorldServer* ws, float angle)
 {
 	//pretty much initialize everything logically
 	/*ws->collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -358,17 +357,17 @@ void TestPhysics() {
 
 void SetTitle(const std::string& title) {
 #ifdef _WIN32
-    std::system(title.c_str());
+	std::system((std::string("title ") + title).c_str());
 #else
-    std::cout << "\\033]0;" << title << "\\007";
+	std::cout << "\\033]0;" << title << "\\007";
 #endif
 }
 
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
-    Logger::log("MAIN", "Server is running in Release");
+	Logger::log("MAIN", "Server is running in Release");
 #else
-    Logger::log("MAIN", "Server is running in Debug");
+	Logger::log("MAIN", "Server is running in Debug");
 #endif
 
 	FileUtils::ChangeDirectory();
@@ -402,24 +401,24 @@ int main(int argc, char* argv[]) {
 
 	//std::uintptr_t * c = CreateCOPScene();
 
-    SetTitle("title OpCrux Server (Standalone)");
+	SetTitle("OpCrux Server (Standalone)");
 	for (std::ptrdiff_t i = 0; i < argc; i++) {
 		std::string arg = std::string(argv[i]);
 		if (arg == "--master") {
 			MODE_SERVER = SERVERMODE::MASTER;
-            SetTitle("title OpCrux Server (Master only)");
+			SetTitle("OpCrux Server (Master only)");
 		}
 		else if (arg == "--world") {
 			MODE_SERVER = SERVERMODE::WORLD;
-            SetTitle("title OpCrux Server (World only)");
+			SetTitle("OpCrux Server (World only)");
 		}
 		else if (arg == "--auth") {
 			MODE_SERVER = SERVERMODE::AUTH;
-            SetTitle("title OpCrux Server (Auth only)");
+			SetTitle("OpCrux Server (Auth only)");
 		}
 		else if (arg == "--ugcop") {
 			MODE_SERVER = SERVERMODE::UGCOP;
-            SetTitle("title OpCrux Server (UGC only)");
+			SetTitle("OpCrux Server (UGC only)");
 		}
 		else if (arg == "--worldID" && i < argc) {
 			givenWorldID = std::stoi(argv[i + 1]);
@@ -451,7 +450,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::AUTH) {
-		std::thread aT([](AuthServer ** as) { new AuthServer(); }, &authServer);
+		std::thread aT([](AuthServer** as) { new AuthServer(); }, &authServer);
 		aT.detach();
 	}
 
@@ -459,7 +458,7 @@ int main(int argc, char* argv[]) {
 		//WorldServer * charSelectWs;
 		//std::thread wT([](WorldServer * ws) { ws = new WorldServer(givenWorldID, 0,2001); }, charSelectWs);
 		//wT.detach();
-	
+
 		//WorldInstanceManager::CreateInstance(1000, 0, 0, 2100);
 	}
 
@@ -469,7 +468,7 @@ int main(int argc, char* argv[]) {
 		//ugcT.detach();
 	}
 
-	while (ServerInfo::bRunning) {RakSleep(30);}
-	
+	while (ServerInfo::bRunning) { RakSleep(30); }
+
 	return 0;
 }
