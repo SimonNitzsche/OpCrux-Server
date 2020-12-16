@@ -161,7 +161,7 @@ public:
 			driver, sizeof(driver), &driver_ret,
 			attr, sizeof(attr), &attr_ret))) {
 			direction = SQL_FETCH_NEXT;
-			if (std::string((char*)(unsigned char[256])driver) == dbConf->GetStringVal("DBConnection", "DBDRIVER")) found = true;
+			if (std::string(reinterpret_cast<char*>(driver)) == dbConf->GetStringVal("DBConnection", "DBDRIVER")) found = true;
 			if (ret == SQL_SUCCESS_WITH_INFO) printf("\tdata truncation\n");
 		}
 
