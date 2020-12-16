@@ -62,12 +62,11 @@ WorldServer* viewWs;
 AuthServer* authServer = nullptr;
 
 #ifdef CAMERA_DEF
-
-GLUquadricObj* quad;
 #include <SDL/include/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "camera.h"
+GLUquadricObj* quad;
 camera cam;
 btRigidBody* addSphere(WorldServer* ws, float rad, float x, float y, float z, float mass)
 {
