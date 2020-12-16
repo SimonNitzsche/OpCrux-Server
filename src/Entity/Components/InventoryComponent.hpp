@@ -850,19 +850,6 @@ public:
 			itemModel.tab = tab;
 			itemModel.templateID = itemStack.LOT;
 
-			// Sync with db
-			if (itemModel.tab != 4 && tab != 6) { // If not temporary item and not temporary model
-				if (useStacking) {
-					Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemModel);
-					//Logger::log("WRLD", "Update item DB");
-				}
-				else {
-					Database::AddItemToInventory(owner->GetZoneInstance()->GetDBConnection(), itemModel);
-					//Logger::log("WRLD", "Add item DB");
-				}
-			}
-			MissionManager::LaunchTaskEvent(Enums::EMissionTask::GATHER, owner, owner->GetObjectID());
-
 			// Sync with client
 			GM::AddItemToInventoryClientSync addItemGM;
 			addItemGM.bBound = itemStack.bound;
@@ -878,6 +865,19 @@ public:
 			addItemGM.showFlyingLoot = true;
 			addItemGM.ni3FlyingLootPosit = sourcePos;
 			GameMessages::Send(owner, owner->GetObjectID(), addItemGM);
+
+			// Sync with db
+			if (itemModel.tab != 4 && tab != 6) { // If not temporary item and not temporary model
+				if (useStacking) {
+					Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemModel);
+					Logger::log("WRLD", "Update item DB");
+				}
+				else {
+					Database::AddItemToInventory(owner->GetZoneInstance()->GetDBConnection(), itemModel);
+					Logger::log("WRLD", "Add item DB");
+				}
+			}
+			MissionManager::LaunchTaskEvent(Enums::EMissionTask::GATHER, owner, owner->GetObjectID());
 		}
 
 		if (overflowCount > 0)
