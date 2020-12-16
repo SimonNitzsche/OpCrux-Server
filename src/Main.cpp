@@ -61,7 +61,7 @@ std::vector<btRigidBody*> bodies;
 WorldServer* viewWs;
 AuthServer* authServer = nullptr;
 
-#ifdef CAMERA
+#ifdef CAMERA_DEF
 
 GLUquadricObj* quad;
 #include <SDL/include/SDL.h>

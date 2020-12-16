@@ -143,7 +143,6 @@ public:
 			+ dbConf->GetStringVal("DBConnection", "DBPASS")\
 			+ ";";
 
-        ListDrivers();
 		conn = env->createConnection();
         conn->connect(connStrBuilder.c_str());
         conn->setAutoCommit(true);
