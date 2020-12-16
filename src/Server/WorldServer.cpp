@@ -725,9 +725,15 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 		Logger::log("WRLD", "User Disconnected from WORLD...");
 		ClientSession * session = sessionManager.GetSession(packet->getSystemAddress());
 		if (session != nullptr) {
-			objectsManager->Destruct(session->actorID);
+			// Remove the session locally
 			sessionManager.RemoveSession(session);
+			// Tell the master server about it
 			masterServerBridge->ClientDisconnect(packet->getSystemAddress(), this);
+			// Remove the player object
+			Entity::GameObject* playerObject = objectsManager->GetObjectByID(session->actorID);
+			if (playerObject != nullptr) {
+				playerObject->InstantiateRemoval();
+			}
 		}
 	} break;
 	default: {
