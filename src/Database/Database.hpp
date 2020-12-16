@@ -1002,6 +1002,15 @@ public:
 	}
 
 	static void UpdateItemFromInventory(odbc::ConnectionRef conn, ItemModel item) {
+		odbc::PreparedStatementRef checkOwnerStatement = conn->prepareStatement("SELECT ownerID FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
+		checkOwnerStatement->setULong(1, item.objectID);
+		odbc::ResultSetRef checkOwnerResultSet = checkOwnerStatement->executeQuery();
+		auto checkedOwnerID = *checkOwnerResultSet->getULong(1);
+		if (checkedOwnerID != item.ownerID) {
+			item.ownerID = checkedOwnerID;
+			Logger::log("WRLD", "ATTENTION!! TRIED TO CHANGE OWNER ON INVENTORY UPDATE!! THIS IS BAD!", LogType::ERR);
+		}
+
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("UPDATE OPCRUX_GD.dbo.Inventory SET objectID = ?, ownerID = ?, subkey = ?, tab = ?, slot = ?, template = ?, count = ?, attributes = ?, metadata = ? WHERE objectID = ?");
 
 		stmt->setULong(1, item.objectID);
