@@ -61,13 +61,14 @@ std::vector<btRigidBody*> bodies;
 WorldServer* viewWs;
 AuthServer* authServer = nullptr;
 
-#ifdef CAMERA
+#ifdef CAMERA_DEF
 
-GLUquadricObj* quad;
 #include <SDL/include/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "camera.h"
+
+GLUquadricObj* quad;
 camera cam;
 btRigidBody* addSphere(WorldServer* ws, float rad, float x, float y, float z, float mass)
 {
@@ -357,7 +358,7 @@ void TestPhysics() {
 
 void SetTitle(const std::string& title) {
 #ifdef _WIN32
-    std::system("title " + title);
+    std::system(title.c_str());
 #else
     std::cout << "\\033]0;" << title << "\\007";
 #endif

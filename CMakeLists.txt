@@ -4,9 +4,9 @@ project(OpCrux_Server)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(USE_MSVC_RUNTIME_LIBRARY_DLL true)
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-	set(USE_MSVC_RUNTIME_LIBRARY_DLL true)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
 	add_definitions(-D_USE_MATH_DEFINES)
@@ -380,7 +380,7 @@ add_executable(OpCrux_Server
 	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp"  "src/Configuration/ConfGeneral.hpp" "src/Entity/Components/SlashCommandComponent.cpp" "src/Entity/GameMessages/SetPlayerControlScheme.hpp" "src/Entity/Components/RocketLaunchComponent.cpp" "src/Entity/GameMessages/TransferToZone.hpp" "src/Entity/GameMessages/TransferToZoneCheckedIM.hpp" "src/Entity/Components/PhantomPhysicsComponent.cpp" "src/GameCache/ObjectSkills.hpp" "src/Entity/GameMessages/AddSkill.hpp" "src/Entity/GameMessages/SetEmoteLockState.hpp" "src/Entity/GameMessages/VendorStatusUpdate.hpp" "src/Entity/GameMessages/BuyFromVendor.hpp" "src/Entity/GameMessages/VendorTransactionResult.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp" "src/Entity/GameMessages/MatchRequest.hpp" "src/Entity/GameMessages/MatchUpdate.hpp" "src/Entity/NativeScripts/ai/ACT/L_ACT_GENERIC_ACTIVITY_MGR.hpp" "src/Entity/NativeScripts/ai/MINIGAME/SURVIVAL/BASE_SURVIVAL_SERVER.hpp" "src/Entity/NativeScripts/zone/AG/L_ZONE_AG_SURVIVAL.hpp" "src/Entity/GameMessages/ScriptNetworkVarUpdate.hpp" "src/Entity/GameMessages/PlayerSetCameraCyclingMode.hpp" "src/Entity/GameMessages/ClientItemConsumed.hpp" "src/Entity/GameMessages/UseItemResult.hpp" "src/Entity/Components/SkillComponent/BehaviorSpawnObject.hpp" "src/Entity/NativeScripts/02_server/Equipment/L_MAESTROM_EXTRACTICATOR_SERVER.hpp" "src/Entity/Components/ScriptComponent.cpp" "src/Entity/NativeScripts/02_server/Map/AG/L_AG_CAGED_BRICKS_SERVER.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_FANS.hpp" "src/Entity/NativeScripts/02_server/Map/AG/L_AG_MONUMENT_BIRDS.hpp" "src/Entity/NativeScripts/02_server/Map/Property/AG_Small/L_ZONE_AG_PROPERTY.hpp" "src/Entity/NativeScripts/zone/PROPERTY/L_BASE_PROPERTY_SERVER.hpp" "src/Entity/GameMessages/NotifyClientObject.hpp" "src/Entity/GMBase.hpp" "src/Entity/NativeScripts/ai/NS/L_NS_GET_FACTION_MISSION_SERVER.hpp" "src/Entity/GameMessages/StartCelebrationEffect.hpp" "src/Entity/Components/PackageComponent.hpp" "src/GameCache/PackageComponent.hpp" "src/Entity/NativeScripts/ai/FV/L_ACT_CANDLE.hpp" "src/Entity/GameMessages/TimerDone.hpp" ) 
 	
 
-set(RuntimeLibrary "MSd_DynamicDebug")
+SET(RuntimeLibrary "MSd_DynamicDebug")
 
 IF(WIN32)
 	SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Shared Libs" FORCE)
@@ -388,7 +388,7 @@ ENDIF(WIN32)
 
 if(WIN32)
 	target_link_libraries(OpCrux_Server
-		OpenGLWindow
+		#OpenGLWindow
 		wsock32
 		ws2_32
 		odbc32
@@ -397,7 +397,7 @@ if(WIN32)
 		../../../libs/SDL/lib/x64/SDL2
 		../../../libs/SDL/lib/x64/SDL2main
 	)
-	add_definitions(-DCAMERA)
+	add_definitions(-DCAMERA_DEF)
 elseif (UNIX)
 	target_link_libraries(OpCrux_Server	pthread	odbccpp)
 endif()
@@ -419,6 +419,6 @@ target_link_libraries(OpCrux_Server
 	Mongoose
 	RakNet
 	rapidxml
-		odbccpp_static
+	odbccpp_static
 )
 

@@ -1,4 +1,4 @@
-#ifdef CAMERA
+#ifdef CAMERA_DEF
 
 #ifndef CAMERA_H
 #define CAMERA_H

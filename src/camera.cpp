@@ -1,4 +1,4 @@
-#ifdef CAMERA
+#ifdef CAMERA_DEF
 
 #include "camera.h"
 #include <SDL/include/SDL.h>
