@@ -525,7 +525,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					auto charStyle = Database::GetCharStyle(GetDBConnection(), info.styleID);
 
 					// shirt and pants got deleted, make new!
-					if (info.shirtObjectID == std::uint64_t(0) && info.pantsObjectID == std::uint64_t(0)) {
+					if (info.shirtObjectID == 0 && info.pantsObjectID == 0) {
 						bool err = false;
 						int shirtObjectLOT = 0;
 						{

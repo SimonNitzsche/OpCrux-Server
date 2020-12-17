@@ -133,12 +133,12 @@ public:
 	}
 
 	void Awake() {
-		if (owner->GetObjectID() == 0ULL) {
+		if (owner->GetObjectID() == 0) {
 			Logger::log("HELP", "SOMETHING WENT WRONG!!! OWNER IS 0ULL!!! INVENTORY COMPONENT!!!", LogType::ERR);
 			throw;
 		}
 
-		if (owner->GetLOT() == 1 && owner->GetObjectID() != 0ULL) {
+		if (owner->GetLOT() == 1 && owner->GetObjectID() != 0) {
 			auto playerBags = Database::GetFullInventory(owner->GetZoneInstance()->GetDBConnection(), owner->GetObjectID().getPureID());
 			auto objMan = this->owner->GetZoneInstance()->objectsManager;
 			for (auto playerInv : playerBags) {

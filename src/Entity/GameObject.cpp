@@ -186,7 +186,7 @@ void Entity::GameObject::Update() {
 		GameMessages::Broadcast(this, nvu);
 	}
 
-	if (maxAge != std::int64_t(0) && std::int64_t(::time(0)) >= std::int64_t(maxAge)) {
+	if (maxAge != 0 && std::int64_t(::time(0)) >= maxAge) {
 		this->InstantiateRemoval();
 	}
 }

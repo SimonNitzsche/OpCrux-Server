@@ -52,7 +52,7 @@ namespace Entity {
 		// The Timestamp this object was created on the server.
 		int64_t creationTimestamp;
 
-		int64_t maxAge = std::int64_t(0);
+		int64_t maxAge = 0;
 
 		// The Spawner GameObject.
 		GameObject* spawner = nullptr;
