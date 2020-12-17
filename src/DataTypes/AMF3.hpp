@@ -84,7 +84,7 @@ namespace DataTypes {
 			/*
 				Get the data as unsigned long.
 			*/
-			operator unsigned long() const {
+			operator std::uint32_t() const {
 				return data;
 			}
 	};

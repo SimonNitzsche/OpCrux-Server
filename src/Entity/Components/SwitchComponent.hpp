@@ -9,7 +9,7 @@ using namespace DataTypes;
 class SwitchComponent : public IEntityComponent {
 private:
 	bool bToggled = false;
-	long long deactivateAt;
+	std::int64_t deactivateAt;
 	std::uint32_t peopleOnIt = 0;
 private:
 	bool is_hit_switch;

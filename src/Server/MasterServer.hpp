@@ -37,7 +37,7 @@ enum class ClientSessionMRState {
 // Client Session Master Reference (server client session as reference for master)
 struct ClientSessionMR {
 public:
-	unsigned long accountID;
+	std::uint32_t accountID;
 	DataTypes::LWOOBJID objectID;
 	SystemAddress systemAddress;
 	MachineProcess * process;

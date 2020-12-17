@@ -40,7 +40,7 @@ private:
 	std::uint32_t currentHandle = 0;
 	std::uint32_t currentSkill = 0;
 
-	void UnCast(const std::string sBitStream, long behaviorID = 0);
+	void UnCast(const std::string sBitStream, std::int32_t behaviorID = 0);
 
 	std::unordered_map<std::uint32_t /*behaviorHandle*/, std::int32_t /*behaviorAction*/> behaviorHandles;
 	std::mutex mutex_behaviorHandles;
@@ -209,7 +209,7 @@ public:
 #include "Entity/Components/SkillComponent/AbstractAggregateBehavior.hpp"
 
 
-void SkillComponent::UnCast(const std::string sBitStream, long behaviorID) {
+void SkillComponent::UnCast(const std::string sBitStream, std::int32_t behaviorID) {
 	currentStackDepth = 0;
 	RakNet::BitStream bs = RakNet::BitStream(reinterpret_cast<unsigned char*>(const_cast<char*>(sBitStream.c_str())), sBitStream.size(), false);
 	if (behaviorID <= 0) behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
@@ -219,7 +219,7 @@ void SkillComponent::UnCast(const std::string sBitStream, long behaviorID) {
 #include "Entity/Components/DestructibleComponent.hpp"
 void SkillComponent::DoDamageOnTarget(std::uint32_t damage) {
 	// Make sure objectID is not empty
-	if (parameters.currentTarget == 0ULL) {
+	if (parameters.currentTarget == std::uint64_t(0)) {
 		Logger::log("WRLD", "Unable to do damage on empty objectID", LogType::WARN);
 		return;
 	}

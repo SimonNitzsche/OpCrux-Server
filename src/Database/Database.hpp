@@ -402,7 +402,7 @@ public:
 		int legs, int hairStyle, int hairColor, int leftHand,
 		int rightHand, int eyebrowStyle, int eyesStyle, int mouthStyle
 	) {
-		long id = reserveCountedID(conn, DBCOUNTERID::P_STYLE);
+		std::int32_t id = reserveCountedID(conn, DBCOUNTERID::P_STYLE);
 
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStyles ON;INSERT INTO OPCRUX_GD.dbo.CharacterStyles(id,headColor,head,chestColor,chest,legs,hairStyle,hairColor,leftHand,rightHand,eyebrowStyle,eyesStyle,mouthStyle) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
@@ -435,11 +435,11 @@ public:
 		shirtObject.count = 1;
 		shirtObject.subkey = 0;
 		shirtObject.ownerID = ownerID & 0xFFFFFFFF;
-		shirtObject.objectID = (1ULL << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
+		shirtObject.objectID = (std::uint64_t(1) << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
 
 		DatabaseModels::ItemModel pantsObject = shirtObject;
 		pantsObject.templateID = pantsObjectLOT;
-		pantsObject.objectID = (1ULL << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
+		pantsObject.objectID = (std::uint64_t(1) << 60) + reserveCountedID(conn, DBCOUNTERID::STATIC);
 		pantsObject.slot = 1;
 
 		AddItemToInventory(conn, shirtObject);

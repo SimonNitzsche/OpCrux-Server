@@ -6,7 +6,7 @@ class SkillComponent;
 
 struct AbstractAggregateBehavior {
 	virtual void UnCast() {};
-	static void StartUnCast(SkillComponent * comp, long nextBehavior, RakNet::BitStream* bs);
+	static void StartUnCast(SkillComponent * comp, std::int32_t nextBehavior, RakNet::BitStream* bs);
 };
 
 
@@ -98,14 +98,14 @@ enum class eBehaviorTemplate : std::uint32_t {
 	SKILL_SET
 };
 
-void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBehavior, RakNet::BitStream* bs) {
+void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, std::int32_t nextBehavior, RakNet::BitStream* bs) {
 	if (nextBehavior <= 0) return;
 	++comp->currentStackDepth;
 	if (comp->currentStackDepth > 50000) {
 		throw Exceptions::NetException::CorruptPacket();
 	}
 
-	long templateID = CacheBehaviorTemplate::GetTemplateID(nextBehavior);
+	std::int32_t templateID = CacheBehaviorTemplate::GetTemplateID(nextBehavior);
 	
 	Logger::log("WRLD", "behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)) + " " + std::to_string(nextBehavior), LogType::UNEXPECTED);
 

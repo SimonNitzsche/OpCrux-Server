@@ -201,8 +201,8 @@ public:
 			for (int i = 0; i < equippedItems.size(); ++i) {
 				factory->Write<std::uint64_t>(equippedItems.at(i).objectID);
 				factory->Write<std::int32_t>(equippedItems.at(i).LOT);
-				factory->Write(equippedItems.at(i).subkey != 0ULL);
-				if (equippedItems.at(i).subkey != 0ULL)
+				factory->Write(equippedItems.at(i).subkey != std::uint64_t(0));
+				if (equippedItems.at(i).subkey != std::uint64_t(0))
 					/**/factory->Write<std::int64_t>(equippedItems.at(i).subkey);
 				factory->Write(true);
 				/**/factory->Write<std::uint32_t>(equippedItems.at(i).quantity);
@@ -740,7 +740,7 @@ public:
 
 		AddItem(item->GetLOT(), incCount, item->GetPosition());
 	}
-	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}, bool subItem = false) {
+	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = std::uint64_t(0), LDFCollection metadata = {}, bool subItem = false) {
 		std::uint32_t nextTabAndSlot = GetNextFreeSlot(itemLOT, subItem);
 
 		std::uint32_t tab = (nextTabAndSlot & 0xFFFF0000) >> 16;

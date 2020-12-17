@@ -44,7 +44,7 @@ public:
 			checkForOwner(self);
 		DataTypes::LWOOBJID propertyOwner = self->GetVar<DataTypes::LWOOBJID>(u"PropertyOwner");
 		bool rented = false;
-		if (propertyOwner != 0ULL)
+		if (propertyOwner != std::uint64_t(0))
 			rented = true;
 
 		Entity::GameObject* player = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.playerID);

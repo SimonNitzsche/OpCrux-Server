@@ -8,7 +8,7 @@ namespace Enums {
 		Based off from Xipho's list that was sent through discord.
 		Filled up by Simon based on the information located on the fdb file.
 	*/
-	enum class ECOMPONENT_TYPE : long {
+	enum class ECOMPONENT_TYPE : std::int32_t {
 		CONTROLABLE_PHYSICS_COMPONENT = 1,
 		RENDER_COMPONENT,
 		SIMPLE_PHYSICS_COMPONENT,

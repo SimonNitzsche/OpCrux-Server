@@ -52,7 +52,7 @@ public:
 		if (!allowUpdate) return;
 		Vector3 newPos = Vector3::zero(); // Vector3(basePosition.x, basePosition.y, basePosition.z);
 
-		unsigned long long time = ServerInfo::uptime();
+		std::uint64_t time = ServerInfo::uptime();
 
 		time += (owner->GetObjectID().getPureID() * 2);
 
