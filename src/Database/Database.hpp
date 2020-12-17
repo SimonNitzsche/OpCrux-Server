@@ -126,6 +126,13 @@ private:
 
 public:
 
+	static inline odbc::PreparedStatementRef safelyPrepareStmt(odbc::ConnectionRef conn, const char* sql) {
+#ifndef _DEBUG
+		Logger::log("DATABASE", sql);
+#endif
+		conn->prepareStatement(sql);
+	}
+
 	static odbc::ConnectionRef Connect() {
 		odbc::ConnectionRef conn;
 		Logger::log("DATABASE", "Attempting connection to SQL Server...");
@@ -164,7 +171,7 @@ public:
 
 		std::string h_password = sha512(s_password);
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT password FROM OPCRUX_AD.dbo.Accounts WHERE username=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT password FROM OPCRUX_AD.dbo.Accounts WHERE username=?");
 		stmt->setString(1, s_username);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 		if (rs->next()) {
@@ -217,7 +224,7 @@ public:
 			return -1;
 		}
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement(query);
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, query);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 		if (rs->next()) {
 			return *rs->getLong(1);
@@ -226,7 +233,7 @@ public:
 	}
 
 	static int GetCharCount(odbc::ConnectionRef conn, unsigned long accountID) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT COUNT(objectID) FROM OPCRUX_GD.dbo.Characters WHERE accountID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT COUNT(objectID) FROM OPCRUX_GD.dbo.Characters WHERE accountID=?");
 		stmt->setUInt(1, accountID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 		if (rs->next()) {
@@ -237,7 +244,7 @@ public:
 	}
 
 	static Str_DB_CharStyle GetCharStyle(odbc::ConnectionRef conn, unsigned long styleID) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle FROM OPCRUX_GD.dbo.CharacterStyles WHERE id=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle FROM OPCRUX_GD.dbo.CharacterStyles WHERE id=?");
 		stmt->setUInt(1, styleID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
@@ -263,7 +270,7 @@ public:
 	}
 
 	static std::vector<Str_DB_CharInfo> GetChars(odbc::ConnectionRef conn, unsigned long accountID) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT objectID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE accountID=? ORDER BY charIndex");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT objectID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE accountID=? ORDER BY charIndex");
 		stmt->setUInt(1, accountID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
@@ -301,7 +308,7 @@ public:
 	}
 
 	static Str_DB_CharInfo GetChar(odbc::ConnectionRef conn, unsigned long long objectID) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE objectID=? ORDER BY charIndex");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE objectID=? ORDER BY charIndex");
 		stmt->setULong(1, objectID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
@@ -341,7 +348,7 @@ public:
 
 	static void UpdateChar(odbc::ConnectionRef conn, Str_DB_CharInfo charInfo) {
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=?,shirtObjectID=?,pantsObjectID=? WHERE objectID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=?,shirtObjectID=?,pantsObjectID=? WHERE objectID=?");
 
 		charInfo.lastLog = ::time(0);
 
@@ -376,7 +383,7 @@ public:
 	) {
 		long id = reserveCountedID(conn, DBCOUNTERID::P_STYLE);
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStyles ON;INSERT INTO OPCRUX_GD.dbo.CharacterStyles(id,headColor,head,chestColor,chest,legs,hairStyle,hairColor,leftHand,rightHand,eyebrowStyle,eyesStyle,mouthStyle) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStyles ON;INSERT INTO OPCRUX_GD.dbo.CharacterStyles(id,headColor,head,chestColor,chest,legs,hairStyle,hairColor,leftHand,rightHand,eyebrowStyle,eyesStyle,mouthStyle) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		stmt->setInt(1, id);
 		stmt->setInt(2, headColor);
@@ -511,7 +518,7 @@ public:
 			auto shirtAndPants = AddCharShirtAndPants(conn, objectID, shirtObjectLOT, pantsObjectLOT);
 
 			// Create player
-			odbc::PreparedStatementRef stmt = conn->prepareStatement("SET IDENTITY_INSERT OPCRUX_GD.dbo.Characters ON;INSERT INTO OPCRUX_GD.dbo.Characters(objectID,accountID,charIndex,name,pendingName,styleID,statsID,lastWorld,lastInstance,lastClone,lastLog,positionX,positionY,positionZ,shirtObjectID,pantsObjectID,uScore,uLevel,currency,reputation,health,imagination,armor) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SET IDENTITY_INSERT OPCRUX_GD.dbo.Characters ON;INSERT INTO OPCRUX_GD.dbo.Characters(objectID,accountID,charIndex,name,pendingName,styleID,statsID,lastWorld,lastInstance,lastClone,lastLog,positionX,positionY,positionZ,shirtObjectID,pantsObjectID,uScore,uLevel,currency,reputation,health,imagination,armor) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 			stmt->setULong(1, objectID);
 			stmt->setInt(2, accountID);
@@ -547,7 +554,7 @@ public:
 
 	static unsigned long GetAccountIDByClientName(odbc::ConnectionRef conn, std::string clientName) {
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT id FROM OPCRUX_AD.dbo.Accounts WHERE username=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT id FROM OPCRUX_AD.dbo.Accounts WHERE username=?");
 
 		stmt->setString(1, clientName);
 
@@ -597,7 +604,7 @@ public:
 
 	static bool HasMission(odbc::ConnectionRef conn, std::int64_t charID, std::int32_t missionID) {
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT COUNT(missionID) FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT COUNT(missionID) FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID=?");
 
 		stmt->setULong(1, charID);
 		stmt->setInt(2, missionID);
@@ -637,7 +644,7 @@ public:
 			//throw std::runtime_error("Mission already exists!");
 		}
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time,chosenReward) VALUES(?,?,?,?,?,?,?)");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "INSERT INTO OPCRUX_GD.dbo.Missions(charID,missionID,state,progress,repeatCount,time,chosenReward) VALUES(?,?,?,?,?,?,?)");
 
 		stmt->setULong(1, model.charID);
 		stmt->setInt(2, model.missionID);
@@ -657,7 +664,7 @@ public:
 	*/
 	static MissionModel GetMission(odbc::ConnectionRef conn, std::int64_t charID, std::int32_t missionID) {
 		
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? AND missionID=?");
 
 		stmt->setULong(1, charID);
 		stmt->setInt(2, missionID);
@@ -684,7 +691,7 @@ public:
 		
 		std::list<MissionModel> retVal = {};
 		
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=?");
 
 		stmt->setULong(1, charID);
 
@@ -709,7 +716,7 @@ public:
 	static std::list<MissionModel> GetAllMissionsByState(odbc::ConnectionRef conn, std::int64_t charID, std::int32_t state) {
 		std::list<MissionModel> retVal = {};
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? and state=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT charID, missionID, state, progress, repeatCount, time, chosenReward FROM OPCRUX_GD.dbo.Missions WHERE charID=? and state=?");
 
 		stmt->setULong(1, charID);
 		stmt->setInt(2, state);
@@ -743,7 +750,7 @@ public:
 			stmBuilder += ",?";
 		stmBuilder += ")";
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement(stmBuilder.c_str());
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, stmBuilder.c_str());
 
 		stmt->setULong(1, charID);
 		int pIndex = 2;
@@ -780,7 +787,7 @@ public:
 			stmBuilder += ",?";
 		stmBuilder += ")";
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement(stmBuilder.c_str());
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, stmBuilder.c_str());
 
 		stmt->setULong(1, charID);
 		int pIndex = 2;
@@ -817,7 +824,7 @@ public:
 			stmBuilder += ",?";
 		stmBuilder += ")";
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement(stmBuilder.c_str());
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, stmBuilder.c_str());
 
 		stmt->setULong(1, charID);
 		stmt->setInt(2, state);
@@ -861,7 +868,7 @@ public:
 			stmBuilder += ",?";
 		stmBuilder += ")";
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement(stmBuilder.c_str());
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, stmBuilder.c_str());
 
 		stmt->setULong(1, charID);
 		int pIndex = 2;
@@ -896,7 +903,7 @@ public:
 	static void UpdateMission(odbc::ConnectionRef conn, MissionModel mission) {
 		mission.time = time(0);
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("UPDATE OPCRUX_GD.dbo.Missions SET state=?,progress=?,repeatCount=?,time=?,chosenReward=? WHERE charID=? AND missionID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "UPDATE OPCRUX_GD.dbo.Missions SET state=?,progress=?,repeatCount=?,time=?,chosenReward=? WHERE charID=? AND missionID=?");
 
 		stmt->setInt(1, mission.state);
 		stmt->setString(2, mission.progress);
@@ -915,7 +922,7 @@ public:
 	static void SetFlag(odbc::ConnectionRef conn, DataTypes::LWOOBJID playerID, std::uint32_t chunkID, std::uint64_t chunkData) {
 		std::uint64_t ppid = playerID.getPureID();
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("UPDATE OPCRUX_GD.dbo.FlagChunks SET chunkData=? WHERE playerID=? AND chunkID=?; IF @@ROWCOUNT=0 INSERT INTO OPCRUX_GD.dbo.FlagChunks(playerID,chunkID,chunkData) VALUES(?,?,?);");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "UPDATE OPCRUX_GD.dbo.FlagChunks SET chunkData=? WHERE playerID=? AND chunkID=?; IF @@ROWCOUNT=0 INSERT INTO OPCRUX_GD.dbo.FlagChunks(playerID,chunkID,chunkData) VALUES(?,?,?);");
 
 		stmt->setULong(1, chunkData);
 		stmt->setULong(2, ppid);
@@ -936,7 +943,7 @@ public:
 	static std::map<std::uint32_t, std::uint64_t> GetFlagChunks(odbc::ConnectionRef conn, std::int64_t charID) {
 		std::map<std::uint32_t, std::uint64_t> retVal = {};
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT chunkID, chunkData FROM OPCRUX_GD.dbo.FlagChunks WHERE playerID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT chunkID, chunkData FROM OPCRUX_GD.dbo.FlagChunks WHERE playerID=?");
 		stmt->setULong(1, charID);
 		
 		odbc::ResultSetRef rs = stmt->executeQuery();
@@ -959,7 +966,7 @@ public:
 	static std::list<ItemModel> GetInventoryItemsOfTab(odbc::ConnectionRef conn, std::int64_t charID, std::int32_t _tab) {
 		std::list<ItemModel> retVal = {};
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT objectID, ownerID, subkey, tab, slot, template, count, attributes, metadata FROM OPCRUX_GD.dbo.Inventory WHERE ownerID=? AND tab=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT objectID, ownerID, subkey, tab, slot, template, count, attributes, metadata FROM OPCRUX_GD.dbo.Inventory WHERE ownerID=? AND tab=?");
 
 		stmt->setULong(1, charID);
 		stmt->setInt(2, _tab);
@@ -986,7 +993,7 @@ public:
 	}
 
 	static void AddItemToInventory(odbc::ConnectionRef conn, ItemModel item) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("INSERT INTO OPCRUX_GD.dbo.Inventory (objectID, ownerID, subkey, tab, slot, template, count, attributes, metadata) VALUES (?,?,?,?,?,?,?,?,?)");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "INSERT INTO OPCRUX_GD.dbo.Inventory (objectID, ownerID, subkey, tab, slot, template, count, attributes, metadata) VALUES (?,?,?,?,?,?,?,?,?)");
 
 		stmt->setULong(1, item.objectID);
 		stmt->setULong(2, item.ownerID);
@@ -1004,7 +1011,7 @@ public:
 	}
 
 	static void UpdateItemFromInventory(odbc::ConnectionRef conn, ItemModel item) {
-		odbc::PreparedStatementRef checkOwnerStatement = conn->prepareStatement("SELECT ownerID FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
+		odbc::PreparedStatementRef checkOwnerStatement = safelyPrepareStmt(conn, "SELECT ownerID FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
 		checkOwnerStatement->setULong(1, item.objectID);
 		odbc::ResultSetRef checkOwnerResultSet = checkOwnerStatement->executeQuery();
 		auto checkedOwnerID = *checkOwnerResultSet->getULong(1);
@@ -1013,7 +1020,7 @@ public:
 			Logger::log("WRLD", "ATTENTION!! TRIED TO CHANGE OWNER ON INVENTORY UPDATE!! THIS IS BAD!", LogType::ERR);
 		}
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("UPDATE OPCRUX_GD.dbo.Inventory SET objectID = ?, ownerID = ?, subkey = ?, tab = ?, slot = ?, template = ?, count = ?, attributes = ?, metadata = ? WHERE objectID = ?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "UPDATE OPCRUX_GD.dbo.Inventory SET objectID = ?, ownerID = ?, subkey = ?, tab = ?, slot = ?, template = ?, count = ?, attributes = ?, metadata = ? WHERE objectID = ?");
 
 		stmt->setULong(1, item.objectID);
 		stmt->setULong(2, item.ownerID);
@@ -1033,7 +1040,7 @@ public:
 	}
 
 	static int GetAccountIDFromMinifigOBJID(odbc::ConnectionRef conn, DataTypes::LWOOBJID objid) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT accountID FROM OPCRUX_GD.dbo.Characters WHERE objectID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT accountID FROM OPCRUX_GD.dbo.Characters WHERE objectID=?");
 
 		stmt->setULong(1, objid.getPureID());
 
@@ -1048,7 +1055,7 @@ public:
 
 	static int GetAccountGMLevel(odbc::ConnectionRef conn, unsigned long accountID) {
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT rank FROM OPCRUX_AD.dbo.Accounts WHERE id=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT rank FROM OPCRUX_AD.dbo.Accounts WHERE id=?");
 
 		stmt->setUInt(1, accountID);
 
@@ -1065,7 +1072,7 @@ public:
 		// TODO: Actually implement stats
 		return {};
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT statsID,"
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT statsID,"
 			"currencyCollected,"
 			"bricksCollected,"
 			"objectsSmashed,"
@@ -1140,7 +1147,7 @@ public:
 	static unsigned long CreateCharStats(odbc::ConnectionRef conn, long statsID) {
 		// TODO: Actually implement stats
 		return -1;
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStats ON;INSERT INTO OPCRUX_GD.dbo.CharacterStats (statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SET IDENTITY_INSERT OPCRUX_GD.dbo.CharacterStats ON;INSERT INTO OPCRUX_GD.dbo.CharacterStats (statsID, TotalCurrencyCollected, TotalBricksCollected, TotalSmashablesSmashed, TotalQuickBuildsCompleted, TotalEnemiesSmashed, TotalRocketsUsed, TotalPetsTamed, TotalImaginationPowerUpsCollected, TotalLifePowerUpsCollected, TotalArmorPowerUpsCollected, TotalDistanceTraveled, TotalSuicides, TotalDamageTaken, TotalDamageHealed, TotalArmorRepaired, TotalImaginationRestored, TotalImaginationUsed, TotalDistanceDriven, TotalTimeAirborne, TotalRacingImaginationPowerUpsCollected, TotalRacecarBoostsActivated, TotalRacecarWrecks, TotalRacingSmashablesSmashed, TotalRacesFinished, TotalFirstPlaceFinishes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		stmt->setULong(1, statsID);
 
@@ -1153,7 +1160,7 @@ public:
 
 	static void UnlockEmote(odbc::ConnectionRef conn, DataTypes::LWOOBJID playerID, std::int32_t emoteID) {
 
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT * FROM OPCRUX_GD.dbo.UnlockedEmotes WHERE playerID = ? AND emoteID = ?; IF @@ROWCOUNT=0 INSERT INTO OPCRUX_GD.dbo.UnlockedEmotes(playerID,emoteID) VALUES(?,?);");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT * FROM OPCRUX_GD.dbo.UnlockedEmotes WHERE playerID = ? AND emoteID = ?; IF @@ROWCOUNT=0 INSERT INTO OPCRUX_GD.dbo.UnlockedEmotes(playerID,emoteID) VALUES(?,?);");
 
 		// SELECT
 		stmt->setULong(1, playerID.getPureID());
@@ -1167,7 +1174,7 @@ public:
 	}
 
 	static std::list<std::int32_t> GetUnlockedEmotes(odbc::ConnectionRef conn, DataTypes::LWOOBJID playerID) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT emoteID FROM OPCRUX_GD.dbo.UnlockedEmotes WHERE playerID = ?;");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT emoteID FROM OPCRUX_GD.dbo.UnlockedEmotes WHERE playerID = ?;");
 
 		// SELECT
 		stmt->setULong(1, playerID.getPureID());
@@ -1183,7 +1190,7 @@ public:
 	}
 
 	static void RemoveItemFromInventory(odbc::ConnectionRef conn, std::uint64_t stackID) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("DELETE FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "DELETE FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
 
 		stmt->setULong(1, stackID);
 
@@ -1191,7 +1198,7 @@ public:
 	}
 	
 	static int GetSlotOfItemStack(odbc::ConnectionRef conn, std::uint64_t stackID) {
-		odbc::PreparedStatementRef stmt = conn->prepareStatement("SELECT * FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT * FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
 
 		stmt->setULong(1, stackID);
 
