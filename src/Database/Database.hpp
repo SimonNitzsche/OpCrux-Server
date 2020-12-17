@@ -343,6 +343,8 @@ public:
 
 		odbc::PreparedStatementRef stmt = conn->prepareStatement("UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=?,shirtObjectID=?,pantsObjectID=? WHERE objectID=?");
 
+		charInfo.lastLog = ::time(0);
+
 		stmt->setString(1, charInfo.name);
 		stmt->setString(2, charInfo.pendingName);
 		stmt->setShort(3, charInfo.lastWorld);
