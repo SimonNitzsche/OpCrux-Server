@@ -59,7 +59,7 @@ namespace PacketFactory {
 			StringUtils::writeBufferedStringToBitStream(&returnBS, "00000000-0000-0000-0000-000000000000", 37);
 			returnBS.Write<std::uint32_t>(0);
 			StringUtils::writeBufferedStringToBitStream(&returnBS, SERVER_LANGUAGE, 3);
-			returnBS.Write<std::uint8_t>(true); // first Subscription Logon
+			returnBS.Write<std::uint8_t>(false); // first Subscription Logon
 			returnBS.Write<std::uint8_t>(false); // is FTP
 			returnBS.Write<std::uint64_t>(0);
 
