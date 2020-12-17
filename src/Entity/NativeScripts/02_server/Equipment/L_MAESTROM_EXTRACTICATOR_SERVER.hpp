@@ -71,7 +71,7 @@ public:
 		auto animTimer = playAnimAndReturnTime(self, collectAnim);
 
 		// Play the collect anim
-		self->GetZoneInstance()->timer.AddTimerWithCancelMs(animTimer * 1000, u"RemoveSample", self);
+		self->GetZoneInstance()->timer.AddTimerWithCancelMs(std::int32_t(animTimer) * 1000, u"RemoveSample", self);
 		// Destroy the sample
 		{GM::RequestDie msg; msg.killerID = player->GetObjectID(); msg.lootOwnerID = player->GetObjectID(); sampleObj->GetComponent<DestructibleComponent>()->ForcefullyPerformRequestDie(self, msg); }
 	}

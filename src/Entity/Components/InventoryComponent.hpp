@@ -794,6 +794,7 @@ public:
 
 		// We don't have a stack, make a new one.
 		if (!useStacking) {
+			itemStack.ownerID = owner->GetObjectID().getPureID();
 			itemStack.LOT = itemLOT;
 			itemStack.equip = false;
 			itemStack.bound = false;
