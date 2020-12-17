@@ -10,6 +10,8 @@
 #include "DataTypes/LWOOBJID.hpp"
 #include "DataTypes/LDF.hpp"
 #include <queue>
+#include "Enums/ELoginReturnCode.hpp"
+#include "Enums/EDisconnectReason.hpp"
 
 enum class SERVERMODE : uint8_t;
 
@@ -38,15 +40,24 @@ enum class ClientSessionMRState {
 struct ClientSessionMR {
 public:
 	unsigned long accountID;
+	// objectID of the selected character
 	DataTypes::LWOOBJID objectID;
+	// ip of the client
 	SystemAddress systemAddress;
+	// The process of the bridge
 	MachineProcess * process;
+	// the instance connected to
 	RemoteWorldInstance* currentInstance = nullptr;
+	// the port of the connected instance
 	std::uint16_t connectedServerPort = 0;
+	// state of the player
 	ClientSessionMRState sessionState;
+	// extra info of the session
 	LDFCollection metadata;
+	// the key to identify the session, replacement for password
 	std::string sessionKey;
 
+	// Sets a variable in the metadata
 	template<typename T>
 	void SetVar(std::u16string key, T data) {
 		auto it = metadata.find(key);
@@ -58,6 +69,7 @@ public:
 		}
 	}
 
+	// Gets a variable of the metadata
 	template<typename T = LDFEntry>
 	LDFEntry GetVarEntry(std::u16string key) {
 		if (metadata.find(key) != metadata.end())
@@ -66,6 +78,7 @@ public:
 			return LDFEntry(key, T());
 	}
 
+	// Gets a variable of the metadata
 	template<typename T = LDFEntry>
 	T GetVar(std::u16string key) {
 		return static_cast<T>(static_cast<LDFEntry>(GetVarEntry<T>(key)));
@@ -142,13 +155,21 @@ public:
 	RemoteWorldInstance * GetInstanceByMachineProcessAndPort(MachineProcess * machineProcess, std::uint16_t port);
 	ClientSession ConvertSessionToCl(ClientSessionMR* sessionMR);
 	void ClientWorldTransferFinishedResponse(ClientSessionMR* sessionMR);
+	void RemoveSession(SystemAddress sysAddress, std::uint16_t serverPortFromDisconnect);
+	void RemoveSession(ClientSessionMR* sessionMR);
 	~MasterServer();
 
 
 	RemoteWorldInstance* GetHubCharServer();
 
-    void MovePlayerFromAuthToSession(ClientSessionMR * playerSession, RemoteWorldInstance * instance);
+	void RemoteKickPlayer(ClientSessionMR* playerSession, Enums::EDisconnectReason reason = Enums::EDisconnectReason::KICK);
+	void MovePlayerFromAuthToSession(ClientSessionMR* playerSession, RemoteWorldInstance* instance);
 	void MovePlayerSessionToNewInstance(ClientSessionMR * playerSession, RemoteWorldInstance * instance);
+
+	/*
+		UNUSED; NO EFFECT
+	*/
+	void NotifyAuthToSessionMovementFailed(ClientSessionMR* playerSession, ELoginReturnCode reason, std::string optionalMessage = "");
 };
 
 /*

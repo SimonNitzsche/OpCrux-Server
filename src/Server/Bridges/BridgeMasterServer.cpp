@@ -13,6 +13,7 @@
 #include "PacketFactory/World/WorldPackets.hpp"
 
 #include "Server/Manager/WorldInstanceManager.hpp"
+#include "Enums/EDisconnectReason.hpp"
 
 using namespace Enums;
 
@@ -115,6 +116,20 @@ void BridgeMasterServer::ListenHandle() {
 						WorldServer* remWs = WorldInstanceManager::GetInstance(clSession.connectedServerPort);
 						remWs->FinishClientTransfer(clSession);
 
+						break;
+					}
+					case EMasterPacketID::CSR_MODERATE_KICK_CHARACTER: {
+						std::uint16_t connectedServerPort;
+						SystemAddress clAddr;
+						EDisconnectReason disconnectReason;
+
+						data->Read(connectedServerPort);
+						data->Read(clAddr);
+						data->Read(disconnectReason);
+
+						WorldServer* remWs = WorldInstanceManager::GetInstance(connectedServerPort);
+						if (remWs != nullptr)
+							remWs->DisconnectPlayer(clAddr, disconnectReason);
 						break;
 					}
 					default: {

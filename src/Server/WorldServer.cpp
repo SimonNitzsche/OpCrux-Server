@@ -758,6 +758,11 @@ void WorldServer::FinishClientTransfer(ClientSession clSession) {
 	PacketFactory::World::LoadStaticZone(rakServer, clSessionLocal, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
 }
 
+void WorldServer::DisconnectPlayer(SystemAddress client, EDisconnectReason reason) {
+
+	PacketFactory::General::doDisconnect(rakServer, client, reason);
+}
+
 std::uint16_t WorldServer::GetZoneID() {
 	if(luZone != nullptr)
 		return luZone->zoneID;
