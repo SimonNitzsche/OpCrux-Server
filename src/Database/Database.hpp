@@ -130,7 +130,7 @@ public:
 #ifndef _DEBUG
 		Logger::log("DATABASE", sql);
 #endif
-		conn->prepareStatement(sql);
+		return conn->prepareStatement(sql);
 	}
 
 	static odbc::ConnectionRef Connect() {
