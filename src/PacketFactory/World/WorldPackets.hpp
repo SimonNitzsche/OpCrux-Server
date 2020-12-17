@@ -39,7 +39,16 @@ namespace PacketFactory {
 			std::vector<DatabaseModels::Str_DB_CharInfo> charsInfo = Database::GetChars(Instance->GetDBConnection(), client->accountID);
 			size_t count = charsInfo.size();
 			returnBS.Write<std::uint8_t>(count & 0xFF);
-			returnBS.Write<std::uint8_t>(0); // front char index
+
+			// Front char index
+			std::uint8_t frontCharIndex = 0;
+			std::uint64_t latestLog = 0ULL;
+			for (int i = 0; i < charsInfo.size(); ++i) {
+				if (charsInfo.at(i).lastLog <= latestLog) continue;
+				latestLog = charsInfo.at(i).lastLog;
+				frontCharIndex = i & 0xFF;
+			}
+			returnBS.Write<std::uint8_t>(frontCharIndex); // front char index
 
 			for (auto charInfo : charsInfo) {
 			    DatabaseModels::Str_DB_CharStyle charStyle = Database::GetCharStyle(Instance->GetDBConnection(), charInfo.styleID);

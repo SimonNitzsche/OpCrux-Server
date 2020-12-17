@@ -168,7 +168,6 @@ void MasterServer::Listen() {
 						for (auto it = connected_clients.begin(); it != connected_clients.end(); ++it) {
 							if ((*it)->accountID == sessionMR.accountID) {
 								sessionMRInList = GetClientSessionMR(sessionMR.accountID);
-								sessionMRInList->process = mp;
 								playerRegistered = true;
 								break;
 							}
@@ -178,6 +177,19 @@ void MasterServer::Listen() {
 						if (!playerRegistered)
 							sessionMRInList = connected_clients.emplace_back(new ClientSessionMR(sessionMR));
 
+						// Is the player already playing? (Double-Login)
+						if (playerRegistered && !isWorldRequest) {
+							// Kick the other session remotely
+							MasterServer::RemoteKickPlayer(sessionMRInList, EDisconnectReason::DUPLICATE_LOGIN);
+
+							RemoveSession(sessionMRInList);
+
+							// Assign new session
+							sessionMRInList = connected_clients.emplace_back(new ClientSessionMR(sessionMR));
+						}
+						
+						// Apply process
+						sessionMRInList->process = mp;
 
 						sessionMRInList->sessionState = ClientSessionMRState::IN_TRANSFER_QUEUE;
 
@@ -218,7 +230,7 @@ void MasterServer::Listen() {
 							bool keyValid = 0 == strcmp(sessionMRInList->sessionKey.c_str(), reinterpret_cast<const char*>(clSessRemLocal.sessionToken.c_str()));
 
 							if (!keyValid) {
-								// TODO: Key invalid;
+								RemoteKickPlayer(sessionMRInList, EDisconnectReason::INVALID_SESSION_KEY);
 								Logger::log("MASTER", std::string("Key invalid for ") + sessionMRInList->systemAddress.ToString(), LogType::WARN);
 								break;
 							}
@@ -254,24 +266,7 @@ void MasterServer::Listen() {
 						data->Read(serverPortFromDisconnect);
 
 
-						// Remove client
-						for (int i = 0; i < connected_clients.size(); ++i) {
-							if (connected_clients[i]->systemAddress == sysAddress) {
-								auto it = connected_clients.begin() + i;
-
-								// Make sure currentInstance is the same instance as the one the user is leaving from
-								// Otherwise the session could be gone before being on the new instance while transfer
-								if ((*it)->currentInstance != nullptr) {
-									if ((*it)->currentInstance->port != serverPortFromDisconnect) break;
-									if ((*it)->sessionState == ClientSessionMRState::IN_TRANSFER) break;
-								}
-
-								Logger::log("MASTER", "User ended playsession for account " + std::to_string((*it)->accountID));
-								delete (*it);
-								connected_clients.erase(connected_clients.begin()+i);
-								break;
-							}
-						}
+						RemoveSession(sysAddress, serverPortFromDisconnect);
 
 					} break;
 
@@ -629,6 +624,32 @@ void MasterServer::ClientWorldTransferFinishedResponse(ClientSessionMR* sessionM
 	rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, sessionMR->process->systemAddress, false);
 }
 
+void MasterServer::RemoveSession(SystemAddress sysAddress, std::uint16_t serverPortFromDisconnect) {
+	// Remove client
+	for (int i = 0; i < connected_clients.size(); ++i) {
+		if (connected_clients[i]->systemAddress == sysAddress) {
+			auto it = connected_clients.begin() + i;
+
+			// Make sure currentInstance is the same instance as the one the user is leaving from
+			// Otherwise the session could be gone before being on the new instance while transfer
+			if ((*it)->currentInstance != nullptr) {
+				if ((*it)->currentInstance->port != serverPortFromDisconnect) break;
+				if ((*it)->sessionState == ClientSessionMRState::IN_TRANSFER) break;
+			}
+
+			Logger::log("MASTER", "User ended playsession for account " + std::to_string((*it)->accountID));
+			delete (*it);
+			connected_clients.erase(connected_clients.begin() + i);
+			break;
+		}
+	}
+}
+
+void MasterServer::RemoveSession(ClientSessionMR* sessionMR) {
+	sessionMR->sessionState = ClientSessionMRState::IN_WORLD;
+	RemoveSession(sessionMR->systemAddress, (sessionMR->currentInstance == nullptr) ? 0 : sessionMR->currentInstance->port);
+}
+
 MasterServer::~MasterServer() {
 	listenThread.~thread();
 }
@@ -640,6 +661,28 @@ RemoteWorldInstance* MasterServer::GetHubCharServer() {
 	}
 
 	return nullptr;
+}
+
+void MasterServer::NotifyAuthToSessionMovementFailed(ClientSessionMR* playerSession, ELoginReturnCode reason, std::string optionalMessage) {
+	auto cpacket = PacketUtils::initPacket(ERemoteConnection::SERVER, static_cast<uint8_t>(EMasterPacketID::MSG_MASTER_SELECT_WORLD_FOR_USER));
+
+	RakNet::BitStream* cpacketPTR = cpacket.get();
+	cpacketPTR->Write(playerSession->systemAddress);
+	cpacketPTR->Write(reason);
+	StringUtils::writeStringToBitStream<std::uint32_t>(cpacketPTR, optionalMessage);
+
+	rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, playerSession->process->systemAddress, false);
+}
+
+void MasterServer::RemoteKickPlayer(ClientSessionMR* playerSession, EDisconnectReason reason) {
+	auto cpacket = PacketUtils::initPacket(ERemoteConnection::SERVER, static_cast<uint8_t>(EMasterPacketID::CSR_MODERATE_KICK_CHARACTER));
+
+	RakNet::BitStream* cpacketPTR = cpacket.get();
+	cpacketPTR->Write(playerSession->connectedServerPort);
+	cpacketPTR->Write(playerSession->systemAddress);
+	cpacketPTR->Write(reason);
+
+	rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, playerSession->process->systemAddress, false);
 }
 
 void MasterServer::MovePlayerFromAuthToSession(ClientSessionMR * playerSession, RemoteWorldInstance * instance) {
@@ -655,7 +698,7 @@ void MasterServer::MovePlayerFromAuthToSession(ClientSessionMR * playerSession, 
 	cpacketPTR->Write(instance->process->systemAddress);
 	cpacketPTR->Write(instance->port);
 
-	rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, instance->process->systemAddress, false);
+	rakServer->Send(cpacketPTR, HIGH_PRIORITY, RELIABLE_ORDERED, 0, playerSession->process->systemAddress, false);
 
 	playerSession->sessionState = ClientSessionMRState::IN_TRANSFER;
 }

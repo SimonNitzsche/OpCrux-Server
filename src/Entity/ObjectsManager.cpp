@@ -81,7 +81,8 @@ void ObjectsManager::Construct(DataTypes::LWOOBJID objID, SystemAddress addr) {
 }
 
 void ObjectsManager::Construct(Entity::GameObject * object, SystemAddress addr) {
-	RM->Construct(object, false, addr, addr == UNASSIGNED_SYSTEM_ADDRESS);
+	if(!object->GetIsServerOnly() && object->isSerializable)
+		RM->Construct(object, false, addr, addr == UNASSIGNED_SYSTEM_ADDRESS);
 }
 
 void ObjectsManager::Serialize() {
@@ -98,7 +99,7 @@ void ObjectsManager::Serialize(DataTypes::LWOOBJID objID) {
 }
 
 void ObjectsManager::Serialize(Entity::GameObject * object) {
-	if(!object->GetIsServerOnly())
+	if(!object->GetIsServerOnly() && object->isSerializable)
 		RM->SignalSerializeNeeded(object, UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 

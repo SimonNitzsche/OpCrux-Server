@@ -725,9 +725,15 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 		Logger::log("WRLD", "User Disconnected from WORLD...");
 		ClientSession * session = sessionManager.GetSession(packet->getSystemAddress());
 		if (session != nullptr) {
-			objectsManager->Destruct(session->actorID);
+			// Remove the session locally
 			sessionManager.RemoveSession(session);
+			// Tell the master server about it
 			masterServerBridge->ClientDisconnect(packet->getSystemAddress(), this);
+			// Remove the player object
+			Entity::GameObject* playerObject = objectsManager->GetObjectByID(session->actorID);
+			if (playerObject != nullptr) {
+				playerObject->InstantiateRemoval();
+			}
 		}
 	} break;
 	default: {
@@ -750,6 +756,11 @@ void WorldServer::FinishClientTransfer(ClientSession clSession) {
 	//PacketFactory::World::CreateCharacter(rakServer, clientSession);
 
 	PacketFactory::World::LoadStaticZone(rakServer, clSessionLocal, luZone->zoneID, 0, 0, luZone->revisionChecksum, luZone->spawnPos.pos, 0);
+}
+
+void WorldServer::DisconnectPlayer(SystemAddress client, EDisconnectReason reason) {
+
+	PacketFactory::General::doDisconnect(rakServer, client, reason);
 }
 
 std::uint16_t WorldServer::GetZoneID() {

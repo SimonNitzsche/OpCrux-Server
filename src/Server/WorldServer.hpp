@@ -10,6 +10,7 @@ class ObjectsManager;
 
 #include "Misc/LWOTimer.hpp"
 #include "odbc-cpp-wrapper/src/odbc/Connection.h"
+#include "Enums/EDisconnectReason.hpp"
 
 class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
@@ -47,6 +48,7 @@ public:
 	void GamePhysicsThread();
 	void handlePacket(RakPeerInterface * rakServer, LUPacket * packet);
     void FinishClientTransfer(ClientSession clSession);
+    void DisconnectPlayer(SystemAddress client, Enums::EDisconnectReason reason);
 	std::uint16_t GetZoneID();
 	inline std::uint16_t GetPort() { return m_port; }
 	odbc::ConnectionRef GetDBConnection() {

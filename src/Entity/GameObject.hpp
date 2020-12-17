@@ -193,6 +193,13 @@ namespace Entity {
 			return serverOnly;
 		}
 
+		/*
+			Are we a player?
+		*/
+		bool IsPlayer() {
+			// LOT == player LOT || LOT == mythran LOT
+			return LOT == 1 || LOT == 10103;
+		}
 
 		/*
 			Called to update the object.

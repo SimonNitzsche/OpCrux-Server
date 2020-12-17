@@ -122,6 +122,10 @@ ReplicaReturnResult Entity::GameObject::Serialize(bool *sendTimestamp, RakNet::B
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::Deserialize(RakNet::BitStream *inBitStream, RakNetTime timestamp, RakNetTime lastDeserializeTime, SystemAddress systemAddress) {
+	
+	// Disable serialization
+	this->isSerializable = false;
+	
 	return REPLICA_PROCESSING_DONE;
 }
 
@@ -499,7 +503,12 @@ bool Entity::GameObject::IsWithinGroup(std::u16string groupName) {
 
 void Entity::GameObject::InstantiateRemoval() {
 	if (this == nullptr) return;
-	this->GetZoneInstance()->objectsManager->Destruct(this);
+
+	// Make sure we are serializable,
+	// otherwise we are never constructed
+	// and don't need to destruct
+	if (this->isSerializable)
+		this->GetZoneInstance()->objectsManager->Destruct(this);
 }
 
 void Entity::GameObject::Remove() {

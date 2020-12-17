@@ -45,7 +45,7 @@ public:
 	void Awake() {
 		this->controllablePhysicsComponent = owner->GetComponent<ControllablePhysicsComponent>();
 		basePosition = controllablePhysicsComponent->GetPosition();
-		allowUpdate = true;
+		allowUpdate = false;
 	}
 
 	void Update() {
