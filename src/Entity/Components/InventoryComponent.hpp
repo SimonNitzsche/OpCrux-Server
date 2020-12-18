@@ -982,6 +982,17 @@ public:
 			removeItemMsg.TotalItems = stack.quantity;
 
 			GameMessages::Send(owner, owner->GetObjectID(), removeItemMsg);
+
+			// Is the stack empty now?
+			if (stack.quantity <= 0) {
+				// Get the object
+				Entity::GameObject* invItemObj = owner->GetZoneInstance()->objectsManager->GetObjectByID(stack.objectID);
+				// Do we have the object?
+				if (invItemObj != nullptr) {
+					// Remove object in world
+					invItemObj->InstantiateRemoval();
+				}
+			}
 		}
 	}
 
