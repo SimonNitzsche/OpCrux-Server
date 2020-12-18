@@ -1026,6 +1026,9 @@ public:
 
 			resultMsg.m_UseItemResult = true;
 			MissionManager::LaunchTaskEvent(EMissionTask::USE_ITEM, item, owner->GetObjectID(), 1, stack.LOT);
+			
+			item->CallMessage(*msg, sender);
+
 			break;
 		}
 
