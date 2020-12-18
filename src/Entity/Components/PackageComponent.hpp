@@ -8,6 +8,8 @@
 #include "GameCache/ComponentsRegistry.hpp"
 
 #include "GameCache/PackageComponent.hpp"
+#include "GameCache/LootMatrix.hpp"
+#include "GameCache/LootTable.hpp"
 
 using namespace DataTypes;
 
@@ -28,15 +30,37 @@ public:
 		lootMatrixIndex = CachePackageComponent::GetLootMatrixIndex(row);
 		packageType = CachePackageComponent::GetPackageType(row);
 	}
-
-	void msgClientItemConsumed(Entity::GameObject* rerouteID, GM::ClientItemConsumed* msg) {
-
-	}
 	
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(PackageComponent, GM::ClientItemConsumed, msgClientItemConsumed);
 	}
 
+	void msgClientItemConsumed(Entity::GameObject* rerouteID, GM::ClientItemConsumed* msg);
+
 };
+
+#include "Entity/Components/InventoryComponent.hpp"
+
+void PackageComponent::msgClientItemConsumed(Entity::GameObject* rerouteID, GM::ClientItemConsumed* msg) {
+
+	InventoryComponent* invComp = rerouteID->GetComponent<InventoryComponent>();
+
+	if (invComp == nullptr) {
+		Logger::log("WRLD", "Unable to consume item when the owner InventoryComponent is nullptr.", LogType::WARN);
+		return;
+	}
+
+	invComp->RemoveItem2(owner->GetLOT());
+
+	auto lootMatrix = CacheLootMatrix::getRow(lootMatrixIndex).flatIt();
+	for (auto lootMatrixIt : lootMatrix) {
+		auto lootTableIndex = CacheLootMatrix::GetLootTableIndex(lootMatrixIt);
+
+		auto lootTable = CacheLootTable::getRows(lootTableIndex);
+		for (auto lootTableIt : lootTable) {
+			invComp->AddItem(CacheLootTable::GetItemID(lootTableIt));
+		}
+	}
+}
 
 #endif

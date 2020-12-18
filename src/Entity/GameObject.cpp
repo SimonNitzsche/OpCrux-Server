@@ -58,6 +58,7 @@
 #include "Entity/Components/ModuleAssemblyComponent.hpp"
 #include "Entity/Components/MovementAIComponent.hpp"
 #include "Entity/Components/MovingPlatformComponent.hpp"
+#include "Entity/Components/PackageComponent.hpp"
 #include "Entity/Components/PetComponent.hpp"
 #include "Entity/Components/PropertyComponent.hpp"
 #include "Entity/Components/PropertyEntranceComponent.hpp"
@@ -261,6 +262,7 @@ IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
 		COMPONENT_ONADD_SWITCH_CASE(GenericActivatorComponent);
 		COMPONENT_ONADD_SWITCH_CASE(HFLightDirectionGadgetComponent);
 		COMPONENT_ONADD_SWITCH_CASE(MovementAIComponent);
+		COMPONENT_ONADD_SWITCH_CASE(PackageComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PropertyComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PropertyEntranceComponent);
 		COMPONENT_ONADD_SWITCH_CASE(PropertyManagementComponent);
