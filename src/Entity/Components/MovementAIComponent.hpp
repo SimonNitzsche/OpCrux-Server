@@ -24,6 +24,9 @@ private:
 
 	Entity::GameObject * pl;
 	bool allowUpdate = false;
+	time_t nextUpdate = 0;
+
+	std::uniform_int_distribution<> nextUpdateDist;
 
 public:
 
@@ -40,16 +43,24 @@ public:
 
 		
 		//basePosition = Vector3(-406.6414489746094 ,350.69287109375, -157.47933959960938);
+		nextUpdateDist = std::uniform_int_distribution<>(20, 25);
 	}
 
 	void Awake() {
 		this->controllablePhysicsComponent = owner->GetComponent<ControllablePhysicsComponent>();
 		basePosition = controllablePhysicsComponent->GetPosition();
-		allowUpdate = false;
+		allowUpdate = true;
 	}
 
 	void Update() {
-		if (!allowUpdate) return;
+		if (!allowUpdate) {
+			if (ServerInfo::uptimeMs() > nextUpdate) {
+				allowUpdate = true;
+				nextUpdate = ServerInfo::uptimeMs() + 1000 * nextUpdateDist(RandomUtil::GetEngine());
+			}
+			return;
+		}
+		allowUpdate = false;
 		Vector3 newPos = Vector3::zero(); // Vector3(basePosition.x, basePosition.y, basePosition.z);
 
 		unsigned long long time = ServerInfo::uptime();
@@ -59,7 +70,7 @@ public:
 		newPos.x += 4 * std::cos(time);
 		newPos.z += 4 * std::sin(time);
 
-		controllablePhysicsComponent->SetVelocity(newPos);
+		//controllablePhysicsComponent->SetVelocity(newPos);
 		controllablePhysicsComponent->SetPosition(newPos + basePosition);
 		owner->SetDirty();
 	}
