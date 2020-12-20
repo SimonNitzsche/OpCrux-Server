@@ -319,8 +319,11 @@ public:
 				nmsg.sourceObj = owner->GetObjectID();
 				nmsg.spawnPosition = owner->GetPosition();
 				nmsg.finalPosition = owner->GetPosition();
-				nmsg.itemTemplate = it->templateID;
+				nmsg.itemTemplate = owner->GetProxyItemCheck(it->templateID);
 				nmsg.lootID = it->objectID;
+
+				// make sure we aren't faction token proxy
+				if (nmsg.itemTemplate == 13763) continue;
 
 				owner->CallMessage(nmsg, lootOwner);
 

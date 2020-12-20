@@ -156,10 +156,7 @@ public:
 					itemStack.ownerID = it->ownerID;
 					itemStack.slot = it->slot;
 
-					Entity::GameObject* itmObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
-					itmObj->SetObjectID(itemStack.objectID);
-					objMan->RegisterObject(itmObj);
-					itmObj->isSerializable = false;
+					
 
 					auto tabIt = inventory.find(it->tab);
 					if (tabIt != inventory.end()) {
@@ -181,6 +178,19 @@ public:
 							itemStack.slot = it->slot;
 							Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemStack.toDBModel());
 						}
+
+						// Check for proxy LOTs
+						auto proxyLOTResolved = owner->GetProxyItemCheck(it->templateID);
+						if (proxyLOTResolved != it->templateID) {
+							it->templateID = proxyLOTResolved;
+							itemStack.LOT = it->templateID;
+							Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemStack.toDBModel());
+						}
+
+						Entity::GameObject* itmObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
+						itmObj->SetObjectID(itemStack.objectID);
+						objMan->RegisterObject(itmObj);
+						itmObj->isSerializable = false;
 
 						tabIt->second.insert({ it->slot, itemStack });
 					}
