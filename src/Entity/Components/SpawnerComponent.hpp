@@ -203,6 +203,7 @@ public:
 		LDFCollection spawnCollection = ldfCache;
 
 		if (spawnerPath != nullptr) {
+			if (spawnerPath->waypoints.size() == 0) return false;
 			// We are spawner path
 			auto wp = spawnerPath->waypoints.at(index);
 			spawnPos = wp->position;
