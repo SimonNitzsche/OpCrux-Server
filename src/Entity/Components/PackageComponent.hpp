@@ -32,16 +32,16 @@ public:
 	}
 	
 	void RegisterMessageHandlers() {
-		REGISTER_OBJECT_MESSAGE_HANDLER(PackageComponent, GM::ClientItemConsumed, msgClientItemConsumed);
+		REGISTER_OBJECT_MESSAGE_HANDLER(PackageComponent, GM::UseNonEquipmentItem, OnUseNonEquipmentItem);
 	}
 
-	void msgClientItemConsumed(Entity::GameObject* rerouteID, GM::ClientItemConsumed* msg);
+	void OnUseNonEquipmentItem(Entity::GameObject* rerouteID, GM::UseNonEquipmentItem* msg);
 
 };
 
 #include "Entity/Components/InventoryComponent.hpp"
 
-void PackageComponent::msgClientItemConsumed(Entity::GameObject* rerouteID, GM::ClientItemConsumed* msg) {
+void PackageComponent::OnUseNonEquipmentItem(Entity::GameObject* rerouteID, GM::UseNonEquipmentItem* msg) {
 
 	InventoryComponent* invComp = rerouteID->GetComponent<InventoryComponent>();
 

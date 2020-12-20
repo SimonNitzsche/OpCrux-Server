@@ -1036,10 +1036,19 @@ public:
 		GameMessages::Send(sender, owner->GetObjectID(), resultMsg);
 	}
 
+	void OnUseNonEquipmentItem(Entity::GameObject* sender, GM::UseNonEquipmentItem* msg) {
+		Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->itemToUse);
+		if (item == nullptr) return;
+		item->CallMessage(*msg, sender);
+	}
+
+	
+
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::EquipInventory, OnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UnEquipInventory, OnUnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::ClientItemConsumed, OnClientItemConsumed);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UseNonEquipmentItem, OnUseNonEquipmentItem);
 	}
 };
 
