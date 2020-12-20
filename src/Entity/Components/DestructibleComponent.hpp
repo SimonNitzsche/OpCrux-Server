@@ -66,7 +66,7 @@ public:
 				{return CacheLootTable::GetSortPriority(a) > CacheLootTable::GetSortPriority(b); });
 
 			for (int i = 0; i < dropCount; ++i) {
-				std::uniform_int_distribution<> dropIndexDist(0, lootTableRows.size());
+				std::uniform_int_distribution<> dropIndexDist(0, lootTableRows.size() - 1);
 				auto it2 = std::next(lootTableRows.begin(), dropIndexDist(RandomUtil::GetEngine()));
 
 				std::int32_t itemID = CacheLootTable::GetItemID(*it2);
