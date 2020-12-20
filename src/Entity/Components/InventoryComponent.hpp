@@ -163,6 +163,25 @@ public:
 
 					auto tabIt = inventory.find(it->tab);
 					if (tabIt != inventory.end()) {
+						// make sure our slot is not being taken up
+						auto targetSlot = it->slot;
+						// TODO check for max
+						while (targetSlot < 240) {
+							// We do not have item? break
+							auto targetSlotIt = tabIt->second.find(targetSlot);
+							if(targetSlotIt == tabIt->second.end()) break;
+							// Are we the same item? break
+							if (targetSlotIt->second.objectID == itemStack.objectID) break;
+							// We have an item there already, count slot up
+							++targetSlot;
+						}
+
+						if (targetSlot != it->slot) {
+							it->slot = targetSlot;
+							itemStack.slot = it->slot;
+							Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemStack.toDBModel());
+						}
+
 						tabIt->second.insert({ it->slot, itemStack });
 					}
 					else {
@@ -301,35 +320,7 @@ public:
 	}
 
 	inline bool HasItem(std::uint32_t LOT) {
-		auto targetTab = GetTabForLOT(LOT);
-
-		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
-		if (itemCompID == -1) return false;
-
-		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
-		if (static_cast<std::string>(equipLocation) == "") return false;
-
-		auto tabIt = inventory.find(targetTab);
-
-		// We do not have tab
-		if (tabIt == inventory.end()) {
-			// Let's also look for temporary
-			targetTab = targetTab == 0 ? 4 : 6;
-			tabIt = inventory.find(targetTab);
-			// We really do not have it
-			if (tabIt == inventory.end())
-				return false;
-		}
-
-		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
-			if (it->second.LOT == LOT) {
-				// We found it!
-				return true;
-			}
-		}
-
-		// We couldn't find the item
-		return false;
+		return GetItem(LOT).LOT == LOT;
 	}
 
 	inline InventoryItemStack GetItem(std::uint32_t LOT, bool temporary = false) {
