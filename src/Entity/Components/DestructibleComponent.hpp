@@ -40,7 +40,7 @@ public:
 
 		auto lootRowMain = CacheLootMatrix::getRow(lootMatrixIndex);
 		auto lootRows = lootRowMain.flatIt();
-		std::uniform_real_distribution<> dropChanceDist(0.0, 1.0);
+		std::uniform_real_distribution<> dropChanceDist(0.0f, 1.0f);
 		for (auto it = lootRows.begin(); it != lootRows.end(); ++it) {
 			// Check if we have flag
 			std::int32_t flag = CacheLootMatrix::GetFlagID(*it);
@@ -55,7 +55,7 @@ public:
 			std::int32_t maxToDrop = CacheLootMatrix::GetMaxToDrop(*it);
 			maxToDrop = minToDrop > maxToDrop ? minToDrop : maxToDrop;
 
-			std::uniform_real_distribution<> dropCountDist(minToDrop, maxToDrop);
+			std::uniform_int_distribution<> dropCountDist(minToDrop, maxToDrop);
 
 			std::int32_t dropCount = dropCountDist(RandomUtil::GetEngine());
 
@@ -66,7 +66,7 @@ public:
 				{return CacheLootTable::GetSortPriority(a) > CacheLootTable::GetSortPriority(b); });
 
 			for (int i = 0; i < dropCount; ++i) {
-				std::uniform_real_distribution<> dropIndexDist(0, lootTableRows.size());
+				std::uniform_int_distribution<> dropIndexDist(0, lootTableRows.size());
 				auto it2 = std::next(lootTableRows.begin(), dropIndexDist(RandomUtil::GetEngine()));
 
 				std::int32_t itemID = CacheLootTable::GetItemID(*it2);
@@ -185,7 +185,7 @@ public:
 		}
 
 		// init random and return in range
-		std::uniform_real_distribution<> coinDropDist(CacheCurrencyTable::GetMinValue(usingRow), CacheCurrencyTable::GetMaxValue(usingRow));
+		std::uniform_int_distribution<> coinDropDist(CacheCurrencyTable::GetMinValue(usingRow), CacheCurrencyTable::GetMaxValue(usingRow));
 		return coinDropDist(RandomUtil::GetEngine());
 	}
 
