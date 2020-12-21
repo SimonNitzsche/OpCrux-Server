@@ -56,9 +56,23 @@ void PackageComponent::OnUseNonEquipmentItem(Entity::GameObject* rerouteID, GM::
 	for (auto lootMatrixIt : lootMatrix) {
 		auto lootTableIndex = CacheLootMatrix::GetLootTableIndex(lootMatrixIt);
 
+		auto minDrop = CacheLootMatrix::GetMinToDrop(lootMatrixIt);
+		auto maxDrop = CacheLootMatrix::GetMaxToDrop(lootMatrixIt);
+
+		std::uniform_int_distribution<> dropCountDist(minDrop, maxDrop);
+		std::int32_t dropCount = dropCountDist(RandomUtil::GetEngine());
+
 		auto lootTable = CacheLootTable::getRows(lootTableIndex);
-		for (auto lootTableIt : lootTable) {
-			invComp->AddItem(owner->GetProxyItemCheck(CacheLootTable::GetItemID(lootTableIt)));
+
+		// Skip, since we're empty
+		if (lootTable.size() == 0) continue;
+
+		for (int i = 0; i < dropCount; ++i) {
+			std::uniform_int_distribution<> dropItemIndexDist(0, lootTable.size() - 1);
+			std::int32_t dropItemIndex = dropItemIndexDist(RandomUtil::GetEngine());
+
+			auto dropItemIt = std::next(lootTable.begin(), dropItemIndex);
+			invComp->AddItem(owner->GetProxyItemCheck(CacheLootTable::GetItemID(*dropItemIt)));
 		}
 	}
 }
