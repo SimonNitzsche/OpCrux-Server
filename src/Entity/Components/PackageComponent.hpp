@@ -58,7 +58,7 @@ void PackageComponent::OnUseNonEquipmentItem(Entity::GameObject* rerouteID, GM::
 
 		auto lootTable = CacheLootTable::getRows(lootTableIndex);
 		for (auto lootTableIt : lootTable) {
-			invComp->AddItem(CacheLootTable::GetItemID(lootTableIt));
+			invComp->AddItem(owner->GetProxyItemCheck(CacheLootTable::GetItemID(lootTableIt)));
 		}
 	}
 }
