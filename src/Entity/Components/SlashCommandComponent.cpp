@@ -54,7 +54,7 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 		if (command.find(u" ") != std::u16string::npos) {
 			if (accountGMLevel >= 5) {
 				InventoryComponent* inventory = sender->GetComponent<InventoryComponent>();
-				inventory->RemoveItem2(std::stoi(StringUtils::to_string(args[1])), 2);
+				inventory->RemoveItem2(true, std::stoi(StringUtils::to_string(args[1])), 2);
 			}
 			else {
 				Reply(Response::RankTooLow, sender);

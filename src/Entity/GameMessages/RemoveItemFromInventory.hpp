@@ -51,7 +51,28 @@ namespace GM {
 		}
 
 		void Deserialize(RakNet::BitStream* bs) {
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, Confirmed, false);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, DeleteItem, true);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, OutSuccess, false);
+
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, InventoryType, (int)Enums::EInventoryType::Items);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, ItemType, (int)Enums::EItemType::Invalid);
+
+			std::u16string wExtraInfo;
+			GM_VAR_DESERIALIZE_WSTRING(bs, wExtraInfo);
+			ExtraInfo = LDFUtils::ParseCollectionFromWString(wExtraInfo);
+
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, ForceDeletion, true);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, Source, DataTypes::LWOOBJID());
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, Item, DataTypes::LWOOBJID());
+
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, ItemLot, 0);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, Requesting, DataTypes::LWOOBJID());
 			
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, Delta, 1);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, TotalItems, 0);
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, SubKey, DataTypes::LWOOBJID());
+			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, TradeId, DataTypes::LWOOBJID());
 		}
 
 		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {

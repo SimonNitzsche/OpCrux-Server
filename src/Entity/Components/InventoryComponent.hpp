@@ -563,13 +563,18 @@ public:
 		// Dont save temporary item or temporary model
 		if (stack.tab == 4 || stack.tab == 6) return;
 
+		// Get current inventory tab
+		auto tabIt = inventory.find(stack.tab);
+
 		// Check if we need to remove item or update it.
 		if (stack.quantity == 0) {
 			// Remove
+			tabIt->second.erase(stack.slot);
 			Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.objectID);
 		}
 		else {
 			// Update
+			tabIt->second.find(stack.slot)->second = stack;
 			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
 		}
 	}
@@ -881,8 +886,7 @@ public:
 		return;
 	}
 
-	void RemoveItem2(std::uint32_t itemLOT, std::uint32_t amount = 1) {
-
+	void RemoveItem2(bool callMessage, std::uint32_t itemLOT, std::uint32_t amount = 1) {
 		// at this point amount will be used as amountLeft
 		// use while to get all stacks
 		while (amount != 0) {
@@ -908,18 +912,20 @@ public:
 			UnEquipItem(stack.objectID);
 
 			// Tell client
-			GM::RemoveItemFromInventory removeItemMsg;
-			removeItemMsg.Confirmed = true;
-			removeItemMsg.DeleteItem = true;
-			removeItemMsg.OutSuccess = false;
-			removeItemMsg.ItemType = -1;
-			removeItemMsg.InventoryType = stack.tab;
-			removeItemMsg.ForceDeletion = true;
-			removeItemMsg.Item = stack.objectID;
-			removeItemMsg.Delta = reduceAmount;
-			removeItemMsg.TotalItems = stack.quantity;
+			if (callMessage) {
+				GM::RemoveItemFromInventory removeItemMsg;
+				removeItemMsg.Confirmed = true;
+				removeItemMsg.DeleteItem = true;
+				removeItemMsg.OutSuccess = false;
+				removeItemMsg.ItemType = -1;
+				removeItemMsg.InventoryType = stack.tab;
+				removeItemMsg.ForceDeletion = true;
+				removeItemMsg.Item = stack.objectID;
+				removeItemMsg.Delta = reduceAmount;
+				removeItemMsg.TotalItems = stack.quantity;
 
-			GameMessages::Send(owner, owner->GetObjectID(), removeItemMsg);
+				GameMessages::Send(owner, owner->GetObjectID(), removeItemMsg);
+			}
 
 			// Is the stack empty now?
 			if (stack.quantity <= 0) {
@@ -978,6 +984,11 @@ public:
 		if (item == nullptr) return;
 		item->CallMessage(*msg, sender);
 	}
+	void OnRemoveItemFromInventory(Entity::GameObject* sender, GM::RemoveItemFromInventory* msg) {
+		if (msg->Confirmed) {
+			this->RemoveItem2(false, msg->ItemLot, msg->Delta);
+		}
+	}
 
 	
 
@@ -986,6 +997,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UnEquipInventory, OnUnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::ClientItemConsumed, OnClientItemConsumed);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UseNonEquipmentItem, OnUseNonEquipmentItem);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::RemoveItemFromInventory, OnRemoveItemFromInventory);
 	}
 };
 
