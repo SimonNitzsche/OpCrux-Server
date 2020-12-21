@@ -478,6 +478,13 @@ public:
 
 					Logger::log("WRLD", "Equipped LOT " + std::to_string(it->second.LOT));
 
+					{
+						GM::ItemEquipped nmsg;
+						nmsg.playerID = owner;
+						nmsg.bIsEquipped = true;
+						objItemToEquip->CallMessage(nmsg);
+					}
+
 					// We're done
 					return true;
 				}
@@ -531,41 +538,7 @@ public:
 		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
 		if (static_cast<std::string>(equipLocation) == "") return false;
 
-		auto tabIt = inventory.find(targetTab);
-
-		// We do not have tab, unable to unequip
-		if (tabIt == inventory.end()) {
-			// Let's also look for temporary
-			targetTab = targetTab == 0 ? 4 : 6;
-			tabIt = inventory.find(targetTab);
-			// We really do not have it
-			if (tabIt == inventory.end()) return false;
-		}
-
-		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
-			if (it->second.LOT == LOT) {
-				// We found it!
-
-				// We're already equipped!
-				if (!it->second.equip) continue;
-
-				// Equip it.
-				it->second.equip = false;
-
-				// Save equip
-				this->SaveStack(it->second);
-
-				// Sync equip.
-				this->_isDirtyFlagEquippedItems = true;
-				this->owner->SetDirty();
-
-				// We're done
-				return true;
-			}
-		}
-
-		// We couldn't find the item
-		return false;
+		return UnEquipLocation(equipLocation);
 	}
 
 	inline bool UnEquipItem(DataTypes::LWOOBJID itemToUnEquip) {
@@ -574,49 +547,13 @@ public:
 
 		std::int32_t LOT = objItemToEquip->GetLOT();
 
-		auto targetTab = GetTabForLOT(LOT);
-
 		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
 		if (itemCompID == -1) return false;
 
 		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
 		if (static_cast<std::string>(equipLocation) == "") return false;
 
-		auto tabIt = inventory.find(targetTab);
-
-		// We do not have tab, unable to unequip
-		if (tabIt == inventory.end()) {
-			// Let's also look for temporary
-			targetTab = targetTab == 0 ? 4 : 6;
-			tabIt = inventory.find(targetTab);
-			// We really do not have it
-			if (tabIt == inventory.end()) return false;
-		}
-
-		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
-			if (it->second.objectID == itemToUnEquip) {
-				// We found it!
-
-				// We're already equipped!
-				if (!it->second.equip) return false;
-
-				// Equip it.
-				it->second.equip = false;
-
-				// Save equip
-				this->SaveStack(it->second);
-
-				// Sync equip.
-				this->_isDirtyFlagEquippedItems = true;
-				this->owner->SetDirty();
-
-				// We're done
-				return true;
-			}
-		}
-
-		// We couldn't find the item
-		return false;
+		return UnEquipLocation(equipLocation);
 	}
 
 	inline void SaveStack(InventoryItemStack stack) {

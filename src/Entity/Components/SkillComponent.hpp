@@ -171,7 +171,6 @@ public:
 		if (invComp == nullptr) return;
 		auto strEquipLocation = CacheItemComponent::GetEquipLocation(invComp->GetComponentID());
 
-
 		auto rm = CacheObjectSkills::getRow(item->GetLOT());
 		auto rf = rm.flatIt();
 		for (auto r : rf) {

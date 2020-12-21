@@ -10,6 +10,7 @@ namespace Enums {
 		  SERVER = Packets that are sent by the server.
 		  DUAL = Both CLIENT and SERVER.
 		  UNKNOWN = Packets that did not shown on the packet logs.
+		  INTERN = Used internally, will not be shared between client and server
 	*/
 	enum EGameMessageID : unsigned short {
 		
@@ -252,6 +253,7 @@ namespace Enums {
 		CLIENT_ZONE_SUMMARY_DISMISSED = 1044,
 		DUAL_MODIFY_PLAYER_ZONE_STATISTICS = 1046,
 
+		INTERN_ITEM_EQUIPPED = 1052,
 		CLIENT_ACTIVITY_STATE_CHANGE_REQUEST = 1053,
 
 		CLIENT_START_BUILDING_WITH_ITEM = 1057,
@@ -336,6 +338,9 @@ namespace Enums {
 		SERVER_NOTIFY_RACING_CLIENT = 1390,
 		SERVER_RACING_PLAYER_LOADED = 1392,
 		CLIENT_RACING_READY = 1393,
+
+		INTERN_FACTION_TRIGGER_ITEM_EQUIPPED = 1400,
+		INTERN_FACTION_TRIGGER_ITEM_UNEQUIPPED = 1401,
 
 		CLIENT_RESET_PROPERTY_BEHAVIORS = 1406,
 		CLIENT_SET_CONSUMABLE_ITEM = 1409,
