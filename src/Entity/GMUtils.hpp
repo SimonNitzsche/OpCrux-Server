@@ -92,6 +92,7 @@
 	mfun(ToggleGhostReferenceOverride);\
 	mfun(ToggleSendingPositionUpdates);\
 	mfun(UnEquipInventory);\
+	mfun(UseNonEquipmentItem);\
 	mfun(RemoveItemFromInventory);
 #endif
 

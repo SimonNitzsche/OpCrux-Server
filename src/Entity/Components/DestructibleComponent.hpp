@@ -35,12 +35,12 @@ public:
 
 	static constexpr int GetTypeID() { return 7; }
 
-	std::list<ItemModel> GetLootDrop(Entity::GameObject * lootOwner) {
+	std::list<ItemModel> GetLootDrop(Entity::GameObject * lootOwner, std::int32_t _lootMatrixIndex) {
 		std::list<ItemModel> dropList = {};
 
-		auto lootRowMain = CacheLootMatrix::getRow(lootMatrixIndex);
+		auto lootRowMain = CacheLootMatrix::getRow(_lootMatrixIndex);
 		auto lootRows = lootRowMain.flatIt();
-		std::uniform_real_distribution<> dropChanceDist(0.0, 1.0);
+		std::uniform_real_distribution<> dropChanceDist(0.0f, 1.0f);
 		for (auto it = lootRows.begin(); it != lootRows.end(); ++it) {
 			// Check if we have flag
 			std::int32_t flag = CacheLootMatrix::GetFlagID(*it);
@@ -55,7 +55,7 @@ public:
 			std::int32_t maxToDrop = CacheLootMatrix::GetMaxToDrop(*it);
 			maxToDrop = minToDrop > maxToDrop ? minToDrop : maxToDrop;
 
-			std::uniform_real_distribution<> dropCountDist(minToDrop, maxToDrop);
+			std::uniform_int_distribution<> dropCountDist(minToDrop, maxToDrop);
 
 			std::int32_t dropCount = dropCountDist(RandomUtil::GetEngine());
 
@@ -66,7 +66,7 @@ public:
 				{return CacheLootTable::GetSortPriority(a) > CacheLootTable::GetSortPriority(b); });
 
 			for (int i = 0; i < dropCount; ++i) {
-				std::uniform_real_distribution<> dropIndexDist(0, lootTableRows.size());
+				std::uniform_int_distribution<> dropIndexDist(0, lootTableRows.size() - 1);
 				auto it2 = std::next(lootTableRows.begin(), dropIndexDist(RandomUtil::GetEngine()));
 
 				std::int32_t itemID = CacheLootTable::GetItemID(*it2);
@@ -185,7 +185,7 @@ public:
 		}
 
 		// init random and return in range
-		std::uniform_real_distribution<> coinDropDist(CacheCurrencyTable::GetMinValue(usingRow), CacheCurrencyTable::GetMaxValue(usingRow));
+		std::uniform_int_distribution<> coinDropDist(CacheCurrencyTable::GetMinValue(usingRow), CacheCurrencyTable::GetMaxValue(usingRow));
 		return coinDropDist(RandomUtil::GetEngine());
 	}
 
@@ -285,38 +285,7 @@ public:
 				// TODO: We need to extend the logic in the future: teams & player spawned turrets need to be handled aswell.
 			}
 
-			{
-				{
-					GM::DropClientLoot msg;
-					msg.iCurrency = GetCurrencyDrop(lootOwner->GetLOT() == 1 ? lootOwner->GetComponent<CharacterComponent>()->GetLevel() : 0);
-					msg.owner = lootOwner->GetObjectID();
-					msg.sourceObj = owner->GetObjectID();
-					msg.spawnPosition = owner->GetPosition();
-					msg.finalPosition = owner->GetPosition();
-
-					GameMessages::Send(lootOwner, msg.sourceObj, msg);
-				}
-
-				auto itemLoot = GetLootDrop(lootOwner);
-				for (auto it = itemLoot.begin(); it != itemLoot.end(); ++it) {
-					{
-						GM::DropClientLoot nmsg;
-						nmsg.iCurrency = 0;
-						nmsg.owner = lootOwner->GetObjectID();
-						nmsg.sourceObj = owner->GetObjectID();
-						nmsg.spawnPosition = owner->GetPosition();
-						nmsg.finalPosition = owner->GetPosition();
-						nmsg.itemTemplate = it->templateID;
-						nmsg.lootID = it->objectID;
-						
-						owner->CallMessage(nmsg, lootOwner);
-						
-						GameMessages::Send(lootOwner, nmsg.sourceObj, nmsg);
-
-						Logger::log("WRLD", "Dropped loot " + std::to_string(std::uint64_t(nmsg.lootID)) + " with LOT " + std::to_string(nmsg.itemTemplate));
-					}
-				}
-			}
+			DoClientLootDrop(lootOwner, lootMatrixIndex);
 
 			// Remove
 			owner->InstantiateRemoval();
@@ -326,6 +295,42 @@ public:
 
 			// Cancle anything else
 			return;
+		}
+	}
+
+	void DoClientLootDrop(Entity::GameObject * lootOwner, int32_t _lootMatrixIndex) {
+		{
+			GM::DropClientLoot msg;
+			msg.iCurrency = GetCurrencyDrop(lootOwner->GetLOT() == 1 ? lootOwner->GetComponent<CharacterComponent>()->GetLevel() : 0);
+			msg.owner = lootOwner->GetObjectID();
+			msg.sourceObj = owner->GetObjectID();
+			msg.spawnPosition = owner->GetPosition();
+			msg.finalPosition = owner->GetPosition();
+
+			GameMessages::Send(lootOwner, msg.sourceObj, msg);
+		}
+
+		auto itemLoot = GetLootDrop(lootOwner, _lootMatrixIndex);
+		for (auto it = itemLoot.begin(); it != itemLoot.end(); ++it) {
+			{
+				GM::DropClientLoot nmsg;
+				nmsg.iCurrency = 0;
+				nmsg.owner = lootOwner->GetObjectID();
+				nmsg.sourceObj = owner->GetObjectID();
+				nmsg.spawnPosition = owner->GetPosition();
+				nmsg.finalPosition = owner->GetPosition();
+				nmsg.itemTemplate = owner->GetProxyItemCheck(it->templateID);
+				nmsg.lootID = it->objectID;
+
+				// make sure we aren't faction token proxy
+				if (nmsg.itemTemplate == 13763) continue;
+
+				owner->CallMessage(nmsg, lootOwner);
+
+				GameMessages::Send(lootOwner, nmsg.sourceObj, nmsg);
+
+				Logger::log("WRLD", "Dropped loot " + std::to_string(std::uint64_t(nmsg.lootID)) + " with LOT " + std::to_string(nmsg.itemTemplate));
+			}
 		}
 	}
 

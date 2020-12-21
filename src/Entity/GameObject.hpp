@@ -535,6 +535,22 @@ namespace Entity {
 
 			this->OnMessage(realReroute, msg.GetID(), &msg);
 		}
+
+
+		std::int32_t GetFactionTokenFromProxy() {
+			if (this->GetFlag(46)) return 8321;
+			if (this->GetFlag(47)) return 8318;
+			if (this->GetFlag(48)) return 8320;
+			if (this->GetFlag(49)) return 8319;
+			return 13763;
+		}
+
+		std::int32_t GetProxyItemCheck(std::int32_t inLOT) {
+			switch (inLOT) {
+			case 13763: return GetFactionTokenFromProxy();
+			default: return inLOT;
+			}
+		}
 	};
 }
 

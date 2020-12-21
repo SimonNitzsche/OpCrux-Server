@@ -156,13 +156,42 @@ public:
 					itemStack.ownerID = it->ownerID;
 					itemStack.slot = it->slot;
 
-					Entity::GameObject* itmObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
-					itmObj->SetObjectID(itemStack.objectID);
-					objMan->RegisterObject(itmObj);
-					itmObj->isSerializable = false;
+					
 
 					auto tabIt = inventory.find(it->tab);
 					if (tabIt != inventory.end()) {
+						// make sure our slot is not being taken up
+						auto targetSlot = it->slot;
+						// TODO check for max
+						while (targetSlot < 240) {
+							// We do not have item? break
+							auto targetSlotIt = tabIt->second.find(targetSlot);
+							if(targetSlotIt == tabIt->second.end()) break;
+							// Are we the same item? break
+							if (targetSlotIt->second.objectID == itemStack.objectID) break;
+							// We have an item there already, count slot up
+							++targetSlot;
+						}
+
+						if (targetSlot != it->slot) {
+							it->slot = targetSlot;
+							itemStack.slot = it->slot;
+							Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemStack.toDBModel());
+						}
+
+						// Check for proxy LOTs
+						auto proxyLOTResolved = owner->GetProxyItemCheck(it->templateID);
+						if (proxyLOTResolved != it->templateID) {
+							it->templateID = proxyLOTResolved;
+							itemStack.LOT = it->templateID;
+							Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemStack.toDBModel());
+						}
+
+						Entity::GameObject* itmObj = new Entity::GameObject(owner->GetZoneInstance(), itemStack.LOT);
+						itmObj->SetObjectID(itemStack.objectID);
+						objMan->RegisterObject(itmObj);
+						itmObj->isSerializable = false;
+
 						tabIt->second.insert({ it->slot, itemStack });
 					}
 					else {
@@ -301,35 +330,7 @@ public:
 	}
 
 	inline bool HasItem(std::uint32_t LOT) {
-		auto targetTab = GetTabForLOT(LOT);
-
-		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
-		if (itemCompID == -1) return false;
-
-		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
-		if (static_cast<std::string>(equipLocation) == "") return false;
-
-		auto tabIt = inventory.find(targetTab);
-
-		// We do not have tab
-		if (tabIt == inventory.end()) {
-			// Let's also look for temporary
-			targetTab = targetTab == 0 ? 4 : 6;
-			tabIt = inventory.find(targetTab);
-			// We really do not have it
-			if (tabIt == inventory.end())
-				return false;
-		}
-
-		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
-			if (it->second.LOT == LOT) {
-				// We found it!
-				return true;
-			}
-		}
-
-		// We couldn't find the item
-		return false;
+		return GetItem(LOT).LOT == LOT;
 	}
 
 	inline InventoryItemStack GetItem(std::uint32_t LOT, bool temporary = false) {
@@ -477,6 +478,13 @@ public:
 
 					Logger::log("WRLD", "Equipped LOT " + std::to_string(it->second.LOT));
 
+					{
+						GM::ItemEquipped nmsg;
+						nmsg.playerID = owner;
+						nmsg.bIsEquipped = true;
+						objItemToEquip->CallMessage(nmsg);
+					}
+
 					// We're done
 					return true;
 				}
@@ -530,41 +538,7 @@ public:
 		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
 		if (static_cast<std::string>(equipLocation) == "") return false;
 
-		auto tabIt = inventory.find(targetTab);
-
-		// We do not have tab, unable to unequip
-		if (tabIt == inventory.end()) {
-			// Let's also look for temporary
-			targetTab = targetTab == 0 ? 4 : 6;
-			tabIt = inventory.find(targetTab);
-			// We really do not have it
-			if (tabIt == inventory.end()) return false;
-		}
-
-		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
-			if (it->second.LOT == LOT) {
-				// We found it!
-
-				// We're already equipped!
-				if (!it->second.equip) continue;
-
-				// Equip it.
-				it->second.equip = false;
-
-				// Save equip
-				this->SaveStack(it->second);
-
-				// Sync equip.
-				this->_isDirtyFlagEquippedItems = true;
-				this->owner->SetDirty();
-
-				// We're done
-				return true;
-			}
-		}
-
-		// We couldn't find the item
-		return false;
+		return UnEquipLocation(equipLocation);
 	}
 
 	inline bool UnEquipItem(DataTypes::LWOOBJID itemToUnEquip) {
@@ -573,49 +547,13 @@ public:
 
 		std::int32_t LOT = objItemToEquip->GetLOT();
 
-		auto targetTab = GetTabForLOT(LOT);
-
 		auto itemCompID = CacheComponentsRegistry::GetComponentID(LOT, 11);
 		if (itemCompID == -1) return false;
 
 		auto equipLocation = CacheItemComponent::GetEquipLocation(itemCompID);
 		if (static_cast<std::string>(equipLocation) == "") return false;
 
-		auto tabIt = inventory.find(targetTab);
-
-		// We do not have tab, unable to unequip
-		if (tabIt == inventory.end()) {
-			// Let's also look for temporary
-			targetTab = targetTab == 0 ? 4 : 6;
-			tabIt = inventory.find(targetTab);
-			// We really do not have it
-			if (tabIt == inventory.end()) return false;
-		}
-
-		for (auto it = tabIt->second.begin(); it != tabIt->second.end(); ++it) {
-			if (it->second.objectID == itemToUnEquip) {
-				// We found it!
-
-				// We're already equipped!
-				if (!it->second.equip) return false;
-
-				// Equip it.
-				it->second.equip = false;
-
-				// Save equip
-				this->SaveStack(it->second);
-
-				// Sync equip.
-				this->_isDirtyFlagEquippedItems = true;
-				this->owner->SetDirty();
-
-				// We're done
-				return true;
-			}
-		}
-
-		// We couldn't find the item
-		return false;
+		return UnEquipLocation(equipLocation);
 	}
 
 	inline void SaveStack(InventoryItemStack stack) {
@@ -982,6 +920,17 @@ public:
 			removeItemMsg.TotalItems = stack.quantity;
 
 			GameMessages::Send(owner, owner->GetObjectID(), removeItemMsg);
+
+			// Is the stack empty now?
+			if (stack.quantity <= 0) {
+				// Get the object
+				Entity::GameObject* invItemObj = owner->GetZoneInstance()->objectsManager->GetObjectByID(stack.objectID);
+				// Do we have the object?
+				if (invItemObj != nullptr) {
+					// Remove object in world
+					invItemObj->InstantiateRemoval();
+				}
+			}
 		}
 	}
 
@@ -1015,16 +964,28 @@ public:
 
 			resultMsg.m_UseItemResult = true;
 			MissionManager::LaunchTaskEvent(EMissionTask::USE_ITEM, item, owner->GetObjectID(), 1, stack.LOT);
+			
+			item->CallMessage(*msg, sender);
+
 			break;
 		}
 
 		GameMessages::Send(sender, owner->GetObjectID(), resultMsg);
 	}
 
+	void OnUseNonEquipmentItem(Entity::GameObject* sender, GM::UseNonEquipmentItem* msg) {
+		Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->itemToUse);
+		if (item == nullptr) return;
+		item->CallMessage(*msg, sender);
+	}
+
+	
+
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::EquipInventory, OnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UnEquipInventory, OnUnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::ClientItemConsumed, OnClientItemConsumed);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UseNonEquipmentItem, OnUseNonEquipmentItem);
 	}
 };
 
