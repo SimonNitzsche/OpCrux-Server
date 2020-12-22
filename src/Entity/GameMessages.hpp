@@ -136,6 +136,7 @@ public:
 #include "Entity/GameMessages/PickupCurrency.hpp"
 #include "Entity/GameMessages/PickupItem.hpp"
 #include "Entity/GameMessages/PlayAnimation.hpp"
+#include "Entity/GameMessages/PlayCinematic.hpp"
 #include "Entity/GameMessages/PlayEmbeddedEffectOnAllClientsNearObject.hpp"
 #include "Entity/GameMessages/PlayEmote.hpp"
 #include "Entity/GameMessages/PlayerLoaded.hpp"

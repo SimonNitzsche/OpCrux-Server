@@ -16,6 +16,8 @@ public:
 
 	void AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::GameObject * object);
 	void AddTimerWithCancel(float timeInSeconds, std::u16string name, Entity::GameObject * object);
+
+	void NotifyObjectDeleted(Entity::GameObject* object);
 }; 
 
 

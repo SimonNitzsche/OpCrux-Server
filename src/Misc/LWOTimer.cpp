@@ -28,7 +28,7 @@ void LWOTimer::AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::G
 	if (timers.find(object) == timers.end()) timers.insert(std::pair<Entity::GameObject*, std::unordered_map<std::u16string, long long>>(object, {}));
 	if (object == nullptr) { return; }
 	if (timers.size() > 1000) { return; }
-	if (timeInMs > 100) {
+	if (timeInMs >= 100) {
 		if (timers.at(object).find(name) == timers.at(object).end()) {
 			// Add
 			timers.at(object).insert(std::make_pair(name, ServerInfo::uptimeMs() + timeInMs));
@@ -45,4 +45,8 @@ void LWOTimer::AddTimerWithCancelMs(int timeInMs, std::u16string name, Entity::G
 
 void LWOTimer::AddTimerWithCancel(float timeInSeconds, std::u16string name, Entity::GameObject* object) {
 	AddTimerWithCancelMs(std::lroundf(timeInSeconds) * 1000, name, object);
+}
+
+void LWOTimer::NotifyObjectDeleted(Entity::GameObject* object) {
+	timers.erase(object);
 }

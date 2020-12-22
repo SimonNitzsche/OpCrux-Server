@@ -533,6 +533,9 @@ void Entity::GameObject::Remove() {
 		child->InstantiateRemoval();
 	}
 
+	// Remove timers
+	Instance->timer.NotifyObjectDeleted(this);
+
 	// Remove me
 	delete this;
 }
