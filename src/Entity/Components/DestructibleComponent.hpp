@@ -187,8 +187,8 @@ public:
 		// init random and return in range
 		auto minCoins = CacheCurrencyTable::GetMinValue(usingRow);
 		auto maxCoins = CacheCurrencyTable::GetMaxValue(usingRow);
-		std::uniform_real_distribution<> coinDropDist(0.0f, 1.0f);
-		return minCoins + coinDropDist(RandomUtil::GetEngine()) * (maxCoins - minCoins);
+		std::uniform_real_distribution<std::float_t> coinDropDist(0.0f, 1.0f);
+		return minCoins + std::uint32_t(coinDropDist(RandomUtil::GetEngine()) * (maxCoins - minCoins));
 	}
 
 	void OnRequestDie(Entity::GameObject* sender, GM::RequestDie * msg) {
