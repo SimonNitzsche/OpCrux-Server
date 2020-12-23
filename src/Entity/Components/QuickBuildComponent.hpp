@@ -104,34 +104,36 @@ public:
 		}
 		// When completed
 		else if (qbState == 2) {
-			auto doResetTime = buildCompleteTime + std::uint32_t(resetTime);
+			if (resetTime > 0) {
+				auto doResetTime = buildCompleteTime + std::uint32_t(resetTime);
 
-			//Reset indicated
-			if (qbResetEffect)
-				doResetTime += std::uint32_t(timeSmash);
+				//Reset indicated
+				if (qbResetEffect)
+					doResetTime += std::uint32_t(timeSmash);
 
-			auto now = ::time(0);
+				auto now = ::time(0);
 
-			// indicate resetting
-			if (!qbResetEffect && now > doResetTime) {
-				qbResetEffect = true;
+				// indicate resetting
+				if (!qbResetEffect && now > doResetTime) {
+					qbResetEffect = true;
 
-				this->_isDirtyFlag = true;
-				this->owner->SetDirty();
-			}
+					this->_isDirtyFlag = true;
+					this->owner->SetDirty();
+				}
 
-			// reset
-			else if (qbResetEffect && now > doResetTime) {
-				GM::RebuildNotifyState msg;
-				msg.player = buildingPlayer->GetObjectID();
-				msg.iPrevState = qbState;
-				msg.iState = (qbState = 4);
-				GameMessages::Broadcast(this->owner, msg);
+				// reset
+				else if (qbResetEffect && now > doResetTime) {
+					GM::RebuildNotifyState msg;
+					msg.player = buildingPlayer->GetObjectID();
+					msg.iPrevState = qbState;
+					msg.iState = (qbState = 4);
+					GameMessages::Broadcast(this->owner, msg);
 
-				this->_isDirtyFlag = true;
-				this->owner->SetDirty();
+					this->_isDirtyFlag = true;
+					this->owner->SetDirty();
 
-				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
+					RemovePlayerFromActivity(buildingPlayer->GetObjectID());
+				}
 			}
 		}
 		else if (qbState == 4) {

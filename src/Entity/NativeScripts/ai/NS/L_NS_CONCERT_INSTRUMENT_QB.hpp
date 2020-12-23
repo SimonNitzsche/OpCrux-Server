@@ -34,11 +34,11 @@ private:
 	};
 
 	// -- the music used for each instrument
-	std::unordered_map<std::int32_t, std::u16string> const CONST_INSTRUMENT_MUSIC = {
-		{CONST_INSTRUMENT_LOT_GUITAR, u"Concert_Guitar"},
-		{CONST_INSTRUMENT_LOT_BASS, u"Concert_Bass"},
-		{CONST_INSTRUMENT_LOT_KEYBOARD, u"Concert_Keys"},
-		{CONST_INSTRUMENT_LOT_DRUM, u"Concert_Drums"}
+	std::unordered_map<std::int32_t, std::string> const CONST_INSTRUMENT_MUSIC = {
+		{CONST_INSTRUMENT_LOT_GUITAR, "Concert_Guitar"},
+		{CONST_INSTRUMENT_LOT_BASS, "Concert_Bass"},
+		{CONST_INSTRUMENT_LOT_KEYBOARD, "Concert_Keys"},
+		{CONST_INSTRUMENT_LOT_DRUM, "Concert_Drums"}
 	};
 
 	// -- path set up through Happy Flower for the cinematic for each instrument
@@ -148,8 +148,17 @@ public:
 		}
 	}
 
-	void AlterMusic(Entity::GameObject* self, std::u16string& szMusicName, bool bActivate) {
-		/* TODO */
+	void AlterMusic(Entity::GameObject* self, std::string szMusicName, bool bActivate) {
+		auto soundRepeaters = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"Audio-Concert", std::uint64_t(0), true);
+
+		for (auto soundRepeater : soundRepeaters) {
+			if (bActivate) {
+				{GM::ActivateNDAudioMusicCue nmsg; nmsg.m_NDAudioMusicCueName = szMusicName; soundRepeater->CallMessage(nmsg); }
+			}
+			else {
+				{GM::DeactivateNDAudioMusicCue nmsg; nmsg.m_NDAudioMusicCueName = szMusicName; soundRepeater->CallMessage(nmsg); }
+			}
+		}
 	}
 
 	void stopPlayerInteraction(Entity::GameObject* self, Entity::GameObject* player) {
@@ -271,8 +280,20 @@ public:
 		self->GetZoneInstance()->timer.AddTimerWithCancelMs(1000 * 20, u"AchievementTimer_20", self);
 	}
 
-	void AffectMusic(Entity::GameObject* self, std::int32_t instrumentLOT, bool bActive) {
-		/* TODO */
+	void AffectMusic(Entity::GameObject* self, std::int32_t instrumentLOT, bool bActivate) {
+		auto szMusicName = CONST_INSTRUMENT_MUSIC.at(instrumentLOT);
+		auto player = GetActivePlayer(self);
+
+		if (player != nullptr) {
+			AlterMusic(self, szMusicName, bActivate);
+
+			if (bActivate) {
+				storeObjectByName(self, u"musicPlayer", player);
+			}
+			else {
+				self->SetVar(u"musicPlayer", false);
+			}
+		}
 	}
 
 	void PlayInstrumentAnim(Entity::GameObject* self, std::int32_t instrumentLOT) {

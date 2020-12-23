@@ -92,6 +92,7 @@ public:
 // The Game Messages:
 
 // Define by include
+#include "Entity/GameMessages/ActivateNDAudioMusicCue.hpp"
 #include "Entity/GameMessages/ActivityStart.hpp"
 #include "Entity/GameMessages/AddItemToInventoryClientSync.hpp"
 #include "Entity/GameMessages/AddSkill.hpp"
@@ -101,6 +102,7 @@ public:
 #include "Entity/GameMessages/BuyFromVendor.hpp"
 #include "Entity/GameMessages/CancelRailMovement.hpp"
 #include "Entity/GameMessages/ClientItemConsumed.hpp"
+#include "Entity/GameMessages/DeactivateNDAudioMusicCue.hpp"
 #include "Entity/GameMessages/Die.hpp"
 #include "Entity/GameMessages/DoneArrangingWithItem.hpp"
 #include "Entity/GameMessages/DropClientLoot.hpp"

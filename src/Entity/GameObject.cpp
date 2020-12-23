@@ -351,6 +351,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ShootingGalleryComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(InventoryComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ScriptComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(SoundTriggerComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SkillComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ItemComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(BaseCombatAIComponent);
