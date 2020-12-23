@@ -564,17 +564,17 @@ public:
 		if (stack.tab == 4 || stack.tab == 6) return;
 
 		// Get current inventory tab
-		auto tabIt = inventory.find(stack.tab);
+		auto itSlots = &this->inventory.find(stack.tab)->second;
 
 		// Check if we need to remove item or update it.
 		if (stack.quantity == 0) {
 			// Remove
-			tabIt->second.erase(stack.slot);
+			itSlots->erase(itSlots->find(stack.slot));
 			Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.objectID);
 		}
 		else {
 			// Update
-			tabIt->second.find(stack.slot)->second = stack;
+			(*itSlots)[stack.slot] = stack;
 			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
 		}
 	}
@@ -940,6 +940,41 @@ public:
 		}
 	}
 
+	void MoveItem(DataTypes::LWOOBJID stackID, std::int32_t slot) {
+		// Get LOT to use GetItem function
+		std::int32_t LOT = Database::GetLOTOfItemStack(owner->GetZoneInstance()->GetDBConnection(), stackID);
+		InventoryItemStack stack = GetItem(LOT);
+
+		UnEquipItem(stack.objectID);
+		auto itSlots = &this->inventory.find(stack.tab)->second;
+
+		// Check if the slot is empty
+		if (itSlots->find(slot) == itSlots->end()) {
+			
+			// Delete item from old slot
+			itSlots->erase(itSlots->find(stack.slot));
+
+			// Update slot and set stack
+			stack.slot = slot;
+			(*itSlots)[slot] = stack;
+			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
+		}
+		else {
+			
+			// Get current stack at slot
+			InventoryItemStack curStack = (*itSlots)[slot];
+			UnEquipItem(curStack.objectID);
+
+			// Switch items
+			curStack.slot = stack.slot;
+			(*itSlots)[stack.slot] = curStack;
+			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), curStack.toDBModel());
+			stack.slot = slot;
+			(*itSlots)[slot] = stack;
+			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
+		}
+	}
+
 	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory* msg) {
 		this->EquipItem(msg->itemToEquip);
 	}
@@ -984,20 +1019,26 @@ public:
 		if (item == nullptr) return;
 		item->CallMessage(*msg, sender);
 	}
+
 	void OnRemoveItemFromInventory(Entity::GameObject* sender, GM::RemoveItemFromInventory* msg) {
 		if (msg->Confirmed) {
 			this->RemoveItem2(false, msg->ItemLot, msg->Delta);
 		}
 	}
 
-	
+	void OnMoveItemInInventory(Entity::GameObject* sender, GM::MoveItemInInventory* msg) {
+		this->MoveItem(msg->objectID, msg->slot);
+	}
 
+
+	
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::EquipInventory, OnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UnEquipInventory, OnUnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::ClientItemConsumed, OnClientItemConsumed);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UseNonEquipmentItem, OnUseNonEquipmentItem);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::RemoveItemFromInventory, OnRemoveItemFromInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::MoveItemInInventory, OnMoveItemInInventory);
 	}
 };
 
