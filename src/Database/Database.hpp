@@ -1210,17 +1210,5 @@ public:
 			return *rs->getInt(5);
 		}
 	}
-
-	static int GetLOTOfItemStack(odbc::ConnectionRef conn, std::uint64_t stackID) {
-		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT * FROM OPCRUX_GD.dbo.Inventory WHERE objectID = ?;");
-
-		stmt->setULong(1, stackID);
-
-		odbc::ResultSetRef rs = stmt->executeQuery();
-
-		if (rs->next()) {
-			return *rs->getInt(6);
-		}
-	}
 };
 #endif // !__DATABASE_HPP__

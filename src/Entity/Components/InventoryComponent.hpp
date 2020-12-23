@@ -940,13 +940,19 @@ public:
 		}
 	}
 
-	void MoveItem(DataTypes::LWOOBJID stackID, std::int32_t slot) {
-		// Get LOT to use GetItem function
-		std::int32_t LOT = Database::GetLOTOfItemStack(owner->GetZoneInstance()->GetDBConnection(), stackID);
-		InventoryItemStack stack = GetItem(LOT);
+	void MoveItem(DataTypes::LWOOBJID stackID, std::int32_t invTab, std::int32_t slot) {
+		// Get ItemStack
+		auto itSlots = &this->inventory.find(invTab)->second;
+
+		InventoryItemStack stack;
+		for (auto it = itSlots->begin(); it != itSlots->end(); ++it) {
+			if (it->second.objectID == stackID) {
+				stack = it->second;
+				break;
+			}
+		}
 
 		UnEquipItem(stack.objectID);
-		auto itSlots = &this->inventory.find(stack.tab)->second;
 
 		// Check if the slot is empty
 		if (itSlots->find(slot) == itSlots->end()) {
@@ -969,6 +975,7 @@ public:
 			curStack.slot = stack.slot;
 			(*itSlots)[stack.slot] = curStack;
 			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), curStack.toDBModel());
+
 			stack.slot = slot;
 			(*itSlots)[slot] = stack;
 			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
@@ -1027,7 +1034,7 @@ public:
 	}
 
 	void OnMoveItemInInventory(Entity::GameObject* sender, GM::MoveItemInInventory* msg) {
-		this->MoveItem(msg->objectID, msg->slot);
+		this->MoveItem(msg->objectID, msg->invType ,msg->slot);
 	}
 
 
