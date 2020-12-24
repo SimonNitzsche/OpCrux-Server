@@ -558,7 +558,7 @@ public:
 
 	inline void SaveStack(InventoryItemStack stack) {
 		// Dont save thinking hat!
-		if (stack.LOT == 6068) return;
+		if (stack.quantity == 0 && stack.LOT == 6068) return;
 
 		// Dont save temporary item or temporary model
 		if (stack.tab == 4 || stack.tab == 6) return;
@@ -569,7 +569,8 @@ public:
 		// Check if we need to remove item or update it.
 		if (stack.quantity == 0) {
 			// Remove
-			itSlots->erase(itSlots->find(stack.slot));
+			if (itSlots->find(stack.slot) != itSlots->end())
+				itSlots->erase(stack.slot);
 			Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.objectID);
 		}
 		else {
@@ -906,10 +907,10 @@ public:
 			stack.quantity -= reduceAmount;
 
 			// Save stack
-			SaveStack(stack);
+			this->SaveStack(stack);
 
 			// Try to unequip item if equipped
-			UnEquipItem(stack.objectID);
+			this->UnEquipItem(stack.objectID);
 
 			// Tell client
 			if (callMessage) {
@@ -952,33 +953,31 @@ public:
 			}
 		}
 
-		UnEquipItem(stack.objectID);
+		this->UnEquipItem(stack.objectID);
 
 		// Check if the slot is empty
 		if (itSlots->find(slot) == itSlots->end()) {
 			
 			// Delete item from old slot
-			itSlots->erase(itSlots->find(stack.slot));
+			if(itSlots->find(stack.slot) != itSlots->end())
+				itSlots->erase(stack.slot);
 
-			// Update slot and set stack
+			// Update slot and save stack
 			stack.slot = slot;
-			(*itSlots)[slot] = stack;
-			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
+			this->SaveStack(stack);
 		}
 		else {
 			
 			// Get current stack at slot
 			InventoryItemStack curStack = (*itSlots)[slot];
-			UnEquipItem(curStack.objectID);
+			this->UnEquipItem(curStack.objectID);
 
 			// Switch items
 			curStack.slot = stack.slot;
-			(*itSlots)[stack.slot] = curStack;
-			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), curStack.toDBModel());
+			this->SaveStack(curStack);
 
 			stack.slot = slot;
-			(*itSlots)[slot] = stack;
-			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
+			this->SaveStack(stack);
 		}
 	}
 
@@ -1034,7 +1033,7 @@ public:
 	}
 
 	void OnMoveItemInInventory(Entity::GameObject* sender, GM::MoveItemInInventory* msg) {
-		this->MoveItem(msg->objectID, msg->invType ,msg->slot);
+		this->MoveItem(msg->objectID, msg->invType, msg->slot);
 	}
 
 
