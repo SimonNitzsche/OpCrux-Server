@@ -26,6 +26,10 @@ set(BUILD_OPENGL3_DEMOS OFF)
 set(BUILD_BULLET2_DEMOS OFF)
 set(BUILD_UNIT_TESTS OFF)
 
+set(RECASTNAVIGATION_DEMO ON)
+set(RECASTNAVIGATION_TESTS OFF)
+set(RECASTNAVIGATION_EXAMPLES ON)
+
 add_subdirectory(libs)
 include_directories(include)
 include_directories(libs)
@@ -464,6 +468,8 @@ target_link_libraries(OpCrux_Server
 	RakNet
 	rapidxml
 	odbccpp_static
+	Recast
+	Detour
 )
 
 
