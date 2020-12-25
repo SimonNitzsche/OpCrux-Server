@@ -10,6 +10,7 @@
 
 #include "FileTypes/LVLFile/LUScene.hpp"
 #include "FileTypes/LVLFile/TriggerFile.hpp"
+#include "FileTypes/RAWFile/RAWFile.hpp"
 
 using namespace DataTypes;
 
@@ -393,6 +394,7 @@ namespace FileTypes::LUZ {
 			TerrainInfo terrainInfo;
 			std::vector<SceneTransition> sceneTransitions;
 			std::unordered_map<std::u16string, LUZonePathBase*> paths;
+			RAW::RAWFile terrainFile;
 		public:
 			// Constructs a new LUZone, with the path to the filename.
 			LUZone(const std::string& filename);

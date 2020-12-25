@@ -175,6 +175,12 @@ void LUZone::Read() {
 	currentOffset = terrainInfo.name.Read(currentOffset);
 	currentOffset = terrainInfo.description.Read(currentOffset);
 
+	{
+		Logger::log("WRLD", "Loading Terrain...");
+		std::string terrainFileNameFull = StringUtils::ToLower(FileUtils::GetFileDir(this->strFile) + "/" + terrainInfo.fileName.ToString());
+		terrainFile.Open(terrainFileNameFull);
+	}
+
 	// Transisions
 	if (version >= 0x1f) {
 		uint32_t * countOfScenes = reinterpret_cast<uint32_t*>(currentOffset);
