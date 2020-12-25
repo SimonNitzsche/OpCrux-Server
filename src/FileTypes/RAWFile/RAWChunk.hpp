@@ -65,7 +65,7 @@ namespace RAW {
 				(*fileDataPtr) += 16 * 2;
 				for (int i = 0; i < 0x10; ++i) {
 					auto thisIsTheFinalCountdown = *reinterpret_cast<std::uint16_t*>(*fileDataPtr);
-					(*fileDataPtr) += thisIsTheFinalCountdown * 2;
+					(*fileDataPtr) += 2 + thisIsTheFinalCountdown * 2;
 				}
 			}
 		}
