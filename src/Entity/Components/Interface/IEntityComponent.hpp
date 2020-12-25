@@ -41,6 +41,7 @@ namespace GM {
 	class ModularAssemblyNIFCompleted;
 	class ModularBuildFinish;
 	class ModuleAssemblyQueryData;
+	class MoveItemInInventory;
 	class NotifyClientFlagChange;
 	class NotifyServerLevelProcessingComplete;
 	class ParseChatMessage;

@@ -558,23 +558,24 @@ public:
 
 	inline void SaveStack(InventoryItemStack stack) {
 		// Dont save thinking hat!
-		if (stack.LOT == 6068) return;
+		if (stack.quantity == 0 && stack.LOT == 6068) return;
 
 		// Dont save temporary item or temporary model
 		if (stack.tab == 4 || stack.tab == 6) return;
 
 		// Get current inventory tab
-		auto tabIt = inventory.find(stack.tab);
+		auto itSlots = &this->inventory.find(stack.tab)->second;
 
 		// Check if we need to remove item or update it.
 		if (stack.quantity == 0) {
 			// Remove
-			tabIt->second.erase(stack.slot);
+			if (itSlots->find(stack.slot) != itSlots->end())
+				itSlots->erase(stack.slot);
 			Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.objectID);
 		}
 		else {
 			// Update
-			tabIt->second.find(stack.slot)->second = stack;
+			(*itSlots)[stack.slot] = stack;
 			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
 		}
 	}
@@ -906,10 +907,10 @@ public:
 			stack.quantity -= reduceAmount;
 
 			// Save stack
-			SaveStack(stack);
+			this->SaveStack(stack);
 
 			// Try to unequip item if equipped
-			UnEquipItem(stack.objectID);
+			this->UnEquipItem(stack.objectID);
 
 			// Tell client
 			if (callMessage) {
@@ -937,6 +938,46 @@ public:
 					invItemObj->InstantiateRemoval();
 				}
 			}
+		}
+	}
+
+	void MoveItem(DataTypes::LWOOBJID stackID, std::int32_t invTab, std::int32_t slot) {
+		// Get ItemStack
+		auto itSlots = &this->inventory.find(invTab)->second;
+
+		InventoryItemStack stack;
+		for (auto it = itSlots->begin(); it != itSlots->end(); ++it) {
+			if (it->second.objectID == stackID) {
+				stack = it->second;
+				break;
+			}
+		}
+
+		this->UnEquipItem(stack.objectID);
+
+		// Check if the slot is empty
+		if (itSlots->find(slot) == itSlots->end()) {
+			
+			// Delete item from old slot
+			if(itSlots->find(stack.slot) != itSlots->end())
+				itSlots->erase(stack.slot);
+
+			// Update slot and save stack
+			stack.slot = slot;
+			this->SaveStack(stack);
+		}
+		else {
+			
+			// Get current stack at slot
+			InventoryItemStack curStack = (*itSlots)[slot];
+			this->UnEquipItem(curStack.objectID);
+
+			// Switch items
+			curStack.slot = stack.slot;
+			this->SaveStack(curStack);
+
+			stack.slot = slot;
+			this->SaveStack(stack);
 		}
 	}
 
@@ -984,20 +1025,26 @@ public:
 		if (item == nullptr) return;
 		item->CallMessage(*msg, sender);
 	}
+
 	void OnRemoveItemFromInventory(Entity::GameObject* sender, GM::RemoveItemFromInventory* msg) {
 		if (msg->Confirmed) {
 			this->RemoveItem2(false, msg->ItemLot, msg->Delta);
 		}
 	}
 
-	
+	void OnMoveItemInInventory(Entity::GameObject* sender, GM::MoveItemInInventory* msg) {
+		this->MoveItem(msg->objectID, msg->invType, msg->slot);
+	}
 
+
+	
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::EquipInventory, OnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UnEquipInventory, OnUnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::ClientItemConsumed, OnClientItemConsumed);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UseNonEquipmentItem, OnUseNonEquipmentItem);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::RemoveItemFromInventory, OnRemoveItemFromInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::MoveItemInInventory, OnMoveItemInInventory);
 	}
 };
 

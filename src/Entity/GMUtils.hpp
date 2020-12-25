@@ -59,6 +59,7 @@
 	mfun(ModularAssemblyNIFCompleted);\
 	mfun(ModularBuildFinish);\
 	mfun(ModuleAssemblyQueryData);\
+	mfun(MoveItemInInventory);\
 	mfun(NotifyClientFlagChange);\
 	mfun(NotifyServerLevelProcessingComplete);\
 	mfun(ParseChatMessage);\
