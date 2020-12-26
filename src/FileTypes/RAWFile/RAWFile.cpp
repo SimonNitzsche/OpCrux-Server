@@ -8,6 +8,9 @@ void RAW::RAWFile::Open(const std::string & filePath) {
 	if (_isFileLoaded()) {
 		Read(&data);
 	}
+
+	// std::string pth = "res/mg/___test";
+	// SaveMesh(pth);
 }
 
 void RAW::RAWFile::Read(std::uint8_t** fileDataPtr) {

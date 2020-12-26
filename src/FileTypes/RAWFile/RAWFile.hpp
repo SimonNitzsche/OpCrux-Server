@@ -19,6 +19,12 @@ namespace RAW {
 		void Open(const std::string& filePath);
 		void Read(std::uint8_t** fileDataPtr);
 		bool _isFileLoaded();
+
+		void SaveMesh(std::string& path) {
+			for (auto& c : chunks) {
+				c.SaveMesh(path + "_" + std::to_string(c.chunkIndex));
+			}
+		}
 	};
 };
 #endif

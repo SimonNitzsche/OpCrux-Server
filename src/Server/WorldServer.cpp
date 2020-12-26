@@ -171,9 +171,6 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 		}
 		Logger::log("WRLD", "Sucessfully loaded zone.");
 
-		rcHeightfield hfield;
-		
-
 		if (luZone->zoneID != zone) {
 			Logger::log("WRLD", "Invalid zoneID within LUZ file, correcting...", LogType::UNEXPECTED);
 			luZone->zoneID = zone;

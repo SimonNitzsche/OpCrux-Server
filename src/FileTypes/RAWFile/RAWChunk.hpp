@@ -4,10 +4,19 @@
 #include <memory>
 #include <cmath>
 #include "RAWHeightmap.hpp"
+#include "DataTypes/Vector3.hpp"
+#include <sstream>
+#include "Utils/FileUtils.hpp"
 
 namespace RAW {
 	class RAWChunk {
 	public:
+		class RAWChunkMesh {
+		public:
+			std::list<DataTypes::Vector3> verts;
+			std::list<std::uint32_t> tris;
+		};
+
 		std::uint32_t chunkIndex;
 		std::uint32_t width;
 		std::uint32_t height;
@@ -68,6 +77,43 @@ namespace RAW {
 					(*fileDataPtr) += 2 + thisIsTheFinalCountdown * 2;
 				}
 			}
+		}
+
+		RAWChunkMesh MakeUnoptimizedMesh() {
+			RAWChunkMesh m;
+			 
+			for (int i = 0; i < width; ++i) {
+				for (int j = 0; j < height; ++j) {
+					std::float_t y = *std::next(heightmap.map.begin(), width * i + j);
+
+					m.verts.push_back(DataTypes::Vector3(i, y, j));
+
+					if (i == 0 || j == 0) continue;
+					m.tris.push_back(width * i + j); //Top right
+					m.tris.push_back(width * i + j - 1); //Bottom right
+					m.tris.push_back(width * (i - 1) + j - 1); //Bottom left - First triangle
+
+					m.tris.push_back(width * (i - 1) + j - 1); //Bottom left 
+					m.tris.push_back(width * (i - 1) + j); //Top left
+					m.tris.push_back(width * i + j); //Top right - Second triangle
+					
+				}
+			}
+			return m;
+		}
+
+		void SaveMesh(std::string& path) {
+			auto m = MakeUnoptimizedMesh();
+
+			std::stringstream ss;
+			for (auto v : m.verts) {
+				ss << "v " << v.x << " " << v.y << " " << v.z << "\n";
+			}
+			for (int i = 0; i < m.tris.size(); i += 3) {
+				ss << "f " << *std::next(m.tris.begin(), i + 0) +1 << " " << *std::next(m.tris.begin(), i + 1) + 1 << " " << *std::next(m.tris.begin(), i + 2) + 1 << "\n";
+			}
+
+			FileUtils::SaveTextFile(path + ".obj", ss.str());
 		}
 	};
 };
