@@ -31,6 +31,8 @@ bool NavMeshManager::Open(std::string filepath) {
 	auto file_ptr = file.get();
 
 	Initialise();
+	if (file_ptr == nullptr) return false;
+
 
 	// Read header
 	header = *reinterpret_cast<NavMeshSetHeader*>(file_ptr);
