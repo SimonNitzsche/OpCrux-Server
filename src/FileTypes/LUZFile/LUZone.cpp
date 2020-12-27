@@ -176,9 +176,9 @@ void LUZone::Read() {
 	currentOffset = terrainInfo.description.Read(currentOffset);
 
 	{
-		Logger::log("WRLD", "Loading Terrain...");
-		std::string terrainFileNameFull = StringUtils::ToLower(FileUtils::GetFileDir(this->strFile) + "/" + terrainInfo.fileName.ToString());
-		terrainFile.Open(terrainFileNameFull);
+		// Logger::log("WRLD", "Loading Terrain...");
+		// std::string terrainFileNameFull = StringUtils::ToLower(FileUtils::GetFileDir(this->strFile) + "/" + terrainInfo.fileName.ToString());
+		// terrainFile.Open(terrainFileNameFull);
 	}
 
 	// Transisions

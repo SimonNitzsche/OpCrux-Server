@@ -218,7 +218,7 @@ public:
 		PerformDamageRequest(caster, 0xFFFFFFFF);
 	}
 
-	void PerformDamageRequest(Entity::GameObject* caster, std::uint32_t damage) {
+	void PerformDamageRequest(Entity::GameObject* caster, std::int32_t damage) {
 		// We are not smashable
 		if (!statsComponent->attributes.isSmashable) return;
 
@@ -227,6 +227,12 @@ public:
 
 		// Cancle if dead
 		if (isDead) { Logger::log("WRLD", "Object is already dead", LogType::WARN); return; }
+
+		if (damage == 0xFFFFFFFF) {
+			statsComponent->attributes.currentArmor = 0;
+			statsComponent->attributes.currentHealth = 0;
+			isDead = true;
+		}
 
 		// TODO: Check for buffs
 

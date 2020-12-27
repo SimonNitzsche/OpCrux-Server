@@ -57,7 +57,7 @@ public:
 		parameters.currentTarget = target;
 	}
 
-	void DoDamageOnTarget(std::uint32_t damage);
+	void DoDamageOnTarget(std::int32_t damage);
 
 	SkillComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
@@ -216,7 +216,7 @@ void SkillComponent::UnCast(const std::string sBitStream, long behaviorID) {
 }
 
 #include "Entity/Components/DestructibleComponent.hpp"
-void SkillComponent::DoDamageOnTarget(std::uint32_t damage) {
+void SkillComponent::DoDamageOnTarget(std::int32_t damage) {
 	// Make sure objectID is not empty
 	if (parameters.currentTarget == 0ULL) {
 		Logger::log("WRLD", "Unable to do damage on empty objectID", LogType::WARN);

@@ -36,7 +36,6 @@ struct BehaviorTacArc : AbstractAggregateBehavior {
 				
 				targets.clear();
 				std::uint32_t tmpNumberOfTargets; bs->Read(tmpNumberOfTargets);
-				targets.reserve(tmpNumberOfTargets);
 				for (int i = 0; i < tmpNumberOfTargets; ++i) {
 					std::uint64_t tmpObjectID; bs->Read(tmpObjectID);
 					targets.push_back(tmpObjectID);

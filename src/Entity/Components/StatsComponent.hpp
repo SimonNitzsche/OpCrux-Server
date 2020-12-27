@@ -15,17 +15,17 @@ using namespace DataTypes;
 
 class StatsComponent : public IEntityComponent {
 public:
-	bool _buffsDirty = true;
+	bool _buffsDirty = false;
 	struct StatBuffs {
-		std::uint32_t buff_0=100;
-		std::uint32_t buff_1=100;
-		std::uint32_t buff_2=100;
-		std::uint32_t buff_3=100;
-		std::uint32_t buff_4=100;
-		std::uint32_t buff_5=100;
-		std::uint32_t buff_6=100;
-		std::uint32_t buff_7=100;
-		std::uint32_t buff_8=100;
+		std::uint32_t buff_0=0;
+		std::uint32_t buff_1=0;
+		std::uint32_t buff_2=0;
+		std::uint32_t buff_3=0;
+		std::uint32_t buff_4=0;
+		std::uint32_t buff_5=0;
+		std::uint32_t buff_6=0;
+		std::uint32_t buff_7=0;
+		std::uint32_t buff_8=0;
 	} buffs;
 
 public:

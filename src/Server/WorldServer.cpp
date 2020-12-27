@@ -274,14 +274,16 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 	masterServerBridge->NotifyInstanceLoaded(zone, instanceID, cloneID, addr);
 
 	while (ServerInfo::bRunning) {
-		RakSleep(30);
+		RakSleep(16);
 		/*if (debugRenderer != nullptr) {
 			debugRenderer->Paint();
 		}*/
 		try {
 			// RakNet likes to crash in debug mode.
 			// Skip packet if unable tro read
+			m_lock.lock();
 			packet = rakServer->Receive();
+			m_lock.unlock();
 		}
 		catch (...) {
 			continue;
