@@ -13,6 +13,9 @@ bool appendRecord(short handleType, void* handle, SQLSMALLINT recNumber,
     SQLINTEGER nativeError;
     SQLCHAR messageText[2048];
     SQLSMALLINT textLength;
+    #ifdef _WIN32
+    #define SQLGetDiagRec SQLGetDiagRecA
+    #endif
     SQLRETURN rc = SQLGetDiagRec(handleType, handle, recNumber, sqlState,
         &nativeError, messageText, sizeof(messageText)/sizeof(SQLCHAR),
         &textLength);
