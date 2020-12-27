@@ -390,6 +390,10 @@ namespace Entity {
 		void OnOffCollisionPhantom(Entity::GameObject* other);
 
 		void SetPlayerActivity(Enums::EGameActivity activity);
+
+		std::int64_t GetCreationTimestamp() {
+			return creationTimestamp;
+		}
 	public:
 		/* Game Messages */
 		//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }

@@ -11,6 +11,7 @@
 #include "FileTypes/LVLFile/LUScene.hpp"
 #include "FileTypes/LVLFile/TriggerFile.hpp"
 #include "FileTypes/RAWFile/RAWFile.hpp"
+#include "Misc/NavMeshManager.hpp"
 
 using namespace DataTypes;
 
@@ -395,6 +396,7 @@ namespace FileTypes::LUZ {
 			std::vector<SceneTransition> sceneTransitions;
 			std::unordered_map<std::u16string, LUZonePathBase*> paths;
 			RAW::RAWFile terrainFile;
+			NavMeshManager navmeshManager;
 		public:
 			// Constructs a new LUZone, with the path to the filename.
 			LUZone(const std::string& filename);

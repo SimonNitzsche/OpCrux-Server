@@ -3,6 +3,7 @@
 #include "Utils/FileUtils.hpp"
 #include "Utils/StringUtils.hpp"
 #include "Utils/LDFUtils.hpp"
+#include "Misc/NavMeshManager.hpp"
 
 using namespace FileTypes::LUZ;
 
@@ -459,4 +460,6 @@ void LUZone::Read() {
 	}
 	
 	this->revisionChecksum = calculateRevisionChecksum();
+
+	this->navmeshManager.Open(StringUtils::ToLower(FileUtils::GetFileDir(this->strFile) + "/" + terrainInfo.fileName.ToString().substr(0, terrainInfo.fileName.ToString().find_last_of(".")) + ".nav").c_str());
 }
