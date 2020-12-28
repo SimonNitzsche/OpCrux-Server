@@ -9,6 +9,8 @@
 #include "Utils/ServerInfo.hpp"
 
 using namespace DataTypes;
+class ControllablePhysicsComponent;
+class NavMeshManager;
 
 class MovementAIComponent : public IEntityComponent {
 private:
@@ -27,6 +29,8 @@ private:
 	time_t nextUpdate = 0;
 
 	std::uniform_int_distribution<> nextUpdateDist;
+	NavMeshManager * navManager;
+	Vector3 targetPos;
 
 public:
 
@@ -43,37 +47,15 @@ public:
 
 		
 		//basePosition = Vector3(-406.6414489746094 ,350.69287109375, -157.47933959960938);
-		nextUpdateDist = std::uniform_int_distribution<>(20, 25);
+		nextUpdateDist = std::uniform_int_distribution<>(20000, 25000);
+		nextUpdateDist = std::uniform_int_distribution<>(3000, 6000);
 	}
 
-	void Awake() {
-		this->controllablePhysicsComponent = owner->GetComponent<ControllablePhysicsComponent>();
-		basePosition = controllablePhysicsComponent->GetPosition();
-		allowUpdate = true;
-	}
+	void Awake();
 
-	void Update() {
-		if (!allowUpdate) {
-			if (ServerInfo::uptimeMs() > nextUpdate) {
-				allowUpdate = true;
-				nextUpdate = ServerInfo::uptimeMs() + 1000 * nextUpdateDist(RandomUtil::GetEngine());
-			}
-			return;
-		}
-		allowUpdate = false;
-		Vector3 newPos = Vector3::zero(); // Vector3(basePosition.x, basePosition.y, basePosition.z);
+	void SetTargetMovementPos(Vector3 position);
 
-		unsigned long long time = ServerInfo::uptime();
-
-		time += (owner->GetObjectID().getPureID() * 2);
-
-		newPos.x += 4 * std::cos(time);
-		newPos.z += 4 * std::sin(time);
-
-		//controllablePhysicsComponent->SetVelocity(newPos);
-		controllablePhysicsComponent->SetPosition(newPos + basePosition);
-		owner->SetDirty();
-	}
+	void Update();
 	
 };
 

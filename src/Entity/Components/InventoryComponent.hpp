@@ -198,6 +198,14 @@ public:
 						InventoryTab _tab; _tab.insert({ it->slot, itemStack });
 						inventory.insert({ it->tab, _tab });
 					}
+
+					if (itemStack.equip) {
+						{
+							GM::EquipInventory nmsg;
+							nmsg.itemToEquip = itemStack.objectID;
+							owner->CallMessage(nmsg);
+						}
+					}
 				}
 			}
 

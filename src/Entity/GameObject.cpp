@@ -766,6 +766,7 @@ void Entity::GameObject::OnCollisionPhantom(Entity::GameObject * other) {
 			component.second->OnCollisionPhantom(other);
 		}
 	}
+	NotifyTriggerEvent("OnEnter");
 }
 
 void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
@@ -776,6 +777,7 @@ void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 			component.second->OnOffCollisionPhantom(other);
 		}
 	}
+	NotifyTriggerEvent("OnExit");
 }
 
 void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {

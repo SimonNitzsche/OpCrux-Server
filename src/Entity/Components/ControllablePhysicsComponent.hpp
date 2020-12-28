@@ -30,6 +30,10 @@ private:
 	bool onRail = false;
 	Vector3 velocity = Vector3::zero();
 	Vector3 angularVelocity = Vector3::zero();
+	/*
+		set this bit to deactivate position updates
+	*/
+	bool puDeactivated = false;
 
 	bool __unk__0=false;
 		float __unk__1=0;
@@ -91,9 +95,11 @@ public:
 
 	void SetPosition(Vector3 pos) {
 		position = pos;
-		_isDirtyPositionAndStuff = true;
-		owner->SetDirty();
-		UpdatePhysicsPosition();
+		if (!puDeactivated) {
+			_isDirtyPositionAndStuff = true;
+			owner->SetDirty();
+			UpdatePhysicsPosition();
+		}
 	}
 
 	void UpdatePhysicsPosition() {
