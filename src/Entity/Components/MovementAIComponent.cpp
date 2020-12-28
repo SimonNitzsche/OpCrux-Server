@@ -13,7 +13,7 @@ void MovementAIComponent::Awake() {
 
 void MovementAIComponent::SetTargetMovementPos(Vector3 position) {
 	targetPos = position;
-	owner->SetPosition(targetPos);
+	//owner->SetPosition(targetPos);
 	//this->controllablePhysicsComponent->SetVelocity(DataTypes::Vector3(0, 5.0f, 0));
 }
 
@@ -43,5 +43,22 @@ void MovementAIComponent::Update() {
 		//controllablePhysicsComponent->SetVelocity(newPos);
 		// controllablePhysicsComponent->SetPosition(newPos /*+ basePosition*/);
 		// owner->SetDirty();
+	}
+
+	if (targetPos != DataTypes::Vector3::zero() && targetPos != controllablePhysicsComponent->GetPosition()) {
+		/*auto velo_rate = 0.2f;
+		auto wander_speed = 12.3f;
+		auto turn_speed = M_PI / 4.0f;
+		std::float_t notDone = controllablePhysicsComponent->MoveTowardsLocation(targetPos, wander_speed, velo_rate);
+		if (notDone) {
+			auto turnProgress = controllablePhysicsComponent->TurnTowardsLocation(targetPos, turn_speed, velo_rate);
+		}*/
+		auto clients = owner->GetZoneInstance()->sessionManager.GetClients();
+		for (auto cl : clients) {
+			auto pl = owner->GetZoneInstance()->objectsManager->GetObjectByID(cl.actorID);
+			if (pl == nullptr) continue;
+			controllablePhysicsComponent->LookAt(Vector3(pl->GetPosition().x, controllablePhysicsComponent->GetPosition().y, pl->GetPosition().z));
+			break;
+		}
 	}
 }

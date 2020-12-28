@@ -1,6 +1,8 @@
 #ifndef __REPLICA__COMPONENTS__CONTROLLABLE_PHYSICS_COMPONENT_HPP__
 #define __REPLICA__COMPONENTS__CONTROLLABLE_PHYSICS_COMPONENT_HPP__
 
+#include "Common/CrossPlatform.hpp"
+
 #include "Entity/Components/Interface/IEntityComponent.hpp"
 #include "DataTypes/Quaternion.hpp"
 
@@ -143,7 +145,7 @@ public:
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 			// Jetpack
 			factory->Write(false);
-			// Buffs
+			// Immunities
 			factory->Write(false);
 
 			_isDirtyPositionAndStuff = true;
@@ -152,7 +154,7 @@ public:
 		factory->Write(false);
 		// ???
 		factory->Write(false);
-		// ???
+		// ???, plays fx bubble
 		factory->Write(false);
 		
 		factory->Write(_isDirtyPositionAndStuff);
@@ -214,6 +216,102 @@ public:
 	void Update() {
 		
 	}
+
+	void LookAt(DataTypes::Vector3 lookAtPos) {
+		Vector3 toVector = (lookAtPos - position).normalized();
+
+		// compute rotation axis
+		Vector3 rotAxis = Vector3::Cross(Vector3::forward(), toVector).normalized();
+		if ((rotAxis.x * rotAxis.x + rotAxis.y * rotAxis.y + rotAxis.z * rotAxis.z) == 0)
+			rotAxis = Vector3::up();
+
+		// find the angle around rotation axis
+		std::float_t dot = Vector3::Dot(Vector3::forward(), toVector);
+		std::float_t ang = std::acosf(dot);
+
+		auto s = std::sinf(ang * 0.5f);
+		auto u = rotAxis.normalized();
+		SetRotation(DataTypes::Quaternion(u.x * s, u.y * s, u.z * s, std::cosf(ang * 0.5)));
+	}
+
+	/*
+		Use this to move an object
+	*/
+	std::float_t MoveTowardsLocation(DataTypes::Vector3 destination, std::float_t speed, std::float_t velocityRate) {
+		GENERIC_POSITION pos = position;
+
+		Vector3 difference = Vector3(pos.x - destination.x, pos.y - destination.y, pos.z - destination.z);
+
+		float distanceRemaining = Vector3::Distance(pos, destination);
+
+		float xSpeed = ((difference.x > 0.5) ? 1.0f : 0.0f) *speed;
+		float zSpeed = ((difference.z > 0.5) ? 1.0f : 0.0f) * speed;
+
+		pos.x += xSpeed / (1 / velocityRate);
+		pos.z += zSpeed / (1 / velocityRate);
+		SetPosition(pos);
+
+		GENERIC_VELOCITY velocity = velocity;
+
+		velocity.x = xSpeed;
+		velocity.z = zSpeed;
+		SetVelocity(velocity);
+
+		return distanceRemaining;
+	}
+
+	/*
+		Use this to rotate an object
+	*/
+	std::float_t TurnTowardsLocation(DataTypes::Vector3 targetLocation, std::float_t turnSpeed, std::float_t velocityRate) {
+
+		targetLocation.y = position.y;
+
+		GENERIC_POSITION objLocal = position;
+
+		Quaternion currentQuaternion = rotation;
+		Quaternion quaternionGoal = Quaternion::betweenPoints(objLocal, targetLocation);
+		auto eu = Quaternion::toEuler(quaternionGoal);
+		quaternionGoal = Quaternion::toQuaternion(Vector3(0, eu.x, 0));
+
+		float currentRadians = currentQuaternion.yaw();
+		float goalRadians = quaternionGoal.yaw();
+		float radianDifference = abs(currentRadians - goalRadians);
+		if (!radianDifference) {
+			Quaternion::slerp(currentQuaternion, quaternionGoal, 1.0f);
+			rotation = (currentQuaternion);
+
+			angularVelocity = (Vector3());
+			return 1.0f;
+		}
+
+		int direction;
+		if (radianDifference < M_PI) direction = (currentRadians < goalRadians) ? 1 : -1;
+		else {
+			if (currentRadians > goalRadians) {
+				radianDifference = goalRadians + 2 * M_PI - currentRadians;
+				direction = 1;
+			}
+			else {
+				radianDifference = currentRadians + 2 * M_PI - goalRadians;
+				direction = -1;
+			}
+		}
+
+		float turnProgress = turnSpeed / radianDifference;
+		if (turnProgress > 1.0f) turnProgress = 1.0f;
+
+		Quaternion::slerp(currentQuaternion, quaternionGoal, turnProgress);
+		rotation = (currentQuaternion);
+
+		GENERIC_VELOCITY_ANGULAR qu_velocity = angularVelocity;
+		if (turnProgress < 1.0f) qu_velocity.y = turnSpeed / (velocityRate * 2) * direction;
+		else qu_velocity.y = 0.0f;
+		angularVelocity = (qu_velocity);
+
+		return turnProgress;
+	}
+
 };
 
 #endif
