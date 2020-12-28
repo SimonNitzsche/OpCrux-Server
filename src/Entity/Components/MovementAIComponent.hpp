@@ -47,8 +47,8 @@ public:
 
 		
 		//basePosition = Vector3(-406.6414489746094 ,350.69287109375, -157.47933959960938);
-		nextUpdateDist = std::uniform_int_distribution<>(20000, 25000);
-		nextUpdateDist = std::uniform_int_distribution<>(3000, 6000);
+		//nextUpdateDist = std::uniform_int_distribution<>(20000, 25000);
+		nextUpdateDist = std::uniform_int_distribution<>(6000, 25000);
 	}
 
 	void Awake();

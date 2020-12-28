@@ -14,7 +14,7 @@ void MovementAIComponent::Awake() {
 void MovementAIComponent::SetTargetMovementPos(Vector3 position) {
 	targetPos = position;
 	owner->SetPosition(targetPos);
-	this->controllablePhysicsComponent->SetVelocity(DataTypes::Vector3(0, 5.0f, 0));
+	//this->controllablePhysicsComponent->SetVelocity(DataTypes::Vector3(0, 5.0f, 0));
 }
 
 void MovementAIComponent::Update() {
