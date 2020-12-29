@@ -74,9 +74,11 @@ void MovementAIComponent::Update() {
 			auto maxdv = max(max(veloDir.x, veloDir.y), veloDir.z);
 			auto maxdf = 1 / maxdv;
 
-			veloDir = veloDir * maxdf * 13.2f;
+			auto speed = wanderSpeed;
+
+			veloDir = veloDir * maxdf * speed;
 			if (controllablePhysicsComponent->GetVelocity() != veloDir) {
-				if (veloDir.x > 13.2f || veloDir.y > 13.2f || veloDir.z > 13.2f) {
+				if (veloDir.x > speed || veloDir.y > speed || veloDir.z > speed) {
 					veloDir = Vector3::zero();
 				}
 				controllablePhysicsComponent->SetVelocity(veloDir);
