@@ -25,6 +25,7 @@ public:
 	virtual void onFireEvent(Entity::GameObject* self, GM::FireEventServerSide msg) {}
 	virtual void onRespondToMission(Entity::GameObject* self, GM::RespondToMission msg) {}
 	virtual void onRebuildNotifyState(Entity::GameObject* self, GM::RebuildNotifyState msg) {}
+	virtual void onRebuildComplete(Entity::GameObject* self, GM::RebuildNotifyState msg) {}
 
 	// Helper functions
 	void print(std::string text) {

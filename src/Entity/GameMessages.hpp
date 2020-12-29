@@ -101,6 +101,7 @@ public:
 #include "Entity/GameMessages/BuildModeSet.hpp"
 #include "Entity/GameMessages/BuyFromVendor.hpp"
 #include "Entity/GameMessages/CancelRailMovement.hpp"
+#include "Entity/GameMessages/CastSkill.hpp"
 #include "Entity/GameMessages/ClientItemConsumed.hpp"
 #include "Entity/GameMessages/DeactivateNDAudioMusicCue.hpp"
 #include "Entity/GameMessages/Die.hpp"

@@ -34,6 +34,12 @@ public:
 			factory->Write(state);
 			factory->Write(target);
 		}
+
+		// We just spawned
+		if (state == ECombatState::SPAWN) {
+			// Go to idle
+			SetState(ECombatState::IDLE);
+		}
 	}
 
 	void SetState(ECombatState newState) {
@@ -47,7 +53,7 @@ public:
 	}
 
 	void Update() {
-		// We're spawned
+		// We're spawned, for the case we haven't constructed ourselves yet
 		if (state == ECombatState::SPAWN) {
 			// Wait 5 seconds
 			if (owner->GetCreationTimestamp() + 5000 < ServerInfo::uptimeMs()) {

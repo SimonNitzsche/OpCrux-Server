@@ -37,8 +37,8 @@ void MovementAIComponent::Update() {
 
 		//newPos.x += 4 * std::cos(time);
 		//newPos.z += 4 * std::sin(time);
-
-		SetTargetMovementPos(newPos);
+		if(targetPos == Vector3::zero())
+			SetTargetMovementPos(newPos);
 
 		//controllablePhysicsComponent->SetVelocity(newPos);
 		// controllablePhysicsComponent->SetPosition(newPos /*+ basePosition*/);
@@ -46,7 +46,8 @@ void MovementAIComponent::Update() {
 	}
 
 	if (targetPos != DataTypes::Vector3::zero()) {
-		if (Vector3::Distance(targetPos, controllablePhysicsComponent->GetPosition()) > 3.f) {
+		auto targetDistance = Vector3::Distance(targetPos, controllablePhysicsComponent->GetPosition());
+		if (targetDistance > 3.f) {
 			/*auto velo_rate = 0.2f;
 			auto wander_speed = 12.3f;
 			auto turn_speed = M_PI / 4.0f;
@@ -74,19 +75,23 @@ void MovementAIComponent::Update() {
 			auto maxdv = max(max(veloDir.x, veloDir.y), veloDir.z);
 			auto maxdf = 1 / maxdv;
 
-			auto speed = wanderSpeed;
+			auto speed = wanderSpeed * 5;
 
 			veloDir = veloDir * maxdf * speed;
 			if (controllablePhysicsComponent->GetVelocity() != veloDir) {
 				if (veloDir.x > speed || veloDir.y > speed || veloDir.z > speed) {
 					veloDir = Vector3::zero();
 				}
+			}
+			if (controllablePhysicsComponent->GetVelocity() != veloDir) {
 				controllablePhysicsComponent->SetVelocity(veloDir);
 			}
 			
 		}
 		else {
-			controllablePhysicsComponent->SetVelocity(Vector3::zero());
+			if(controllablePhysicsComponent->GetVelocity() != Vector3::zero())
+				controllablePhysicsComponent->SetVelocity(Vector3::zero());
+			targetPos = Vector3::zero();
 		}
 	}
 }

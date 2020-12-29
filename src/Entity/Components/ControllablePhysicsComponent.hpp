@@ -131,9 +131,11 @@ public:
 	}
 
 	void SetVelocity(Vector3 vel) {
+		if ((velocity != vel) && (Vector3::Distance(velocity, vel) > 0.05f)) {
+			_isDirtyPositionAndStuff = true;
+			owner->SetDirty();
+		}
 		velocity = vel;
-		_isDirtyPositionAndStuff = true;
-		owner->SetDirty();
 	}
 
 	Vector3 GetVelocity() {
@@ -214,7 +216,7 @@ public:
 
 
 	void Update() {
-		const auto updateFactor = 0.33f;
+		const auto updateFactor = 0.0625f;
 		if(velocity != DataTypes::Vector3::zero())
 			position += velocity * updateFactor;
 	}
@@ -233,7 +235,11 @@ public:
 
 		auto s = std::sinf(ang * 0.5f);
 		auto u = rotAxis.normalized();
-		SetRotation(DataTypes::Quaternion(u.x * s, u.y * s, u.z * s, std::cosf(ang * 0.5)));
+		auto newRotation = DataTypes::Quaternion(u.x * s, u.y * s, u.z * s, std::cosf(ang * 0.5));
+		if (Vector3::Distance(Quaternion::toEuler(rotation), Quaternion::toEuler(newRotation)) > 1.0f)
+			SetRotation(newRotation);
+		else
+			rotation = newRotation;
 	}
 
 	/*

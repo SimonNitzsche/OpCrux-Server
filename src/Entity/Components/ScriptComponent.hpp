@@ -154,8 +154,11 @@ public:
 	}
 
 	void OnRebuildNotifyState(Entity::GameObject* sender, GM::RebuildNotifyState* msg) {
-		if (instance)
+		if (instance) {
 			instance->onRebuildNotifyState(sender, *msg);
+			if (msg->iState == 2)
+				instance->onRebuildComplete(sender, *msg);
+		}
 	}
 
 	std::vector<Entity::GameObject*> objectsInProximity = {};

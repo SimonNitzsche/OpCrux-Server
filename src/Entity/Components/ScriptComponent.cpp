@@ -10,6 +10,7 @@
 #include "Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_FANS.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_IMAG_SMASHABLE.hpp"
+#include "Entity/NativeScripts/ai/AG/L_AG_JET_EFFECT_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_PLAYER_SHOCK_SERVER.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SHIP_SHAKE.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_SPACE_STUFF.hpp"
@@ -34,6 +35,7 @@ const std::unordered_map<std::string, script_factory> ScriptComponent::factories
 		{"scripts\\ai\\AG\\L_AG_BUS_DOOR.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR>(); }},
 		{"scripts\\ai\\AG\\L_AG_FANS.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_FANS>(); }},
 		{"scripts\\ai\\AG\\L_AG_IMAG_SMASHABLE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_IMAG_SMASHABLE>(); }},
+		{"scripts\\ai\\AG\\L_AG_JET_EFFECT_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_JET_EFFECT_SERVER>(); }},
 		{"scripts\\ai\\AG\\L_AG_SHIP_PLAYER_SHOCK_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_PLAYER_SHOCK_SERVER>(); }},
 		{"scripts\\ai\\AG\\L_AG_SHIP_SHAKE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SHIP_SHAKE>(); }},
 		{"scripts\\ai\\AG\\L_AG_SPACE_STUFF.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_SPACE_STUFF>();  }},

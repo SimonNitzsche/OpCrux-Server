@@ -65,6 +65,26 @@ using namespace Exceptions;
 extern BridgeMasterServer* masterServerBridge;
 extern std::vector<ILUServer*> virtualServerInstances;
 
+std::uint32_t WorldServer::GetCinematicInfo(std::u16string name) {
+	if (!luZone || !luZone->_isFileLoaded()) return 0;
+	auto pathIt = luZone->paths.find(name);
+
+	if (pathIt == luZone->paths.end()) return 0;
+	if (pathIt->second->pathType != FileTypes::LUZ::LUZonePathType::Camera) return 0;
+	auto camPath = reinterpret_cast<FileTypes::LUZ::LUZonePathCamera*>(pathIt->second);
+	
+	std::uint32_t totalTime = 0;
+	for (auto wp : camPath->waypoints) {
+		totalTime += std::int32_t((wp->time) * 1000);
+	}
+
+	if (camPath->nextPath.length != 0) {
+		totalTime += GetCinematicInfo(camPath->nextPath.ToString());
+	}
+
+    return totalTime;
+}
+
 WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_port(port) {
 	// Preload
 	std::string buf;

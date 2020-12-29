@@ -128,6 +128,7 @@ public:
 					msg.iPrevState = qbState;
 					msg.iState = (qbState = 4);
 					GameMessages::Broadcast(this->owner, msg);
+					owner->CallMessage(msg);
 
 					this->_isDirtyFlag = true;
 					this->owner->SetDirty();
@@ -244,7 +245,7 @@ public:
 			buildingPlayer = sender;
 			playerStartImagination = sender->GetImagination();
 			{GM::EnableRebuild nmsg; nmsg.user = sender->GetObjectID(); nmsg.bEnable = true; nmsg.fDuration = completionTime; GameMessages::Broadcast(this->owner, nmsg); }
-			{GM::RebuildNotifyState nmsg; nmsg.player = sender->GetObjectID(); nmsg.iPrevState = qbState; nmsg.iState = (qbState = 5); GameMessages::Broadcast(this->owner, nmsg); }
+			{GM::RebuildNotifyState nmsg; nmsg.player = sender->GetObjectID(); nmsg.iPrevState = qbState; nmsg.iState = (qbState = 5); GameMessages::Broadcast(this->owner, nmsg); owner->CallMessage(nmsg); }
 
 			this->_isDirtyFlag = true;
 			this->owner->SetDirty();
