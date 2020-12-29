@@ -567,6 +567,29 @@ public:
 		return -1;
 	}
 
+	static void DeleteCharacter(odbc::ConnectionRef conn, DataTypes::LWOOBJID ObjectID, uint32_t AccountID) {
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT objectID FROM OPCRUX_GD.dbo.Characters WHERE accountID = ?");
+
+		stmt->setInt(1, AccountID);
+		odbc::ResultSetRef rs = stmt->executeQuery();
+		uint64_t objid;
+		bool Good = false;
+		while (rs->next()) {
+			objid = *rs->getULong(1);
+			if (DataTypes::LWOOBJID::makePlayerObjectID(objid) == ObjectID) {
+				Good = true;
+			}
+		}
+		stmt.reset();
+		rs.reset();
+
+		{
+			odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "DELETE FROM OPCRUX_GD.dbo.Characters WHERE objectID = ?");
+			stmt->setULong(1, objid);
+			stmt->executeQuery();
+		}
+	}
+
 	static std::uint64_t getStatByID(std::int64_t statsID, std::uint32_t statsIndex) {
 		const std::string lookup[27] = {
 			"currencyCollected",
