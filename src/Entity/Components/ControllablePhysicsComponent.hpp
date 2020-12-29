@@ -214,7 +214,9 @@ public:
 
 
 	void Update() {
-		
+		const auto updateFactor = 0.33f;
+		if(velocity != DataTypes::Vector3::zero())
+			position += velocity * updateFactor;
 	}
 
 	void LookAt(DataTypes::Vector3 lookAtPos) {
@@ -311,7 +313,6 @@ public:
 
 		return turnProgress;
 	}
-
 };
 
 #endif

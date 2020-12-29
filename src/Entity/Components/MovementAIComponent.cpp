@@ -45,20 +45,46 @@ void MovementAIComponent::Update() {
 		// owner->SetDirty();
 	}
 
-	if (targetPos != DataTypes::Vector3::zero() && targetPos != controllablePhysicsComponent->GetPosition()) {
-		/*auto velo_rate = 0.2f;
-		auto wander_speed = 12.3f;
-		auto turn_speed = M_PI / 4.0f;
-		std::float_t notDone = controllablePhysicsComponent->MoveTowardsLocation(targetPos, wander_speed, velo_rate);
-		if (notDone) {
-			auto turnProgress = controllablePhysicsComponent->TurnTowardsLocation(targetPos, turn_speed, velo_rate);
-		}*/
-		auto clients = owner->GetZoneInstance()->sessionManager.GetClients();
-		for (auto cl : clients) {
-			auto pl = owner->GetZoneInstance()->objectsManager->GetObjectByID(cl.actorID);
-			if (pl == nullptr) continue;
-			controllablePhysicsComponent->LookAt(Vector3(pl->GetPosition().x, controllablePhysicsComponent->GetPosition().y, pl->GetPosition().z));
-			break;
+	if (targetPos != DataTypes::Vector3::zero()) {
+		if (Vector3::Distance(targetPos, controllablePhysicsComponent->GetPosition()) > 3.f) {
+			/*auto velo_rate = 0.2f;
+			auto wander_speed = 12.3f;
+			auto turn_speed = M_PI / 4.0f;
+			std::float_t notDone = controllablePhysicsComponent->MoveTowardsLocation(targetPos, wander_speed, velo_rate);
+			if (notDone) {
+				auto turnProgress = controllablePhysicsComponent->TurnTowardsLocation(targetPos, turn_speed, velo_rate);
+			}*/
+			/*auto clients = owner->GetZoneInstance()->sessionManager.GetClients();
+			for (auto cl : clients) {
+				auto pl = owner->GetZoneInstance()->objectsManager->GetObjectByID(cl.actorID);
+				if (pl == nullptr) continue;
+				break;
+			}*/
+
+			//SetTargetMovementPos(pl->GetPosition());
+			controllablePhysicsComponent->LookAt(Vector3(targetPos.x, controllablePhysicsComponent->GetPosition().y, targetPos.z));
+
+			// get max for factoring
+
+			Vector3 localPos = controllablePhysicsComponent->GetPosition();
+			Vector3 veloDir;
+			veloDir.set(targetPos.x - localPos.x, targetPos.y - localPos.y, targetPos.z - localPos.z);
+
+
+			auto maxdv = max(max(veloDir.x, veloDir.y), veloDir.z);
+			auto maxdf = 1 / maxdv;
+
+			veloDir = veloDir * maxdf * 13.2f;
+			if (controllablePhysicsComponent->GetVelocity() != veloDir) {
+				if (veloDir.x > 13.2f || veloDir.y > 13.2f || veloDir.z > 13.2f) {
+					veloDir = Vector3::zero();
+				}
+				controllablePhysicsComponent->SetVelocity(veloDir);
+			}
+			
+		}
+		else {
+			controllablePhysicsComponent->SetVelocity(Vector3::zero());
 		}
 	}
 }
