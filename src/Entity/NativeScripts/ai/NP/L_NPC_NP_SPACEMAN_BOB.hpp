@@ -15,6 +15,13 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 
 			Entity::GameObject* player = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.responder);
 
+			MissionManager::LaunchTaskEvent(EMissionTask::SCRIPT, self, player->GetObjectID());
+
+			GM::NotifyClientFlagChange flagGM;
+			flagGM.bFlag = true;
+			flagGM.iFlagID = 66;
+			GameMessages::Send(player, player->GetObjectID(), flagGM);
+
 			DatabaseModels::MissionModel model;
 			if (!Database::HasMission(self->GetZoneInstance()->GetDBConnection(), msg.responder.getPureID(), 664)) {
 				model = Database::AddMission(self->GetZoneInstance()->GetDBConnection(), msg.responder.getPureID(), 664);
@@ -25,12 +32,7 @@ class NATIVESCRIPT__AI__NP__L_NPC_SPACEMAN_BOB : public NativeScript {
 			}
 
 
-			MissionManager::LaunchTaskEvent(EMissionTask::SCRIPT, self, player->GetObjectID());
-
-			GM::NotifyClientFlagChange flagGM;
-			flagGM.bFlag = true;
-			flagGM.iFlagID = 66;
-			GameMessages::Send(player, player->GetObjectID(), flagGM);
+			
 		}
 	}
 };

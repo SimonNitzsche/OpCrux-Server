@@ -8,6 +8,7 @@
 #include "Entity/Components/CharacterComponent.hpp"
 #include "Entity/GameMessages.hpp"
 #include "Entity/Components/InventoryComponent.hpp"
+#include "Entity/Components/DestructibleComponent.hpp"
 
 std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> MissionManager::GetMissionTasksByTaskTypeAndTarget(Enums::EMissionTask taskType, std::int32_t target) {
     std::map<std::int32_t, std::map<std::int32_t, std::int32_t>> missionsFound;
@@ -609,6 +610,9 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
     InventoryComponent* invComp = player->GetComponent<InventoryComponent>();
     if (invComp == nullptr) return;
 
+	StatsComponent* statsComp = player->GetComponent<StatsComponent>();
+	if (statsComp == nullptr) return;
+
 	auto charInfo = charComp->GetCharInfo();
 	auto charStats = charComp->GetCharStats();
 
@@ -629,23 +633,40 @@ void MissionManager::SendMissionRewards(Entity::GameObject* player, DatabaseMode
     // Reward: LEGO Score
     tmpVal = CacheMissions::GetLegoScore(missionRow);
     charInfo.uScore += (tmpVal > 0 ? tmpVal : 0);
-    // TODO: Level Update
+	if (tmpVal > 0) {
+		{GM::ModifyLegoScore nmsg; nmsg.score = charInfo.uScore; GameMessages::Send(player, player->GetObjectID(), nmsg); }
+	}
+
     // Reward: Reputation
     tmpVal = CacheMissions::GetRewardReputation(missionRow);
     charInfo.reputation += (tmpVal > 0 ? tmpVal : 0);
+	if (tmpVal > 0) {
+		{GM::UpdateReputation nmsg; nmsg.iReputation = charInfo.reputation; GameMessages::Send(player, player->GetObjectID(), nmsg); }
+	}
     // Reward: MaxImagination
     tmpVal = CacheMissions::GetRewardMaxImagination(missionRow);
-    charInfo.imagination += (tmpVal > 0 ? tmpVal : 0);
+    charInfo.maximagination += (tmpVal > 0 ? tmpVal : 0);
+	if (tmpVal > 0) {
+		statsComp->attributes.maxImagination += tmpVal;
+	}
     // Reward: MaxHealth
     tmpVal = CacheMissions::GetRewardMaxHealth(missionRow);
-    charInfo.health += (tmpVal > 0 ? tmpVal : 0);
-    // TODO: Reward: MaxInventory
-    // TODO: Reward: MaxModel
-    
+    charInfo.maxhealth += (tmpVal > 0 ? tmpVal : 0);
+	if (tmpVal > 0) {
+		statsComp->attributes.maxHealth += tmpVal;
+	}
+    // Reward: MaxInventory
+	tmpVal = CacheMissions::GetRewardMaxInventory(missionRow);
+	charInfo.maxinventory += (tmpVal > 0 ? tmpVal : 0);
+	if (tmpVal > 0) {
+		{GM::SetInventorySize nmsg; nmsg.inventoryType = 0; nmsg.size = charInfo.maxinventory; GameMessages::Send(player, player->GetObjectID(), nmsg); }
+	}
+
     charComp->InitCharInfo(charInfo);
     Database::UpdateChar(player->GetZoneInstance()->GetDBConnection(), charInfo);
 	charComp->CheckLevelProgression();
-    player->GetZoneInstance()->objectsManager->Serialize(player);
+	statsComp->SetDirty();
+	player->GetZoneInstance()->objectsManager->Serialize(player);
 
     // Reward: Items
 

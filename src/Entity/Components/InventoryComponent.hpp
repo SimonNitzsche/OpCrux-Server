@@ -11,6 +11,8 @@
 #include "Database/Database.hpp"
 #include "Entity/GameMessages.hpp"
 
+#include "Misc/MailManager.hpp"
+
 /*
 	TODO: This component is currently only implemented for static inventory, change this in future.
 */
@@ -48,7 +50,7 @@ class InventoryComponent : public IEntityComponent {
 private:
 	bool _isDirtyFlagEquippedItems = false;
 	bool _isDirtyFlagNextStruct = false;
-
+	std::int32_t maxItemSlots = 240;
 
 public:
 	typedef
@@ -712,8 +714,6 @@ public:
 		std::int32_t stackSize = GetStackSizeForLOT(itemLOT);
 		if (stackSize < 1) stackSize = 999;
 
-		// TODO: Check if inventory is full.
-
 		auto tabIt = inventory.find(tab);
 
 		// Make Item
@@ -744,6 +744,7 @@ public:
 
 		//Logger::log("WRLD", "Stack item? "+std::string(useStacking?"true":"false"));
 
+
 		// We don't have a stack, make a new one.
 		if (!useStacking) {
 			itemStack.ownerID = owner->GetObjectID().getPureID();
@@ -768,13 +769,26 @@ public:
 			// metadata stuff
 			itemStack.metadata = metadata;
 
-			// Add item to player
-			if (tabIt != inventory.end()) {
-				tabIt->second.insert({ slot, itemStack });
+			// Check if inventory is full.
+			if (tab == 0 && slot > maxItemSlots) {
+				// TODO: send mission mail:
+				// Mail::SendItem(...);
+				// return;
+				MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", true, 0Ui64, itemStack.toDBModel());
+			
+				{GM::NotifyRewardMailed nmsg; nmsg.objectID = itemStack.objectID; nmsg.startPoint = sourcePos; nmsg.subkey = itemStack.subkey; nmsg.templateID = itemStack.LOT; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
+				return;
 			}
+
 			else {
-				InventoryTab _tab; _tab.insert({ slot, itemStack });
-				inventory.insert({ tab, _tab });
+				// Add item to player directly
+				if (tabIt != inventory.end()) {
+					tabIt->second.insert({ slot, itemStack });
+				}
+				else {
+					InventoryTab _tab; _tab.insert({ slot, itemStack });
+					inventory.insert({ tab, _tab });
+				}
 			}
 		}
 
@@ -988,7 +1002,11 @@ public:
 			this->SaveStack(stack);
 		}
 	}
-
+	void OnSetInventorySize(Entity::GameObject* sender, GM::SetInventorySize* msg) {
+		if (msg->inventoryType == 0) {
+			maxItemSlots = msg->size;
+		}
+	}
 	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory* msg) {
 		this->EquipItem(msg->itemToEquip);
 	}
@@ -1053,6 +1071,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UseNonEquipmentItem, OnUseNonEquipmentItem);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::RemoveItemFromInventory, OnRemoveItemFromInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::MoveItemInInventory, OnMoveItemInInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::SetInventorySize, OnSetInventorySize);
 	}
 };
 

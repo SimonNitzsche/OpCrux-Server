@@ -13,6 +13,8 @@
 #include "GameCache/LevelProgressionLookup.hpp"
 #include "GameCache/ItemComponent.hpp"
 
+#include "Misc/MailManager.hpp"
+
 class CharacterComponent : public IEntityComponent {
 private:
 	DatabaseModels::Str_DB_CharInfo charInfo = DatabaseModels::Str_DB_CharInfo();
@@ -103,7 +105,7 @@ public:
 	}
 
 	void SetImagination(std::int32_t imag) {
-		//charInfo.imagination = imag; // TODO: imagination is imag as well as maxImag! WE NEED TO CHANGE THAT!
+		charInfo.imagination = imag; // TODO: imagination is imag as well as maxImag! WE NEED TO CHANGE THAT!
 		Database::UpdateChar(owner->GetZoneInstance()->GetDBConnection(), charInfo);
 	}
 
@@ -306,6 +308,8 @@ public:
 		GM::RestoreToPostLoadStats rtpls;
 		GameMessages::Send(owner, this->owner->GetObjectID(), rtpls);
 		PacketFactory::Chat::SendChatMessage(sender->GetZoneInstance()->zoneControlObject, 4, u"Player " + sender->GetName() + u" joined the game.");
+
+		MailManager::SendNewMailNotification(owner->GetZoneInstance(), owner->GetZoneInstance()->sessionManager.GetSession(owner->GetObjectID()));
 
 		GM::PlayerReady nmsg; 
 		auto Instance = this->owner->GetZoneInstance();

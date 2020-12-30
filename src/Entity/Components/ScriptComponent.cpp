@@ -24,6 +24,7 @@
 #include "Entity/NativeScripts/zone/AG/L_ZONE_AG_SURVIVAL.hpp"
 #include "Entity/NativeScripts/ScriptComponent_0952_script_name__removed.hpp"
 #include "Entity/NativeScripts/ScriptComponent_1021_script_name__removed.hpp"
+#include "Entity/NativeScripts/ScriptComponent_1088_script_name__removed.hpp"
 
 const std::unordered_map<std::string, script_factory> ScriptComponent::factories = {
 		{"TestScript", []() -> script_ptr {return std::make_shared<TestScript>(); }},
@@ -49,5 +50,6 @@ const std::unordered_map<std::string, script_factory> ScriptComponent::factories
 		{"scripts\\zone\\AG\\L_ZONE_AG_SURVIVAL.lua", []()->script_ptr {return std::make_shared < NATIVESCRIPT__ZONE__AG__L_ZONE_AG_SURVIVAL>(); }},
 		{"ScriptComponent_952_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_0952_script_name__removed>(); }},
 		{"ScriptComponent_1021_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1021_script_name__removed>(); }},
-		{"ScriptComponent_815_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_DARKLING_MECH>(); }}
+		{"ScriptComponent_815_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_DARKLING_MECH>(); }},
+		{"ScriptComponent_1088_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1088_script_name__removed>(); }}
 };

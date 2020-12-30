@@ -854,7 +854,7 @@ std::string Entity::GameObject::GenerateXML() {
 		{
 			ss << "<bag>";
 			{
-				ss << "<b t=\"0\" m=\"200\"/>" ;
+				ss << "<b t=\"0\" m=\""<< charInfo.maxinventory <<"\"/>" ;
 				ss << "<b t=\"1\" m=\"240\"/>" ;
 				ss << "<b t=\"14\" m=\"240\"/>";
 				ss << "<b t=\"15\" m=\"240\"/>";

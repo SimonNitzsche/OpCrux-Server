@@ -47,6 +47,8 @@
 #include "GameCache/ZoneTable.hpp"
 #include "GameCache/Objects.hpp"
 
+#include "Misc/MailManager.hpp"
+
 #include "Utils/LDFUtils.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
 
@@ -380,6 +382,16 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 			break;
 		}
 		case ERemoteConnection::CHAT: {
+			ClientSession* clientSession = nullptr;
+			if (static_cast<EWorldPacketID>(packetHeader.packetID) != EWorldPacketID::CLIENT_VALIDATION) { // Whitelist CLIENT_VALIDATION
+				clientSession = sessionManager.GetSession(packet->getSystemAddress());
+				// Something went wrong
+				if (clientSession == nullptr) {
+					PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::CHARACTER_NOT_FOUND);
+					return;
+				}
+			}
+
 			switch (EChatPacketID(packetHeader.packetID)) {
 			case EChatPacketID::ADD_FRIEND_REQUEST: {
 				uint64_t unknown;
@@ -699,6 +711,41 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					// throw std::runtime_error("Invalid objectID; TODO: Kick Player -> Cheating");
 				}
 				break;
+			}
+
+			case Enums::EWorldPacketID::CLIENT_MAIL: {
+				std::uint32_t type;
+				data->Read(type);
+				switch (type) {
+					// mail send
+				case 0x00: break;
+
+					// mail data request
+				case 0x03: {
+					// send mail list
+					MailManager::SendMailListToClient(this, clientSession);
+				} break;
+
+					// mail attachment collect
+				case 0x05: break;
+
+					// mail delete
+				case 0x07: break;
+
+					// mail read
+				case 0x09: {
+					std::uint32_t unknownMailRead0c;
+					data->Read(unknownMailRead0c);
+					std::int64_t mailID;
+					data->Read(mailID);
+					MailManager::MarkMailAsSeen(this, clientSession, mailID);
+				} break;
+
+					// mail notification request
+				case 0x0b: {
+					MailManager::SendNewMailNotification(this, clientSession);
+				} break;
+				}
 			}
 
 			case Enums::EWorldPacketID::CLIENT_STRING_CHECK: {
