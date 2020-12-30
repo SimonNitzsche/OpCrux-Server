@@ -450,6 +450,16 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				PacketFactory::World::sendCharList(this, clientSession);
 				break;
 			}
+			case EWorldPacketID::CLIENT_CHARACTER_DELETE_REQUEST: {
+				DataTypes::LWOOBJID objectID;
+				data->Read(objectID);
+
+				Database::DeleteCharacter(GetDBConnection(), objectID, sessionManager.GetSession(packet->getSystemAddress())->accountID);
+
+				PacketFactory::World::DeleteCharacterResponse(rakServer, packet->getSystemAddress());
+
+				break;
+			}
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
 
 				std::u16string customName = StringUtils::readBufferedWStringFromBitStream(data);

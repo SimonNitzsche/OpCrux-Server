@@ -188,6 +188,20 @@ namespace PacketFactory {
 			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, clientSession->systemAddress, false);
 		}
 
+		inline void DeleteCharacterResponse(RakPeerInterface* rakServer, SystemAddress address) {
+			RakNet::BitStream returnBS;
+			LUPacketHeader returnBSHead{};
+			returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+			returnBSHead.remoteType = static_cast<std::uint16_t>(Enums::ERemoteConnection::CLIENT);
+			returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EClientPacketID::CHARACTER_DELETE_RESPONSE);
+			returnBS.Write(returnBSHead);
+
+			returnBS.Write<std::uint8_t>(0x01);
+
+			// Send
+			rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, address, false);
+		}
+
 		inline void TransferToWorld(WorldServer* Instance, SystemAddress clientSession, char* ipAddress, std::uint16_t portOrErrorCode, bool doAnnouncement = false) {
 
 			Entity::GameObject* playerObj = nullptr;
