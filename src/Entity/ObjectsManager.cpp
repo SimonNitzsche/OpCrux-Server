@@ -115,6 +115,22 @@ void ObjectsManager::Destruct(Entity::GameObject * object) {
 	object_garbage.push_back(object->GetObjectID());
 }
 
+std::vector<Entity::GameObject*> ObjectsManager::GetObjectsInRange(DataTypes::Vector3 originPosition, std::float_t range, std::int32_t max) {
+	std::vector<Entity::GameObject*> collected = {};
+	
+	// Get objects
+	for (auto & obj : object_list) {
+		// Check max
+		if (max > 0 && collected.size() == max) break;
+
+		// within range?
+		if (Vector3::Distance(obj.second->GetPosition(), originPosition) <= range)
+			collected.push_back(obj.second);
+	}
+
+	return collected;
+}
+
 void ObjectsManager::OnUpdate() {
 	// Check for garbage
 	while (object_garbage.size() != 0) {

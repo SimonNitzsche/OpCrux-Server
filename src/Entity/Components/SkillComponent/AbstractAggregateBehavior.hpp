@@ -5,8 +5,10 @@
 class SkillComponent;
 
 struct AbstractAggregateBehavior {
-	virtual void UnCast() {};
-	static void StartUnCast(SkillComponent * comp, long nextBehavior, RakNet::BitStream* bs);
+	virtual void UnCast(SkillComponent* comp, std::int32_t behaviorID, RakNet::BitStream* bs) {};
+	virtual void Cast(SkillComponent* comp, std::int32_t behaviorID, RakNet::BitStream* bs) {};
+	static void StartUnCast(SkillComponent* comp, long nextBehavior, RakNet::BitStream* bs);
+	static void StartCast(SkillComponent* comp, long nextBehavior, RakNet::BitStream* bs);
 };
 
 
@@ -14,6 +16,7 @@ struct AbstractAggregateBehavior {
 #include "Entity/Components/SkillComponent/BehaviorAlterChainDelay.hpp"
 #include "Entity/Components/SkillComponent/BehaviorAlterCooldown.hpp"
 #include "Entity/Components/SkillComponent/BehaviorAnd.hpp"
+#include "Entity/Components/SkillComponent/BehaviorAreaOfEffect.hpp"
 #include "Entity/Components/SkillComponent/BehaviorAttackDelay.hpp"
 #include "Entity/Components/SkillComponent/BehaviorBasicAttack.hpp"
 #include "Entity/Components/SkillComponent/BehaviorChain.hpp"
@@ -134,6 +137,11 @@ void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBeha
 		movementSwitch.UnCast(comp, nextBehavior, bs);
 		break;
 	}
+	case eBehaviorTemplate::AREA_OF_EFFECT: {
+		// Area of Effect
+		BehaviorAreaOfEffect areaOfEffect = BehaviorAreaOfEffect();
+		areaOfEffect.UnCast(comp, nextBehavior, bs);
+	}
 	case eBehaviorTemplate::STUN: {
 		// Stun
 		BehaviorStun stun = BehaviorStun();
@@ -202,6 +210,119 @@ void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBeha
 	}
 	default:
 		Logger::log("WRLD", "TODO: Implement behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)) + " " + std::to_string(nextBehavior), LogType::UNEXPECTED);
+		break;
+	}
+}
+
+void AbstractAggregateBehavior::StartCast(SkillComponent* comp, long nextBehavior, RakNet::BitStream* bs) {
+	if (nextBehavior <= 0) return;
+	++comp->currentStackDepth;
+	if (comp->currentStackDepth > 50000) {
+		throw Exceptions::NetException::CorruptPacket();
+	}
+
+	long templateID = CacheBehaviorTemplate::GetTemplateID(nextBehavior);
+
+	Logger::log("WRLD", "[Cast] behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)) + " " + std::to_string(nextBehavior), LogType::UNEXPECTED);
+
+	switch (eBehaviorTemplate(templateID)) {
+	case eBehaviorTemplate::BASIC_ATTACK: {
+		// Basic Attack
+		BehaviorBasicAttack basicAttack = BehaviorBasicAttack();
+		basicAttack.Cast(comp, nextBehavior, bs);
+		break;
+	}
+	//case eBehaviorTemplate::TAC_ARC: {
+	//	// Tac Arc
+	//	BehaviorTacArc tacArc = BehaviorTacArc();
+	//	tacArc.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	case eBehaviorTemplate::AND: {
+		// And
+		BehaviorAnd bAnd = BehaviorAnd();
+		bAnd.Cast(comp, nextBehavior, bs);
+		break;
+	}
+	//case eBehaviorTemplate::MOVEMENT_SWITCH: {
+	//	// Movement Switch
+	//	BehaviorMovementSwitch movementSwitch = BehaviorMovementSwitch();
+	//	movementSwitch.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	case eBehaviorTemplate::AREA_OF_EFFECT: {
+		// Area of Effect
+		BehaviorAreaOfEffect areaOfEffect = BehaviorAreaOfEffect();
+		areaOfEffect.Cast(comp, nextBehavior, bs);
+	}
+	//case eBehaviorTemplate::STUN: {
+	//	// Stun
+	//	BehaviorStun stun = BehaviorStun();
+	//	stun.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	//case eBehaviorTemplate::DURATION: {
+	//	// Duration
+	//	BehaviorDuration duration = BehaviorDuration();
+	//	duration.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	case eBehaviorTemplate::ATTACK_DELAY: {
+		// Attack Delay
+		BehaviorAttackDelay bAttackDelay = BehaviorAttackDelay();
+		bAttackDelay.Cast(comp, nextBehavior, bs);
+		break;
+	}
+	//case eBehaviorTemplate::SPAWN_OBJECT: {
+	//	// Spawn Object
+	//	BehaviorSpawnObject bSpawnObject = BehaviorSpawnObject();
+	//	bSpawnObject.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	//case eBehaviorTemplate::CHAIN: {
+	//	// Chain
+	//	BehaviorChain bChain = BehaviorChain();
+	//	bChain.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	//case eBehaviorTemplate::CHANGE_ORIENTATION: {
+	//	// Change Orientation
+	//	BehaviorChangeOrientation bChangeOrientation = BehaviorChangeOrientation();
+	//	bChangeOrientation.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	//case eBehaviorTemplate::FORCE_MOVEMENT: {
+	//	// Force Movement
+	//	BehaviorForceMovement bForceMovement = BehaviorForceMovement();
+	//	bForceMovement.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	//case eBehaviorTemplate::INTERRUPT: {
+	//	// Interrupt
+	//	BehaviorInterrupt bInterrupt = BehaviorInterrupt();
+	//	bInterrupt.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	//case eBehaviorTemplate::ALTER_COOLDOWN: {
+	//	// Alter Cooldown
+	//	BehaviorAlterCooldown alterCooldown = BehaviorAlterCooldown();
+	//	alterCooldown.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	case eBehaviorTemplate::KNOCKBACK: {
+		// Knockback
+		BehaviorKnockback knockback = BehaviorKnockback();
+		knockback.Cast(comp, nextBehavior, bs);
+		break;
+	}
+	//case eBehaviorTemplate::ALTER_CHAIN_DELAY: {
+	//	// Alter Chain Delay
+	//	BehaviorAlterChainDelay alterChainDelay = BehaviorAlterChainDelay();
+	//	alterChainDelay.Cast(comp, nextBehavior, bs);
+	//	break;
+	//}
+	default:
+		Logger::log("WRLD", "[Cast] TODO: Implement behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)) + " " + std::to_string(nextBehavior), LogType::UNEXPECTED);
 		break;
 	}
 }

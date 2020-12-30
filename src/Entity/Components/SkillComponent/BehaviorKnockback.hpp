@@ -13,5 +13,15 @@ struct BehaviorKnockback : AbstractAggregateBehavior {
 
 		// TODO
 	}
+
+	void Cast(SkillComponent* comp, std::int32_t behaviorID, RakNet::BitStream* bs) {
+		// INTERUPT
+
+		bool unknown1 = false;
+
+		bs->Write(unknown1);
+
+		// TODO
+	}
 };
 #endif

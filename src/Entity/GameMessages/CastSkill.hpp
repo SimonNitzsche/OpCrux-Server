@@ -9,7 +9,7 @@ namespace GM {
 		DataTypes::LWOOBJID optionalOriginatorID;
 		std::float_t fCasterLatency;
 		bool succeeded;
-		std::int32_t iCastType;
+		std::int32_t iCastType = 0;
 		DataTypes::LWOOBJID optionalTargetID;
 		DataTypes::Quaternion originatorRot;
 		DataTypes::LWOOBJID consumableItemID;
