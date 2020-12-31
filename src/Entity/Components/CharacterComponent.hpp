@@ -491,6 +491,19 @@ public:
 		}
 	}
 
+	void OnReadyForUpdates(Entity::GameObject* sender, GM::ReadyForUpdates* msg) {
+
+		auto objectRFU = owner->GetZoneInstance()->objectsManager->GetObjectByID(msg->objectID);
+		auto replicaManager = owner->GetZoneInstance()->replicaManager;
+		auto clSession = owner->GetZoneInstance()->sessionManager.GetSession(owner->GetObjectID());
+
+		if (objectRFU == nullptr) return;
+		if (replicaManager == nullptr) return;
+		if (clSession == nullptr) return;
+
+		replicaManager->SetScope(objectRFU, true, clSession->systemAddress, false);
+	}
+
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::SetFlag, OnSetFlag);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PlayerLoaded, OnPlayerLoaded);
@@ -503,6 +516,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestSmashPlayer, OnRequestSmashPlayer);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::RequestResurrect, OnRequestResurrect);
 		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::PickupItem, OnPickupItem);
+		REGISTER_OBJECT_MESSAGE_HANDLER(CharacterComponent, GM::ReadyForUpdates, OnReadyForUpdates);
 	}
 };
 

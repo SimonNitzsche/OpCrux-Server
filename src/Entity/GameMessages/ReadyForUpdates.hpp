@@ -9,15 +9,14 @@ namespace GM {
 			return Enums::EGameMessageID::CLIENT_READY_FOR_UPDATES;
 		}
 
+		DataTypes::LWOOBJID objectID;
+
 		ReadyForUpdates() {}
 
 		void Deserialize(RakNet::BitStream* bs) {
-
+			GM_VAR_DESERIALIZE(bs, objectID);
 		}
 
-		void TriggerEvent(Entity::GameObject* sender, Entity::GameObject* target) {
-
-		}
 	};
 }
 

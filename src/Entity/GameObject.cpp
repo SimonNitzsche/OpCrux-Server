@@ -97,7 +97,7 @@ ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime,
 	if (this->serverOnly) return REPLICA_PROCESSING_DONE;
 	
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::CONSTRUCTION);
-	Instance->replicaManager->SetScope(this, true, UNASSIGNED_SYSTEM_ADDRESS, true);
+	//Instance->replicaManager->SetScope(this, true, UNASSIGNED_SYSTEM_ADDRESS, true);
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::SendDestruction(RakNet::BitStream *outBitStream, SystemAddress systemAddress, bool *includeTimestamp) {
