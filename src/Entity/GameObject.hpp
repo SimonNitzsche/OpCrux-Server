@@ -401,7 +401,7 @@ namespace Entity {
 
 		//GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DECLARE);
 
-		virtual void OnDie(Entity::GameObject* sender, GM::Die* msg);
+		//virtual void OnDie(Entity::GameObject* sender, GM::Die* msg);
 		/*virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg);
 		virtual void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg);
 		virtual void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg);

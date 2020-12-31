@@ -202,7 +202,7 @@ public:
 		msgDie.killerID = msg->killerID;
 		msgDie.lootOwnerID = msg->lootOwnerID;
 		GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, msgDie);
-		this->owner->OnDie(this->owner, &msgDie);
+		this->owner->OnMessage(this->owner, GM::Die::GetID(), &msgDie);
 	}
 
 	void ForcefullyPerformRequestDie(Entity::GameObject* sender, GM::RequestDie& msg) {
@@ -281,7 +281,7 @@ public:
 				GM::Die msg;
 				msg.killerID = caster->GetObjectID();
 				GameMessages::Broadcast(owner, msg);
-				this->owner->OnDie(this->owner, &msg);
+				this->owner->OnMessage(this->owner, GM::Die::GetID(), &msg);
 			}
 
 			// Figure out who of the two receives the loot.

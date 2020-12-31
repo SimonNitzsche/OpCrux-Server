@@ -521,7 +521,7 @@ void Entity::GameObject::Remove() {
 		spawner->GetComponent<SpawnerComponent>()->NotifyOfObjectRemoval(this);
 		GM::Die dieGM;
 		auto scriptComp = spawner->GetComponent<ScriptComponent>();
-		if(scriptComp != nullptr) scriptComp->OnDie(this, &dieGM);
+		if(scriptComp != nullptr) scriptComp->OnMessage(this, GM::Die::GetID(), &dieGM);
 	}
 
 	// Detach parent/child
@@ -791,9 +791,9 @@ void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {
 
 //GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DEFINE);
 
-void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
-	for (auto i : components) i.second->OnMessage(sender, msg->GetID(), msg);
-}
+//void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
+//	for (auto i : components) i.second->OnMessage(sender, msg->GetID(), msg);
+//}
 
 
 void Entity::GameObject::PickupLoot(Entity::GameObject* loot) {
