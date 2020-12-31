@@ -580,7 +580,7 @@ public:
 			auto shirtAndPants = AddCharShirtAndPants(conn, objectID, shirtObjectLOT, pantsObjectLOT);
 
 			// Create player
-			odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SET IDENTITY_INSERT OPCRUX_GD.dbo.Characters ON;INSERT INTO OPCRUX_GD.dbo.Characters(objectID,accountID,charIndex,name,pendingName,styleID,statsID,lastWorld,lastInstance,lastClone,lastLog,positionX,positionY,positionZ,shirtObjectID,pantsObjectID,uScore,uLevel,currency,reputation,health,imagination,armor,maxhealth,maximagination,maxarmor,maxinventory) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SET IDENTITY_INSERT OPCRUX_GD.dbo.Characters ON;INSERT INTO OPCRUX_GD.dbo.Characters(objectID,accountID,charIndex,name,pendingName,styleID,statsID,lastWorld,lastInstance,lastClone,lastLog,positionX,positionY,positionZ,shirtObjectID,pantsObjectID,uScore,uLevel,currency,reputation,health,imagination,armor,maxhealth,maximagination,maxarmor,maxinventory) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 			stmt->setULong(1, objectID);
 			stmt->setInt(2, accountID);
