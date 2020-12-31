@@ -241,6 +241,19 @@ public:
 
 	inline void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory* msg) {
 		// Remove skills
+		Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->itemToUnEquip);
+		if (item == nullptr) return;
+
+		IEntityComponent* invComp = item->GetComponentByType(9);
+		if (invComp == nullptr) return;
+
+		auto rm = CacheObjectSkills::getRow(item->GetLOT());
+		auto rf = rm.flatIt();
+		for (auto r : rf) {
+			GM::RemoveSkill RemoveSkillGM;
+			RemoveSkillGM.skillID = CacheObjectSkills::GetSkillID(r);
+			GameMessages::Broadcast(sender, RemoveSkillGM);
+		}
 	}
 
 	void OnCastSkill(Entity::GameObject* sender, GM::CastSkill* msg) {

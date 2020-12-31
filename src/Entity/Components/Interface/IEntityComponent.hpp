@@ -54,6 +54,7 @@ namespace GM {
 	class ReadyForUpdates;
 	class RebuildCancel;
 	class RemoveItemFromInventory;
+	class RemoveSkill;
 	class ReportBug;
 	class RequestDie;
 	class RequestLinkedMission;

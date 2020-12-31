@@ -94,6 +94,7 @@
 	mfun(ToggleSendingPositionUpdates);\
 	mfun(UnEquipInventory);\
 	mfun(UseNonEquipmentItem);\
-	mfun(RemoveItemFromInventory);
+	mfun(RemoveItemFromInventory);\
+	mfun(RemoveSkill);
 #endif
 

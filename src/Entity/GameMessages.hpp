@@ -158,6 +158,7 @@ public:
 #include "Entity/GameMessages/RebuildNotifyState.hpp"
 #include "Entity/GameMessages/ReportBug.hpp"
 #include "Entity/GameMessages/RemoveItemFromInventory.hpp"
+#include "Entity/GameMessages/RemoveSkill.hpp"
 #include "Entity/GameMessages/RequestDie.hpp"
 #include "Entity/GameMessages/RequestLinkedMission.hpp"
 #include "Entity/GameMessages/RequestResurrect.hpp"
