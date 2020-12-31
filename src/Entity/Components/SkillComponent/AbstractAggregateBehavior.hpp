@@ -109,8 +109,8 @@ void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBeha
 	}
 
 	long templateID = CacheBehaviorTemplate::GetTemplateID(nextBehavior);
-	
-	Logger::log("WRLD", "behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)) + " " + std::to_string(nextBehavior), LogType::UNEXPECTED);
+
+	Logger::log("WRLD", "[UnCast] behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)) + " " + std::to_string(nextBehavior), LogType::UNEXPECTED);
 
 	switch (eBehaviorTemplate(templateID)) {
 	case eBehaviorTemplate::BASIC_ATTACK: {

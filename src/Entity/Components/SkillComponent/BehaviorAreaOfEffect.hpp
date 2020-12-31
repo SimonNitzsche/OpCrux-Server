@@ -11,6 +11,7 @@ struct BehaviorAreaOfEffect : AbstractAggregateBehavior {
 		for (int i = 0; i < numberOfTargets; ++i) {
 			std::uint64_t target;
 			bs->Read(target);
+			targets.push_back(target);
 		}
 
 		auto action = CacheBehaviorParameter::GetParameterValue(behaviorID, "action");
