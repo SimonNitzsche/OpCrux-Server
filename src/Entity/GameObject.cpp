@@ -94,7 +94,7 @@
 #include "Entity/Components/VendorComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
-	if (this->serverOnly) return REPLICA_PROCESSING_DONE;
+	if (this->serverOnly) return REPLICA_CANCEL_PROCESS;
 	
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::CONSTRUCTION);
 	//Instance->replicaManager->SetScope(this, true, UNASSIGNED_SYSTEM_ADDRESS, true);
@@ -217,6 +217,14 @@ IEntityComponent* Entity::GameObject::GetComponentByType(int id) {
 template<class T>
 T * Entity::GameObject::GetComponent() {
 	return static_cast<T*>(GetComponentByType(T::GetTypeID()));
+}
+
+void Entity::GameObject::RemoveComponentByID(int id) {
+	auto comp = this->GetComponentByType(id);
+
+	this->components.erase(id);
+
+	delete comp;
 }
 
 IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
@@ -547,6 +555,20 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 		collection = &configData;
 
 	configData = *collection;
+
+	bool markedAsPhantom;
+	LDF_GET_VAL_FROM_COLLECTION(markedAsPhantom, collection, u"markedAsPhantom", false);
+
+	if (markedAsPhantom) {
+		bool phantomPhysicsOnly;
+		LDF_GET_VAL_FROM_COLLECTION(phantomPhysicsOnly, collection, u"phantomPhysicsOnly", false);
+
+		if (phantomPhysicsOnly) {
+			this->RemoveComponentByID(PhantomPhysicsComponent::GetTypeID());
+		}
+
+		this->AddComponent<PhantomPhysicsComponent>(-1);
+	}
 
 	// TODO: Populate base data
 	std::u16string groupWstr;

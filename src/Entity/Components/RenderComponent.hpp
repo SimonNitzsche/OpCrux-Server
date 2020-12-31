@@ -81,6 +81,9 @@ public:
 		if (lot == 1) {
 			renderDisabled = true;
 		}
+		if (lot == 7001) {
+			renderDisabled = false;
+		}
 	}
 
 	void RegisterMessageHandlers() {

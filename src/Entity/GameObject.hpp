@@ -230,6 +230,7 @@ namespace Entity {
 		/*
 			Adds an component by ID
 		*/
+		void RemoveComponentByID(int id);
 		IEntityComponent* AddComponentByID(int id, int compID);
 
 
