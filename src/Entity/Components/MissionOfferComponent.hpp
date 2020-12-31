@@ -41,7 +41,7 @@ public:
 		missionOffer.missionID = missionOfferGiver.missionID = -1;
 
 		// Make sure to recheck if we have the item already.
-		MissionManager::LaunchTaskEvent(Enums::EMissionTask::GATHER, msg->user, msg->user->GetObjectID());
+		MissionManager::LaunchTaskEvent(Enums::EMissionTask::GATHER, sender, sender->GetObjectID());
 
 		// pick first that meets requirements
 		// get missions of npc
