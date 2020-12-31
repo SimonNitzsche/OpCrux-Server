@@ -172,16 +172,27 @@ public:
 		else {
 			auto mis = Database::GetMission(owner->GetZoneInstance()->GetDBConnection(), sender->GetObjectID() & 0xFFFFFFFF, msg->missionID);
 			if (msg->bIsComplete && (mis.state == 4 || mis.state == 12)) {
-				mis.state = 8;
-				Database::UpdateMission(owner->GetZoneInstance()->GetDBConnection(), mis);
-				GM::NotifyMission gm;
-				gm.missionID = mis.missionID;
-				gm.missionState = mis.state;
-				gm.sendingRewards = true;
-				GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
-				MissionManager::SendMissionRewards(sender, mis);
-				gm.sendingRewards = false;
-				GameMessages::Send(sender->GetZoneInstance(), sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID())->systemAddress, sender->GetObjectID(), gm);
+				{
+					/*
+					   Mission completion
+				   */
+
+					GM::NotifyMission nmsg;
+					nmsg.missionID = mis.missionID;
+					nmsg.missionState = 0;
+					nmsg.sendingRewards = true;
+					GameMessages::Send(sender, sender->GetObjectID(), nmsg);
+
+					// Send rewards
+					mis.state = 8;
+					// Update state to 8 in the db, to prevent infinity loop
+					Database::UpdateMission(sender->GetZoneInstance()->GetDBConnection(), mis);
+					MissionManager::SendMissionRewards(sender, mis);
+
+					nmsg.missionState = mis.state;
+					nmsg.sendingRewards = false;
+					GameMessages::Send(sender, sender->GetObjectID(), nmsg);
+				}
 
 				// Try to offer next mission.
 				auto responderObj = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->responder);
