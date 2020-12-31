@@ -129,6 +129,7 @@ public:
 #include "Entity/GameMessages/ModuleAssemblyDBDataForClient.hpp"
 #include "Entity/GameMessages/ModularAssemblyNIFCompleted.hpp"
 #include "Entity/GameMessages/ModuleAssemblyQueryData.hpp"
+#include "Entity/GameMessages/MoveItemBetweenInventoryTypes.hpp"
 #include "Entity/GameMessages/MoveItemInInventory.hpp"
 #include "Entity/GameMessages/NotifyClientFlagChange.hpp"
 #include "Entity/GameMessages/NotifyClientObject.hpp"

@@ -95,6 +95,6 @@
 	mfun(UnEquipInventory);\
 	mfun(UseNonEquipmentItem);\
 	mfun(RemoveItemFromInventory);\
-	mfun(RemoveSkill);
+	mfun(MoveItemBetweenInventoryTypes);
 #endif
 

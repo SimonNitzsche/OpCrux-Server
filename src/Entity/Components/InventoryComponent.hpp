@@ -694,11 +694,14 @@ public:
 
 		AddItem(item->GetLOT(), incCount, item->GetPosition());
 	}
-	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}, bool subItem = false) {
+
+	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}, bool subItem = false, uint32_t optionalTab = 0) {
 		std::uint32_t nextTabAndSlot = GetNextFreeSlot(itemLOT, subItem);
 
 		std::uint32_t tab = (nextTabAndSlot & 0xFFFF0000) >> 16;
 		std::uint32_t slot = (nextTabAndSlot & 0x0000FFFF);
+
+		if (optionalTab != 0) tab = optionalTab;
 
 		std::uint32_t overflowCount = 0;
 
@@ -1062,6 +1065,11 @@ public:
 		this->MoveItem(msg->objectID, msg->invType, msg->slot);
 	}
 
+	void OnMoveItemBetweenInventoryTypes(Entity::GameObject* sender, GM::MoveItemBetweenInventoryTypes* msg) {
+		RemoveItem(msg->templateId, msg->stackCount);
+
+		AddItem(msg->templateId, 1, DataTypes::Vector3(), 0ULL, {}, false, msg->inventoryTypeB);
+	}
 
 	
 	void RegisterMessageHandlers() {
@@ -1072,6 +1080,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::RemoveItemFromInventory, OnRemoveItemFromInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::MoveItemInInventory, OnMoveItemInInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::SetInventorySize, OnSetInventorySize);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::MoveItemBetweenInventoryTypes, OnMoveItemBetweenInventoryTypes);
 	}
 };
 
