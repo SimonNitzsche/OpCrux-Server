@@ -25,13 +25,6 @@ namespace GM {
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, showFlyingLoot, true);
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, stackCount, 1);
 			GM_VAR_DESERIALIZE_WITH_DEFAULT(bs, templateId, 0);
-
-			Logger::log("TEST", std::to_string(inventoryTypeA));
-			Logger::log("TEST", std::to_string(inventoryTypeB));
-			Logger::log("TEST", std::to_string(objectID));
-			Logger::log("TEST", showFlyingLoot ? "True" : "False");
-			Logger::log("TEST", std::to_string(stackCount));
-			Logger::log("TEST", std::to_string(templateId));
 		}
 	};
 }
