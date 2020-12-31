@@ -381,8 +381,8 @@ add_executable(OpCrux_Server
 	src/Utils/StringUtils.hpp
 	src/Utils/RandomUtil.hpp 
 	src/Utils/RandomUtil.cpp
-	src/API/API.cpp
-	src/API/API.hpp
+	
+	"src/Server/API.hpp"
 	src/Main.cpp
 	src/camera.h
 	src/camera.cpp

@@ -59,11 +59,6 @@ namespace Configuration {
 				{"HOSTURL", "https://localhost:8443"},
 				// APPKEY
 				{"APPKEY", "THIS_IS_A_DUMMY_KEY"}
-			}},
-
-			{"API", {
-				// Whether to use SSL TRUE or FALSE
-				{"USESSL", "FALSE"}
 			}}
 		};}
 	};

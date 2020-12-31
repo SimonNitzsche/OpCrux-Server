@@ -16,7 +16,7 @@
 #include "Server/AuthServer.hpp"
 #include "Server/WorldServer.hpp"
 #include "Server/Bridges/BridgeMasterServer.hpp"
-#include "API/API.hpp"
+#include "Server/API.hpp"
 #include "GameCache/Interface/FastDatabase.hpp"
 #include "DataTypes/AMF3.hpp"
 
@@ -259,9 +259,6 @@ void TestPhysics() {
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER == SERVERMODE::MASTER) {
 		std::thread mT([](MasterServer* ms) { ms = new MasterServer(); }, ServerInfo::masterServer);
 		mT.detach();
-
-		std::thread wiT([]() { StartAPI(); });
-		wiT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
@@ -439,14 +436,11 @@ int main(int argc, char* argv[]) {
 		std::thread mT([](MasterServer* ms) { ms = new MasterServer(); }, ServerInfo::masterServer);
 		mT.detach();
 
-		if (Configuration::ConfigurationManager::dbConf.GetStringVal("API", "USESSL") == "TRUE") {
-			/*std::thread wiT([]() { StartAPIWithSSL(); });
-			wiT.detach();*/
-		}
-		else {
-			std::thread wiT([]() { StartAPI(); });
-			wiT.detach();
-		}
+		std::thread wiT([]() { 
+			APIServer* server = new APIServer(); 
+			server->Start(); 
+		});
+		wiT.detach();
 	}
 
 	if (MODE_SERVER == SERVERMODE::STANDALONE || MODE_SERVER != SERVERMODE::MASTER) {
