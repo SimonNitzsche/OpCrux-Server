@@ -8,8 +8,6 @@
 #include <string>
 #include <codecvt>
 
-#include <rapidxml/rapidxml.hpp>
-
 #include "Entity/GMBase.hpp"
 
 //using namespace Entity::Components::Interface;

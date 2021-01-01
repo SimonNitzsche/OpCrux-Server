@@ -394,7 +394,7 @@ set_property(TARGET glad PROPERTY CXX_STANDARD 98)
 set_property(TARGET json PROPERTY CXX_STANDARD 98)
 set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
-set_property(TARGET rapidxml PROPERTY CXX_STANDARD 98)
+set_property(TARGET TinyXML2 PROPERTY CXX_STANDARD 98)
 ADD_DEFINITIONS(-DODBC_STATIC)
 
 SET(RuntimeLibrary "MSd_DynamicDebug")
@@ -466,10 +466,10 @@ target_link_libraries(OpCrux_Server
 	json
 	Mongoose
 	RakNet
-	rapidxml
 	odbccpp_static
 	Recast
 	Detour
+	TinyXML2
 )
 
 

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <rapidxml/rapidxml.hpp>
+#include <TinyXML2/tinyxml2.h>
 
 #include "Utils/StringUtils.hpp"
 
@@ -40,71 +40,67 @@ struct ZoneTrigger {
 		: id(_id), enabled(_enabled), events({}) {}
 };
 
-
-using namespace rapidxml;
-
 class ZoneTriggerFile {
 public:
 	std::vector<ZoneTrigger> triggers {};
 public:
 	bool Load(const char * filepath ) {
-		xml_document<> doc;
-		xml_node<> * root_node;
+		tinyxml2::XMLDocument doc;
+		tinyxml2::XMLElement* root_node;
 
 		Logger::log("WRLD", "Loading Scene Triggers: " + std::string(filepath));
 
-		// Open file
-		std::ifstream fstream(filepath);
-
-
-		// File open
+		std::ifstream fstream = std::ifstream();
+		fstream.open(filepath, std::ios::in);
 		if (fstream.is_open()) {
-			// Copy file content to string
-			std::string fcontent ((std::istreambuf_iterator<char>(fstream)),
+			std::string fcontent((std::istreambuf_iterator<char>(fstream)),
 				std::istreambuf_iterator<char>());
 
-			// Parse xml from string
-			doc.parse<0>(const_cast<char*>(fcontent.c_str()));
-			
-			// Select first node
-			root_node = doc.first_node("triggers");
+			doc.Parse(fcontent.c_str());
+		}
+		else {
+			Logger::log("WRLD", "Failed to load scene trigger: " + std::string(filepath));
+			return false;
+		}
 
-			// Fill Data
-			for (xml_node<> * trigger_node = root_node->first_node("trigger"); trigger_node; trigger_node = trigger_node->next_sibling()) {
-				int trigger_id = std::stoi(trigger_node->first_attribute("id")->value());
-				bool trigger_enabled = std::stoi(trigger_node->first_attribute("enabled")->value());
+		root_node = doc.FirstChildElement("triggers");
 
-				ZoneTrigger zTrigger(trigger_id, trigger_enabled);
+		for (tinyxml2::XMLElement* trigger_node = root_node->FirstChildElement("trigger");
+			trigger_node != NULL;
+			trigger_node = trigger_node->NextSiblingElement("trigger")
+		) {
+			int trigger_id = std::stoi(trigger_node->FindAttribute("id")->Value());
+			bool trigger_enabled = std::stoi(trigger_node->FindAttribute("enabled")->Value());
+
+			ZoneTrigger zTrigger(trigger_id, trigger_enabled);
 				
-				for (xml_node<> * event_node = trigger_node->first_node("event"); event_node; event_node = event_node->next_sibling()) {
-					std::string event_id = event_node->first_attribute("id")->value();
+			for (tinyxml2::XMLElement* event_node = trigger_node->FirstChildElement("event"); event_node; event_node = event_node->NextSiblingElement("event")) {
+				std::string event_id = event_node->FindAttribute("id")->Value();
 
-					ZoneTriggerEvent zEvent(event_id);
+				ZoneTriggerEvent zEvent(event_id);
 
-					for (xml_node<> * command_node = event_node->first_node("command"); command_node; command_node = command_node->next_sibling()) {
-						std::string command_id = command_node->first_attribute("id")->value();
-						std::string command_target = command_node->first_attribute("target")->value();
-						std::string command_targetName = "";
-						if (command_target == "objGroup") {
-							command_targetName = command_node->first_attribute("targetName")->value();
-						}
-
-						auto attr_args = command_node->first_attribute("args");
-						std::string command_args = attr_args ? attr_args->value() : "";
-					
-						ZoneTriggerCommand zCommand(command_id, command_target, command_args, command_targetName);
-
-						zEvent.commands.push_back(zCommand);
+				for (tinyxml2::XMLElement* command_node = event_node->FirstChildElement("command"); command_node; command_node = command_node->NextSiblingElement("command")) {
+					std::string command_id = command_node->FindAttribute("id")->Value();
+					std::string command_target = command_node->FindAttribute("target")->Value();
+					std::string command_targetName = "";
+					if (command_target == "objGroup") {
+						command_targetName = command_node->FindAttribute("targetName")->Value();
 					}
 
-					zTrigger.events.push_back(zEvent);
+					auto attr_args = command_node->FindAttribute("args");
+					std::string command_args = attr_args ? attr_args->Value() : "";
+					
+					ZoneTriggerCommand zCommand(command_id, command_target, command_args, command_targetName);
+
+					zEvent.commands.push_back(zCommand);
 				}
 
-				triggers.push_back(zTrigger);
+				zTrigger.events.push_back(zEvent);
 			}
-			return true;
+
+			triggers.push_back(zTrigger);
 		}
-		return false;
+		return true;
 	}
 
 
