@@ -294,7 +294,7 @@ public:
 	void Awake() {
 		StatsComponent * statsComp = this->owner->GetComponent<StatsComponent>();
 		if (statsComp != nullptr) {
-			statsComp->attributes.maxImagination = statsComp->attributes.currentImagination = GetImagination();
+			//statsComp->attributes.maxImagination = statsComp->attributes.currentImagination = GetImagination();
 		}
 
 		if (owner->GetComponent<SlashCommandComponent>() == nullptr)
