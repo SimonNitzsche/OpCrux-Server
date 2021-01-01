@@ -564,9 +564,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				auto * playerObject = new Entity::GameObject(this, 1);
 				playerObject->SetObjectID(clientSession->actorID);
 				auto * charComp = playerObject->GetComponent<CharacterComponent>();
+
+				DatabaseModels::Str_DB_CharInfo info = Database::GetChar(GetDBConnection(), clientSession->actorID.getPureID());
 				if (charComp != nullptr) {
 					charComp->clientAddress = clientSession->systemAddress;
-					DatabaseModels::Str_DB_CharInfo info = Database::GetChar(GetDBConnection(), clientSession->actorID.getPureID());
 					playerObject->SetPosition(luZone->spawnPos.pos);
 					playerObject->SetRotation(luZone->spawnPos.rot);
 
@@ -641,11 +642,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					charComp->InitCharInfo(info);
 					charComp->InitCharStyle(charStyle);
 					charComp->CheckLevelProgression();
-				
-					auto* charDestComp = playerObject->GetComponent<DestructibleComponent>();
-					if (charDestComp != nullptr) {
-						charDestComp->SetImagination(info.imagination);
-					}
 
 					playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
 					//playerObject->Finish();
@@ -658,6 +654,19 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				objectsManager->RegisterObject(playerObject);
 				playerObject->Finish();
+
+				auto* statsComp = playerObject->GetComponent<StatsComponent>();
+				if (statsComp != nullptr) {
+					statsComp->attributes.currentHealth = info.health;
+					statsComp->attributes.maxHealth = info.maxhealth;
+					statsComp->attributes.dupMaxHealth = info.maxhealth;
+					statsComp->attributes.currentArmor = info.armor;
+					statsComp->attributes.maxArmor = info.maxarmor;
+					statsComp->attributes.dupMaxArmor = info.maxarmor;
+					statsComp->attributes.currentImagination = info.imagination;
+					statsComp->attributes.maxImagination = info.maximagination;
+					statsComp->attributes.dupMaxImagination = info.maximagination;
+				}
 
 				Logger::log("WRLD", "Create character packet");
 

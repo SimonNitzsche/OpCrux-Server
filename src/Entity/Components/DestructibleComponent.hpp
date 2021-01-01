@@ -147,9 +147,6 @@ public:
 
 	void SetImagination(std::int32_t imag) {
 		statsComponent->attributes.currentImagination = imag;
-		if (statsComponent->attributes.maxImagination <= imag) {
-			statsComponent->attributes.maxImagination = imag;
-		}
 		statsComponent->SetDirty();
 	}
 
