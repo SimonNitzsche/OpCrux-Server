@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <rapidxml/rapidxml.hpp>
 #include <TinyXML2/tinyxml2.h>
 
 #include "Utils/StringUtils.hpp"
