@@ -210,7 +210,10 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 
 		// TODO: Move this to somewhere else
 		for (const auto& scene : luZone->scenes) {
+
+			if (*scene.sceneID == 1300 && *scene.sceneID > 8) break;
 			for (auto objT : scene.scene.objectsChunk.objects) {
+
 
 				// If we are the same LOT as zoneObject, continue
 				if (*objT.LOT == this->zoneControlObject->GetLOT()) continue;
