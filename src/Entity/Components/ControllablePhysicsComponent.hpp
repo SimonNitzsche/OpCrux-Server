@@ -249,6 +249,13 @@ public:
 			}
 		}
 
+		// number of constructed objects from this frame
+		// used to reduce the amount of constructed objects per frame
+		std::uint32_t numConstructed = 0;
+
+		// is the player itself constructed?
+		bool selfConstructed = replicaManager->IsConstructed(owner, clSession->systemAddress);
+
 		// Now activate/disable/construct objects
 		for (auto object : objects) {
 			bool bSetActive = *(sceneMask + object->GetSceneID()) == 1;
@@ -257,10 +264,13 @@ public:
 			if (!isConstructed && bSetActive) {
 				// Can we be constructed?
 				if (object->isSerializable && !object->GetIsServerOnly() && object->GetObjectID() != owner->GetObjectID()) {
+					// Have we hit the limit?
+					if (selfConstructed && numConstructed >= 5) break;
 					// Construct
 					replicaManager->Construct(object, false, clSession->systemAddress, false);
 					//Logger::log("WRLD", "Constructing LOT #" + std::to_string(object->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object->GetObjectID()) + " @ sceneID " + std::to_string(object->GetSceneID()));
-
+					// increase constructed counter
+					++numConstructed;
 				}
 			}
 			else if (isConstructed) {
