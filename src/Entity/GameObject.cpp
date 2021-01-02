@@ -567,6 +567,13 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 		this->AddComponent<PhantomPhysicsComponent>(-1);
 	}
 
+	LDF_GET_VAL_FROM_COLLECTION(sceneID, collection, u"sceneID", GetSceneID());
+	bool sceneIDOverrideEnabled;
+	LDF_GET_VAL_FROM_COLLECTION(sceneIDOverrideEnabled, collection, u"sceneIDOverrideEnabled", false);
+	if (sceneIDOverrideEnabled) {
+		LDF_GET_VAL_FROM_COLLECTION(sceneID, collection, u"sceneIDOverride", GetSceneID());
+	}
+
 	// TODO: Populate base data
 	std::u16string groupWstr;
 	LDF_GET_VAL_FROM_COLLECTION(groupWstr, collection, u"groupID", u"");
