@@ -27,6 +27,7 @@ struct AbstractAggregateBehavior {
 #include "Entity/Components/SkillComponent/BehaviorKnockback.hpp"
 #include "Entity/Components/SkillComponent/BehaviorMovementSwitch.hpp"
 #include "Entity/Components/SkillComponent/BehaviorSpawnObject.hpp"
+#include "Entity/Components/SkillComponent/BehaviorSpawnQuickbuild.hpp"
 #include "Entity/Components/SkillComponent/BehaviorStun.hpp"
 #include "Entity/Components/SkillComponent/BehaviorTacArc.hpp"
 
@@ -207,6 +208,11 @@ void AbstractAggregateBehavior::StartUnCast(SkillComponent * comp, long nextBeha
 		BehaviorAlterChainDelay alterChainDelay = BehaviorAlterChainDelay();
 		alterChainDelay.UnCast(comp, nextBehavior, bs);
 		break;
+	}
+	case eBehaviorTemplate::SPAWN_QUICKBUILD: {
+		// Spawn Quickbuild
+		BehaviorSpawnQuickbuild spawnQB = BehaviorSpawnQuickbuild();
+		spawnQB.UnCast(comp, nextBehavior, bs);
 	}
 	default:
 		Logger::log("WRLD", "TODO: Implement behavior template " + std::string(CacheBehaviorTemplateName::GetName(templateID)) + " " + std::to_string(nextBehavior), LogType::UNEXPECTED);

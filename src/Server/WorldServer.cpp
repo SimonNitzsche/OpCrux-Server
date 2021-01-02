@@ -649,6 +649,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					//playerObject->Finish();
 				}
 				auto invComp = playerObject->GetComponent<InventoryComponent>();
+				{GM::SetInventorySize nmsg; nmsg.inventoryType = 0; nmsg.size = info.maxinventory; playerObject->CallMessage(nmsg); }
 				
 				// Bypass disabling of player construction
 				// by missing components

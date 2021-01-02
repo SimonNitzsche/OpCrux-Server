@@ -263,6 +263,13 @@ public:
 	void OnRebuildCancel(Entity::GameObject* sender, GM::RebuildCancel * msg) {
 		if (buildingPlayer != nullptr) {
 			buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
+			
+			// GM::RebuildNotifyState msg;
+			// msg.player = buildingPlayer->GetObjectID();
+			// msg.iPrevState = qbState;
+			// msg.iState = (qbState = 6);
+			// GameMessages::Broadcast(this->owner, msg);
+			// owner->CallMessage(msg);
 		}
 	}
 

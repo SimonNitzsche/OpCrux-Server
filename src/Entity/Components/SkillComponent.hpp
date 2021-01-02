@@ -178,6 +178,9 @@ public:
 			behaviorID = behaviorIDIt->second.first;
 			behaviorHandles.erase(behaviorIDIt);
 		}
+		else {
+			Logger::log("WRLD", "Received SyncSkill with an unfindable handle.", LogType::WARN);
+		}
 		mutex_behaviorHandles.unlock();
 
 		GM::EchoSyncSkill echoGM; {
@@ -193,7 +196,7 @@ public:
 	}
 
 	inline void AddBehaviorHandle(std::uint32_t behaviorHandle, std::int32_t behaviorAction, std::float_t delay = 0.0f) {
-		std::uint64_t time = ServerInfo::uptimeMs() + std::int32_t(delay * 1000);
+		std::uint64_t time = ServerInfo::uptimeMs() + std::int32_t(delay * 1000.0f);
 		mutex_behaviorHandles.lock();
 		behaviorHandles.insert({ behaviorHandle, std::make_pair(behaviorAction, time) });
 		mutex_behaviorHandles.unlock();
