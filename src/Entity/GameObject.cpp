@@ -556,13 +556,12 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 
 	bool markedAsPhantom;
 	LDF_GET_VAL_FROM_COLLECTION(markedAsPhantom, collection, u"markedAsPhantom", false);
-
 	if (markedAsPhantom) {
 		bool phantomPhysicsOnly;
 		LDF_GET_VAL_FROM_COLLECTION(phantomPhysicsOnly, collection, u"phantomPhysicsOnly", false);
 
 		if (phantomPhysicsOnly) {
-			this->RemoveComponentByID(PhantomPhysicsComponent::GetTypeID());
+			this->RemoveComponentByID(SimplePhysicsComponent::GetTypeID());
 		}
 
 		this->AddComponent<PhantomPhysicsComponent>(-1);

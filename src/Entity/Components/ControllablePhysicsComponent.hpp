@@ -15,6 +15,7 @@
 #include "GameCache/PhysicsComponent.hpp"
 #include "Entity/GameObject.hpp"
 #include "Server/WorldServer.hpp"
+#include <GameCache\Objects.hpp>
 
 using namespace DataTypes;
 
@@ -212,8 +213,69 @@ public:
 
 		_isDirtyPositionAndStuff = true;
 		owner->SetDirty();
+
+		DoSceneManagement();
 	}
 
+	/*
+		Set's scopes for serialization
+	*/
+	void DoSceneManagement(bool allowScoping = true) {
+		auto replicaManager = owner->GetZoneInstance()->replicaManager;
+		auto objectManager = owner->GetZoneInstance()->objectsManager;
+		auto clSession = owner->GetZoneInstance()->sessionManager.GetSession(owner->GetObjectID());
+		
+		// Figure out which scenes we are in atm.
+		size_t lastSceneID = *(owner->GetZoneInstance()->luZone->scenes.at(owner->GetZoneInstance()->luZone->scenes.size() - 1).sceneID);
+		std::uint8_t* sceneMask = (std::uint8_t*)malloc(lastSceneID);
+		memset(sceneMask, 0x00, lastSceneID);
+
+		// set scene 0 (Global) always to true
+		*sceneMask = 1;
+
+		auto objects = objectManager->GetObjects();
+		// Go through all objects to check which scenes to enable
+		for (auto object : objects) {
+			// Is not scene enabled already
+			if (!*(sceneMask+object->GetSceneID())) {
+				auto distance = Vector3::Distance(position, object->GetPosition());
+				// Within range?
+				if (distance <= 120.0f) {
+					// activate scene
+					*(sceneMask + object->GetSceneID()) = 1;
+
+					//Logger::log("WRLD", "Distance is " + std::to_string(distance) + " so let's activate sceneID " + std::to_string(object->GetSceneID()));
+				}
+			}
+		}
+
+		// Now activate/disable/construct objects
+		for (auto object : objects) {
+			bool bSetActive = *(sceneMask + object->GetSceneID()) == 1;
+			bool isConstructed = replicaManager->IsConstructed(object, clSession->systemAddress);
+			// Do we need to construct?
+			if (!isConstructed && bSetActive) {
+				// Can we be constructed?
+				if (object->isSerializable && !object->GetIsServerOnly() && object->GetObjectID() != owner->GetObjectID()) {
+					// Construct
+					replicaManager->Construct(object, false, clSession->systemAddress, false);
+					//Logger::log("WRLD", "Constructing LOT #" + std::to_string(object->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object->GetObjectID()) + " @ sceneID " + std::to_string(object->GetSceneID()));
+
+				}
+			}
+			else if (isConstructed) {
+				// Do we allow scoping?
+				if (bSetActive && !allowScoping) continue;
+
+				// Set scope
+				replicaManager->SetScope(object, bSetActive, clSession->systemAddress, false);
+			}
+		}
+
+
+		// We don't need the list anymore
+		free(sceneMask);
+	}
 
 	void Update() {
 		const auto updateFactor = 0.0625f;

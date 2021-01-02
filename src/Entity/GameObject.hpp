@@ -87,6 +87,8 @@ namespace Entity {
 		// Don't construct to client if set
 		bool serverOnly = false;
 
+		std::uint32_t sceneID = 0;
+
 		WorldServer* Instance;
 
 		LDFCollection configData;
@@ -377,6 +379,14 @@ namespace Entity {
 
 		void SetMaxAge(std::int64_t age) {
 			maxAge = std::int64_t(::time(0)) + std::int64_t(age);
+		}
+
+		std::uint32_t GetSceneID() {
+			return sceneID;
+		}
+
+		void SetSceneID(std::uint32_t newSceneID) {
+			sceneID = newSceneID;
 		}
 
 		/*

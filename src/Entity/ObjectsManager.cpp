@@ -81,6 +81,7 @@ void ObjectsManager::Construct(DataTypes::LWOOBJID objID, SystemAddress addr) {
 }
 
 void ObjectsManager::Construct(Entity::GameObject * object, SystemAddress addr) {
+	/* We shouldn't use this anymore, so */ return;
 	if(!object->GetIsServerOnly() && object->isSerializable)
 		RM->Construct(object, false, addr, addr == UNASSIGNED_SYSTEM_ADDRESS);
 }

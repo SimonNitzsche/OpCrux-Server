@@ -242,6 +242,8 @@ public:
 		spawnedObject->SetPosition(spawnPos);
 		spawnedObject->SetRotation(spawnRot);
 
+		spawnedObject->SetSceneID(owner->GetSceneID());
+
 		spawnedObject->Finish();
 
 		// Register

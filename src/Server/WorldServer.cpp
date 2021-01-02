@@ -211,7 +211,7 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 		// TODO: Move this to somewhere else
 		for (const auto& scene : luZone->scenes) {
 
-			if (*scene.sceneID == 1300 && *scene.sceneID > 8) break;
+			//if (*scene.sceneID == 1300 && *scene.sceneID > 8) break;
 			for (auto objT : scene.scene.objectsChunk.objects) {
 
 
@@ -237,6 +237,8 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				go->SetScale(*objT.scale);
 
 				go->PopulateFromLDF(&ldfCollection);
+
+				go->SetSceneID(*scene.sceneID);
 
 				objectsManager->RegisterObject(go);
 			}
@@ -652,6 +654,9 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				// by missing components
 				playerObject->isSerializable = true;
 
+				ControllablePhysicsComponent* physComp = playerObject->GetComponent<ControllablePhysicsComponent>();
+				physComp->DoSceneManagement(false);
+
 				objectsManager->RegisterObject(playerObject);
 				playerObject->Finish();
 
@@ -684,8 +689,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {
 					if (object_to_construct->isSerializable && !object_to_construct->GetIsServerOnly() && object_to_construct->GetComponent<CharacterComponent>() == nullptr /*&& object_to_construct->GetComponent<PetComponent>() == nullptr*/) {
-						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
-						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
+						//Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						//objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}
 
@@ -697,14 +702,15 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				
 				for (auto object_to_construct : objectsManager->GetObjects()) {
 					if (object_to_construct->GetObjectID() != playerObject->GetObjectID() && object_to_construct->isSerializable && (object_to_construct->GetComponent<CharacterComponent>() != nullptr /*|| object_to_construct->GetComponent<PetComponent>() != nullptr*/)) {
-						Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object_to_construct->GetObjectID()));
-						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
+						//Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						//objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}
 
 				if(invComp != nullptr)
 					invComp->Awake();
 				objectsManager->Construct(playerObject);
+				replicaManager->Construct(playerObject, false, clientSession->systemAddress, false);
 
 				Logger::log("WRLD", "Server done loading");
 				PacketFactory::World::TestLoad(rakServer, clientSession);
