@@ -84,7 +84,7 @@ public:
 						GameMessages::Send(sender, owner->GetObjectID(), missionOffer);
 						GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
 						GameMessages::Send(sender, sender->GetObjectID(), missionOffer);
-						return;
+						//return;
 					}
 				}
 			}

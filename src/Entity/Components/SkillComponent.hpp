@@ -199,6 +199,9 @@ public:
 		std::uint64_t time = ServerInfo::uptimeMs() + std::int32_t(delay * 1000.0f);
 		mutex_behaviorHandles.lock();
 		behaviorHandles.insert({ behaviorHandle, std::make_pair(behaviorAction, time) });
+		if (behaviorHandle > 10000) {
+			Logger::log("WRLD", "Added possibly invalid behaviorHandle " + std::to_string(behaviorHandle), LogType::WARN);
+		}
 		mutex_behaviorHandles.unlock();
 	}
 

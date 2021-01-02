@@ -296,7 +296,7 @@ public:
 			owner->InstantiateRemoval();
 
 			// Update Missions
-			MissionManager::LaunchTaskEvent(EMissionTask::KILL, this->owner, caster->GetObjectID(), this->owner->GetLOT());
+			MissionManager::LaunchTaskEvent(EMissionTask::KILL, this->owner, caster->GetObjectID(), 1, this->owner->GetLOT());
 
 			// Cancle anything else
 			return;

@@ -125,7 +125,7 @@ void MissionManager::LaunchTaskEvent(Enums::EMissionTask taskType, Entity::GameO
 				auto updateTasks = possibleMissions.at(it->missionID);
 				auto cacheMissionTasks = CacheMissionTasks::getRow(it->missionID).flatIt();
 
-				auto iTarget = updateVal;
+				auto iTarget = extraParam;
 				updateVal = 1;
 
 				for (int i = 0; i < missionTasksProgress.size(); ++i) {
