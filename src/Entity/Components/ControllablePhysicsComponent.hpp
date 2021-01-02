@@ -227,8 +227,8 @@ public:
 		
 		// Figure out which scenes we are in atm.
 		size_t lastSceneID = *(owner->GetZoneInstance()->luZone->scenes.at(owner->GetZoneInstance()->luZone->scenes.size() - 1).sceneID);
-		std::uint8_t* sceneMask = (std::uint8_t*)malloc(lastSceneID);
-		memset(sceneMask, 0x00, lastSceneID);
+		std::uint8_t* sceneMask = (std::uint8_t*)malloc(lastSceneID + 1);
+		memset(sceneMask, 0x00, lastSceneID + 1);
 
 		// set scene 0 (Global) always to true
 		*sceneMask = 1;
