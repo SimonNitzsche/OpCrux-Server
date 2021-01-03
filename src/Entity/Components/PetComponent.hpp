@@ -147,7 +147,7 @@ public:
 				}
 			}
 
-			LXFML* lxfml = new LXFML("res/BrickModels/pettaming/cathousewscratchingpost.lxfml");
+			LXFML* lxfml = new LXFML("res/BrickModels/pettaming/cathousewscratchingpost.lxfml"); // TODO: Fix my cache stuff and you know not hard code this xD
 
 			if (lxfml->Loaded) {
 				RakNet::BitStream* bs = new RakNet::BitStream();
