@@ -543,7 +543,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				std::uint16_t messageID;
 				data->Read(messageID);
 
-				Logger::log("WRLD", "Received Game Message ID #" + std::to_string(messageID));
+				std::stringstream ss; ss << std::hex << messageID;
+				Logger::log("WRLD", "Received Game Message ID #" + std::to_string(messageID) + ", 0x" + ss.str());
 				
 				break;
 			}

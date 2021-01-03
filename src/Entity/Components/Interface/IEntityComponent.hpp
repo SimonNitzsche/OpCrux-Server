@@ -24,6 +24,7 @@ namespace GM {
 	class BuyFromVendor;
 	class CancelRailMovement;
 	class ClientItemConsumed;
+	class CommandPet;
 	class Die;
 	class DoneArrangingWithItem;
 	class EquipInventory;
@@ -43,6 +44,7 @@ namespace GM {
 	class ModuleAssemblyQueryData;
 	class MoveItemInInventory;
 	class NotifyClientFlagChange;
+	class NotifyPetTamingMinigame;
 	class NotifyServerLevelProcessingComplete;
 	class ParseChatMessage;
 	class PickupCurrency;

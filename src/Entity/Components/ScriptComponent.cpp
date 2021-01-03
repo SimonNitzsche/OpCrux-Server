@@ -20,7 +20,9 @@
 #include "Entity/NativeScripts/ai/NS/L_NS_GET_FACTION_MISSION_SERVER.hpp"
 #include "Entity/NativeScripts/ai/NP/L_NPC_NP_SPACEMAN_BOB.hpp"
 #include "Entity/NativeScripts/ai/RACING/TRACK_GF/GF_RACE_SERVER.hpp"
+#include "Entity/NativeScripts/ai/SPEC/L_SPECIAL_IMAGINE-POWERUP-SPAWNER.hpp"
 #include "Entity/NativeScripts/ai/WILD/L_ALL_CRATE_CHICKEN.hpp"
+#include "Entity/NativeScripts/client/ai/PR/L_PR_WHISTLE.hpp"
 #include "Entity/NativeScripts/zone/AG/L_ZONE_AG_SURVIVAL.hpp"
 #include "Entity/NativeScripts/ScriptComponent_0952_script_name__removed.hpp"
 #include "Entity/NativeScripts/ScriptComponent_1021_script_name__removed.hpp"
@@ -47,6 +49,8 @@ const std::unordered_map<std::string, script_factory> ScriptComponent::factories
 		{"scripts\\ai\\NS\\L_NS_GET_FACTION_MISSION_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__NS__L_NS_GET_FACTION_MISSION_SERVER>(); }},
 		{"scripts\\ai\\RACING\\TRACK_GF\\GF_RACE_SERVER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__RACING__TRACK_GF__GF_RACE_SERVER>(); }},
 		{"scripts\\ai\\WILD\\L_ALL_CRATE_CHICKEN.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__WILD__L_ALL_CRATE_CHICKEN>(); }},
+		{"scripts\\ai\\SPEC\\L_SPECIAL_IMAGINE-POWERUP-SPAWNER.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI_SPEC_L_SPECIAL_IMAGINE_POWERUP_SPAWNER>(); }},
+		{"scripts\\client\\ai\\PR\\L_PR_WHISTLE.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__CLIENT_AI_PR_L_PR_WHISTLE>();  }},
 		{"scripts\\zone\\AG\\L_ZONE_AG_SURVIVAL.lua", []()->script_ptr {return std::make_shared < NATIVESCRIPT__ZONE__AG__L_ZONE_AG_SURVIVAL>(); }},
 		{"ScriptComponent_952_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_0952_script_name__removed>(); }},
 		{"ScriptComponent_1021_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1021_script_name__removed>(); }},

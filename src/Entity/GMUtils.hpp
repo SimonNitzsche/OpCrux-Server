@@ -95,6 +95,7 @@
 	mfun(UnEquipInventory);\
 	mfun(UseNonEquipmentItem);\
 	mfun(RemoveItemFromInventory);\
-	mfun(MoveItemBetweenInventoryTypes);
+	mfun(MoveItemBetweenInventoryTypes);\
+	mfun(CommandPet);
 #endif
 
