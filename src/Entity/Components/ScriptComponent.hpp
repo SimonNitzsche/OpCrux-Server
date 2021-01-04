@@ -44,7 +44,7 @@ private:
 
 	// Include native scripts
 
-	static const std::unordered_map<std::string, script_factory> factories; 
+	static const std::unordered_map<std::string, script_factory> factories;
 
 private:
 	bool _isDirtyFlag = false;
@@ -66,11 +66,11 @@ public:
 		scriptName = CacheScriptComponent::GetScriptName(compID);
 
 		if (/*scriptName == ("ScriptComponent_" + std::to_string(compID) + "_script_name__removed") && */factories.find(scriptName) == factories.end()) {
-			scriptName = "";
+			//scriptName = "";
 		}
 	}
 
-	void PopulateFromLDF(LDFCollection * collection) {
+	void PopulateFromLDF(LDFCollection* collection) {
 		std::u16string customScriptName = u"";
 		LDF_GET_VAL_FROM_COLLECTION(customScriptName, collection, u"custom_script_server", u"");
 
@@ -113,22 +113,22 @@ public:
 			instance->onPlayerLoaded(owner, *msg);
 	}
 
-	void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK * msg) {
+	void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg) {
 		if (instance)
 			instance->onMissionDialogueOK(owner, *msg);
 	}
 
-	void OnRequestUse(Entity::GameObject * sender, GM::RequestUse * msg) {
+	void OnRequestUse(Entity::GameObject* sender, GM::RequestUse* msg) {
 		if (instance)
 			instance->onUse(owner, *msg);
 	}
 
-	void OnTimerDone(Entity::GameObject * sender, GM::TimerDone * msg) {
+	void OnTimerDone(Entity::GameObject* sender, GM::TimerDone* msg) {
 		if (instance)
 			instance->onTimerDone(owner, *msg);
 	}
 
-	void OnFireEventServerSide(Entity::GameObject * sender, GM::FireEventServerSide * msg) {
+	void OnFireEventServerSide(Entity::GameObject* sender, GM::FireEventServerSide* msg) {
 		if (instance)
 			instance->onFireEventServerSide(owner, *msg);
 	}
@@ -153,20 +153,28 @@ public:
 			instance->onRespondToMission(sender, *msg);
 	}
 
-	std::vector<Entity::GameObject *> objectsInProximity = {};
-	std::unordered_map<std::string, std::pair<float, std::vector<Entity::GameObject *>>> proximityRadii;
+	void OnRebuildNotifyState(Entity::GameObject* sender, GM::RebuildNotifyState* msg) {
+		if (instance) {
+			instance->onRebuildNotifyState(sender, *msg);
+			if (msg->iState == 2)
+				instance->onRebuildComplete(sender, *msg);
+		}
+	}
+
+	std::vector<Entity::GameObject*> objectsInProximity = {};
+	std::unordered_map<std::string, std::pair<float, std::vector<Entity::GameObject*>>> proximityRadii;
 
 	inline void DoProximityUpdate() {
 		if (proximityRadii.size() == 0) return;
 
 		// Get own position
 		Vector3 pos = Vector3::zero();
-		ControllablePhysicsComponent * contPhysComp = owner->GetComponent<ControllablePhysicsComponent>();
+		ControllablePhysicsComponent* contPhysComp = owner->GetComponent<ControllablePhysicsComponent>();
 		if (contPhysComp) {
 			pos = contPhysComp->GetPosition();
 		}
 		else {
-			SimplePhysicsComponent * simpPhysComp = owner->GetComponent<SimplePhysicsComponent>();
+			SimplePhysicsComponent* simpPhysComp = owner->GetComponent<SimplePhysicsComponent>();
 			if (simpPhysComp)
 				pos = simpPhysComp->GetPosition();
 			else
@@ -184,7 +192,7 @@ public:
 
 		for (auto o : this->owner->GetZoneInstance()->objectsManager->GetObjects()) {
 			// we can assume, the object has a controllable physics object, otherwise it can't move.
-			ControllablePhysicsComponent * objectPhysicsComponent = o->GetComponent<ControllablePhysicsComponent>();
+			ControllablePhysicsComponent* objectPhysicsComponent = o->GetComponent<ControllablePhysicsComponent>();
 			if (!objectPhysicsComponent || objectPhysicsComponent == nullptr) continue;
 			Vector3 position = Vector3::zero();
 			position = objectPhysicsComponent->GetPosition();
@@ -204,7 +212,7 @@ public:
 						auto it2 = std::find(proximityRadii[rc.first].second.begin(), proximityRadii[rc.first].second.end(), o);
 						if (it2 != proximityRadii[rc.first].second.end())
 							proximityRadii[rc.first].second.erase(it2);
-					}	
+					}
 				}
 				else {
 					// Object not in list, check if entered
@@ -223,14 +231,14 @@ public:
 	}
 
 	void Update() {
-		
+
 	}
 
 	void PhysicUpdate() {
 		DoProximityUpdate();
 	}
 
-	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
+	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		/* TODO: Script Component Serialization */
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 			LDFCollection netConf = owner->GetNetworkedConfig();
@@ -253,6 +261,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::Die, OnDie);
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::RespondToMission, OnRespondToMission);
 		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::TimerDone, OnTimerDone);
+		REGISTER_OBJECT_MESSAGE_HANDLER(ScriptComponent, GM::RebuildNotifyState, OnRebuildNotifyState);
 	}
 
 };

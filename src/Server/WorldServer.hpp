@@ -41,6 +41,11 @@ public:
 	Entity::GameObject * zoneControlObject = nullptr;
 	LWOTimer timer;
 	std::mutex m_lock;
+
+	/*
+		Used by scripts, returns the time of a cinematic of an LUZPath
+	*/
+	std::uint32_t GetCinematicInfo(std::u16string name);
 public:
 	WorldServer(int zone, int instanceID, int cloneID, int port);
 	void GameLoopThread();

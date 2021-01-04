@@ -59,6 +59,7 @@
 	mfun(ModularAssemblyNIFCompleted);\
 	mfun(ModularBuildFinish);\
 	mfun(ModuleAssemblyQueryData);\
+	mfun(MoveItemInInventory);\
 	mfun(NotifyClientFlagChange);\
 	mfun(NotifyServerLevelProcessingComplete);\
 	mfun(ParseChatMessage);\
@@ -93,6 +94,7 @@
 	mfun(ToggleSendingPositionUpdates);\
 	mfun(UnEquipInventory);\
 	mfun(UseNonEquipmentItem);\
-	mfun(RemoveItemFromInventory);
+	mfun(RemoveItemFromInventory);\
+	mfun(MoveItemBetweenInventoryTypes);
 #endif
 

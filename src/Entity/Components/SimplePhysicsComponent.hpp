@@ -12,15 +12,15 @@ using namespace DataTypes;
 
 class SimplePhysicsComponent : public IEntityComponent {
 private:
-	bool allowGlitchUp = false;
-	std::int32_t unknownCreation32=0;
+	bool climbable = false;
+	std::int32_t climbableType=0;
 	
 	bool _velocityDirty = false;
 	DataTypes::Vector3 linearVelocity = DataTypes::Vector3::zero();
 	DataTypes::Vector3 angularVelocity = DataTypes::Vector3::zero();
 
-	bool _airSpeedDirty = true;
-	std::uint32_t airSpeed = 0;
+	bool _physicsMotionStateDirty = false;
+	std::uint32_t physicsMotionState = 0;
 
 	bool _posRotDirty = true;
 	DataTypes::Vector3 position = DataTypes::Vector3::zero();
@@ -37,8 +37,8 @@ public:
 		bool tmpFlag = false;
 
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
-			factory->Write(allowGlitchUp);
-			factory->Write<std::int32_t>(unknownCreation32);
+			factory->Write(climbable);
+			factory->Write<std::int32_t>(climbableType);
 		}
 
 		if (packetType != ReplicaTypes::PacketTypes::CONSTRUCTION) {
@@ -58,10 +58,10 @@ public:
 			factory->Write<std::float_t>(angularVelocity.y);
 			factory->Write<std::float_t>(angularVelocity.z);
 		}
-		tmpFlag = _airSpeedDirty && airSpeed != 0;
+		tmpFlag = _physicsMotionStateDirty && physicsMotionState != 0;
 		factory->Write(tmpFlag);
 		if (tmpFlag) {
-			factory->Write(airSpeed);
+			factory->Write(physicsMotionState);
 		}
 		tmpFlag = _posRotDirty || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
 		factory->Write(tmpFlag);

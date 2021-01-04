@@ -347,6 +347,13 @@ namespace DataTypes {
 				return btVec3;
 			}
 
+			/*
+				returns pointer to float array [x,y,z]
+			*/
+			std::float_t* getFArr() {
+				return reinterpret_cast<std::float_t*>(this);
+			}
+
 		private:
 
 			/*

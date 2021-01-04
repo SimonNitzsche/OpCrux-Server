@@ -7,7 +7,7 @@ struct BehaviorStun : AbstractAggregateBehavior {
 
 	void UnCast(SkillComponent* comp, std::int32_t behaviorID, RakNet::BitStream* bs) {
 		std::float_t stun_caster = CacheBehaviorParameter::GetParameterValue(behaviorID, "stun_caster");
-		if (stun_caster == 0.0f)
+		if (comp->GetParameters().optionalOriginatorID != comp->GetParameters().optionalTargetID)
 			bs->Read(unknownBit);
 	}
 };

@@ -1,6 +1,9 @@
 #ifndef __DATABASE__DATABASEMODELS_HPP__
 #define __DATABASE__DATABASEMODELS_HPP__
 
+#include "DataTypes/Vector3.hpp"
+#include "DataTypes/LDF.hpp"
+
 namespace DatabaseModels {
 	struct Str_DB_CharStyle {
 public:
@@ -103,6 +106,10 @@ public:
 	std::uint32_t health;
 	std::uint32_t imagination;
 	std::uint32_t armor;
+	unsigned int maxhealth;
+	unsigned int maximagination;
+	unsigned int maxarmor;
+	unsigned int maxinventory;
 	Str_DB_CharInfo() {
 		name = "";
 		pendingName = "";
@@ -130,7 +137,7 @@ struct ItemModel {
 	std::uint64_t subkey;
 	std::uint32_t tab;
 	std::uint32_t slot;
-	std::uint32_t templateID;
+	std::uint32_t templateID = -1;
 	std::uint32_t count;
 	struct ItemAttributes {
 		/*
@@ -184,6 +191,23 @@ struct ItemModel {
 		subkey = 0;
 		count = 1;
 	}
+};
+
+struct MailModel {
+	std::int64_t mailID; // Never set mailID manually, this will be taken care of the DB itself
+	std::int64_t receiver;
+	std::string subject;
+	std::string body;
+	std::string sender;
+	std::int64_t attachedCurrency=0i64;
+	std::int64_t attachedObjectID = 0i64;
+	std::int32_t attachedLOT;
+	std::int64_t attachedSubkey = 0i64;
+	std::int16_t attachmentCount=0i16;
+	std::int64_t expirationDate;
+	std::int64_t sendDate;
+	bool markedAsSeen;
+	bool hasBeenModerated;
 };
 }
 

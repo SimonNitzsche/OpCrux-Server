@@ -11,6 +11,8 @@
 #include "Database/Database.hpp"
 #include "Entity/GameMessages.hpp"
 
+#include "Misc/MailManager.hpp"
+
 /*
 	TODO: This component is currently only implemented for static inventory, change this in future.
 */
@@ -48,7 +50,7 @@ class InventoryComponent : public IEntityComponent {
 private:
 	bool _isDirtyFlagEquippedItems = false;
 	bool _isDirtyFlagNextStruct = false;
-
+	std::int32_t maxItemSlots = 240;
 
 public:
 	typedef
@@ -156,7 +158,13 @@ public:
 					itemStack.ownerID = it->ownerID;
 					itemStack.slot = it->slot;
 
-					
+					// Check if an item glitched to a slot we don't have,
+					// and if so send it per mail and delete from inventory
+					if (itemStack.tab == 0 && itemStack.slot >= maxItemSlots) {
+						MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, 0Ui64, *it);
+						Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), it->objectID);
+						continue;
+					}
 
 					auto tabIt = inventory.find(it->tab);
 					if (tabIt != inventory.end()) {
@@ -179,6 +187,8 @@ public:
 							Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), itemStack.toDBModel());
 						}
 
+						
+
 						// Check for proxy LOTs
 						auto proxyLOTResolved = owner->GetProxyItemCheck(it->templateID);
 						if (proxyLOTResolved != it->templateID) {
@@ -197,6 +207,14 @@ public:
 					else {
 						InventoryTab _tab; _tab.insert({ it->slot, itemStack });
 						inventory.insert({ it->tab, _tab });
+					}
+
+					if (itemStack.equip) {
+						{
+							GM::EquipInventory nmsg;
+							nmsg.itemToEquip = itemStack.objectID;
+							owner->CallMessage(nmsg);
+						}
 					}
 				}
 			}
@@ -558,18 +576,24 @@ public:
 
 	inline void SaveStack(InventoryItemStack stack) {
 		// Dont save thinking hat!
-		if (stack.LOT == 6068) return;
+		if (stack.quantity == 0 && stack.LOT == 6068) return;
 
 		// Dont save temporary item or temporary model
 		if (stack.tab == 4 || stack.tab == 6) return;
 
+		// Get current inventory tab
+		auto itSlots = &this->inventory.find(stack.tab)->second;
+
 		// Check if we need to remove item or update it.
 		if (stack.quantity == 0) {
 			// Remove
+			if (itSlots->find(stack.slot) != itSlots->end())
+				itSlots->erase(stack.slot);
 			Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.objectID);
 		}
 		else {
 			// Update
+			(*itSlots)[stack.slot] = stack;
 			Database::UpdateItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), stack.toDBModel());
 		}
 	}
@@ -678,11 +702,14 @@ public:
 
 		AddItem(item->GetLOT(), incCount, item->GetPosition());
 	}
-	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = std::uint64_t(0), LDFCollection metadata = {}, bool subItem = false) {
+	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}, bool subItem = false, uint32_t optionalTab = 0) {
+
 		std::uint32_t nextTabAndSlot = GetNextFreeSlot(itemLOT, subItem);
 
 		std::uint32_t tab = (nextTabAndSlot & 0xFFFF0000) >> 16;
 		std::uint32_t slot = (nextTabAndSlot & 0x0000FFFF);
+
+		if (optionalTab != 0) tab = optionalTab;
 
 		std::uint32_t overflowCount = 0;
 
@@ -697,8 +724,6 @@ public:
 		// Get stack size.
 		std::int32_t stackSize = GetStackSizeForLOT(itemLOT);
 		if (stackSize < 1) stackSize = 999;
-
-		// TODO: Check if inventory is full.
 
 		auto tabIt = inventory.find(tab);
 
@@ -730,6 +755,7 @@ public:
 
 		//Logger::log("WRLD", "Stack item? "+std::string(useStacking?"true":"false"));
 
+
 		// We don't have a stack, make a new one.
 		if (!useStacking) {
 			itemStack.ownerID = owner->GetObjectID().getPureID();
@@ -754,13 +780,26 @@ public:
 			// metadata stuff
 			itemStack.metadata = metadata;
 
-			// Add item to player
-			if (tabIt != inventory.end()) {
-				tabIt->second.insert({ slot, itemStack });
+			// Check if inventory is full.
+			if (tab == 0 && slot > maxItemSlots - 1) {
+				// TODO: send mission mail:
+				// Mail::SendItem(...);
+				// return;
+				MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, 0Ui64, itemStack.toDBModel());
+			
+				{GM::NotifyRewardMailed nmsg; nmsg.objectID = itemStack.objectID; nmsg.startPoint = sourcePos; nmsg.subkey = itemStack.subkey; nmsg.templateID = itemStack.LOT; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
+				return;
 			}
+
 			else {
-				InventoryTab _tab; _tab.insert({ slot, itemStack });
-				inventory.insert({ tab, _tab });
+				// Add item to player directly
+				if (tabIt != inventory.end()) {
+					tabIt->second.insert({ slot, itemStack });
+				}
+				else {
+					InventoryTab _tab; _tab.insert({ slot, itemStack });
+					inventory.insert({ tab, _tab });
+				}
 			}
 		}
 
@@ -881,8 +920,7 @@ public:
 		return;
 	}
 
-	void RemoveItem2(std::uint32_t itemLOT, std::uint32_t amount = 1) {
-
+	void RemoveItem2(bool callMessage, std::uint32_t itemLOT, std::uint32_t amount = 1) {
 		// at this point amount will be used as amountLeft
 		// use while to get all stacks
 		while (amount != 0) {
@@ -902,24 +940,26 @@ public:
 			stack.quantity -= reduceAmount;
 
 			// Save stack
-			SaveStack(stack);
+			this->SaveStack(stack);
 
 			// Try to unequip item if equipped
-			UnEquipItem(stack.objectID);
+			this->UnEquipItem(stack.objectID);
 
 			// Tell client
-			GM::RemoveItemFromInventory removeItemMsg;
-			removeItemMsg.Confirmed = true;
-			removeItemMsg.DeleteItem = true;
-			removeItemMsg.OutSuccess = false;
-			removeItemMsg.ItemType = -1;
-			removeItemMsg.InventoryType = stack.tab;
-			removeItemMsg.ForceDeletion = true;
-			removeItemMsg.Item = stack.objectID;
-			removeItemMsg.Delta = reduceAmount;
-			removeItemMsg.TotalItems = stack.quantity;
+			if (callMessage) {
+				GM::RemoveItemFromInventory removeItemMsg;
+				removeItemMsg.Confirmed = true;
+				removeItemMsg.DeleteItem = true;
+				removeItemMsg.OutSuccess = false;
+				removeItemMsg.ItemType = -1;
+				removeItemMsg.InventoryType = stack.tab;
+				removeItemMsg.ForceDeletion = true;
+				removeItemMsg.Item = stack.objectID;
+				removeItemMsg.Delta = reduceAmount;
+				removeItemMsg.TotalItems = stack.quantity;
 
-			GameMessages::Send(owner, owner->GetObjectID(), removeItemMsg);
+				GameMessages::Send(owner, owner->GetObjectID(), removeItemMsg);
+			}
 
 			// Is the stack empty now?
 			if (stack.quantity <= 0) {
@@ -934,6 +974,50 @@ public:
 		}
 	}
 
+	void MoveItem(DataTypes::LWOOBJID stackID, std::int32_t invTab, std::int32_t slot) {
+		// Get ItemStack
+		auto itSlots = &this->inventory.find(invTab)->second;
+
+		InventoryItemStack stack;
+		for (auto it = itSlots->begin(); it != itSlots->end(); ++it) {
+			if (it->second.objectID == stackID) {
+				stack = it->second;
+				break;
+			}
+		}
+
+		this->UnEquipItem(stack.objectID);
+
+		// Check if the slot is empty
+		if (itSlots->find(slot) == itSlots->end()) {
+			
+			// Delete item from old slot
+			if(itSlots->find(stack.slot) != itSlots->end())
+				itSlots->erase(stack.slot);
+
+			// Update slot and save stack
+			stack.slot = slot;
+			this->SaveStack(stack);
+		}
+		else {
+			
+			// Get current stack at slot
+			InventoryItemStack curStack = (*itSlots)[slot];
+			this->UnEquipItem(curStack.objectID);
+
+			// Switch items
+			curStack.slot = stack.slot;
+			this->SaveStack(curStack);
+
+			stack.slot = slot;
+			this->SaveStack(stack);
+		}
+	}
+	void OnSetInventorySize(Entity::GameObject* sender, GM::SetInventorySize* msg) {
+		if (msg->inventoryType == 0) {
+			maxItemSlots = msg->size;
+		}
+	}
 	void OnEquipInventory(Entity::GameObject* sender, GM::EquipInventory* msg) {
 		this->EquipItem(msg->itemToEquip);
 	}
@@ -979,13 +1063,32 @@ public:
 		item->CallMessage(*msg, sender);
 	}
 
-	
+	void OnRemoveItemFromInventory(Entity::GameObject* sender, GM::RemoveItemFromInventory* msg) {
+		if (msg->Confirmed) {
+			this->RemoveItem2(false, msg->ItemLot, msg->Delta);
+		}
+	}
 
+	void OnMoveItemInInventory(Entity::GameObject* sender, GM::MoveItemInInventory* msg) {
+		this->MoveItem(msg->objectID, msg->invType, msg->slot);
+	}
+
+	void OnMoveItemBetweenInventoryTypes(Entity::GameObject* sender, GM::MoveItemBetweenInventoryTypes* msg) {
+		RemoveItem(msg->templateId, msg->stackCount);
+
+		AddItem(msg->templateId, 1, DataTypes::Vector3(), 0ULL, {}, false, msg->inventoryTypeB);
+	}
+
+	
 	void RegisterMessageHandlers() {
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::EquipInventory, OnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UnEquipInventory, OnUnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::ClientItemConsumed, OnClientItemConsumed);
 		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::UseNonEquipmentItem, OnUseNonEquipmentItem);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::RemoveItemFromInventory, OnRemoveItemFromInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::MoveItemInInventory, OnMoveItemInInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::SetInventorySize, OnSetInventorySize);
+		REGISTER_OBJECT_MESSAGE_HANDLER(InventoryComponent, GM::MoveItemBetweenInventoryTypes, OnMoveItemBetweenInventoryTypes);
 	}
 };
 

@@ -8,7 +8,7 @@ struct BehaviorAnd : AbstractAggregateBehavior {
 
 		auto ri = CacheBehaviorParameter::GetBehaviorRow(behaviorID);
 		if (!ri.isValid())
-			throw new std::runtime_error("Unable to query row.");
+			throw std::runtime_error("Unable to query row.");
 
 		// Initial call
 		std::int32_t nextID = *reinterpret_cast<float*>(ri[2].getMemoryLocation());
@@ -19,6 +19,24 @@ struct BehaviorAnd : AbstractAggregateBehavior {
 			ri = ri.getLinkedRowInfo();
 			nextID = *reinterpret_cast<float*>(ri[2].getMemoryLocation());
 			StartUnCast(comp, nextID, bs);
+		}
+	}
+
+	void Cast(SkillComponent* comp, std::int32_t behaviorID, RakNet::BitStream* bs) {
+
+		auto ri = CacheBehaviorParameter::GetBehaviorRow(behaviorID);
+		if (!ri.isValid())
+			throw std::runtime_error("Unable to query row.");
+
+		// Initial call
+		std::int32_t nextID = *reinterpret_cast<float*>(ri[2].getMemoryLocation());
+		StartCast(comp, nextID, bs);
+
+		// For all others
+		while (ri.isLinkedRowInfoValid()) {
+			ri = ri.getLinkedRowInfo();
+			nextID = *reinterpret_cast<float*>(ri[2].getMemoryLocation());
+			StartCast(comp, nextID, bs);
 		}
 	}
 };

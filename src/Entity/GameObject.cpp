@@ -8,8 +8,6 @@
 #include <string>
 #include <codecvt>
 
-#include <rapidxml/rapidxml.hpp>
-
 #include "Entity/GMBase.hpp"
 
 //using namespace Entity::Components::Interface;
@@ -94,10 +92,10 @@
 #include "Entity/Components/VendorComponent.hpp"
 
 ReplicaReturnResult Entity::GameObject::SendConstruction(RakNetTime currentTime, SystemAddress systemAddress, unsigned int &flags, RakNet::BitStream *outBitStream, bool *includeTimestamp) {
-	if (this->serverOnly) return REPLICA_PROCESSING_DONE;
+	if (this->serverOnly) return REPLICA_CANCEL_PROCESS;
 	
 	this->Serialize(outBitStream, ReplicaTypes::PacketTypes::CONSTRUCTION);
-	Instance->replicaManager->SetScope(this, true, UNASSIGNED_SYSTEM_ADDRESS, true);
+	//Instance->replicaManager->SetScope(this, true, UNASSIGNED_SYSTEM_ADDRESS, true);
 	return REPLICA_PROCESSING_DONE;
 }
 ReplicaReturnResult Entity::GameObject::SendDestruction(RakNet::BitStream *outBitStream, SystemAddress systemAddress, bool *includeTimestamp) {
@@ -143,7 +141,7 @@ Entity::GameObject::GameObject(WorldServer * instance, std::uint32_t LOT) {
 
 	auto component_types_to_be_added = CacheComponentsRegistry::GetObjectComponentTypes(LOT);
 
-	this->creationTimestamp = ServerInfo::uptime();
+	this->creationTimestamp = ServerInfo::uptimeMs();
 
 	// Add components
 	for (auto component_type : component_types_to_be_added) {
@@ -217,6 +215,14 @@ IEntityComponent* Entity::GameObject::GetComponentByType(int id) {
 template<class T>
 T * Entity::GameObject::GetComponent() {
 	return static_cast<T*>(GetComponentByType(T::GetTypeID()));
+}
+
+void Entity::GameObject::RemoveComponentByID(int id) {
+	auto comp = this->GetComponentByType(id);
+
+	this->components.erase(id);
+
+	delete comp;
 }
 
 IEntityComponent * Entity::GameObject::AddComponentByID(int id, int compID) {
@@ -351,6 +357,7 @@ void Entity::GameObject::SerializeComponents(RakNet::BitStream * factory, Replic
 	//SERIALIZE_COMPONENT_IF_ATTACHED(ShootingGalleryComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(InventoryComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ScriptComponent);
+	SERIALIZE_COMPONENT_IF_ATTACHED(SoundTriggerComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(SkillComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(ItemComponent);
 	SERIALIZE_COMPONENT_IF_ATTACHED(BaseCombatAIComponent);
@@ -520,7 +527,7 @@ void Entity::GameObject::Remove() {
 		spawner->GetComponent<SpawnerComponent>()->NotifyOfObjectRemoval(this);
 		GM::Die dieGM;
 		auto scriptComp = spawner->GetComponent<ScriptComponent>();
-		if(scriptComp != nullptr) scriptComp->OnDie(this, &dieGM);
+		if(scriptComp != nullptr) scriptComp->OnMessage(this, GM::Die::GetID(), &dieGM);
 	}
 
 	// Detach parent/child
@@ -533,6 +540,9 @@ void Entity::GameObject::Remove() {
 		child->InstantiateRemoval();
 	}
 
+	// Remove timers
+	Instance->timer.NotifyObjectDeleted(this);
+
 	// Remove me
 	delete this;
 }
@@ -543,6 +553,26 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 		collection = &configData;
 
 	configData = *collection;
+
+	bool markedAsPhantom;
+	LDF_GET_VAL_FROM_COLLECTION(markedAsPhantom, collection, u"markedAsPhantom", false);
+	if (markedAsPhantom) {
+		bool phantomPhysicsOnly;
+		LDF_GET_VAL_FROM_COLLECTION(phantomPhysicsOnly, collection, u"phantomPhysicsOnly", false);
+
+		if (phantomPhysicsOnly) {
+			this->RemoveComponentByID(SimplePhysicsComponent::GetTypeID());
+		}
+
+		this->AddComponent<PhantomPhysicsComponent>(-1);
+	}
+
+	LDF_GET_VAL_FROM_COLLECTION(sceneID, collection, u"sceneID", GetSceneID());
+	bool sceneIDOverrideEnabled;
+	LDF_GET_VAL_FROM_COLLECTION(sceneIDOverrideEnabled, collection, u"sceneIDOverrideEnabled", false);
+	if (sceneIDOverrideEnabled) {
+		LDF_GET_VAL_FROM_COLLECTION(sceneID, collection, u"sceneIDOverride", GetSceneID());
+	}
 
 	// TODO: Populate base data
 	std::u16string groupWstr;
@@ -762,6 +792,7 @@ void Entity::GameObject::OnCollisionPhantom(Entity::GameObject * other) {
 			component.second->OnCollisionPhantom(other);
 		}
 	}
+	NotifyTriggerEvent("OnEnter");
 }
 
 void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
@@ -772,6 +803,7 @@ void Entity::GameObject::OnOffCollisionPhantom(Entity::GameObject * other) {
 			component.second->OnOffCollisionPhantom(other);
 		}
 	}
+	NotifyTriggerEvent("OnExit");
 }
 
 void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {
@@ -785,9 +817,9 @@ void Entity::GameObject::SetPlayerActivity(Enums::EGameActivity activity) {
 
 //GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DEFINE);
 
-void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
-	for (auto i : components) i.second->OnMessage(sender, msg->GetID(), msg);
-}
+//void Entity::GameObject::OnDie(Entity::GameObject* sender, GM::Die* msg) {
+//	for (auto i : components) i.second->OnMessage(sender, msg->GetID(), msg);
+//}
 
 
 void Entity::GameObject::PickupLoot(Entity::GameObject* loot) {
@@ -848,7 +880,7 @@ std::string Entity::GameObject::GenerateXML() {
 		{
 			ss << "<bag>";
 			{
-				ss << "<b t=\"0\" m=\"200\"/>" ;
+				ss << "<b t=\"0\" m=\""<< charInfo.maxinventory <<"\"/>" ;
 				ss << "<b t=\"1\" m=\"240\"/>" ;
 				ss << "<b t=\"14\" m=\"240\"/>";
 				ss << "<b t=\"15\" m=\"240\"/>";

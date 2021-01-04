@@ -7,9 +7,20 @@
 using namespace DataTypes;
 
 class BaseCombatAIComponent : public IEntityComponent {
+public:
+	enum class ECombatState : std::uint32_t {
+		IDLE,
+		AGGRO,
+		TETHER,
+		SPAWN,
+		DEAD
+	};
 private:
 	bool _isDirtyFlag = false;
 
+	ECombatState state = ECombatState::IDLE;
+
+	DataTypes::LWOOBJID target;
 
 public:
 
@@ -18,8 +29,38 @@ public:
 	static constexpr int GetTypeID() { return 60; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-		/* TODO: BaseCombatAIComponent Serialization */
 		factory->Write(_isDirtyFlag);
+		if (_isDirtyFlag) {
+			factory->Write(state);
+			factory->Write(target);
+		}
+
+		// We just spawned
+		if (state == ECombatState::SPAWN) {
+			// Go to idle
+			SetState(ECombatState::IDLE);
+		}
+	}
+
+	void SetState(ECombatState newState) {
+		state = newState;
+		_isDirtyFlag = true;
+		owner->SetDirty();
+	}
+
+	void Start() {
+		SetState(ECombatState::SPAWN);
+	}
+
+	void Update() {
+		// We're spawned, for the case we haven't constructed ourselves yet
+		if (state == ECombatState::SPAWN) {
+			// Wait 5 seconds
+			if (owner->GetCreationTimestamp() + 5000 < ServerInfo::uptimeMs()) {
+				// Go to idle
+				SetState(ECombatState::IDLE);
+			}
+		}
 	}
 
 };

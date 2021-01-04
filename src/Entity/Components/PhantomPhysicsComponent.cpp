@@ -45,7 +45,7 @@ void PhantomPhysicsComponent::PhysicUpdate() {
 			// Object in list, check if left
 
 			// Look for matching radii
-			if (difference > owner->GetScale() * 2) {
+			if (difference > owner->GetScale() * 2.5f) {
 				// Message object left.
 				owner->OnOffCollisionPhantom(o);
 				auto it2 = std::find(enteredObjects.begin(), enteredObjects.end(), o);
@@ -57,7 +57,7 @@ void PhantomPhysicsComponent::PhysicUpdate() {
 			// Object not in list, check if entered
 
 			// Look for matching radii
-			if (difference <= owner->GetScale() * 2) {
+			if (difference <= owner->GetScale() * 2.5f) {
 				// Message object joined.
 				auto it2 = std::find(enteredObjects.begin(), enteredObjects.end(), o);
 				if (it2 != enteredObjects.end()) continue;

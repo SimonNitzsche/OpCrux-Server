@@ -47,6 +47,8 @@
 #include "GameCache/ZoneTable.hpp"
 #include "GameCache/Objects.hpp"
 
+#include "Misc/MailManager.hpp"
+
 #include "Utils/LDFUtils.hpp"
 #include "FileTypes/LUZFile/LUZone.hpp"
 
@@ -58,10 +60,32 @@
 #include "Entity/Components/MinigameComponent.hpp"
 #include "Entity/Components/ScriptComponent.hpp"
 
+#include "../../libs/recastnavigation/Recast/Include/Recast.h"
+
 using namespace Exceptions;
 
 extern BridgeMasterServer* masterServerBridge;
 extern std::vector<ILUServer*> virtualServerInstances;
+
+std::uint32_t WorldServer::GetCinematicInfo(std::u16string name) {
+	if (!luZone || !luZone->_isFileLoaded()) return 0;
+	auto pathIt = luZone->paths.find(name);
+
+	if (pathIt == luZone->paths.end()) return 0;
+	if (pathIt->second->pathType != FileTypes::LUZ::LUZonePathType::Camera) return 0;
+	auto camPath = reinterpret_cast<FileTypes::LUZ::LUZonePathCamera*>(pathIt->second);
+	
+	std::uint32_t totalTime = 0;
+	for (auto wp : camPath->waypoints) {
+		totalTime += std::int32_t((wp->time) * 1000);
+	}
+
+	if (camPath->nextPath.length != 0) {
+		totalTime += GetCinematicInfo(camPath->nextPath.ToString());
+	}
+
+    return totalTime;
+}
 
 WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_port(port) {
 	// Preload
@@ -186,7 +210,10 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 
 		// TODO: Move this to somewhere else
 		for (const auto& scene : luZone->scenes) {
+
+			//if (*scene.sceneID == 1300 && *scene.sceneID > 8) break;
 			for (auto objT : scene.scene.objectsChunk.objects) {
+
 
 				// If we are the same LOT as zoneObject, continue
 				if (*objT.LOT == this->zoneControlObject->GetLOT()) continue;
@@ -210,6 +237,8 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				go->SetScale(*objT.scale);
 
 				go->PopulateFromLDF(&ldfCollection);
+
+				go->SetSceneID(*scene.sceneID);
 
 				objectsManager->RegisterObject(go);
 			}
@@ -272,14 +301,16 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 	masterServerBridge->NotifyInstanceLoaded(zone, instanceID, cloneID, addr);
 
 	while (ServerInfo::bRunning) {
-		RakSleep(30);
+		RakSleep(16);
 		/*if (debugRenderer != nullptr) {
 			debugRenderer->Paint();
 		}*/
 		try {
 			// RakNet likes to crash in debug mode.
 			// Skip packet if unable tro read
+			m_lock.lock();
 			packet = rakServer->Receive();
+			m_lock.unlock();
 		}
 		catch (...) {
 			continue;
@@ -356,6 +387,16 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 			break;
 		}
 		case ERemoteConnection::CHAT: {
+			ClientSession* clientSession = nullptr;
+			if (static_cast<EWorldPacketID>(packetHeader.packetID) != EWorldPacketID::CLIENT_VALIDATION) { // Whitelist CLIENT_VALIDATION
+				clientSession = sessionManager.GetSession(packet->getSystemAddress());
+				// Something went wrong
+				if (clientSession == nullptr) {
+					PacketFactory::General::doDisconnect(rakServer, packet->getSystemAddress(), Enums::EDisconnectReason::CHARACTER_NOT_FOUND);
+					return;
+				}
+			}
+
 			switch (EChatPacketID(packetHeader.packetID)) {
 			case EChatPacketID::ADD_FRIEND_REQUEST: {
 				uint64_t unknown;
@@ -424,6 +465,16 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_LIST_REQUEST: {
 				PacketFactory::World::sendCharList(this, clientSession);
+				break;
+			}
+			case EWorldPacketID::CLIENT_CHARACTER_DELETE_REQUEST: {
+				DataTypes::LWOOBJID objectID;
+				data->Read(objectID);
+
+				Database::DeleteCharacter(GetDBConnection(), objectID, sessionManager.GetSession(packet->getSystemAddress())->accountID);
+
+				PacketFactory::World::DeleteCharacterResponse(rakServer, packet->getSystemAddress());
+
 				break;
 			}
 			case EWorldPacketID::CLIENT_CHARACTER_CREATE_REQUEST: {
@@ -515,9 +566,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				auto * playerObject = new Entity::GameObject(this, 1);
 				playerObject->SetObjectID(clientSession->actorID);
 				auto * charComp = playerObject->GetComponent<CharacterComponent>();
+
+				DatabaseModels::Str_DB_CharInfo info = Database::GetChar(GetDBConnection(), clientSession->actorID.getPureID());
 				if (charComp != nullptr) {
 					charComp->clientAddress = clientSession->systemAddress;
-					DatabaseModels::Str_DB_CharInfo info = Database::GetChar(GetDBConnection(), clientSession->actorID.getPureID());
 					playerObject->SetPosition(luZone->spawnPos.pos);
 					playerObject->SetRotation(luZone->spawnPos.rot);
 
@@ -592,23 +644,35 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					charComp->InitCharInfo(info);
 					charComp->InitCharStyle(charStyle);
 					charComp->CheckLevelProgression();
-				
-					auto* charDestComp = playerObject->GetComponent<DestructibleComponent>();
-					if (charDestComp != nullptr) {
-						charDestComp->SetImagination(info.imagination);
-					}
 
 					playerObject->SetName(std::u16string(info.name.begin(), info.name.end()));
 					//playerObject->Finish();
 				}
 				auto invComp = playerObject->GetComponent<InventoryComponent>();
+				{GM::SetInventorySize nmsg; nmsg.inventoryType = 0; nmsg.size = info.maxinventory; playerObject->CallMessage(nmsg); }
 				
 				// Bypass disabling of player construction
 				// by missing components
 				playerObject->isSerializable = true;
 
+				ControllablePhysicsComponent* physComp = playerObject->GetComponent<ControllablePhysicsComponent>();
+				physComp->DoSceneManagement(false);
+
 				objectsManager->RegisterObject(playerObject);
 				playerObject->Finish();
+
+				auto* statsComp = playerObject->GetComponent<StatsComponent>();
+				if (statsComp != nullptr) {
+					statsComp->attributes.currentHealth = info.health;
+					statsComp->attributes.maxHealth = info.maxhealth;
+					statsComp->attributes.dupMaxHealth = info.maxhealth;
+					statsComp->attributes.currentArmor = info.armor;
+					statsComp->attributes.maxArmor = info.maxarmor;
+					statsComp->attributes.dupMaxArmor = info.maxarmor;
+					statsComp->attributes.currentImagination = info.imagination;
+					statsComp->attributes.maxImagination = info.maximagination;
+					statsComp->attributes.dupMaxImagination = info.maximagination;
+				}
 
 				Logger::log("WRLD", "Create character packet");
 
@@ -626,8 +690,8 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				Logger::log("WRLD", "Sending serialization");
 				for (auto object_to_construct : objectsManager->GetObjects()) {
 					if (object_to_construct->isSerializable && !object_to_construct->GetIsServerOnly() && object_to_construct->GetComponent<CharacterComponent>() == nullptr /*&& object_to_construct->GetComponent<PetComponent>() == nullptr*/) {
-						Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((std::uint64_t)object_to_construct->GetObjectID()));
-						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
+						//Logger::log("WRLD", "Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) +" ("+(std::string)CacheObjects::GetName(object_to_construct->GetLOT())+") with objectID "+std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						//objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}
 
@@ -639,14 +703,15 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				
 				for (auto object_to_construct : objectsManager->GetObjects()) {
 					if (object_to_construct->GetObjectID() != playerObject->GetObjectID() && object_to_construct->isSerializable && (object_to_construct->GetComponent<CharacterComponent>() != nullptr /*|| object_to_construct->GetComponent<PetComponent>() != nullptr*/)) {
-						Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((std::uint64_t)object_to_construct->GetObjectID()));
-						objectsManager->Construct(object_to_construct, packet->getSystemAddress());
+						//Logger::log("WRLD", "Post-Load: Constructing LOT #" + std::to_string(object_to_construct->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object_to_construct->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object_to_construct->GetObjectID()));
+						//objectsManager->Construct(object_to_construct, packet->getSystemAddress());
 					}
 				}
 
 				if(invComp != nullptr)
 					invComp->Awake();
 				objectsManager->Construct(playerObject);
+				replicaManager->Construct(playerObject, false, clientSession->systemAddress, false);
 
 				Logger::log("WRLD", "Server done loading");
 				PacketFactory::World::TestLoad(rakServer, clientSession);
@@ -665,6 +730,41 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					// throw std::runtime_error("Invalid objectID; TODO: Kick Player -> Cheating");
 				}
 				break;
+			}
+
+			case Enums::EWorldPacketID::CLIENT_MAIL: {
+				std::uint32_t type;
+				data->Read(type);
+				switch (type) {
+					// mail send
+				case 0x00: break;
+
+					// mail data request
+				case 0x03: {
+					// send mail list
+					MailManager::SendMailListToClient(this, clientSession);
+				} break;
+
+					// mail attachment collect
+				case 0x05: break;
+
+					// mail delete
+				case 0x07: break;
+
+					// mail read
+				case 0x09: {
+					std::uint32_t unknownMailRead0c;
+					data->Read(unknownMailRead0c);
+					std::int64_t mailID;
+					data->Read(mailID);
+					MailManager::MarkMailAsSeen(this, clientSession, mailID);
+				} break;
+
+					// mail notification request
+				case 0x0b: {
+					MailManager::SendNewMailNotification(this, clientSession);
+				} break;
+				}
 			}
 
 			case Enums::EWorldPacketID::CLIENT_STRING_CHECK: {

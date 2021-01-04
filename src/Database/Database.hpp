@@ -300,7 +300,7 @@ public:
 	}
 
 	static std::vector<Str_DB_CharInfo> GetChars(odbc::ConnectionRef conn, std::uint32_t accountID) {
-		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT objectID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE accountID=? ORDER BY charIndex");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT objectID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor, maxhealth, maximagination, maxarmor, maxinventory FROM OPCRUX_GD.dbo.Characters WHERE accountID=? ORDER BY charIndex");
 		stmt->setUInt(1, accountID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
@@ -331,6 +331,10 @@ public:
 			charInfo.health = *rs->getInt(20);
 			charInfo.imagination = *rs->getInt(21);
 			charInfo.armor = *rs->getInt(22);
+			charInfo.maxhealth = *rs->getInt(23);
+			charInfo.maximagination = *rs->getInt(24);
+			charInfo.maxarmor = *rs->getInt(25);
+			charInfo.maxinventory = *rs->getInt(26);
 			charsInfo.push_back(charInfo);
 		}
 
@@ -338,7 +342,7 @@ public:
 	}
 
 	static Str_DB_CharInfo GetChar(odbc::ConnectionRef conn, std::uint64_t objectID) {
-		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor FROM OPCRUX_GD.dbo.Characters WHERE objectID=? ORDER BY charIndex");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor, maxhealth, maximagination, maxarmor, maxinventory FROM OPCRUX_GD.dbo.Characters WHERE objectID=? ORDER BY charIndex");
 		stmt->setULong(1, objectID);
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
@@ -369,6 +373,10 @@ public:
 			charInfo.health = *rs->getInt(20);
 			charInfo.imagination = *rs->getInt(21);
 			charInfo.armor = *rs->getInt(22);
+			charInfo.maxhealth = *rs->getInt(23);
+			charInfo.maximagination = *rs->getInt(24);
+			charInfo.maxarmor = *rs->getInt(25);
+			charInfo.maxinventory = *rs->getInt(26);
 
 			return charInfo;
 		}
@@ -376,9 +384,54 @@ public:
 		return Str_DB_CharInfo();
 	}
 
+	static Str_DB_CharInfo GetCharByName(odbc::ConnectionRef conn, std::string name) {
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT accountID, charIndex, name, pendingName, styleID,statsID, lastWorld, lastInstance, lastClone, lastLog, positionX, positionY, positionZ, shirtObjectID, pantsObjectID, uScore, uLevel, currency, reputation, health, imagination, armor, maxhealth, maximagination, maxarmor, maxinventory, objectID FROM OPCRUX_GD.dbo.Characters WHERE name=? OR pendingName=? ORDER BY charIndex");
+		stmt->setString(1, name);
+		stmt->setString(2, name);
+		odbc::ResultSetRef rs = stmt->executeQuery();
+
+		std::vector<Str_DB_CharInfo> charsInfo;
+
+		if (rs->next()) {
+			Str_DB_CharInfo charInfo;
+			charInfo.accountID = *rs->getInt(1);
+			charInfo.charIndex = *rs->getInt(2);
+			charInfo.name = *rs->getString(3);
+			charInfo.pendingName = *rs->getString(4);
+			charInfo.styleID = *rs->getInt(5);
+			charInfo.statsID = *rs->getInt(6);
+			charInfo.lastWorld = *rs->getShort(7) & 0xFFFF;
+			charInfo.lastInstance = *rs->getShort(8) & 0xFFFF;
+			charInfo.lastClone = *rs->getInt(9);
+			charInfo.lastLog = *rs->getULong(10);
+			charInfo.position.x = *rs->getFloat(11);
+			charInfo.position.y = *rs->getFloat(12);
+			charInfo.position.z = *rs->getFloat(13);
+			charInfo.shirtObjectID = *rs->getULong(14);
+			charInfo.pantsObjectID = *rs->getULong(15);
+			charInfo.uScore = *rs->getInt(16);
+			charInfo.uLevel = *rs->getInt(17);
+			charInfo.currency = *rs->getInt(18);
+			charInfo.reputation = *rs->getInt(19);
+			charInfo.health = *rs->getInt(20);
+			charInfo.imagination = *rs->getInt(21);
+			charInfo.armor = *rs->getInt(22);
+			charInfo.maxhealth = *rs->getInt(23);
+			charInfo.maximagination = *rs->getInt(24);
+			charInfo.maxarmor = *rs->getInt(25);
+			charInfo.maxinventory = *rs->getInt(26);
+			charInfo.objectID = *rs->getULong(27);
+
+			return charInfo;
+		}
+
+		return Str_DB_CharInfo();
+	}
+
+
 	static void UpdateChar(odbc::ConnectionRef conn, Str_DB_CharInfo charInfo) {
 
-		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=?,shirtObjectID=?,pantsObjectID=? WHERE objectID=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "UPDATE OPCRUX_GD.dbo.Characters SET name=?,pendingName=?,lastWorld=?,lastInstance=?,lastClone=?,lastLog=?,positionX=?,positionY=?,positionZ=?,uScore=?,uLevel=?,currency=?,reputation=?,health=?,imagination=?,armor=?,shirtObjectID=?,pantsObjectID=?,maxhealth=?,maximagination=?,maxarmor=?,maxinventory=? WHERE objectID=?");
 
 		charInfo.lastLog = ::time(0);
 
@@ -400,8 +453,12 @@ public:
 		stmt->setInt(16, charInfo.armor);
 		stmt->setULong(17, charInfo.shirtObjectID);
 		stmt->setULong(18, charInfo.pantsObjectID);
+		stmt->setInt(19, charInfo.maxhealth);
+		stmt->setInt(20, charInfo.maximagination);
+		stmt->setInt(21, charInfo.maxarmor);
+		stmt->setInt(22, charInfo.maxinventory);
 
-		stmt->setULong(19, charInfo.objectID);
+		stmt->setULong(23, charInfo.objectID);
 
 		size_t nAffectedRows = stmt->executeUpdate();
 	}
@@ -535,6 +592,11 @@ public:
 			int imagination = 0;
 			int armor = 0;
 
+			int maxhealth = health;
+			int maximagination = imagination;
+			int maxarmor = armor;
+			int maxinventory = 20;
+
 			// Create style
 			std::uint32_t styleID = CreateCharStyle(conn, headColor, head, chestColor, chest, legs, hairStyle, hairColor, leftHand, rightHand, eyebrowStyle, eyesStyle, mouthStyle);
 
@@ -548,7 +610,7 @@ public:
 			auto shirtAndPants = AddCharShirtAndPants(conn, objectID, shirtObjectLOT, pantsObjectLOT);
 
 			// Create player
-			odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SET IDENTITY_INSERT OPCRUX_GD.dbo.Characters ON;INSERT INTO OPCRUX_GD.dbo.Characters(objectID,accountID,charIndex,name,pendingName,styleID,statsID,lastWorld,lastInstance,lastClone,lastLog,positionX,positionY,positionZ,shirtObjectID,pantsObjectID,uScore,uLevel,currency,reputation,health,imagination,armor) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SET IDENTITY_INSERT OPCRUX_GD.dbo.Characters ON;INSERT INTO OPCRUX_GD.dbo.Characters(objectID,accountID,charIndex,name,pendingName,styleID,statsID,lastWorld,lastInstance,lastClone,lastLog,positionX,positionY,positionZ,shirtObjectID,pantsObjectID,uScore,uLevel,currency,reputation,health,imagination,armor,maxhealth,maximagination,maxarmor,maxinventory) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 			stmt->setULong(1, objectID);
 			stmt->setInt(2, accountID);
@@ -573,6 +635,10 @@ public:
 			stmt->setInt(21, health);
 			stmt->setInt(22, imagination);
 			stmt->setInt(23, armor);
+			stmt->setInt(24, maxhealth);
+			stmt->setInt(25, maximagination);
+			stmt->setInt(26, maxarmor);
+			stmt->setInt(27, maxinventory);
 
 			odbc::ResultSetRef rs = stmt->executeQuery();
 
@@ -595,6 +661,29 @@ public:
 
 
 		return -1;
+	}
+
+	static void DeleteCharacter(odbc::ConnectionRef conn, DataTypes::LWOOBJID ObjectID, uint32_t AccountID) {
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT objectID FROM OPCRUX_GD.dbo.Characters WHERE accountID = ?");
+
+		stmt->setInt(1, AccountID);
+		odbc::ResultSetRef rs = stmt->executeQuery();
+		uint64_t objid;
+		bool Good = false;
+		while (rs->next()) {
+			objid = *rs->getULong(1);
+			if (DataTypes::LWOOBJID::makePlayerObjectID(objid) == ObjectID) {
+				Good = true;
+			}
+		}
+		stmt.reset();
+		rs.reset();
+
+		{
+			odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "DELETE FROM OPCRUX_GD.dbo.Characters WHERE objectID = ?");
+			stmt->setULong(1, objid);
+			stmt->executeQuery();
+		}
 	}
 
 	static std::uint64_t getStatByID(std::int64_t statsID, std::uint32_t statsIndex) {
@@ -1239,6 +1328,120 @@ public:
 		if (rs->next()) {
 			return *rs->getInt(5);
 		}
+	}
+
+	static void SendMail(odbc::ConnectionRef conn, MailModel & model) {
+		// // Expires in 90 days
+		// model.expirationDate = currentTime + (60 * 60 * 24 * 90);
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SET IDENTITY_INSERT OPCRUX_GD.dbo.Mail OFF; INSERT INTO OPCRUX_GD.dbo.Mail (receiver, subject, body, sender, attachedCurrency, attachedObjectID, attachedLOT, attachedSubkey, attachmentCount, expirationDate, sendDate, markedAsSeen, hasBeenModerated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);");
+	
+		stmt->setLong(1, model.receiver);
+		stmt->setString(2, model.subject);
+		stmt->setString(3, model.body);
+		stmt->setString(4, model.sender);
+		stmt->setLong(5, model.attachedCurrency);
+		stmt->setLong(6, model.attachedObjectID);
+		stmt->setInt(7, model.attachedLOT);
+		stmt->setLong(8, model.attachedSubkey);
+		stmt->setShort(9, model.attachmentCount);
+		stmt->setLong(10, model.expirationDate);
+		stmt->setLong(11, model.sendDate);
+		stmt->setBoolean(12, model.markedAsSeen);
+		stmt->setBoolean(13, model.hasBeenModerated);
+
+		odbc::ResultSetRef rs = stmt->executeQuery();
+	}
+
+	static std::int32_t GetNewMailCount(odbc::ConnectionRef conn, DataTypes::LWOOBJID charID) {
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT COUNT(mailID) FROM OPCRUX_GD.dbo.Mail WHERE receiver = ? AND markedAsSeen = 0 AND hasBeenModerated = 1");
+		
+		stmt->setLong(1, charID.getPureID());
+
+		auto rs = stmt->executeQuery();
+		if (rs->next()) {
+			return *rs->getInt(1);
+		}
+		
+		return 0;
+	}
+
+	static std::list<MailModel> GetMails(odbc::ConnectionRef conn, DataTypes::LWOOBJID charID) {
+		std::list<MailModel> mails = {};
+
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT mailID, receiver, subject, body, sender, attachedCurrency, attachedObjectID, attachedLOT, attachedSubkey, attachmentCount, expirationDate, sendDate, markedAsSeen, hasBeenModerated FROM OPCRUX_GD.dbo.Mail WHERE receiver = ? AND hasBeenModerated = 1; ");
+
+		stmt->setLong(1, charID.getPureID());
+
+		auto rs = stmt->executeQuery();
+
+		while (rs->next()) {
+			MailModel model;
+
+			model.mailID = *rs->getLong(1);
+			model.receiver = *rs->getLong(2);
+			model.subject = *rs->getString(3);
+			model.body = *rs->getString(4);
+			model.sender = *rs->getString(5);
+			model.attachedCurrency = *rs->getLong(6);
+			model.attachedObjectID = *rs->getLong(7);
+			model.attachedLOT = *rs->getInt(8);
+			model.attachedSubkey = *rs->getLong(9);
+			model.attachmentCount = *rs->getShort(10);
+			model.expirationDate = *rs->getLong(11);
+			model.sendDate = *rs->getLong(12);
+			model.markedAsSeen = *rs->getBoolean(13);
+			model.hasBeenModerated = *rs->getBoolean(14);
+
+			mails.push_back(model);
+		}
+
+		return mails;
+	}
+
+	static MailModel GetMail(odbc::ConnectionRef conn, std::int64_t mailID) {
+
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT mailID, receiver, subject, body, sender, attachedCurrency, attachedObjectID, attachedLOT, attachedSubkey, attachmentCount, expirationDate, sendDate, markedAsSeen, hasBeenModerated FROM OPCRUX_GD.dbo.Mail WHERE mailID = ? AND hasBeenModerated = 1; ");
+
+		stmt->setLong(1, mailID);
+
+		auto rs = stmt->executeQuery();
+
+		MailModel model;
+		model.mailID = -1;
+		if (rs->next()) {
+			model.mailID = *rs->getLong(1);
+			model.receiver = *rs->getLong(2);
+			model.subject = *rs->getString(3);
+			model.body = *rs->getString(4);
+			model.sender = *rs->getString(5);
+			model.attachedCurrency = *rs->getLong(6);
+			model.attachedObjectID = *rs->getLong(7);
+			model.attachedLOT = *rs->getInt(8);
+			model.attachedSubkey = *rs->getLong(9);
+			model.attachmentCount = *rs->getShort(10);
+			model.expirationDate = *rs->getLong(11);
+			model.sendDate = *rs->getLong(12);
+			model.markedAsSeen = *rs->getBoolean(13);
+			model.hasBeenModerated = *rs->getBoolean(14);
+		}
+
+		return model;
+	}
+
+	static void UpdateMail(odbc::ConnectionRef conn, MailModel mail) {
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "UPDATE OPCRUX_GD.dbo.Mail SET attachedCurrency = ?, attachedObjectID = ?, attachedLOT = ?, attachedSubkey = ?, attachmentCount = ?, markedAsSeen = ?, hasBeenModerated = ? WHERE mailID = ?;");
+
+		stmt->setLong(1, mail.attachedCurrency);
+		stmt->setLong(2, mail.attachedObjectID);
+		stmt->setInt(3, mail.attachedLOT);
+		stmt->setLong(4, mail.attachedSubkey);
+		stmt->setShort(5, mail.attachmentCount);
+		stmt->setBoolean(6, mail.markedAsSeen);
+		stmt->setBoolean(7, mail.hasBeenModerated);
+
+		stmt->setLong(8, mail.mailID);
+
+		odbc::ResultSetRef rs = stmt->executeQuery();
 	}
 };
 #endif // !__DATABASE_HPP__

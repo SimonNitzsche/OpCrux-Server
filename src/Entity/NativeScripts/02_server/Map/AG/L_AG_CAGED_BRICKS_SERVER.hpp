@@ -27,7 +27,7 @@ public:
 				// set the mission player flag
 				{GM::SetFlag nmsg; nmsg.iFlagID = flagID; nmsg.bFlag = true; msg.user->CallMessage(nmsg); }
 				// Player has completed the mission, remove necessary items
-				msg.user->GetComponent<InventoryComponent>()->RemoveItem2(invenItem, 1);
+				msg.user->GetComponent<InventoryComponent>()->RemoveItem2(true, invenItem, 1);
 			}
 		}
 

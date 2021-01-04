@@ -84,7 +84,7 @@ public:
 			// When build time is up
 			if ((buildStartTime - ::time(0) + completionTime) <= .0f) {
 				buildCompleteTime = ::time(0) + std::uint32_t(completionTime);
-				{GM::RebuildNotifyState msg; msg.player = buildingPlayer->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 2); GameMessages::Broadcast(this->owner, msg); }
+				{GM::RebuildNotifyState msg; msg.player = buildingPlayer->GetObjectID(); msg.iPrevState = qbState; msg.iState = (qbState = 2); GameMessages::Broadcast(this->owner, msg); owner->CallMessage(msg); }
 				{GM::PlayFXEffect msg; msg.effectID = 507; msg.effectType = u"create"; msg.fScale = 1.0f; msg.name = "BrickFadeUpVisCompleteEffect"; msg.priority = 0.4000000059604645f; msg.serialize = true; GameMessages::Broadcast(this->owner, msg); }
 				{GM::EnableRebuild msg; msg.user = buildingPlayer->GetObjectID(); msg.bSuccess; msg.fDuration = completionTime; GameMessages::Broadcast(this->owner, msg); }
 				{GM::TerminateInteraction msg; msg.ObjIDTerminator = buildingPlayer->GetObjectID(); msg.type = Enums::ETerminateType::FROM_INTERACTION; GameMessages::Broadcast(this->owner, msg); }
@@ -104,34 +104,37 @@ public:
 		}
 		// When completed
 		else if (qbState == 2) {
-			auto doResetTime = buildCompleteTime + std::uint32_t(resetTime);
+			if (resetTime > 0) {
+				auto doResetTime = buildCompleteTime + std::uint32_t(resetTime);
 
-			//Reset indicated
-			if (qbResetEffect)
-				doResetTime += std::uint32_t(timeSmash);
+				//Reset indicated
+				if (qbResetEffect)
+					doResetTime += std::uint32_t(timeSmash);
 
-			auto now = ::time(0);
+				auto now = ::time(0);
 
-			// indicate resetting
-			if (!qbResetEffect && now > doResetTime) {
-				qbResetEffect = true;
+				// indicate resetting
+				if (!qbResetEffect && now > doResetTime) {
+					qbResetEffect = true;
 
-				this->_isDirtyFlag = true;
-				this->owner->SetDirty();
-			}
+					this->_isDirtyFlag = true;
+					this->owner->SetDirty();
+				}
 
-			// reset
-			else if (qbResetEffect && now > doResetTime) {
-				GM::RebuildNotifyState msg;
-				msg.player = buildingPlayer->GetObjectID();
-				msg.iPrevState = qbState;
-				msg.iState = (qbState = 4);
-				GameMessages::Broadcast(this->owner, msg);
+				// reset
+				else if (qbResetEffect && now > doResetTime) {
+					GM::RebuildNotifyState msg;
+					msg.player = buildingPlayer->GetObjectID();
+					msg.iPrevState = qbState;
+					msg.iState = (qbState = 4);
+					GameMessages::Broadcast(this->owner, msg);
+					owner->CallMessage(msg);
 
-				this->_isDirtyFlag = true;
-				this->owner->SetDirty();
+					this->_isDirtyFlag = true;
+					this->owner->SetDirty();
 
-				RemovePlayerFromActivity(buildingPlayer->GetObjectID());
+					RemovePlayerFromActivity(buildingPlayer->GetObjectID());
+				}
 			}
 		}
 		else if (qbState == 4) {
@@ -242,7 +245,7 @@ public:
 			buildingPlayer = sender;
 			playerStartImagination = sender->GetImagination();
 			{GM::EnableRebuild nmsg; nmsg.user = sender->GetObjectID(); nmsg.bEnable = true; nmsg.fDuration = completionTime; GameMessages::Broadcast(this->owner, nmsg); }
-			{GM::RebuildNotifyState nmsg; nmsg.player = sender->GetObjectID(); nmsg.iPrevState = qbState; nmsg.iState = (qbState = 5); GameMessages::Broadcast(this->owner, nmsg); }
+			{GM::RebuildNotifyState nmsg; nmsg.player = sender->GetObjectID(); nmsg.iPrevState = qbState; nmsg.iState = (qbState = 5); GameMessages::Broadcast(this->owner, nmsg); owner->CallMessage(nmsg); }
 
 			this->_isDirtyFlag = true;
 			this->owner->SetDirty();
@@ -260,6 +263,13 @@ public:
 	void OnRebuildCancel(Entity::GameObject* sender, GM::RebuildCancel * msg) {
 		if (buildingPlayer != nullptr) {
 			buildingPlayer->SetPlayerActivity(Enums::EGameActivity::NONE);
+			
+			// GM::RebuildNotifyState msg;
+			// msg.player = buildingPlayer->GetObjectID();
+			// msg.iPrevState = qbState;
+			// msg.iState = (qbState = 6);
+			// GameMessages::Broadcast(this->owner, msg);
+			// owner->CallMessage(msg);
 		}
 	}
 

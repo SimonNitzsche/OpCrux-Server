@@ -40,9 +40,10 @@ private:
 	std::uint32_t currentHandle = 0;
 	std::uint32_t currentSkill = 0;
 
-	void UnCast(const std::string sBitStream, std::int32_t behaviorID = 0);
+	void UnCast(const std::string sBitStream, long behaviorID = 0);
+	void Cast(std::string * sBitStream, long behaviorID = 0);
 
-	std::unordered_map<std::uint32_t /*behaviorHandle*/, std::int32_t /*behaviorAction*/> behaviorHandles;
+	std::unordered_map<std::uint32_t /*behaviorHandle*/, std::pair<std::int32_t /*behaviorAction*/, std::uint64_t /* time, only used for casting*/>> behaviorHandles;
 	std::mutex mutex_behaviorHandles;
 public:
 	std::uint32_t currentStackDepth = 0;
@@ -57,7 +58,7 @@ public:
 		parameters.currentTarget = target;
 	}
 
-	void DoDamageOnTarget(std::uint32_t damage);
+	void DoDamageOnTarget(std::int32_t damage);
 
 	SkillComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
 
@@ -68,6 +69,7 @@ public:
 		REGISTER_OBJECT_MESSAGE_HANDLER(SkillComponent, GM::SyncSkill, OnSyncSkill);
 		REGISTER_OBJECT_MESSAGE_HANDLER(SkillComponent, GM::EquipInventory, OnEquipInventory);
 		REGISTER_OBJECT_MESSAGE_HANDLER(SkillComponent, GM::UnEquipInventory, OnUnEquipInventory);
+		REGISTER_OBJECT_MESSAGE_HANDLER(SkillComponent, GM::CastSkill, OnCastSkill);
 	}
 
 	void Awake() {
@@ -80,6 +82,52 @@ public:
 			factory->Write(true);
 			if (true) {
 				factory->Write<std::uint32_t>(0);
+			}
+		}
+	}
+
+	void Update() {
+		/*
+			When we are not a player,
+			we need to look for skill delays
+			by ourselves.1
+		*/
+		if (!owner->IsPlayer()) {
+			for (auto it = this->behaviorHandles.begin(); it != this->behaviorHandles.end(); ++it) {
+				if (it->second.second > ServerInfo::uptimeMs()) {
+					// make a copy so we still have it
+					auto copy = *it;
+					
+					// mutex_behaviorHandles.lock();
+					// // remove ourselves from pending
+					// this->behaviorHandles.erase(it);
+					// mutex_behaviorHandles.unlock();
+
+
+					auto behaviorID = copy.second.first;
+					if (behaviorID <= 0) return;
+					
+
+					GM::EchoSyncSkill echoGM; {
+						echoGM.bDone = parameters.bDone;
+						Cast(&(echoGM.sBitStream), behaviorID);
+						echoGM.uiBehaviorHandle = parameters.uiBehvaiorHandle;
+						echoGM.uiSkillHandle = parameters.uiSkillHandle;
+					}
+					GameMessages::Broadcast(this->owner, echoGM, true);
+
+					GM::SyncSkill syncSkillGM; {
+						syncSkillGM.bDone = echoGM.bDone;
+						syncSkillGM.sBitStream = echoGM.sBitStream;
+						syncSkillGM.uiBehaviorHandle = echoGM.uiBehaviorHandle;
+						syncSkillGM.uiSkillHandle = echoGM.uiSkillHandle;
+					}
+					owner->OnMessage(owner, syncSkillGM.GetID(), &syncSkillGM);
+					
+					
+					// we need to break, cuz the list It is now invalid
+					break;
+				}
 			}
 		}
 	}
@@ -127,8 +175,11 @@ public:
 		auto behaviorIDIt = behaviorHandles.find(msg->uiBehaviorHandle);
 		std::int32_t behaviorID = 0;
 		if (behaviorIDIt != behaviorHandles.end()) {
-			behaviorID = behaviorIDIt->second;
+			behaviorID = behaviorIDIt->second.first;
 			behaviorHandles.erase(behaviorIDIt);
+		}
+		else {
+			Logger::log("WRLD", "Received SyncSkill with an unfindable handle.", LogType::WARN);
 		}
 		mutex_behaviorHandles.unlock();
 
@@ -144,9 +195,13 @@ public:
 		UnCast(msg->sBitStream, behaviorID);
 	}
 
-	inline void AddBehaviorHandle(std::uint32_t behaviorHandle, std::int32_t behaviorAction) {
+	inline void AddBehaviorHandle(std::uint32_t behaviorHandle, std::int32_t behaviorAction, std::float_t delay = 0.0f) {
+		std::uint64_t time = ServerInfo::uptimeMs() + std::int32_t(delay * 1000.0f);
 		mutex_behaviorHandles.lock();
-		behaviorHandles.insert({ behaviorHandle, behaviorAction });
+		behaviorHandles.insert({ behaviorHandle, std::make_pair(behaviorAction, time) });
+		if (behaviorHandle > 10000) {
+			Logger::log("WRLD", "Added possibly invalid behaviorHandle " + std::to_string(behaviorHandle), LogType::WARN);
+		}
 		mutex_behaviorHandles.unlock();
 	}
 
@@ -185,21 +240,49 @@ public:
 
 			// On Equip
 			if (addSkillGM.castType == 1) {
-				ServerStartSkill(addSkillGM.skillID, addSkillGM.castType);
+				{GM::CastSkill nmsg; nmsg.skillID = addSkillGM.skillID; nmsg.iCastType = addSkillGM.castType; owner->CallMessage(nmsg); };
 			}
 		}
 	}
 
 	inline void OnUnEquipInventory(Entity::GameObject* sender, GM::UnEquipInventory* msg) {
 		// Remove skills
+		Entity::GameObject* item = sender->GetZoneInstance()->objectsManager->GetObjectByID(msg->itemToUnEquip);
+		if (item == nullptr) return;
+
+		IEntityComponent* invComp = item->GetComponentByType(9);
+		if (invComp == nullptr) return;
+
+		auto rm = CacheObjectSkills::getRow(item->GetLOT());
+		auto rf = rm.flatIt();
+		for (auto r : rf) {
+			GM::RemoveSkill RemoveSkillGM;
+			RemoveSkillGM.skillID = CacheObjectSkills::GetSkillID(r);
+			GameMessages::Broadcast(sender, RemoveSkillGM);
+		}
 	}
 
-	inline void ServerStartSkill(std::uint32_t skillID, std::int32_t castType) {
+	void OnCastSkill(Entity::GameObject* sender, GM::CastSkill* msg) {
 		GM::StartSkill startSkillGM;
-		startSkillGM.skillID = skillID;
-		startSkillGM.iCastType = castType;
+		startSkillGM.skillID = msg->skillID;
+		startSkillGM.iCastType = msg->iCastType;
 		startSkillGM.uiSkillHandle = ++parameters.uiSkillHandle;
 		startSkillGM.sBitStream = "";
+
+		parameters = SkillStackParameters();
+
+		currentSkill = msg->skillID;
+
+		parameters.bUsedMouse = msg->bUsedMouse;
+		parameters.fCasterLatency = msg->fCasterLatency;
+		parameters.iCastType = msg->iCastType;
+		parameters.lastClickedPosit = msg->lastClickedPosit;
+		parameters.optionalOriginatorID = msg->optionalOriginatorID;
+		parameters.optionalTargetID = msg->optionalTargetID;
+		parameters.originatorRot = msg->originatorRot;
+		parameters.uiSkillHandle = currentHandle;
+
+		Cast(&startSkillGM.sBitStream);
 		owner->OnMessage(owner, startSkillGM.GetID(), &startSkillGM);
 	}
 
@@ -215,8 +298,18 @@ void SkillComponent::UnCast(const std::string sBitStream, std::int32_t behaviorI
 	AbstractAggregateBehavior::StartUnCast(this, behaviorID, &bs);
 }
 
+void SkillComponent::Cast(std::string* sBitStream, long behaviorID) {
+	currentStackDepth = 0;
+	RakNet::BitStream bs;
+
+	if (behaviorID <= 0) behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
+	AbstractAggregateBehavior::StartCast(this, behaviorID, &bs);
+
+	*sBitStream = std::string((const char*)bs.GetData(), bs.GetNumberOfBytesUsed());
+}
+
 #include "Entity/Components/DestructibleComponent.hpp"
-void SkillComponent::DoDamageOnTarget(std::uint32_t damage) {
+void SkillComponent::DoDamageOnTarget(std::int32_t damage) {
 	// Make sure objectID is not empty
 	if (parameters.currentTarget == std::uint64_t(0)) {
 		Logger::log("WRLD", "Unable to do damage on empty objectID", LogType::WARN);

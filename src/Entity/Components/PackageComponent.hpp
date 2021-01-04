@@ -50,7 +50,7 @@ void PackageComponent::OnUseNonEquipmentItem(Entity::GameObject* rerouteID, GM::
 		return;
 	}
 
-	invComp->RemoveItem2(owner->GetLOT());
+	invComp->RemoveItem2(true, owner->GetLOT());
 
 	auto lootMatrix = CacheLootMatrix::getRow(lootMatrixIndex).flatIt();
 	for (auto lootMatrixIt : lootMatrix) {

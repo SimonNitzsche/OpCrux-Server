@@ -147,9 +147,6 @@ public:
 
 	void SetImagination(std::int32_t imag) {
 		statsComponent->attributes.currentImagination = imag;
-		if (statsComponent->attributes.maxImagination <= imag) {
-			statsComponent->attributes.maxImagination = imag;
-		}
 		statsComponent->SetDirty();
 	}
 
@@ -185,8 +182,10 @@ public:
 		}
 
 		// init random and return in range
-		std::uniform_int_distribution<> coinDropDist(CacheCurrencyTable::GetMinValue(usingRow), CacheCurrencyTable::GetMaxValue(usingRow));
-		return coinDropDist(RandomUtil::GetEngine());
+		auto minCoins = CacheCurrencyTable::GetMinValue(usingRow);
+		auto maxCoins = CacheCurrencyTable::GetMaxValue(usingRow);
+		std::uniform_real_distribution<std::float_t> coinDropDist(0.0f, 1.0f);
+		return minCoins + std::uint32_t(coinDropDist(RandomUtil::GetEngine()) * (maxCoins - minCoins));
 	}
 
 	void OnRequestDie(Entity::GameObject* sender, GM::RequestDie * msg) {
@@ -200,7 +199,7 @@ public:
 		msgDie.killerID = msg->killerID;
 		msgDie.lootOwnerID = msg->lootOwnerID;
 		GameMessages::Broadcast(this->owner->GetZoneInstance(), this->owner, msgDie);
-		this->owner->OnDie(this->owner, &msgDie);
+		this->owner->OnMessage(this->owner, GM::Die::GetID(), &msgDie);
 	}
 
 	void ForcefullyPerformRequestDie(Entity::GameObject* sender, GM::RequestDie& msg) {
@@ -216,7 +215,7 @@ public:
 		PerformDamageRequest(caster, 0xFFFFFFFF);
 	}
 
-	void PerformDamageRequest(Entity::GameObject* caster, std::uint32_t damage) {
+	void PerformDamageRequest(Entity::GameObject* caster, std::int32_t damage) {
 		// We are not smashable
 		if (!statsComponent->attributes.isSmashable) return;
 
@@ -225,6 +224,12 @@ public:
 
 		// Cancle if dead
 		if (isDead) { Logger::log("WRLD", "Object is already dead", LogType::WARN); return; }
+
+		if (damage == 0xFFFFFFFF) {
+			statsComponent->attributes.currentArmor = 0;
+			statsComponent->attributes.currentHealth = 0;
+			isDead = true;
+		}
 
 		// TODO: Check for buffs
 
@@ -273,7 +278,7 @@ public:
 				GM::Die msg;
 				msg.killerID = caster->GetObjectID();
 				GameMessages::Broadcast(owner, msg);
-				this->owner->OnDie(this->owner, &msg);
+				this->owner->OnMessage(this->owner, GM::Die::GetID(), &msg);
 			}
 
 			// Figure out who of the two receives the loot.
@@ -291,7 +296,7 @@ public:
 			owner->InstantiateRemoval();
 
 			// Update Missions
-			MissionManager::LaunchTaskEvent(EMissionTask::KILL, this->owner, caster->GetObjectID(), this->owner->GetLOT());
+			MissionManager::LaunchTaskEvent(EMissionTask::KILL, this->owner, caster->GetObjectID(), 1, this->owner->GetLOT());
 
 			// Cancle anything else
 			return;

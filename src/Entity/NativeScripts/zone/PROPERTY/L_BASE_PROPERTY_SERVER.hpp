@@ -32,11 +32,27 @@ public:
 	}
 
 	virtual void checkForOwner(Entity::GameObject* self) {
+		auto propertyPlaques = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(*Group.at(u"PropertyPlaque").begin(), 0Ui64, true);
 
+		if (propertyPlaques.empty()) {
+			LWOTimer* timer = new LWOTimer;
+			timer->AddTimerWithCancel(0.5, u"runPlayerLoadedAgain", self);
+			return;
+		}
+
+		// Check for owner, most likely through a new database table
 	}
 	
 	virtual void onFireEvent(Entity::GameObject* self, GM::FireEventServerSide msg) {
+		auto eventType = msg.args;
+		auto sendObj = msg.senderID;
 
+		if (eventType.empty()) return;
+
+		if (eventType == u"CheckForPropertyOwner") {
+			DataTypes::LWOOBJID propertyOwner = self->GetVar<DataTypes::LWOOBJID>(u"PropertyOwner");
+			self->SetNetworkedVar(u"PropertyOwner", propertyOwner);
+		}
 	}
 
 	virtual void basePlayerLoaded(Entity::GameObject* self, GM::PlayerLoaded msg) {
@@ -62,16 +78,16 @@ public:
 			}
 			// TODO: player:Play2DAmbientSound{m_NDAudioEventGUID = GUIDPeaceful}
 
-			/*-- spawn the property safe object
-			ActivateSpawner(self,Spawners.PropObjs)
+			// spawn the property safe object
+			ActivateSpawner(self, *Spawners.at(u"PropObjs").begin());
 		
-			-- tell the client script that the property is rented and who the renter is
-			self:SetNetworkVar("renter",propertyOwner)
+			// tell the client script that the property is rented and who the renter is
+			self->SetNetworkedVar(u"renter",propertyOwner);
 
-			--  check to see if the player standing on the property is the person who owns the property
-			if player:GetID() ~= propertyOwner then
-				return
-			end*/
+			// check to see if the player standing on the property is the person who owns the property
+			if (player->GetObjectID() != propertyOwner) {
+				return;
+			}
 		}
 		// if the property hasnt been rented, then assume that this is the players property to rent (if this is broken, it is through code)
 		else {
@@ -84,7 +100,7 @@ public:
 
 			// check to see if the player has defeated the maelstrom before (they could defeat it and leave without renting it)
 			if (!defeatedflag) {
-				// custom function that starts all teh maelstrom 
+				// custom function that starts all the maelstrom 
 				StartMaelstrom(self, player);
 				SpawnSpots(self);
 				self->SetVar(u"playerID", StringUtils::to_u16string(std::to_string(player->GetObjectID())));
@@ -92,8 +108,8 @@ public:
 			}
 
 			else {
-			/*	player:Play2DAmbientSound{ m_NDAudioEventGUID = GUIDPeaceful }
-				GAMEOBJ:GetTimer() : AddTimerWithCancel(1, "killFXObject", self)*/
+				// player:Play2DAmbientSound{ m_NDAudioEventGUID = GUIDPeaceful }
+				LWOTimer* timer = new LWOTimer(); timer->AddTimerWithCancel(1, u"killFXObject", self);
 			}
 		}
 

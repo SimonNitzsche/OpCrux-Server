@@ -87,6 +87,8 @@ namespace Entity {
 		// Don't construct to client if set
 		bool serverOnly = false;
 
+		std::uint32_t sceneID = 0;
+
 		WorldServer* Instance;
 
 		LDFCollection configData;
@@ -230,6 +232,7 @@ namespace Entity {
 		/*
 			Adds an component by ID
 		*/
+		void RemoveComponentByID(int id);
 		IEntityComponent* AddComponentByID(int id, int compID);
 
 
@@ -378,6 +381,14 @@ namespace Entity {
 			maxAge = std::int64_t(::time(0)) + std::int64_t(age);
 		}
 
+		std::uint32_t GetSceneID() {
+			return sceneID;
+		}
+
+		void SetSceneID(std::uint32_t newSceneID) {
+			sceneID = newSceneID;
+		}
+
 		/*
 			Quick function to create the test object.
 		*/
@@ -390,6 +401,10 @@ namespace Entity {
 		void OnOffCollisionPhantom(Entity::GameObject* other);
 
 		void SetPlayerActivity(Enums::EGameActivity activity);
+
+		std::int64_t GetCreationTimestamp() {
+			return creationTimestamp;
+		}
 	public:
 		/* Game Messages */
 		//void SendGM(Entity::GameObject * sender, GM::GMBase msg) { GameMessages::Send(Instance, UNASSIGNED_SYSTEM_ADDRESS, objectID, msg); }
@@ -397,7 +412,7 @@ namespace Entity {
 
 		//GM_MAKE_LIST_CLIENT(GM_MAKE_GAMEOBJECT_DECLARE);
 
-		virtual void OnDie(Entity::GameObject* sender, GM::Die* msg);
+		//virtual void OnDie(Entity::GameObject* sender, GM::Die* msg);
 		/*virtual void OnHasBeenCollected(Entity::GameObject* sender, GM::HasBeenCollected* msg);
 		virtual void OnMissionDialogueOK(Entity::GameObject* sender, GM::MissionDialogueOK* msg);
 		virtual void OnRequestDie(Entity::GameObject* sender, GM::RequestDie* msg);

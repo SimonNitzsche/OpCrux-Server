@@ -33,6 +33,7 @@ public:
 	void Serialize(Entity::GameObject * object);
 	void Destruct(DataTypes::LWOOBJID objID);
 	void Destruct(Entity::GameObject * object);
+	std::vector<Entity::GameObject*> GetObjectsInRange(DataTypes::Vector3 originPosition, std::float_t range, std::int32_t max = -1);
 	void OnUpdate();
 	void OnPhysicsUpdate();
 	SpawnerComponent* GetSpawnerByName(std::u16string spawnerName);

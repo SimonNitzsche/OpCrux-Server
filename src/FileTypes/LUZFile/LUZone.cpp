@@ -3,6 +3,7 @@
 #include "Utils/FileUtils.hpp"
 #include "Utils/StringUtils.hpp"
 #include "Utils/LDFUtils.hpp"
+#include "Misc/NavMeshManager.hpp"
 
 using namespace FileTypes::LUZ;
 
@@ -174,6 +175,12 @@ void LUZone::Read() {
 	currentOffset = terrainInfo.fileName.Read(currentOffset);
 	currentOffset = terrainInfo.name.Read(currentOffset);
 	currentOffset = terrainInfo.description.Read(currentOffset);
+
+	{
+		// Logger::log("WRLD", "Loading Terrain...");
+		// std::string terrainFileNameFull = StringUtils::ToLower(FileUtils::GetFileDir(this->strFile) + "/" + terrainInfo.fileName.ToString());
+		// terrainFile.Open(terrainFileNameFull);
+	}
 
 	// Transisions
 	if (version >= 0x1f) {
@@ -453,4 +460,11 @@ void LUZone::Read() {
 	}
 	
 	this->revisionChecksum = calculateRevisionChecksum();
+
+	Logger::log("World", "Loading Navmesh: " + StringUtils::ToLower(FileUtils::GetFileDir(this->strFile) + "/" + terrainInfo.fileName.ToString().substr(0, terrainInfo.fileName.ToString().find_last_of(".")) + ".nav"));
+
+	// Loads the luz but with .nav extension
+	// e.g. res/maps/01_live_maps/nd_nimbus_station/nd_nimbus_station.nav
+
+	this->navmeshManager.Open(StringUtils::ToLower(FileUtils::GetFileDir(this->strFile) + "/" + terrainInfo.fileName.ToString().substr(0, terrainInfo.fileName.ToString().find_last_of(".")) + ".nav").c_str());
 }

@@ -34,5 +34,7 @@ public:
 	static void SetAuthIP(const std::string & authIP);
 	static std::string gameVersion;
 	static void numericGameVersion(uint16_t * major, uint16_t * current, uint16_t * minor);
+	static std::uint64_t WindowsGetSystemTimeAsUnixTime();
+	static std::uint64_t GetSystemTimeAsUnixTime();
 };
 #endif // !__UTILS__SERVERINFO_HPP__
