@@ -102,7 +102,7 @@ namespace FileUtils {
 		return std::string(data.get(), data.get() + size);
 	}
 
-	inline void SaveTextFile(std::string const &file, std::string &data) {
+	inline void SaveTextFile(std::string const &file, std::string data) {
 		std::ofstream stream;
 		stream.open(file);
 		stream << data;

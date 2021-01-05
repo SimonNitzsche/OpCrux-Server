@@ -199,11 +199,11 @@ struct MailModel {
 	std::string subject;
 	std::string body;
 	std::string sender;
-	std::int64_t attachedCurrency=0i64;
-	std::int64_t attachedObjectID = 0i64;
+	std::int64_t attachedCurrency=std::int64_t(0);
+	std::int64_t attachedObjectID = std::int64_t(0);
 	std::int32_t attachedLOT;
-	std::int64_t attachedSubkey = 0i64;
-	std::int16_t attachmentCount=0i16;
+	std::int64_t attachedSubkey = std::int64_t(0);
+	std::int16_t attachmentCount=std::int64_t(0);
 	std::int64_t expirationDate;
 	std::int64_t sendDate;
 	bool markedAsSeen;

@@ -5,6 +5,7 @@
 #include <string>
 #include <time.h>
 #include <stdint.h>
+#include <chrono>
 #include "Common/CrossPlatform.hpp"
 
 class MasterServer;

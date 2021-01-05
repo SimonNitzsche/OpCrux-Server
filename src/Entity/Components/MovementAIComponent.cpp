@@ -29,7 +29,7 @@ void MovementAIComponent::Update() {
 		allowUpdate = false;
 		Vector3 newPos = Vector3::zero(); // Vector3(basePosition.x, basePosition.y, basePosition.z);
 
-		unsigned long long time = ServerInfo::uptime();
+		std::uint64_t time = ServerInfo::uptime();
 
 		time += (owner->GetObjectID().getPureID() * 2);
 
@@ -72,7 +72,7 @@ void MovementAIComponent::Update() {
 			veloDir.set(targetPos.x - localPos.x, targetPos.y - localPos.y, targetPos.z - localPos.z);
 
 
-			auto maxdv = max(max(veloDir.x, veloDir.y), veloDir.z);
+			auto maxdv = std::max(std::max(veloDir.x, veloDir.y), veloDir.z);
 			auto maxdf = 1 / maxdv;
 
 			auto speed = wanderSpeed * 5;

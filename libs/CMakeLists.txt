@@ -15,7 +15,7 @@ set_property(TARGET glad PROPERTY CXX_STANDARD 98)
 set_property(TARGET json PROPERTY CXX_STANDARD 98)
 set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
-set_property(TARGET rapidxml PROPERTY CXX_STANDARD 98)
+set_property(TARGET TinyXML2 PROPERTY CXX_STANDARD 98)
 
 add_definitions(-DODBC_STATIC)
 add_definitions(-Wno-dev)

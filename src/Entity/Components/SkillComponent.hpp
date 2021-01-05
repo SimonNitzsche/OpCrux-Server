@@ -40,8 +40,8 @@ private:
 	std::uint32_t currentHandle = 0;
 	std::uint32_t currentSkill = 0;
 
-	void UnCast(const std::string sBitStream, long behaviorID = 0);
-	void Cast(std::string * sBitStream, long behaviorID = 0);
+	void UnCast(const std::string sBitStream, std::int32_t behaviorID = 0);
+	void Cast(std::string * sBitStream, std::int32_t behaviorID = 0);
 
 	std::unordered_map<std::uint32_t /*behaviorHandle*/, std::pair<std::int32_t /*behaviorAction*/, std::uint64_t /* time, only used for casting*/>> behaviorHandles;
 	std::mutex mutex_behaviorHandles;
@@ -298,7 +298,7 @@ void SkillComponent::UnCast(const std::string sBitStream, std::int32_t behaviorI
 	AbstractAggregateBehavior::StartUnCast(this, behaviorID, &bs);
 }
 
-void SkillComponent::Cast(std::string* sBitStream, long behaviorID) {
+void SkillComponent::Cast(std::string* sBitStream, std::int32_t behaviorID) {
 	currentStackDepth = 0;
 	RakNet::BitStream bs;
 

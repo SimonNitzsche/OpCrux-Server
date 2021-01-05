@@ -108,7 +108,7 @@ void ServerInfo::numericGameVersion(uint16_t * major, uint16_t * current, uint16
 
 MasterServer * ServerInfo::masterServer = nullptr;
 
-
+#ifdef _WIN32
 std::uint64_t ServerInfo::WindowsGetSystemTimeAsUnixTime() {
 	//Get the number of seconds since January 1, 1970 12:00am UTC
 	//Code released into public domain; no attribution required.
@@ -128,6 +128,7 @@ std::uint64_t ServerInfo::WindowsGetSystemTimeAsUnixTime() {
 	//Convert ticks since 1/1/1970 into seconds
 	return (li.QuadPart - UNIX_TIME_START) / TICKS_PER_SECOND;
 }
+#endif
 
 std::uint64_t ServerInfo::GetSystemTimeAsUnixTime() {
 #ifdef _WIN32

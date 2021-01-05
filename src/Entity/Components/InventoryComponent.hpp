@@ -161,7 +161,7 @@ public:
 					// Check if an item glitched to a slot we don't have,
 					// and if so send it per mail and delete from inventory
 					if (itemStack.tab == 0 && itemStack.slot >= maxItemSlots) {
-						MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, 0Ui64, *it);
+						MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, std::uint64_t(0), *it);
 						Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), it->objectID);
 						continue;
 					}
@@ -785,7 +785,7 @@ public:
 				// TODO: send mission mail:
 				// Mail::SendItem(...);
 				// return;
-				MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, 0Ui64, itemStack.toDBModel());
+				MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, std::int64_t(0), itemStack.toDBModel());
 			
 				{GM::NotifyRewardMailed nmsg; nmsg.objectID = itemStack.objectID; nmsg.startPoint = sourcePos; nmsg.subkey = itemStack.subkey; nmsg.templateID = itemStack.LOT; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
 				return;
