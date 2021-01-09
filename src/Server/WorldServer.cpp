@@ -533,8 +533,6 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				break;
 			}
 			case EWorldPacketID::CLIENT_GAME_MSG: {
-				if (*reinterpret_cast<uint16_t*>(packet->getData() + 24) == 888) break;
-
 				BitSize_t readOffset = data->GetReadOffset();
 
 				GameMessages::Deserialize(this, clientSession, data);
