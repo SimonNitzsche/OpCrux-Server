@@ -1,0 +1,1 @@
+ALTER TABLE dbo.Accounts ADD Banned bigint;

@@ -169,6 +169,11 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				if (Configuration::ConfigurationManager::dbConf.GetStringVal("ExtAccountService", "ExtAccountService") == "FALSE") {
 					bool authSuccess = Database::IsLoginCorrect(dbConnection, (char16_t*)name.c_str(), (char16_t*)pswd.c_str());
 					if (authSuccess) {
+						if (Database::IsBanned(dbConnection, (char16_t*)name.c_str())) {
+							PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), "", ELoginReturnCode::ACCOUNT_BANNED);
+							break;
+						}
+
 						std::uint64_t accountID = Database::GetAccountIDByClientName(dbConnection, std::string(name.begin(), name.end()));
 						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
 						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);
@@ -179,6 +184,8 @@ void AuthServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				else {
 					bool authSuccess = MakeAccountAPICall("/auth", { {"username", std::string(name.begin(), name.end())}, {"password", std::string(pswd.begin(), pswd.end())} }) == "PASS";
 					if (authSuccess) {
+						// TODO: Check if banned when using SSO auth
+
 						std::uint64_t accountID = Database::GetAccountIDByClientName(dbConnection, std::string(name.begin(), name.end()));
 						RequestMasterUserAuthConfirmation(packet->getSystemAddress(), accountID);
 						//PacketFactory::Auth::doLoginResponse(rakServer, packet->getSystemAddress(), ELoginReturnCode::SUCCESS);

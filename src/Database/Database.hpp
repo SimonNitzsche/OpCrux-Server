@@ -187,6 +187,22 @@ public:
 		return false;
 	}
 
+	static bool IsBanned(odbc::ConnectionRef conn, char16_t* username) {
+		std::u16string w_username(username);
+		std::string s_username(w_username.begin(), w_username.end());
+
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT Banned FROM OPCRUX_AD.dbo.Accounts WHERE username=?");
+		stmt->setString(1, s_username);
+		odbc::ResultSetRef rs = stmt->executeQuery();
+		if (rs->next()) {
+			odbc::Long banned = rs->getLong(1);
+			if (banned.isNull()) return false;
+			else return true;
+		}
+
+		return true;
+	}
+
 	static bool APILoginCheck(odbc::ConnectionRef conn, std::string s_username, std::string s_password) {
 
 		std::u16string w_username(s_username.begin(), s_username.end());
