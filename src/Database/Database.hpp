@@ -1110,6 +1110,8 @@ public:
 				Logger::log("WRLD", "ATTENTION!! TRIED TO CHANGE OWNER ON INVENTORY UPDATE!! THIS IS BAD!", LogType::ERR);
 			}
 		}
+		checkOwnerStatement.~Reference();
+		checkOwnerResultSet.~Reference();
 
 		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "UPDATE OPCRUX_GD.dbo.Inventory SET objectID = ?, ownerID = ?, subkey = ?, tab = ?, slot = ?, template = ?, count = ?, attributes = ?, metadata = ? WHERE objectID = ?");
 
