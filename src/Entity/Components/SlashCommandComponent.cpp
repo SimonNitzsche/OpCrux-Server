@@ -186,7 +186,7 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 				Reply(u"Requesting map change...", sender);
 
 				std::string zoneName = CacheZoneTable::GetZoneName(zoneID).operator std::string(); // Linux is case sensitive. TODO: Find better approach
-				StringUtils::ToLower(zoneName);
+				StringUtils::ToLowerSelf(zoneName);
 
 				if (FileUtils::FileExists("res/maps/" + zoneName)) {
 
