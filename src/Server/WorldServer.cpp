@@ -109,6 +109,10 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 	// TODO: Init Security
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
+	// LU Client has set a limit, we do it aswell to make sure nothing
+	// messes up
+	rakServer->SetPerConnectionOutgoingBandwidthLimit(10000);
+
 	dbConnection = Database::Connect();
 
 	// Initializes SocketDescriptor
@@ -710,7 +714,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				if(invComp != nullptr)
 					invComp->Awake();
-				objectsManager->Construct(playerObject);
+				//objectsManager->Construct(playerObject);
 				replicaManager->Construct(playerObject, false, clientSession->systemAddress, false);
 
 				Logger::log("WRLD", "Server done loading");

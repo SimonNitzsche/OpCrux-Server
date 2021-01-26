@@ -14,14 +14,30 @@ public:
 	std::uint32_t mpcType = -1;
 
 	std::uint64_t timeWPStart;
-	
-	std::int32_t desiredWaypointIndex=0;
+	bool isRunning = false;
+	FileTypes::LUZ::LUZonePathMovingPlatform* actualPath;
+	bool pushUpdate = false;
+	DataTypes::Vector3 currentPosition;
+
+	Entity::GameObject* owner;
+
+	/*
+		State updates on AG tour bus:
+		IDLE = 28			-> 0001 1100
+		MOVING = 25			-> 0001 1001
+		REACHED_WP = 2		-> 0000 0010
+		SET_NEXT_WP = 25	-> 0001 1001
+		STOP_PATHING = 2	-> 0000 0010
+		FINISHED = 28		-> 0001 1100
+	*/
+
+	std::int32_t desiredWaypointIndex=-1;
 	bool stopAtDesiredWaypoint;
 
 	bool isReverse;
 	std::uint32_t state=0;
 	std::int32_t currentWaypointIndex=0;
-	std::int32_t nextWaypointIndex=0;
+	std::int32_t nextWaypointIndex=1;
 
 	std::float_t percToNextWP=0;
 
@@ -33,13 +49,200 @@ public:
 
 	}
 
-	virtual void Setup(MovingPlatformComponent * mpc, FileTypes::LUZ::LUZonePathMovingPlatform* path, LDFCollection* collection) {
-
+	virtual void Setup(Entity::GameObject * owner, FileTypes::LUZ::LUZonePathMovingPlatform* path, LDFCollection* collection) {
+		actualPath = path;
+		this->owner = owner;
 	}
 
 	virtual void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		factory->Write(mpcType);
 	};
+
+	/*
+		gets current waypoint based from given index
+	*/
+	FileTypes::LUZ::LUZonePathWaypointMovingPlatform * GetWP(int index) {
+		return actualPath->waypoints.at(index);
+	}
+
+	/*
+		returns the time in second the mp takes to move
+	*/
+	std::float_t GetMovementDuration() {
+		auto curWP = GetWP(currentWaypointIndex);
+		auto nextWP = GetWP(nextWaypointIndex);
+		auto diff = Vector3::Distance(curWP->position, nextWP->position);
+		return diff * (1.0f / curWP->speed);
+	}
+
+	/*
+		returns the time in seconds that the mp will wait before it moves
+	*/
+	std::float_t GetIdleDuration() {
+		auto curWP = GetWP(currentWaypointIndex);
+		return curWP->wait;
+	}
+
+	/*
+		returns the time in second the mp takes to move and finish
+	*/
+	std::float_t GetTotalDuration() {
+		
+		return GetIdleDuration() + GetMovementDuration();
+	}
+
+	/*
+		Gets the next wp index once finished traveling.
+		Returns 0xFFFFFFFF when there is none (e.g. Once)
+	*/
+	std::uint32_t GetNextWPIndex() {
+
+	}
+
+	/*
+		Does the calculations to get the current status
+	*/
+	void ApplyValues() {
+		// We stopped
+		if (state == 2) {
+			pushUpdate = true;
+			ReachedWaypoint();
+			return;
+		}
+
+		if (state == 28) {
+			if (timeWPStart + int32_t(GetIdleDuration() * 1000.f) < ServerInfo::uptimeMs()) {
+				if (nextWaypointIndex != -1) {
+					timeWPStart = ServerInfo::uptimeMs();
+					
+					if (!stopAtDesiredWaypoint) {
+						state = 25;
+					}
+				}
+			}
+			return;
+		}
+
+		if (state == 25) {
+			auto curTime = ServerInfo::uptimeMs() - this->timeWPStart;
+			
+			
+
+			percToNextWP = 1.0f / GetMovementDuration() * curTime * 0.001f;
+
+			if (percToNextWP > 1.0f) percToNextWP = 1.0f;
+
+			if (percToNextWP < 0.05f || percToNextWP > 0.95f)
+				pushUpdate = true;
+
+			auto curWP = GetWP(currentWaypointIndex);
+			auto nextWP = GetWP(nextWaypointIndex);
+
+			currentPosition.x = curWP->position.x + (nextWP->position.x - curWP->position.x) * percToNextWP;
+			currentPosition.y = curWP->position.y + (nextWP->position.y - curWP->position.y) * percToNextWP;
+			currentPosition.z = curWP->position.z + (nextWP->position.z - curWP->position.z) * percToNextWP;
+
+			if (percToNextWP == 1.0f) {
+				state = 2;
+				pushUpdate = true;
+			}
+
+			
+			return;
+		}
+
+
+
+	}
+
+	void SetupNextWP() {
+		bool reverse = this->isReverse;
+
+		bool allowReverse = actualPath->pathBehaviour == FileTypes::LUZ::LUZonePathBehaviour::Bounce;
+
+		// Keep track for later
+		auto oldNext = nextWaypointIndex;
+
+		// set next index without checks
+		nextWaypointIndex = currentWaypointIndex + (this->isReverse ? -1 : +1);
+
+		// now do the checks
+		if (nextWaypointIndex >= actualPath->waypoints.size() || nextWaypointIndex < 0) {
+			// we are beyond limits
+			switch (actualPath->pathBehaviour) {
+			case FileTypes::LUZ::LUZonePathBehaviour::Once: {
+				// we don't have a next
+				nextWaypointIndex = -1;
+				state = 28;
+				break;
+			}
+			case FileTypes::LUZ::LUZonePathBehaviour::Bounce: {
+				// change direction
+				isReverse = !isReverse;
+			} [[nobreak]]
+			case FileTypes::LUZ::LUZonePathBehaviour::Loop: {
+
+				// put it back in limits
+				nextWaypointIndex = (isReverse) ? actualPath->waypoints.size() - 2 : 0;
+
+				if (nextWaypointIndex == -1) nextWaypointIndex = 0;
+				state = 28;
+
+				break;
+			}
+			}
+		}
+
+		percToNextWP == 0.0f;
+		Logger::log("TEST", "Next waypoint: " + std::to_string(nextWaypointIndex));
+		if(oldNext != -1)
+			currentWaypointIndex = oldNext;
+	}
+
+	void ReachedWaypoint() {
+		pushUpdate = true;
+		state = 28;
+		timeWPStart = ServerInfo::uptimeMs();
+		
+
+		SetupNextWP();
+
+		bool isDesiredWaypoint = desiredWaypointIndex == currentWaypointIndex;
+
+		if (isDesiredWaypoint) {
+			GM::ArrivedAtDesiredWaypoint nmsg;
+			nmsg.iPathIndex = desiredWaypointIndex;
+			owner->CallMessage(nmsg);
+		}
+
+		
+	}
+
+	void StartPathing() {
+		state = 2;
+	}
+
+	void GoToWaypoint(GM::GoToWaypoint* msg) {
+
+	}
+
+
+	void Sync() {
+		GM::PlatformResync nmsg;
+		nmsg.bReverse = isReverse;
+		nmsg.bStopAtDesiredWaypoint = stopAtDesiredWaypoint;
+		nmsg.eCommand = 0;
+		nmsg.eState = state;
+		nmsg.eUnexpectedCommand = 0;
+		nmsg.fIdleTimeElapsed = idleTimeElapsed;
+		nmsg.fMoveTimeElapsed = moveTimeElapsed;
+		nmsg.fPercentBetweenPoints = percToNextWP;
+		nmsg.iDesiredWaypointIndex = desiredWaypointIndex;
+		nmsg.iIndex = currentWaypointIndex;
+		nmsg.iNextIndex = nextWaypointIndex;
+		nmsg.ptUnexpectedLocation = currentPosition;
+		GameMessages::Broadcast(owner, nmsg);
+	}
 
 };
 class MPC_SC_Mover : public MPC_SC_Base {
@@ -50,14 +253,20 @@ public:
 
 	static constexpr int GetTypeID() { return (25 << 8) + 4; }
 
-	void Setup(MovingPlatformComponent* mpc, FileTypes::LUZ::LUZonePathMovingPlatform* path, LDFCollection* collection) {
-		MPC_SC_Base::Setup(mpc, path, collection);
+	void Setup(Entity::GameObject* owner, FileTypes::LUZ::LUZonePathMovingPlatform* path, LDFCollection* collection) {
+		MPC_SC_Base::Setup(owner, path, collection);
 	}
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		MPC_SC_Base::Serialize(factory, packetType);
 
 		bool dirtyFlag = false;
+		
+		dirtyFlag = pushUpdate;
+		if (pushUpdate) {
+			pushUpdate = false;
+		}
+		
 		factory->Write(dirtyFlag);
 		if (dirtyFlag) {
 			factory->Write(state);
@@ -66,7 +275,7 @@ public:
 			factory->Write(isReverse);
 
 			if (false) {
-
+				// TODO
 			}
 			else {
 				factory->Write(percToNextWP);
@@ -91,14 +300,20 @@ public:
 		mpcType = 5;
 	}
 
-	void Setup(MovingPlatformComponent* mpc, FileTypes::LUZ::LUZonePathMovingPlatform* path, LDFCollection* collection) {
-		MPC_SC_Base::Setup(mpc, path, collection);
+	void Setup(Entity::GameObject* owner, FileTypes::LUZ::LUZonePathMovingPlatform* path, LDFCollection* collection) {
+		MPC_SC_Base::Setup(owner, path, collection);
 	}
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
 		MPC_SC_Base::Serialize(factory, packetType);
 
 		bool locDirty = false;
+		bool baseDirty = false;
+
+		baseDirty = pushUpdate;
+		if (pushUpdate) {
+			pushUpdate = false;
+		}
 
 		if (locDirty) {
 			factory->Write(hasStartingPoint);
@@ -108,7 +323,7 @@ public:
 			}
 		}
 
-		bool baseDirty = false;
+		
 		if (baseDirty) {
 			factory->Write(state);
 			factory->Write(isReverse);
@@ -122,8 +337,8 @@ public:
 		mpcType = 6;
 	}
 
-	void Setup(MovingPlatformComponent* mpc, FileTypes::LUZ::LUZonePathMovingPlatform* path, LDFCollection* collection) {
-		MPC_SC_Base::Setup(mpc, path, collection);
+	void Setup(Entity::GameObject* owner, FileTypes::LUZ::LUZonePathMovingPlatform* path, LDFCollection* collection) {
+		MPC_SC_Base::Setup(owner, path, collection);
 	}
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {
@@ -137,8 +352,9 @@ private:
 	std::uint32_t startingPointIndex = 0;
 	bool isReverse = false;
 
+	bool startPathingOnLoad = false;
 
-	std::list<std::unique_ptr<MPC_SC_Base>> mpcPaths = {};
+	std::list<std::unique_ptr<MPC_SC_Base>> platforms = {};
 
 	bool pathInfoDirty = true;
 	FileTypes::LUZ::LUZonePathMovingPlatform * attachedPath = nullptr;
@@ -152,7 +368,8 @@ public:
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
 		
-		bool sendSC = mpcPaths.size() != 0;
+		bool sendSC = platforms.size() != 0;
+		sendSC = false;
 		factory->Write(sendSC);
 		
 		bool pathAttached = attachedPath != nullptr;
@@ -169,7 +386,7 @@ public:
 		}
 
 		if (sendSC) {
-			for (auto& mpcp : mpcPaths) {
+			for (auto& mpcp : platforms) {
 				/* while */ factory->Write(true);
 				mpcp->Serialize(factory, packetType);
 			}
@@ -234,11 +451,19 @@ public:
 	void Update() {
 		//if ((ServerInfo::uptime() % 100) != 0) return;
 		
+		for (auto& p : platforms) {
+			p->ApplyValues();
+			if (p->pushUpdate) {
+				//owner->SetDirty();
+				p->Sync();
+				p->pushUpdate = false;
+			}
+		}
 	}
 
 	void PopulateFromLDF(LDFCollection * collection) {
 
-		bool rotate_while_idle, platformIsRotater, platformIsMover, platformIsSimpleMover, dbonly, startPathingOnLoad, platformNoUpdateSync;
+		bool rotate_while_idle, platformIsRotater, platformIsMover, platformIsSimpleMover, dbonly, platformNoUpdateSync;
 		LDF_GET_VAL_FROM_COLLECTION(rotate_while_idle, collection, u"rotate_while_idle", false);
 		LDF_GET_VAL_FROM_COLLECTION(platformIsRotater, collection, u"platformIsRotater", false);
 		LDF_GET_VAL_FROM_COLLECTION(platformIsMover, collection, u"platformIsMover", false);
@@ -252,15 +477,15 @@ public:
 		}
 
 		if (platformIsRotater) {
-			this->mpcPaths.push_back(std::make_unique<MPC_SC_Rotater>());
+			this->platforms.push_back(std::make_unique<MPC_SC_Rotater>());
 		}
 
 		if (platformIsMover) {
-			this->mpcPaths.push_back(std::make_unique<MPC_SC_Mover>());
+			this->platforms.push_back(std::make_unique<MPC_SC_Mover>());
 		}
 
 		if (platformIsSimpleMover) {
-			this->mpcPaths.push_back(std::make_unique<MPC_SC_SimpleMover>());
+			this->platforms.push_back(std::make_unique<MPC_SC_SimpleMover>());
 		}
 
 		LDF_GET_VAL_FROM_COLLECTION(pathName, collection, u"attached_path", u"");
@@ -273,8 +498,14 @@ public:
 		if(pathName != u"")
 			attachedPath = static_cast<FileTypes::LUZ::LUZonePathMovingPlatform*>(owner->GetZoneInstance()->luZone->paths.at(pathName));
 
-		for (auto& sc : mpcPaths) {
-			sc->Setup(this, attachedPath, storedConfig);
+		for (auto& sc : platforms) {
+			sc->Setup(this->owner, attachedPath, storedConfig);
+		}
+
+		if (startPathingOnLoad) {
+			for (auto& sc : platforms) {
+				sc->StartPathing();
+			}
 		}
 	}
 /*
@@ -332,11 +563,25 @@ public:
 		if (currentWaypointIndex == desiredWaypointIndex) return;
 		GameMessages::Broadcast(owner, nmsg);
 	}
+	*/
+
+	void OnGoToWaypoint(Entity::GameObject* rerouteID, GM::GoToWaypoint* msg) {
+		for (auto& p : platforms) {
+			p->GoToWaypoint(msg);
+		}
+	}
+
+	void OnRequestPlatformResync(Entity::GameObject* rerouteID, GM::RequestPlatformResync* msg) {
+		for (auto& p : platforms) {
+			p->Sync();
+		}
+	}
 
 	void RegisterMessageHandlers() {
-		REGISTER_OBJECT_MESSAGE_HANDLER(MovingPlatformComponent, GM::StopPathing, OnStopPathing);
+		//REGISTER_OBJECT_MESSAGE_HANDLER(MovingPlatformComponent, GM::StopPathing, OnStopPathing);
 		REGISTER_OBJECT_MESSAGE_HANDLER(MovingPlatformComponent, GM::GoToWaypoint, OnGoToWaypoint);
-	}*/
+		REGISTER_OBJECT_MESSAGE_HANDLER(MovingPlatformComponent, GM::RequestPlatformResync, OnRequestPlatformResync);
+	}
 };
 
 #endif
