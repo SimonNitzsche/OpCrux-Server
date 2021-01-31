@@ -150,27 +150,7 @@ public:
 			+ dbConf->GetStringVal("DBConnection", "DBPASS")\
 			+ ";";
 
-		bool found = false;
-
-		SQLHENV SQLenv;
-		SQLCHAR driver[256];
-		SQLCHAR attr[256];
-		SQLSMALLINT driver_ret;
-		SQLSMALLINT attr_ret;
-		SQLUSMALLINT direction;
-		SQLRETURN ret;
-
-		SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &SQLenv);
-		SQLSetEnvAttr(SQLenv, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
-
-		direction = SQL_FETCH_FIRST;
-		while (SQL_SUCCEEDED(ret = SQLDrivers(SQLenv, direction,
-			driver, sizeof(driver), &driver_ret,
-			attr, sizeof(attr), &attr_ret))) {
-			direction = SQL_FETCH_NEXT;
-			if (std::string(reinterpret_cast<char*>(driver)) == dbConf->GetStringVal("DBConnection", "DBDRIVER")) found = true;
-			if (ret == SQL_SUCCESS_WITH_INFO) printf("\tdata truncation\n");
-		}
+		bool found = true
 
 		if (!found) {
 			Logger::log("Database", "Driver not found in driver list, below is a list of drivers", LogType::ERR);
