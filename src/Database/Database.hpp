@@ -150,7 +150,7 @@ public:
 			+ dbConf->GetStringVal("DBConnection", "DBPASS")\
 			+ ";";
 
-		bool found = true
+		bool found = true;
 
 		if (!found) {
 			Logger::log("Database", "Driver not found in driver list, below is a list of drivers", LogType::ERR);
