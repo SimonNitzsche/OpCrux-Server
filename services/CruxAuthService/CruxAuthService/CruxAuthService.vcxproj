@@ -76,6 +76,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>../../../src;../../../libs/odbc-cpp-wrapper/src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -105,7 +106,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HAVE_CONFIG_H;MG_ENABLE_SSL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAVE_CONFIG_H;MG_ENABLE_SSL;_DEBUG;_CONSOLE;NO_RAKNET;_CRT_SECURE_NO_WARNINGS;SQL_NOUNICODEMAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>openssl/include;libbcrypt/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -113,7 +114,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>odbc32.lib;openssl/lib/libcryptoMDd.lib;;openssl/lib/libsslMDd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;openssl/lib/libcryptoMDd.lib;openssl/lib/libsslMDd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;uuid.lib;odbccpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -156,6 +157,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\libs\Mongoose\mongoose.c" />
+    <ClCompile Include="..\..\..\src\Utils\Logger.cpp" />
+    <ClCompile Include="..\..\..\src\Utils\ServerInfo.cpp" />
     <ClCompile Include="CruxAuthService.cpp" />
     <ClCompile Include="DBInterface.cpp" />
     <ClCompile Include="libbcrypt\src\bcrypt.c" />
@@ -165,6 +168,34 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\libs\Mongoose\mongoose.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Config.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Connection.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaData.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaDataBase.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaDataUnicode.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Environment.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Exception.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Forwards.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Batch.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Macros.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Odbc.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\ParameterData.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\TypeInfo.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\UtilInternal.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ParameterMetaData.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\PreparedStatement.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\RefCounted.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSet.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaData.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaDataBase.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaDataUnicode.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Statement.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\StatementBase.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Types.h" />
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Util.h" />
+    <ClInclude Include="..\..\..\src\Configuration\ConfDatabase.hpp" />
+    <ClInclude Include="..\..\..\src\FileTypes\INIFile\ConfFile.hpp" />
+    <ClInclude Include="..\..\..\src\Utils\Logger.hpp" />
     <ClInclude Include="DBInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -13,7 +13,9 @@
 #include <codecvt>
 #include <list>
 
+#ifndef NO_RAKNET
 #include <RakNet/BitStream.h>
+#endif
 #include "Utils/RandomUtil.hpp"
 
 namespace StringUtils {
@@ -56,6 +58,7 @@ namespace StringUtils {
 		return true;
 	};
 
+#ifndef NO_RAKNET
 	template<class T>
 	inline std::u16string readWStringFromBitStream(RakNet::BitStream * bitstream) {
 		std::uint32_t size; bitstream->Read<T>(size);
@@ -143,7 +146,7 @@ namespace StringUtils {
 		bitstream->Write(reinterpret_cast<const char*>(text.c_str()), text.length() * 2);
 		FillZero(bitstream, (len - text.length()) * 2);
 	}
-
+#endif
 	inline void ToLowerSelf(std::string &data) {
 		std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) -> unsigned char {	
 			return std::tolower(c);

@@ -6,12 +6,13 @@
 #include <memory>
 #include <unordered_map>
 #include <fstream>
+#include <Configuration/ConfDatabase.hpp>
 
 #define AUTH_PORT 22390
 #define SSL_PRIVATE "res/ssl/private.pem"
 #define SSL_PUBLIC "res/ssl/public.pem"
 #define SSL_CA "res/ssl/ca.pem"
-#define REQUEST_KEYS "res/appkeys.txt"
+#define REQUEST_KEYS "./res/appkeys.txt"
 
 #include "DBInterface.h"
 
@@ -19,6 +20,8 @@ static const char* s_http_port = "8443";
 
 static struct mg_serve_http_opts s_http_server_opts;
 static std::vector<std::string> app_keys = {};
+
+Configuration::ConfDatabase confDB;
 
 inline std::string_view sw_str(mg_str _mstr) {
 	return std::string_view(_mstr.p, _mstr.len);
@@ -63,11 +66,18 @@ std::string HelperGetConf(std::unordered_map<std::string, std::string>& conf, st
 	return it->second;
 }
 
+template<class T = ConfFile>
+std::string HelperGetConf(T * conf, std::string section, std::string key) {
+	return conf->GetStringVal(section, key);
+}
+
 int LoadDBConf() {
+	confDB.Load();
+
 	std::fstream file;
 	std::unordered_map<std::string, std::string> conf;
 
-	file.open("res/conf.txt", std::ios::in);
+	/*file.open("res/conf.txt", std::ios::in);
 
 	if (!file.is_open()) {
 		return -1;
@@ -91,9 +101,9 @@ int LoadDBConf() {
 				break;
 			}
 		}
-	}
+	}*/
 
-	DBInterface::Setup(HelperGetConf(conf, "DBDRIVER"), HelperGetConf(conf, "DBHOST"), HelperGetConf(conf, "DBUSER"), HelperGetConf(conf, "DBPASS"));
+	DBInterface::Setup(HelperGetConf(&confDB, "DBConnection", "DBDRIVER"), HelperGetConf(&confDB, "DBConnection", "DBHOST"), HelperGetConf(&confDB, "DBConnection", "DBUSER"), HelperGetConf(&confDB, "DBConnection", "DBPASS"));
 
 	return 0;
 }
