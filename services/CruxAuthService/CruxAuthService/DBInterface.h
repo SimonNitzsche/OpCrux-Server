@@ -85,7 +85,7 @@ public:
 			Logger::log("DATABASE", dbhash);
 			Logger::log("DATABASE", pkhash);
 
-			return (db_hash == h_password);
+			return BCrypt::validatePassword(std::string(s_password), pkhash);
 		}
 
 		return false;
@@ -104,7 +104,7 @@ public:
 			Logger::log("DATABASE", dbhash);
 			Logger::log("DATABASE", pkhash);
 
-			return (db_hash == h_password);
+			return BCrypt::validatePassword(std::string(s_password), pkhash);
 		}
 
 		return false;
