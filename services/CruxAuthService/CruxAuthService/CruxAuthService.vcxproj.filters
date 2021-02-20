@@ -22,10 +22,13 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Headerdateien\odbc">
+    <Filter Include="Headerdateien\libs">
+      <UniqueIdentifier>{b458ab7e-f85f-496c-8f3e-71c1a3945a7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\libs\odbc">
       <UniqueIdentifier>{54f463a7-a73c-4637-8c2e-9d3ebad2c4bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\odbc\internal">
+    <Filter Include="Headerdateien\libs\odbc\internal">
       <UniqueIdentifier>{8680254a-5757-44e5-aad7-695302a42f6f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -75,79 +78,82 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Types.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Util.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Config.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Connection.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaData.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaDataBase.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaDataUnicode.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Environment.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Exception.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Forwards.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ParameterMetaData.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\PreparedStatement.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\RefCounted.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSet.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaData.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaDataBase.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaDataUnicode.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Statement.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\StatementBase.h">
-      <Filter>Headerdateien\odbc</Filter>
+      <Filter>Headerdateien\libs\odbc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\ParameterData.h">
-      <Filter>Headerdateien\odbc\internal</Filter>
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\TypeInfo.h">
-      <Filter>Headerdateien\odbc\internal</Filter>
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\UtilInternal.h">
-      <Filter>Headerdateien\odbc\internal</Filter>
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Batch.h">
-      <Filter>Headerdateien\odbc\internal</Filter>
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Macros.h">
-      <Filter>Headerdateien\odbc\internal</Filter>
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Odbc.h">
-      <Filter>Headerdateien\odbc\internal</Filter>
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="json.h">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

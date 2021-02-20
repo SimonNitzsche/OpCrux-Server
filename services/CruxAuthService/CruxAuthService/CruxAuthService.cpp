@@ -180,6 +180,27 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 			return;
 		}
 		
+		if (sw_pcmp(hm->uri, "/userinfo")) {
+
+			auto it_username = form_data.find("username");
+
+			/*
+				Requires:
+					username
+			*/
+
+			if (it_username == form_data.end()) {
+				const char* msg = "400 Bad Request";
+				mg_send_head(c, 400, strlen(msg), "Content-Type: text/plain");
+				mg_printf(c, "%.*s", strlen(msg), msg);
+				return;
+			}
+
+			std::string msg = DBInterface::GetUserInfoJSON(it_username->second);
+			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", msg.length(), msg.c_str());
+			return;
+		}
 
 		const char* msg = "421 Misdirected Request";
 		mg_send_head(c, 421, strlen(msg), "Content-Type: text/plain");

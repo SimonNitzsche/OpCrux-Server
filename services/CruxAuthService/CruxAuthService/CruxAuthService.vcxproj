@@ -199,6 +199,7 @@
     <ClInclude Include="..\..\..\src\FileTypes\INIFile\ConfFile.hpp" />
     <ClInclude Include="..\..\..\src\Utils\Logger.hpp" />
     <ClInclude Include="DBInterface.h" />
+    <ClInclude Include="json.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

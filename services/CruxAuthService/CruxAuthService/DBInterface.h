@@ -14,6 +14,7 @@
 #include "odbc/PreparedStatement.h"
 #include "odbc/ResultSet.h"
 #include <Utils/Logger.hpp>
+#include "json.h"
 
 #define SQL_RESULT_LEN 240
 #define SQL_RETURN_CODE_LEN 1000
@@ -119,6 +120,30 @@ public:
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
 		return rs->next();
+	}
+
+	static std::string GetUserInfoJSON(std::string_view& s_username) {
+
+		nlohmann::json json;
+
+		// do not send password hash
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT id, username, rank FROM OPCRUX_AD.dbo.Accounts WHERE username=?"); 
+		stmt->setString(1, std::string(s_username.data(), s_username.length()));
+		
+		odbc::ResultSetRef rs = stmt->executeQuery();
+		if (rs->next()) {
+			int accountID = *rs->getInt(1);
+			std::string username = *rs->getString(2);
+			int rank = *rs->getInt(3);
+			
+			json = {
+				{"accountID", accountID},
+				{"username", username},
+				{"rank", rank}
+			};
+		}
+
+		return json.dump();
 	}
 
 };
