@@ -104,7 +104,7 @@ public:
 	*/
 	void ApplyValues() {
 		// We stopped
-		if (state == 2) {
+		/*if (state == 2) {
 			pushUpdate = true;
 			ReachedWaypoint();
 			return;
@@ -149,10 +149,66 @@ public:
 
 			
 			return;
+		}*/
+
+		if (pushUpdate) {
+			Sync();
+			pushUpdate = false;
 		}
 
+		if (state == 2) {
+			// Moving
 
+			auto curTime = ServerInfo::uptimeMs() - this->timeWPStart;
 
+			percToNextWP = 1.0f / GetMovementDuration() * curTime * 0.001f;
+
+			if (percToNextWP > 1.0f) percToNextWP = 1.0f;
+
+			
+			if (percToNextWP == 0.0f || percToNextWP == 1.0f)
+				pushUpdate = true;
+
+			auto curWP = GetWP(currentWaypointIndex);
+			auto nextWP = GetWP(nextWaypointIndex);
+
+			currentPosition.x = curWP->position.x + (nextWP->position.x - curWP->position.x) * percToNextWP;
+			currentPosition.y = curWP->position.y + (nextWP->position.y - curWP->position.y) * percToNextWP;
+			currentPosition.z = curWP->position.z + (nextWP->position.z - curWP->position.z) * percToNextWP;
+
+			// Reached end?
+			if (percToNextWP == 1.0f) {
+				state = 4;
+				pushUpdate = true;
+				ReachedWaypoint();
+			}
+			return;
+		}
+
+		if (state == 4) {
+			// Idle
+
+			if (currentWaypointIndex == desiredWaypointIndex) return;
+
+			if (timeWPStart + int32_t(GetIdleDuration() * 1000.f) < ServerInfo::uptimeMs()) {
+				if (nextWaypointIndex != -1) {
+					timeWPStart = ServerInfo::uptimeMs();
+
+					if (!stopAtDesiredWaypoint && nextWaypointIndex == desiredWaypointIndex) {
+						state = 4;
+						return;
+					}
+					SetupNextWP();
+					state = 2;
+				}
+			}
+
+			// Reached destination
+			
+
+			// Last waypoint in direction
+			return;
+		}
 	}
 
 	void SetupNextWP() {
@@ -173,7 +229,8 @@ public:
 			case FileTypes::LUZ::LUZonePathBehaviour::Once: {
 				// we don't have a next
 				nextWaypointIndex = -1;
-				state = 28;
+				desiredWaypointIndex = oldNext;
+				state = 4;
 				break;
 			}
 			case FileTypes::LUZ::LUZonePathBehaviour::Bounce: {
@@ -186,7 +243,7 @@ public:
 				nextWaypointIndex = (isReverse) ? actualPath->waypoints.size() - 2 : 0;
 
 				if (nextWaypointIndex == -1) nextWaypointIndex = 0;
-				state = 28;
+				state = 4;
 
 				break;
 			}
@@ -194,18 +251,17 @@ public:
 		}
 
 		percToNextWP == 0.0f;
-		Logger::log("TEST", "Next waypoint: " + std::to_string(nextWaypointIndex));
+		Logger::log(CacheObjects::GetName(owner->GetLOT()), "Next waypoint: " + std::to_string(currentWaypointIndex) + " -> " + std::to_string(nextWaypointIndex));
 		if(oldNext != -1)
 			currentWaypointIndex = oldNext;
 	}
 
 	void ReachedWaypoint() {
+		Logger::log(CacheObjects::GetName(owner->GetLOT()), "Reached waypoint" + std::to_string(currentWaypointIndex));
 		pushUpdate = true;
-		state = 28;
+		state = 4;
 		timeWPStart = ServerInfo::uptimeMs();
 		
-
-		SetupNextWP();
 
 		bool isDesiredWaypoint = desiredWaypointIndex == currentWaypointIndex;
 
@@ -219,11 +275,19 @@ public:
 	}
 
 	void StartPathing() {
+		pushUpdate = true;
 		state = 2;
+		timeWPStart = ServerInfo::uptimeMs();
+		currentWaypointIndex = 0;
+		SetupNextWP();
 	}
 
 	void GoToWaypoint(GM::GoToWaypoint* msg) {
-
+		desiredWaypointIndex = msg->iPathIndex;
+		// = msg->bAllowPathingDirectionChange
+		stopAtDesiredWaypoint = msg->bStopAtWaypoint;
+		state = 2;
+		timeWPStart = ServerInfo::uptimeMs();
 	}
 
 

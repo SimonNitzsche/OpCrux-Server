@@ -111,7 +111,7 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 
 	// LU Client has set a limit, we do it aswell to make sure nothing
 	// messes up
-	rakServer->SetPerConnectionOutgoingBandwidthLimit(10000);
+	rakServer->SetPerConnectionOutgoingBandwidthLimit(100000);
 
 	dbConnection = Database::Connect();
 
