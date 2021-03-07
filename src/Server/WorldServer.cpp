@@ -794,7 +794,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Entity::GameObject* playerObject = objectsManager->GetObjectByID(clientSession->actorID);
 				if (playerObject != nullptr) {
-					PacketFactory::Chat::SendChatMessage(playerObject, 0x04, chatMessage);
+					/*
+						DISABLE CHAT
+					*/
+					// PacketFactory::Chat::SendChatMessage(playerObject, 0x04, chatMessage);
 				}
 
 				break;

@@ -98,7 +98,7 @@ bool NavMeshManager::Open(std::string filepath) {
 						ss << ((p->verts[t2[k]] * 3) + 1);
 					}
 					else {
-						ss << (((/*pd->vertBase*/ t->header->vertCount + t2[k]/* - p->vertCount*/) * 3) + 1);
+						ss << (((/\*pd->vertBase*\/ t->header->vertCount + t2[k]/\* - p->vertCount*\/) * 3) + 1);
 					}
 
 				}
@@ -115,7 +115,7 @@ bool NavMeshManager::Open(std::string filepath) {
 		std::string ptn(pt + std::to_string(i)+".obj");
 		std::remove(ptn.c_str());
 		FileUtils::SaveTextFile(ptn, ss.str());*/
-	}
+	//}
 
 	return false;
 }

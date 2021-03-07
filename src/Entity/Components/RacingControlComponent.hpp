@@ -131,8 +131,11 @@ public:
 		{ GM::NotifyVehicleOfRacingObject msg; msg.racingObjectID = this->owner->GetObjectID(); GameMessages::Broadcast(this->owner->GetZoneInstance(), myCar, msg); }
 
 		{ GM::RacingPlayerLoaded msg; msg.playerID = playerID; msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
-
-		{GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(owner->GetZoneInstance(), myCar, msg); }
+		if (playerInfo.size() == 2) {
+			for (auto pli : playerInfo) {
+				// {GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(owner->GetZoneInstance(), owner->GetZoneInstance()->objectsManager->GetObjectByID(pli.carObjectID), msg); }
+			}
+		}
 	}
 
 	void OnAcknowledgePossession(Entity::GameObject* player, Entity::GameObject* car) {
