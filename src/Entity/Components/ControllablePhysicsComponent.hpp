@@ -225,6 +225,11 @@ public:
 		auto objectManager = owner->GetZoneInstance()->objectsManager;
 		auto clSession = owner->GetZoneInstance()->sessionManager.GetSession(owner->GetObjectID());
 		
+		// is the player itself constructed?
+		bool selfConstructed = replicaManager->IsConstructed(owner, clSession->systemAddress);
+
+		if (allowScoping && !selfConstructed) return;
+
 		// Figure out which scenes we are in atm.
 		size_t lastSceneID = *(owner->GetZoneInstance()->luZone->scenes.at(owner->GetZoneInstance()->luZone->scenes.size() - 1).sceneID);
 		std::uint8_t* sceneMask = (std::uint8_t*)malloc(lastSceneID + 1);
@@ -253,8 +258,6 @@ public:
 		// used to reduce the amount of constructed objects per frame
 		std::uint32_t numConstructed = 0;
 
-		// is the player itself constructed?
-		bool selfConstructed = replicaManager->IsConstructed(owner, clSession->systemAddress);
 
 		// Now activate/disable/construct objects
 		for (auto object : objects) {
@@ -268,7 +271,7 @@ public:
 					if (selfConstructed && numConstructed >= 5) break;
 					// Construct
 					replicaManager->Construct(object, false, clSession->systemAddress, false);
-					//Logger::log("WRLD", "Constructing LOT #" + std::to_string(object->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object->GetObjectID()) + " @ sceneID " + std::to_string(object->GetSceneID()));
+					Logger::log("WRLD", "Constructing LOT #" + std::to_string(object->GetLOT()) + " (" + (std::string)CacheObjects::GetName(object->GetLOT()) + ") with objectID " + std::to_string((unsigned long long)object->GetObjectID()) + " @ sceneID " + std::to_string(object->GetSceneID()));
 					// increase constructed counter
 					++numConstructed;
 				}
@@ -278,7 +281,8 @@ public:
 				if (bSetActive && !allowScoping) continue;
 
 				// Set scope
-				replicaManager->SetScope(object, bSetActive, clSession->systemAddress, false);
+				if(bSetActive != replicaManager->IsInScope(object, clSession->systemAddress))
+					replicaManager->SetScope(object, bSetActive, clSession->systemAddress, false);
 			}
 		}
 

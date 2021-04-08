@@ -9,32 +9,56 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Quelldateien\libs">
+      <UniqueIdentifier>{ab6aa1bd-b4f3-4d39-b6d4-e59951fb8bb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\libs\bcrypt">
+      <UniqueIdentifier>{8e20a4f4-73ec-4e51-a4cc-8c20fc3d50f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\libs\mongoose">
+      <UniqueIdentifier>{26a785e6-a2df-4a8e-8113-0095227f7db8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Ressourcendateien">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\libs">
+      <UniqueIdentifier>{b458ab7e-f85f-496c-8f3e-71c1a3945a7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\libs\odbc">
+      <UniqueIdentifier>{54f463a7-a73c-4637-8c2e-9d3ebad2c4bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\libs\odbc\internal">
+      <UniqueIdentifier>{8680254a-5757-44e5-aad7-695302a42f6f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CruxAuthService.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libs\Mongoose\mongoose.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="DBInterface.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="libbcrypt\src\crypt_blowfish.c">
+    <ClCompile Include="..\..\..\src\Utils\Logger.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="libbcrypt\src\crypt_gensalt.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="libbcrypt\src\wrapper.c">
+    <ClCompile Include="..\..\..\src\Utils\ServerInfo.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="libbcrypt\src\bcrypt.c">
-      <Filter>Quelldateien</Filter>
+      <Filter>Quelldateien\libs\bcrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="libbcrypt\src\crypt_blowfish.c">
+      <Filter>Quelldateien\libs\bcrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="libbcrypt\src\crypt_gensalt.c">
+      <Filter>Quelldateien\libs\bcrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\Mongoose\mongoose.c">
+      <Filter>Quelldateien\libs\mongoose</Filter>
+    </ClCompile>
+    <ClCompile Include="libbcrypt\src\wrapper.c">
+      <Filter>Quelldateien\libs\bcrypt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +66,93 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="DBInterface.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\FileTypes\INIFile\ConfFile.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Configuration\ConfDatabase.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Utils\Logger.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Types.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Util.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Config.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Connection.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaData.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaDataBase.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\DatabaseMetaDataUnicode.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Environment.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Exception.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Forwards.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ParameterMetaData.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\PreparedStatement.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\RefCounted.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSet.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaData.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaDataBase.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\ResultSetMetaDataUnicode.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\Statement.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\StatementBase.h">
+      <Filter>Headerdateien\libs\odbc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\ParameterData.h">
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\TypeInfo.h">
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\UtilInternal.h">
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Batch.h">
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Macros.h">
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\odbc-cpp-wrapper\src\odbc\internal\Odbc.h">
+      <Filter>Headerdateien\libs\odbc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="json.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
