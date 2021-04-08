@@ -165,7 +165,7 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 					email
 			*/
 
-			if (it_username == form_data.end() || it_email == form_data.end()) {
+			if (it_username == form_data.end() && it_email == form_data.end()) {
 				const char* msg = "400 Bad Request";
 				mg_send_head(c, 400, strlen(msg), "Content-Type: text/plain");
 				mg_printf(c, "%.*s", strlen(msg), msg);
@@ -197,6 +197,40 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 			}
 
 			std::string msg = DBInterface::GetUserInfoJSON(it_username->second);
+			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", msg.length(), msg.c_str());
+			return;
+		}
+
+		if (sw_pcmp(hm->uri, "/register")) {
+			auto it_username = form_data.find("username");
+			auto it_password = form_data.find("password");
+
+			if ((it_username == form_data.end()) || it_password == form_data.end()) {
+				const char* msg = "400 Bad Request";
+				mg_send_head(c, 400, strlen(msg), "Content-Type: text/plain");
+				mg_printf(c, "%.*s", strlen(msg), msg);
+				return;
+			}
+
+			bool isLoginCorrect = (it_username == form_data.end())
+				? false
+				: DBInterface::RegisterUser(it_username->second, it_password->second);
+
+			std::string msg = isLoginCorrect ? "PASS" : "FAIL";
+			std::cout << "\nRegistration for user " << std::string(it_username->second.data(), it_username->second.size()) << " " << (isLoginCorrect ? "passed" : "failed") << "." << std::endl;
+			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", msg.length(), msg.c_str());
+			return;
+		}
+
+		if (sw_pcmp(hm->uri, "/fix")) {
+
+
+			bool oSuccess = DBInterface::FixUsers();
+
+			std::string msg = oSuccess ? "PASS" : "FAIL";
+			std::cout << "\nFixed users!\n";
 			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
 			mg_printf(c, "%.*s", msg.length(), msg.c_str());
 			return;

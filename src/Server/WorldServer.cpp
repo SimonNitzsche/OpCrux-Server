@@ -750,8 +750,13 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				} break;
 
 					// mail attachment collect
-				case 0x05: break;
-
+				case 0x05: {
+					std::uint32_t unknownMailRead0c;
+					data->Read(unknownMailRead0c);
+					std::int64_t mailID;
+					data->Read(mailID);
+					MailManager::TakeAttachment(this, clientSession, mailID);
+				}
 					// mail delete
 				case 0x07: break;
 

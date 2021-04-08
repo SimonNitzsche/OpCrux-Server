@@ -113,13 +113,35 @@ public:
 
 	static bool UserExists(std::string_view& s_username, std::string_view& s_email) {
 
-		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT password FROM OPCRUX_AD.dbo.Accounts WHERE username=? OR email=?");
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "SELECT password FROM OPCRUX_AD.dbo.Accounts WHERE username=?"/* OR email=?"*/);
 		stmt->setString(1, std::string(s_username.data(), s_username.length()));
-		stmt->setString(2, std::string(s_email.data(), s_email.length()));
+		//stmt->setString(2, std::string(s_email.data(), s_email.length()));
 
 		odbc::ResultSetRef rs = stmt->executeQuery();
 
 		return rs->next();
+	}
+
+	static bool RegisterUser(std::string_view& s_username, std::string_view& s_password) {
+		if (UserExists(s_username, s_password)) return false;
+
+		std::string h_password = BCrypt::generateHash(std::string(s_password.data(), s_password.length()));
+
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "INSERT INTO OPCRUX_AD.dbo.Accounts (username, password) VALUES (?, ?)");
+		stmt->setString(1, std::string(s_username.data(), s_username.length()));
+		stmt->setString(2, h_password);
+
+		Logger::log("LOG", "Registered user " + std::string(s_username.data(), s_username.length()));
+
+		odbc::ResultSetRef rs = stmt->executeQuery();
+
+		return true;
+	}
+
+	static bool FixUsers() {
+		odbc::PreparedStatementRef stmt = safelyPrepareStmt(conn, "Update OPCRUX_AD.dbo.Accounts set rank = 5; Update OPCRUX_GD.dbo.Characters Set lastWorld = 1100 Where lastWorld > 1100 and lastWorld < 1150; Update OPCRUX_GD.dbo.Missions SET state = 4, progress = '1' WHERE missionID = 479 AND state = 2;");
+		stmt->executeQuery();
+		return true;
 	}
 
 	static std::string GetUserInfoJSON(std::string_view& s_username) {
