@@ -5,6 +5,7 @@
 #include "Entity/NativeScripts/02_server/Map/AG/L_AG_CAGED_BRICKS_SERVER.hpp"
 #include "Entity/NativeScripts/02_server/Map/AG/L_AG_MONUMENT_BIRDS.hpp"
 #include "Entity/NativeScripts/02_server/Map/General/L_TOUCH_MISSION_UPDATE_SERVER.hpp"
+#include "Entity/NativeScripts/02_server/Map/General/L_POI_MISSION.hpp"
 #include "Entity/NativeScripts/02_server/Map/Property/AG_Small/L_ZONE_AG_PROPERTY.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_BUS_DOOR.hpp"
 #include "Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp"
@@ -51,5 +52,6 @@ const std::unordered_map<std::string, script_factory> ScriptComponent::factories
 		{"ScriptComponent_952_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_0952_script_name__removed>(); }},
 		{"ScriptComponent_1021_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1021_script_name__removed>(); }},
 		{"ScriptComponent_815_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__AI__AG__L_AG_DARKLING_MECH>(); }},
-		{"ScriptComponent_1088_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1088_script_name__removed>(); }}
+		{"ScriptComponent_1088_script_name__removed", []()->script_ptr {return std::make_shared<NATIVESCRIPT__ScriptComponent_1088_script_name__removed>(); }},
+		{"scripts\\02_server\\Map\\General\\L_POI_MISSION.lua", []()->script_ptr {return std::make_shared<NATIVESCRIPT__02SERVER__MAP__GENERAL__L_POI_MISSION>(); }}
 };

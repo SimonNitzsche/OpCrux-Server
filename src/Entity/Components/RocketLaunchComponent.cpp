@@ -29,7 +29,7 @@ void AMF3U29(RakNet::BitStream* bs, std::uint32_t number) {
 }
 
 void RocketLaunchComponent::OnRequestUse(Entity::GameObject* sender, GM::RequestUse * msg) {
-
+#ifndef _DEBUG // We don't want auto complete when working on it 
 	if (this->targetZone == 1150) {
 		RakNet::BitStream bs = RakNet::BitStream();
 		LUPacketHeader returnBSHead;
@@ -123,7 +123,7 @@ void RocketLaunchComponent::OnRequestUse(Entity::GameObject* sender, GM::Request
 
 		return;
 	}
-
+#endif
 
 
 	GM::FireEventClientSide fecs;

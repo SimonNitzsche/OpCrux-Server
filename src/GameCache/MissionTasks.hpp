@@ -25,6 +25,22 @@ namespace CacheMissionTasks {
 		return FDB::RowInfo();
 	}
 
+	inline FDB::RowInfo getRowByTargetGroup(std::string TargetGroup) {
+		FDB::RowTopHeader rth = Cache.getRows("MissionTasks");
+		for (int i = 0; i < rth.getRowCount(); ++i) {
+			try {
+				if (!rth.isValid(i)) continue;
+				FDB::RowInfo rowInfo = rth[i];
+				if (rowInfo.isValid())
+					if (rowInfo[4].operator FDB::PointerString().operator std::string() == TargetGroup) return rth[i];
+			}
+			catch (std::runtime_error e) {
+				Logger::log("Cache:MissionTasks", e.what(), LogType::ERR);
+			}
+		}
+		return FDB::RowInfo();
+	}
+
 	CRUX_CACHE_ADD_COLUMN_GETTER(0, std::int32_t, ID)
 	CRUX_CACHE_ADD_COLUMN_GETTER(1, std::int32_t, LocStatus)
 	CRUX_CACHE_ADD_COLUMN_GETTER(2, std::int32_t, TaskType)
