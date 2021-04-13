@@ -72,7 +72,7 @@ void MovementAIComponent::Update() {
 			veloDir.set(targetPos.x - localPos.x, targetPos.y - localPos.y, targetPos.z - localPos.z);
 
 
-			auto maxdv = std::max(std::max(veloDir.x, veloDir.y), veloDir.z);
+			auto maxdv = ((((((veloDir.x) > (veloDir.y)) ? (veloDir.x) : (veloDir.y))) > (veloDir.z)) ? ((((veloDir.x) > (veloDir.y)) ? (veloDir.x) : (veloDir.y))) : (veloDir.z)); // this is just a expanded version of this max(max(veloDir.x, veloDir.y), veloDir.z); (i am so sorry :P) 
 			auto maxdf = 1 / maxdv;
 
 			auto speed = wanderSpeed * 5;
