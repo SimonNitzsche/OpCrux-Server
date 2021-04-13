@@ -1,7 +1,9 @@
 #ifndef __UTILS__FILEUTILS_HPP__
 #define __UTILS__FILEUTILS_HPP__
 
+#ifndef NO_RAKNET
 #include <RakNet/BitStream.h>
+#endif
 
 #include "Utils/Logger.hpp"
 #include "Common/CrossPlatform.hpp"
@@ -113,6 +115,7 @@ namespace FileUtils {
 	static std::uint32_t savedPacketIndex = 0;
 	static std::string savedPacketFolder = "";
 
+#ifndef NO_RAKNET
 	inline void SavePacket(RakNet::BitStream * packetToSave, std::uint16_t portFrom, std::uint16_t portTo) {
 #ifdef OPCRUX_PLATFORM_WIN32
 		// Copy packet
@@ -153,7 +156,7 @@ namespace FileUtils {
 
 #endif
 	}
-
+#endif
 	inline void ChangeDirectory() {
 		// Change directory to directory of the executable, since we're using relative paths
 #ifdef OPCRUX_PLATFORM_WIN32

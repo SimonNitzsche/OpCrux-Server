@@ -11,8 +11,6 @@
 #include <RakNet/ReplicaManager.h>
 #include <RakNet/NetworkIDManager.h>
 
-#include <bullet3-2.89/src/btBulletDynamicsCommon.h>
-
 #include "Enums/EPackets.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/ESystem.hpp"
@@ -109,6 +107,10 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 	// TODO: Init Security
 	rakServer->SetIncomingPassword("3.25 ND1", 8);
 
+	// LU Client has set a limit, we do it aswell to make sure nothing
+	// messes up
+	rakServer->SetPerConnectionOutgoingBandwidthLimit(100000);
+
 	dbConnection = Database::Connect();
 
 	// Initializes SocketDescriptor
@@ -151,27 +153,14 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 	WorldInstanceManager::AddWorldServer(m_port, this);
 
 	if (zone != 0) {
-		/// collision configuration contains default setup for memory, collision setup.
-		/// Advanced users can create their own configuration.
-		collisionConfiguration = new btDefaultCollisionConfiguration();
+		// World Settings for the physics world objects
+		reactphysics3d::PhysicsWorld::WorldSettings worldSettings;
 
-		/// use the default collision dispatcher. For parallel processing you can use a diffent
-		/// dispatcher(see Extras / BulletMultiThreaded)
-		collisionDispatcher = new btCollisionDispatcher(collisionConfiguration);
+		// Set gravity for the world
+		worldSettings.gravity = reactphysics3d::Vector3(0.f, -CacheWorldConfig::GetPEGravityValue(), 0.f);
 
-		/// btDbvtBroadphase is a good general purpose broadphase. You can also try out
-		/// btAxis3Sweep.
-		overlappingPairCache = new btDbvtBroadphase();
-
-		/// the default constraint solver. For parallel processing you can use a different solver
-		/// (see Extras / BulletMultiThreaded)
-		constraintSolver = new btSequentialImpulseConstraintSolver();
-
-		/// Create physic world
-		dynamicsWorld = new btDiscreteDynamicsWorld(collisionDispatcher, overlappingPairCache, constraintSolver, collisionConfiguration);
-
-		// Set gravity
-		dynamicsWorld->setGravity(btVector3(0, -CacheWorldConfig::GetPEGravityValue(), 0));
+		// Create physics world using object factory
+		physicsWorld = physicsCommon.createPhysicsWorld(worldSettings);
 
 		// Get zone file
 		std::string zoneName = CacheZoneTable::GetZoneName(zone);
@@ -180,11 +169,6 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 		Logger::log("WRLD", "Loading Zone: " + zoneName);
 		luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
 		if (!luZone->_isFileLoaded()) {
-			delete collisionConfiguration;
-			delete collisionDispatcher;
-			delete overlappingPairCache;
-			delete constraintSolver;
-			delete dynamicsWorld;
 			delete luZone;
 
 			// TODO: Tell MS that loading failed
@@ -710,7 +694,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				if(invComp != nullptr)
 					invComp->Awake();
-				objectsManager->Construct(playerObject);
+				//objectsManager->Construct(playerObject);
 				replicaManager->Construct(playerObject, false, clientSession->systemAddress, false);
 
 				Logger::log("WRLD", "Server done loading");
@@ -746,8 +730,13 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 				} break;
 
 					// mail attachment collect
-				case 0x05: break;
-
+				case 0x05: {
+					std::uint32_t unknownMailRead0c;
+					data->Read(unknownMailRead0c);
+					std::int64_t mailID;
+					data->Read(mailID);
+					MailManager::TakeAttachment(this, clientSession, mailID);
+				}
 					// mail delete
 				case 0x07: break;
 
@@ -790,7 +779,10 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 
 				Entity::GameObject* playerObject = objectsManager->GetObjectByID(clientSession->actorID);
 				if (playerObject != nullptr) {
-					PacketFactory::Chat::SendChatMessage(playerObject, 0x04, chatMessage);
+					/*
+						DISABLE CHAT
+					*/
+					// PacketFactory::Chat::SendChatMessage(playerObject, 0x04, chatMessage);
 				}
 
 				break;
@@ -873,10 +865,5 @@ WorldServer::~WorldServer() {
 	if (replicaManager) delete replicaManager;
 	if (networkIdManager) delete networkIdManager;
 	if (luZone) delete luZone;
-	if (collisionConfiguration) delete collisionConfiguration;
-	if (collisionDispatcher) delete collisionDispatcher;
-	if (overlappingPairCache) delete overlappingPairCache;
-	if (constraintSolver) delete constraintSolver;
-	if (dynamicsWorld) delete dynamicsWorld;
 	Database::Disconnect(GetDBConnection());
 }

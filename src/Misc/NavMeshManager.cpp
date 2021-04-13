@@ -55,6 +55,68 @@ bool NavMeshManager::Open(std::string filepath) {
 
 	m_navMeshQuery->init(m_navMesh, 2048);
 
+	// Export code for debugging:
+	/*const dtNavMesh* maMesh = m_navMesh;
+	auto pt = "res/mgnv/";
+	for (int i = 0; i < header.numTiles; ++i) {
+		const dtMeshTile* t = maMesh->getTile(i);
+		std::stringstream ss;
+		for (auto vi = 0; vi < t->header->vertCount; ++vi) {
+			ss << "v " << *(t->verts + (vi * 3) + 0) << " " << *(t->verts + (vi * 3) + 1) << " " << *(t->verts + (vi * 3) + 2) << "\n";
+		}
+
+
+		for (auto pi = 0; pi < t->header->polyCount; ++pi) {
+			auto p = &t->polys[pi];
+
+			if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)	// Skip off-mesh links.
+				continue;
+
+			const dtPolyDetail* pd = &t->detailMeshes[pi];
+
+			for (int j = 0; j < t->header->detailVertCount; ++j) {
+				ss << "v " << t->detailVerts[3 * j + 0] << " " << t->detailVerts[3 * j + 1] << " " << t->detailVerts[3 * j + 2];
+			}
+
+			for (int j = 0; j < pd->triCount; ++j)
+			{
+
+				ss << "f";
+				const unsigned char* t2 = &t->detailTris[(pd->triBase + j) * 4];
+				for (int k = 0; k < 3; ++k)
+				{
+					//float * newV;
+
+					ss << " ";
+
+					//if (t2[k] < p->vertCount)
+					//	newV = &t->verts[p->verts[t2[k]] * 3];
+					//else
+					//	newV = &t->detailVerts[(pd->vertBase + t2[k] - p->vertCount) * 3];
+
+					if (t2[k] < p->vertCount) {
+						ss << ((p->verts[t2[k]] * 3) + 1);
+					}
+					else {
+						ss << (((/\*pd->vertBase*\/ t->header->vertCount + t2[k]/\* - p->vertCount*\/) * 3) + 1);
+					}
+
+				}
+
+				ss << "\n";
+			}
+
+			for (auto fi = 0; fi < 1; ++fi) {
+				//ss << "f " << p->verts[0] + 1 << " " << p->verts[1] + 1 << " " << p->verts[2] + 1 << "\n";
+				//ss << "f " << p->verts[5] + 1 << " " << p->verts[4] + 1 << " " << p->verts[3] + 1 << "\n";
+			}
+		}
+
+		std::string ptn(pt + std::to_string(i)+".obj");
+		std::remove(ptn.c_str());
+		FileUtils::SaveTextFile(ptn, ss.str());*/
+	//}
+
 	return false;
 }
 

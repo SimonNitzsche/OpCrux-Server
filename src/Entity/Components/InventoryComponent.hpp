@@ -20,9 +20,9 @@
 /* Maybe replace this in future. */
 struct InventoryItemStack {
 	std::int32_t LOT = -1;
-	DataTypes::LWOOBJID ownerID = std::uint64_t(0);
-	DataTypes::LWOOBJID objectID = std::uint64_t(0);
-	DataTypes::LWOOBJID subkey = std::uint64_t(0);
+	DataTypes::LWOOBJID ownerID = 0ULL;
+	DataTypes::LWOOBJID objectID = 0ULL;
+	DataTypes::LWOOBJID subkey = 0ULL;
 	std::uint32_t quantity = 1;
 	std::uint32_t slot = 0;
 	std::uint32_t tab = 0;
@@ -135,12 +135,12 @@ public:
 	}
 
 	void Awake() {
-		if (owner->GetObjectID() == 0) {
+		if (owner->GetObjectID() == 0ULL) {
 			Logger::log("HELP", "SOMETHING WENT WRONG!!! OWNER IS 0ULL!!! INVENTORY COMPONENT!!!", LogType::ERR);
 			throw;
 		}
 
-		if (owner->GetLOT() == 1 && owner->GetObjectID() != 0) {
+		if (owner->GetLOT() == 1 && owner->GetObjectID() != 0ULL) {
 			auto playerBags = Database::GetFullInventory(owner->GetZoneInstance()->GetDBConnection(), owner->GetObjectID().getPureID());
 			auto objMan = this->owner->GetZoneInstance()->objectsManager;
 			for (auto playerInv : playerBags) {
@@ -161,7 +161,7 @@ public:
 					// Check if an item glitched to a slot we don't have,
 					// and if so send it per mail and delete from inventory
 					if (itemStack.tab == 0 && itemStack.slot >= maxItemSlots) {
-						MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, std::uint64_t(0), *it);
+						MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, 0Ui64, *it);
 						Database::RemoveItemFromInventory(owner->GetZoneInstance()->GetDBConnection(), it->objectID);
 						continue;
 					}
@@ -248,8 +248,8 @@ public:
 			for (int i = 0; i < equippedItems.size(); ++i) {
 				factory->Write<std::uint64_t>(equippedItems.at(i).objectID);
 				factory->Write<std::int32_t>(equippedItems.at(i).LOT);
-				factory->Write(equippedItems.at(i).subkey != std::uint64_t(0));
-				if (equippedItems.at(i).subkey != std::uint64_t(0))
+				factory->Write(equippedItems.at(i).subkey != 0ULL);
+				if (equippedItems.at(i).subkey != 0ULL)
 					/**/factory->Write<std::int64_t>(equippedItems.at(i).subkey);
 				factory->Write(true);
 				/**/factory->Write<std::uint32_t>(equippedItems.at(i).quantity);
@@ -476,7 +476,7 @@ public:
 						// Do we have item?
 						if (subItemStack.LOT != subitem) {
 							// We don't so let's add it
-							AddItem(subitem, 1U, DataTypes::Vector3(), std::uint64_t(0), {}, true);
+							AddItem(subitem, 1U, DataTypes::Vector3(), 0ULL, {}, true);
 							// Do we have it now?
 							subItemStack = GetItem(subitem);
 							if (subItemStack.LOT != subitem) {
@@ -702,8 +702,8 @@ public:
 
 		AddItem(item->GetLOT(), incCount, item->GetPosition());
 	}
-	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}, bool subItem = false, uint32_t optionalTab = 0) {
 
+	void AddItem(std::int32_t itemLOT, std::uint32_t incCount = 1, DataTypes::Vector3 sourcePos = DataTypes::Vector3(), DataTypes::LWOOBJID iSubKey = 0ULL, LDFCollection metadata = {}, bool subItem = false, uint32_t optionalTab = 0) {
 		std::uint32_t nextTabAndSlot = GetNextFreeSlot(itemLOT, subItem);
 
 		std::uint32_t tab = (nextTabAndSlot & 0xFFFF0000) >> 16;
@@ -766,7 +766,7 @@ public:
 			itemStack.quantity = 1;
 			itemStack.tab = tab;
 			if (owner->GetLOT() == 1 && tab != 4 && tab != 6) { // player and not temporary item and not temporary model
-				itemStack.objectID = (std::uint64_t(1) << 60) | Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER);
+				itemStack.objectID = (1ULL << 60) | Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER);
 			}
 			else {
 				itemStack.objectID = owner->GetZoneInstance()->objectsManager->GenerateSpawnedID();
@@ -785,7 +785,7 @@ public:
 				// TODO: send mission mail:
 				// Mail::SendItem(...);
 				// return;
-				MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, std::int64_t(0), itemStack.toDBModel());
+				MailManager::SendMail(owner->GetZoneInstance(), owner->GetNameStr(), "MAIL_SYSTEM_NOTIFICATION", "MAIL_INTERNAL_CSR_DEFAULT_SUBJECT", "MAIL_ACTIVITY_OVERFLOW_BODY", false, 0Ui64, itemStack.toDBModel());
 			
 				{GM::NotifyRewardMailed nmsg; nmsg.objectID = itemStack.objectID; nmsg.startPoint = sourcePos; nmsg.subkey = itemStack.subkey; nmsg.templateID = itemStack.LOT; GameMessages::Send(owner, owner->GetObjectID(), nmsg); }
 				return;
@@ -931,7 +931,7 @@ public:
 			if (stack.LOT != itemLOT) break;
 
 			// Get the safe amount to reduce on the stack
-			auto reduceAmount = (((stack.quantity) < amount)) ? (stack.quantity) : (amount);
+			auto reduceAmount = (((stack.quantity) < (amount)) ? (stack.quantity) : (amount));
 
 			// keep track of amount reduced
 			amount -= reduceAmount;

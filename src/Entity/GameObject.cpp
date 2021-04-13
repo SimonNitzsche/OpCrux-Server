@@ -558,7 +558,7 @@ void Entity::GameObject::PopulateFromLDF(LDFCollection * collection) {
 	LDF_GET_VAL_FROM_COLLECTION(markedAsPhantom, collection, u"markedAsPhantom", false);
 	if (markedAsPhantom) {
 		bool phantomPhysicsOnly;
-		LDF_GET_VAL_FROM_COLLECTION(phantomPhysicsOnly, collection, u"phantomPhysicsOnly", false);
+		LDF_GET_VAL_FROM_COLLECTION(phantomPhysicsOnly, collection, u"phantomPhysicsOnly", true);
 
 		if (phantomPhysicsOnly) {
 			this->RemoveComponentByID(SimplePhysicsComponent::GetTypeID());
@@ -727,7 +727,7 @@ DataTypes::Quaternion Entity::GameObject::GetRotation() {
 	return DataTypes::Quaternion();
 }
 
-btRigidBody* Entity::GameObject::GetRigidBody() {
+reactphysics3d::RigidBody* Entity::GameObject::GetRigidBody() {
 	auto controllablePhysicsComponent = this->GetComponent<ControllablePhysicsComponent>();
 	if (controllablePhysicsComponent != nullptr) {
 		return controllablePhysicsComponent->GetRigidBody();

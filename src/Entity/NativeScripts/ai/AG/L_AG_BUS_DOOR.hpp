@@ -26,19 +26,19 @@ class NATIVESCRIPT__AI__AG__L_AG_BUS_DOOR : public NativeScript {
 		self->SetVar(u"outerCounter", 0);
 		self->SetProximityRadius("busDoor", ProxRadius);
 		self->SetProximityRadius("busDoorOuter", OuterProxRadius);
-		//self:StopPathing()
+		{GM::StopPathing nmsg; self->CallMessage(nmsg); }
 	}
 
 	void moveDoor(Entity::GameObject * self, bool bOpen) {
 		// print("move door **************");
 
 		if (bOpen) {
-			print("open door **************");
-			//self:GoToWaypoint{iPathIndex = 0}
+			// print("open door **************");
+			{GM::GoToWaypoint nmsg; nmsg.iPathIndex = 0; self->CallMessage(nmsg); }
 		}
 		else {
-			print("close door **************");
-			//self:GoToWaypoint{iPathIndex = 1}               
+			// print("close door **************");   
+			{GM::GoToWaypoint nmsg; nmsg.iPathIndex = 1; self->CallMessage(nmsg); }
 		}
 
 		self->PlayNDAudioEmitter(soundName);

@@ -15,6 +15,8 @@
 
 #include "Misc/MailManager.hpp"
 
+#include "GameCache/ObjectSkills.hpp"
+
 class CharacterComponent : public IEntityComponent {
 private:
 	DatabaseModels::Str_DB_CharInfo charInfo = DatabaseModels::Str_DB_CharInfo();
@@ -485,6 +487,17 @@ public:
 
 		if (lootObject != nullptr && player != nullptr) {
 			player->PickupLoot(lootObject);
+
+			auto skR = CacheObjectSkills::getRow(lootObject->GetLOT());
+			if (skR.isValid() && CacheObjectSkills::GetCastOnType(skR) == 2) {
+				if (CacheObjectSkills::GetSkillID(skR) == 13) {
+					charInfo.imagination += 1;
+					if (charInfo.imagination > charInfo.maximagination)
+						charInfo.imagination = charInfo.maximagination;
+
+					owner->SetImagination(charInfo.imagination);
+				}
+			}
 		}
 		else {
 			Logger::log("WRLD", "PickupItem: Unable to pickup unknown object " + std::to_string(std::uint64_t(msg->lootObjectID)), LogType::WARN);

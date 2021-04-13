@@ -5,6 +5,8 @@
 #include "Structs/Networking/General/StructPacketHeader.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/EPackets.hpp"
+#include <Entity\Components\InventoryComponent.hpp>
+#include <Entity\Components\CharacterComponent.hpp>
 
 void MailManager::SendMailListToClient(WorldServer* ws, ClientSession* cl) {
 	RakNet::BitStream returnBS;
@@ -137,4 +139,52 @@ void MailManager::MarkMailAsSeen(WorldServer* ws, ClientSession* cl, std::int64_
 }
 
 void MailManager::TakeAttachment(WorldServer* ws, ClientSession* cl, std::int64_t mailID) {
+	int returnCode = 3;
+	while (true) {
+		auto mail = Database::GetMail(ws->GetDBConnection(), mailID);
+		if (mail.mailID != mailID) break;
+		if (mail.receiver != cl->actorID.getPureID()) break;
+
+		returnCode = 5;
+		auto playerObj = ws->objectsManager->GetObjectByID(cl->actorID);
+		if (playerObj == nullptr) break;
+
+		auto invComp = playerObj->GetComponent<InventoryComponent>();
+
+		returnCode = 2;
+		if (invComp->GetNextFreeSlot(mail.attachedLOT) == 0xFFFFFFFF)
+			break;
+
+		invComp->AddItem(mail.attachedLOT, mail.attachmentCount, Vector3(), mail.attachedSubkey);
+
+		if (mail.attachedCurrency != 0) {
+			GM::PickupCurrency msgCurrency;
+			msgCurrency.currency = mail.attachedCurrency;
+			msgCurrency.position = playerObj->GetPosition();
+			playerObj->CallMessage(msgCurrency);
+		}
+
+		auto mailCopy = mail;
+		mail.attachedCurrency = 0;
+		mail.attachedLOT = -1;
+		mail.attachmentCount = 0;
+		Database::UpdateMail(ws->GetDBConnection(), mail);
+		returnCode = 0;
+		break;
+	}
+
+	RakNet::BitStream returnBS;
+	// Head
+	LUPacketHeader returnBSHead{};
+	returnBSHead.protocolID = static_cast<std::uint8_t>(ID_USER_PACKET_ENUM);
+	returnBSHead.remoteType = static_cast<std::uint16_t>(Enums::ERemoteConnection::CLIENT);
+	returnBSHead.packetID = static_cast<std::uint32_t>(Enums::EClientPacketID::MAIL_STUFF);
+	returnBS.Write(returnBSHead);
+	//Data
+	returnBS.Write(0x06); // mail notification
+	returnBS.Write<std::uint32_t>(returnCode);
+	returnBS.Write<std::uint64_t>(mailID);
+
+	// Send
+	ws->rakServer->Send(&returnBS, SYSTEM_PRIORITY, RELIABLE_ORDERED, 0, cl->systemAddress, false);
 }

@@ -50,15 +50,15 @@ public:
 	static constexpr int GetTypeID() { return 71; }
 
 	void OnEnable() {
-		
+
 	}
 
 	void Awake() {
-		
+
 	}
 
 	void msgPlayerAddedToWorldLocal(DataTypes::LWOOBJID playerID) {
-		Entity::GameObject * playerObject = owner->GetZoneInstance()->objectsManager->GetObjectByID(playerID);
+		Entity::GameObject* playerObject = owner->GetZoneInstance()->objectsManager->GetObjectByID(playerID);
 
 		if (playerObject == nullptr) return;
 
@@ -81,7 +81,7 @@ public:
 		//myCar->SetRotation(DataTypes::Quaternion(0, 0.8638404011726379, 0, 0.5037656426429749));
 
 		auto path = reinterpret_cast<FileTypes::LUZ::LUZonePathRace*>(owner->GetZoneInstance()->luZone->paths.find(u"MainPath")->second);
-		myCar->SetPosition(path->waypoints.at(0)->position);
+		myCar->SetPosition(path->waypoints.at(0)->position + Vector3(0, 20, 0));
 		//myCar->SetRotation(DataTypes::Quaternion(0, 0.8638404011726379, 0, 0.5037656426429749));
 
 
@@ -124,7 +124,7 @@ public:
 			TODO: Player Ready & Teleport & ZoneObject: PlayerReady
 			TODO: GetLastCustomBuild
 		*/
-		
+
 
 		playerObject->Possess(myCar);
 
@@ -132,7 +132,7 @@ public:
 
 		{ GM::RacingPlayerLoaded msg; msg.playerID = playerID; msg.vehicleID = myCar->GetObjectID(); GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
 
-		{GM::VehicleUnlockInput msg; msg.bLockWheels = false; GameMessages::Broadcast(owner->GetZoneInstance(), myCar, msg); }
+		// {GM::VehicleUnlockInput msg; msg.bLockWheels = true; GameMessages::Broadcast(owner->GetZoneInstance(), myCar, msg); }
 	}
 
 	void OnAcknowledgePossession(Entity::GameObject* player, Entity::GameObject* car) {
@@ -148,25 +148,27 @@ public:
 
 
 
-		
+
+
+		// {GM::VehicleUnlockInput msg; msg.bLockWheels = true; GameMessages::Broadcast(owner->GetZoneInstance(), car, msg); }
 
 		//Test();
 		this->owner->GetZoneInstance()->objectsManager->Serialize(this->owner);
 
-		//{ GM::NotifyRacingClient msg; msg.eventType = Enums::ERacingClientNotificationType::ACTIVITY_START; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
-		//{ GM::ActivityStart msg; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
+		{ GM::NotifyRacingClient msg; msg.eventType = Enums::ERacingClientNotificationType::ACTIVITY_START; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
+		{ GM::ActivityStart msg; GameMessages::Broadcast(owner->GetZoneInstance(), owner, msg); }
 	}
 
 	void Update() {
-		
+
 	}
 
 	void Start() {
-		
+
 	}
 
 	void PopulateFromLDF(LDFCollection* collection) {
-		
+
 	}
 
 	void Serialize(RakNet::BitStream* factory, ReplicaTypes::PacketTypes packetType) {

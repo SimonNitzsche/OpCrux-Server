@@ -6,12 +6,13 @@
 #include <memory>
 #include <unordered_map>
 #include <fstream>
+#include <Configuration/ConfDatabase.hpp>
 
 #define AUTH_PORT 22390
 #define SSL_PRIVATE "res/ssl/private.pem"
 #define SSL_PUBLIC "res/ssl/public.pem"
 #define SSL_CA "res/ssl/ca.pem"
-#define REQUEST_KEYS "res/appkeys.txt"
+#define REQUEST_KEYS "./res/appkeys.txt"
 
 #include "DBInterface.h"
 
@@ -19,6 +20,8 @@ static const char* s_http_port = "8443";
 
 static struct mg_serve_http_opts s_http_server_opts;
 static std::vector<std::string> app_keys = {};
+
+Configuration::ConfDatabase confDB;
 
 inline std::string_view sw_str(mg_str _mstr) {
 	return std::string_view(_mstr.p, _mstr.len);
@@ -63,11 +66,18 @@ std::string HelperGetConf(std::unordered_map<std::string, std::string>& conf, st
 	return it->second;
 }
 
+template<class T = ConfFile>
+std::string HelperGetConf(T * conf, std::string section, std::string key) {
+	return conf->GetStringVal(section, key);
+}
+
 int LoadDBConf() {
+	confDB.Load();
+
 	std::fstream file;
 	std::unordered_map<std::string, std::string> conf;
 
-	file.open("res/conf.txt", std::ios::in);
+	/*file.open("res/conf.txt", std::ios::in);
 
 	if (!file.is_open()) {
 		return -1;
@@ -91,9 +101,9 @@ int LoadDBConf() {
 				break;
 			}
 		}
-	}
+	}*/
 
-	DBInterface::Setup(HelperGetConf(conf, "DBDRIVER"), HelperGetConf(conf, "DBHOST"), HelperGetConf(conf, "DBUSER"), HelperGetConf(conf, "DBPASS"));
+	DBInterface::Setup(HelperGetConf(&confDB, "DBConnection", "DBDRIVER"), HelperGetConf(&confDB, "DBConnection", "DBHOST"), HelperGetConf(&confDB, "DBConnection", "DBUSER"), HelperGetConf(&confDB, "DBConnection", "DBPASS"));
 
 	return 0;
 }
@@ -155,7 +165,7 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 					email
 			*/
 
-			if (it_username == form_data.end() || it_email == form_data.end()) {
+			if (it_username == form_data.end() && it_email == form_data.end()) {
 				const char* msg = "400 Bad Request";
 				mg_send_head(c, 400, strlen(msg), "Content-Type: text/plain");
 				mg_printf(c, "%.*s", strlen(msg), msg);
@@ -170,6 +180,61 @@ static void ev_handler(struct mg_connection* c, int ev, void* p) {
 			return;
 		}
 		
+		if (sw_pcmp(hm->uri, "/userinfo")) {
+
+			auto it_username = form_data.find("username");
+
+			/*
+				Requires:
+					username
+			*/
+
+			if (it_username == form_data.end()) {
+				const char* msg = "400 Bad Request";
+				mg_send_head(c, 400, strlen(msg), "Content-Type: text/plain");
+				mg_printf(c, "%.*s", strlen(msg), msg);
+				return;
+			}
+
+			std::string msg = DBInterface::GetUserInfoJSON(it_username->second);
+			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", msg.length(), msg.c_str());
+			return;
+		}
+
+		if (sw_pcmp(hm->uri, "/register")) {
+			auto it_username = form_data.find("username");
+			auto it_password = form_data.find("password");
+
+			if ((it_username == form_data.end()) || it_password == form_data.end()) {
+				const char* msg = "400 Bad Request";
+				mg_send_head(c, 400, strlen(msg), "Content-Type: text/plain");
+				mg_printf(c, "%.*s", strlen(msg), msg);
+				return;
+			}
+
+			bool isLoginCorrect = (it_username == form_data.end())
+				? false
+				: DBInterface::RegisterUser(it_username->second, it_password->second);
+
+			std::string msg = isLoginCorrect ? "PASS" : "FAIL";
+			std::cout << "\nRegistration for user " << std::string(it_username->second.data(), it_username->second.size()) << " " << (isLoginCorrect ? "passed" : "failed") << "." << std::endl;
+			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", msg.length(), msg.c_str());
+			return;
+		}
+
+		if (sw_pcmp(hm->uri, "/fix")) {
+
+
+			bool oSuccess = DBInterface::FixUsers();
+
+			std::string msg = oSuccess ? "PASS" : "FAIL";
+			std::cout << "\nFixed users!\n";
+			mg_send_head(c, 200, msg.length(), "Content-Type: text/plain");
+			mg_printf(c, "%.*s", msg.length(), msg.c_str());
+			return;
+		}
 
 		const char* msg = "421 Misdirected Request";
 		mg_send_head(c, 421, strlen(msg), "Content-Type: text/plain");

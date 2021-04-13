@@ -358,7 +358,7 @@ namespace Entity {
 		/*
 			Returns the rigid body, used for physics
 		*/
-		btRigidBody* GetRigidBody();
+		reactphysics3d::RigidBody* GetRigidBody();
 
 		/*
 			Returns the instance

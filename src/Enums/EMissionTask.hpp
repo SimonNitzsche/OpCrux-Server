@@ -17,7 +17,7 @@ namespace Enums {
 		USE_ITEM = 9,
 		USE_SKILL = 10,
 		GATHER = 11,
-		EXPLORE = 12,
+		EXPLORE = 12, // discover not explore 
 		INVENTORY_CHANGE = 13,
 		MINIGAME_ACHIEVEMENT = 14,
 		INTERACT = 15,

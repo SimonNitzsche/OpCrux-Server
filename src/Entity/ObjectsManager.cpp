@@ -1,7 +1,6 @@
 #include "Entity/ObjectsManager.hpp"
 
-#include "bullet3-2.89/src/btBulletDynamicsCommon.h"
-#include "Entity/Components/ControllablePhysicsComponent.hpp"
+#include <Entity\Components\ControllablePhysicsComponent.hpp>
 #include "Entity/Components/SpawnerComponent.hpp"
 
 ObjectsManager::ObjectsManager()
@@ -61,7 +60,7 @@ std::vector<Entity::GameObject*> ObjectsManager::GetObjectsInGroup(std::u16strin
 	for (auto oPair : object_list) {
 		if (oPair.second->IsWithinGroup(groupName)) {
 
-			if (ignoreSelf != std::uint64_t(0) && oPair.second->GetObjectID() == ignoreSelf) continue;
+			if (ignoreSelf != 0ULL && oPair.second->GetObjectID() == ignoreSelf) continue;
 			if (ignoreSpawners && oPair.second->GetLOT() == 176) continue;
 			if (oPair.second == nullptr) continue;
 
@@ -181,5 +180,5 @@ SpawnerComponent* ObjectsManager::GetSpawnerByName(std::u16string spawnerName) {
 }
 
 DataTypes::LWOOBJID ObjectsManager::GenerateSpawnedID() {
-	return DataTypes::LWOOBJID((std::uint64_t(1) << 58) + std::uint64_t(104120439353844) + spawnedObjectIDCounter++);
+	return DataTypes::LWOOBJID((1ULL << 58) + 104120439353844ULL + spawnedObjectIDCounter++);
 }
