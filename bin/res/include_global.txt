@@ -14,4 +14,3 @@ scripts/*
 scripts_02/*
 scripts_custom/*
 cdclient.fdb
-locale.xml
