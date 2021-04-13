@@ -1,6 +1,6 @@
 #include "Entity/ObjectsManager.hpp"
 
-#include <Entity\Components\ControllablePhysicsComponent.hpp>
+#include "Entity/Components/ControllablePhysicsComponent.hpp"
 #include "Entity/Components/SpawnerComponent.hpp"
 
 ObjectsManager::ObjectsManager()
