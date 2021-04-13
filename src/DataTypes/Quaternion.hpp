@@ -165,13 +165,8 @@ namespace DataTypes {
 			return Vector3(x * vector.x, y * vector.y, z * vector.z);
 		}
 
-		const btQuaternion getBt() const {
-			btQuaternion btQuat;
-			btQuat.setX(x);
-			btQuat.setY(y);
-			btQuat.setZ(z);
-			btQuat.setW(w);
-			return btQuat;
+		const reactphysics3d::Quaternion getReact() const {
+			return reactphysics3d::Quaternion(x, y, z, w);
 		}
 
 		/*

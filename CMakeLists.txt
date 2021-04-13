@@ -451,17 +451,7 @@ if(UNIX)
 endif()
 
 target_link_libraries(OpCrux_Server
-	
-	#OpenGLWindow
-	BulletDynamics
-	BulletCollision
-	LinearMath
-	Bullet3Common
-	Bullet3Collision
-	Bullet3Dynamics
-	Bullet3Geometry
-	Bullet3OpenCL_clew
-	Bullet2FileLoader
+	reactphysics3d
 	glfw
 	json
 	Mongoose

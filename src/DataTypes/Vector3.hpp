@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include "Common/CrossPlatform.hpp"
 #include "RakNet/BitStream.h"
-#include "bullet3-2.89/src/btBulletDynamicsCommon.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 #ifndef _MATH_DEFINES_DEFINED
 #define _MATH_DEFINES_DEFINED
@@ -341,10 +341,8 @@ namespace DataTypes {
 			/*
 				Returns btVector3
 			*/
-			const btVector3 getBt() const {
-				btVector3 btVec3;
-				btVec3.setValue(x, y, z);
-				return btVec3;
+			const reactphysics3d::Vector3 getReact() const {
+				return reactphysics3d::Vector3(x, y, z);
 			}
 
 			/*

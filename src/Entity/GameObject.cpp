@@ -727,7 +727,7 @@ DataTypes::Quaternion Entity::GameObject::GetRotation() {
 	return DataTypes::Quaternion();
 }
 
-btRigidBody* Entity::GameObject::GetRigidBody() {
+reactphysics3d::RigidBody* Entity::GameObject::GetRigidBody() {
 	auto controllablePhysicsComponent = this->GetComponent<ControllablePhysicsComponent>();
 	if (controllablePhysicsComponent != nullptr) {
 		return controllablePhysicsComponent->GetRigidBody();

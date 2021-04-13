@@ -931,7 +931,7 @@ public:
 			if (stack.LOT != itemLOT) break;
 
 			// Get the safe amount to reduce on the stack
-			auto reduceAmount = min(stack.quantity, amount);
+			auto reduceAmount = (((stack.quantity) < (amount)) ? (stack.quantity) : (amount));
 
 			// keep track of amount reduced
 			amount -= reduceAmount;

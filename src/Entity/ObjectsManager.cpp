@@ -1,6 +1,5 @@
 #include "Entity/ObjectsManager.hpp"
 
-#include "bullet3-2.89/src/btBulletDynamicsCommon.h"
 #include <Entity\Components\ControllablePhysicsComponent.hpp>
 #include "Entity/Components/SpawnerComponent.hpp"
 

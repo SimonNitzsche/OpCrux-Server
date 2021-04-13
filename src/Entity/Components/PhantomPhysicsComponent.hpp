@@ -9,10 +9,6 @@
 #include "Entity/Components/SimplePhysicsComponent.hpp"
 #include "Entity/Components/ControllablePhysicsComponent.hpp"
 
-#include "bullet3-2.89/src/btBulletDynamicsCommon.h"
-#include "bullet3-2.89/src/btBulletCollisionCommon.h"
-#include "bullet3-2.89/src/BulletCollision/CollisionDispatch/btGhostObject.h"
-
 #include "Entity/GameObject.hpp"
 
 using namespace DataTypes;

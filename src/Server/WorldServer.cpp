@@ -11,8 +11,6 @@
 #include <RakNet/ReplicaManager.h>
 #include <RakNet/NetworkIDManager.h>
 
-#include <bullet3-2.89/src/btBulletDynamicsCommon.h>
-
 #include "Enums/EPackets.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/ESystem.hpp"
@@ -155,27 +153,14 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 	WorldInstanceManager::AddWorldServer(m_port, this);
 
 	if (zone != 0) {
-		/// collision configuration contains default setup for memory, collision setup.
-		/// Advanced users can create their own configuration.
-		collisionConfiguration = new btDefaultCollisionConfiguration();
+		// World Settings for the physics world objects
+		reactphysics3d::PhysicsWorld::WorldSettings worldSettings;
 
-		/// use the default collision dispatcher. For parallel processing you can use a diffent
-		/// dispatcher(see Extras / BulletMultiThreaded)
-		collisionDispatcher = new btCollisionDispatcher(collisionConfiguration);
+		// Set gravity for the world
+		worldSettings.gravity = reactphysics3d::Vector3(0.f, -CacheWorldConfig::GetPEGravityValue(), 0.f);
 
-		/// btDbvtBroadphase is a good general purpose broadphase. You can also try out
-		/// btAxis3Sweep.
-		overlappingPairCache = new btDbvtBroadphase();
-
-		/// the default constraint solver. For parallel processing you can use a different solver
-		/// (see Extras / BulletMultiThreaded)
-		constraintSolver = new btSequentialImpulseConstraintSolver();
-
-		/// Create physic world
-		dynamicsWorld = new btDiscreteDynamicsWorld(collisionDispatcher, overlappingPairCache, constraintSolver, collisionConfiguration);
-
-		// Set gravity
-		dynamicsWorld->setGravity(btVector3(0, -CacheWorldConfig::GetPEGravityValue(), 0));
+		// Create physics world using object factory
+		physicsWorld = physicsCommon.createPhysicsWorld(worldSettings);
 
 		// Get zone file
 		std::string zoneName = CacheZoneTable::GetZoneName(zone);
@@ -184,11 +169,6 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 		Logger::log("WRLD", "Loading Zone: " + zoneName);
 		luZone = new FileTypes::LUZ::LUZone("res/maps/" + zoneName);
 		if (!luZone->_isFileLoaded()) {
-			delete collisionConfiguration;
-			delete collisionDispatcher;
-			delete overlappingPairCache;
-			delete constraintSolver;
-			delete dynamicsWorld;
 			delete luZone;
 
 			// TODO: Tell MS that loading failed
@@ -885,10 +865,5 @@ WorldServer::~WorldServer() {
 	if (replicaManager) delete replicaManager;
 	if (networkIdManager) delete networkIdManager;
 	if (luZone) delete luZone;
-	if (collisionConfiguration) delete collisionConfiguration;
-	if (collisionDispatcher) delete collisionDispatcher;
-	if (overlappingPairCache) delete overlappingPairCache;
-	if (constraintSolver) delete constraintSolver;
-	if (dynamicsWorld) delete dynamicsWorld;
 	Database::Disconnect(GetDBConnection());
 }

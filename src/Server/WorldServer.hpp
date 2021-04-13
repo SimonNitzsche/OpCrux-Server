@@ -11,12 +11,7 @@ class ObjectsManager;
 #include "Misc/LWOTimer.hpp"
 #include "odbc-cpp-wrapper/src/odbc/Connection.h"
 #include "Enums/EDisconnectReason.hpp"
-
-class btDefaultCollisionConfiguration;
-class btCollisionDispatcher;
-class btBroadphaseInterface;
-class btSequentialImpulseConstraintSolver;
-class btDiscreteDynamicsWorld;
+#include <reactphysics3d/reactphysics3d.h>
 
 class WorldServer : public ILUServer {
 private:
@@ -30,14 +25,12 @@ public:
 	ReplicaManager * replicaManager = nullptr;
 	NetworkIDManager * networkIdManager = nullptr;
 	ObjectsManager * objectsManager = nullptr;
+	reactphysics3d::PhysicsWorld* physicsWorld = nullptr;
+	reactphysics3d::PhysicsCommon physicsCommon;
 	//DebugRenderer* debugRenderer = nullptr;
 	RakPeerInterface* rakServer;
 	FileTypes::LUZ::LUZone * luZone = nullptr;
-	btDefaultCollisionConfiguration* collisionConfiguration;
-	btCollisionDispatcher* collisionDispatcher;
-	btBroadphaseInterface* overlappingPairCache;
-	btSequentialImpulseConstraintSolver* constraintSolver;
-	btDiscreteDynamicsWorld* dynamicsWorld;
+
 	Entity::GameObject * zoneControlObject = nullptr;
 	LWOTimer timer;
 	std::mutex m_lock;
