@@ -32,7 +32,7 @@ namespace GM {
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, eLootTypeSource, 0);
 			GM_VAR_SERIALIZE_LDF(bs, extraInfo);
 			GM_VAR_SERIALIZE(bs, iObjTemplate);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, iSubkey, 0ULL);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, iSubkey, std::uint64_t(0));
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, invType, 0);
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, itemCount, 1);
 			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, itemsTotal, 0);

@@ -183,7 +183,7 @@ public:
 	}
 
 	explicit operator std::int64_t() const {
-		if (type == Enums::LDFType::UNASSIGNED_LDFTYPE) return 0LL;
+		if (type == Enums::LDFType::UNASSIGNED_LDFTYPE) return std::int64_t(0);
 		if (type != Enums::LDFType::S64) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<std::int64_t*>(const_cast<char*>(data.c_str()));
 	}
@@ -196,7 +196,7 @@ public:
 	}
 
 	explicit operator DataTypes::LWOOBJID() const {
-		if (type == Enums::LDFType::UNASSIGNED_LDFTYPE) return 0ULL;
+		if (type == Enums::LDFType::UNASSIGNED_LDFTYPE) std::int64_t(0);
 		if (type != Enums::LDFType::LWOOBJID) throw new std::runtime_error("Invalid LDF type.");
 		return *reinterpret_cast<DataTypes::LWOOBJID*>(const_cast<char*>(data.c_str()));
 	}
@@ -295,7 +295,7 @@ public:
 		throw new std::runtime_error("Unknown LDF Type.");
 	}
 
-	inline std::string& GetValueAsString() {
+	inline std::string GetValueAsString() {
 		auto tmp = GetValueAsWString();
 		return std::string(tmp.begin(), tmp.end());
 	}

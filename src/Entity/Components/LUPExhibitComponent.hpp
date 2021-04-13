@@ -14,10 +14,10 @@ private:
 	std::int32_t cycleIndex=0;
 
 	std::vector<int32_t> exhibitLOTs = {};
-	long long lastupdate = 0;
+	std::int64_t lastupdate = 0;
 
 	static const int showTimeInSeconds = 20;
-	long long lastSet = 0;
+	std::int64_t lastSet = 0;
 public:
 
 	LUPExhibitComponent(std::int32_t componentID) : IEntityComponent(componentID) {}
@@ -59,7 +59,7 @@ public:
 	}
 
 	void Update() {
-		long long uptime = ServerInfo::uptime();
+		std::int64_t uptime = ServerInfo::uptime();
 		if (uptime > lastSet + showTimeInSeconds) {
 			CycleExhibitLOT();
 		}

@@ -52,7 +52,7 @@ namespace FileUtils {
 
 		// Get file size
 		fseek(file, 0, SEEK_END);
-		long int size = ftell(file);
+		std::int32_t size = ftell(file);
 
 		// Reading data to array of unsigned chars
 		std::unique_ptr<unsigned char[]> data = std::make_unique<unsigned char[]>(size);
@@ -90,7 +90,7 @@ namespace FileUtils {
 
 		// Get file size
 		fseek(file, 0, SEEK_END);
-		long int size = ftell(file);
+		std::int32_t size = ftell(file);
 
 		// Reading data to array of unsigned chars
 		std::unique_ptr<unsigned char[]> data = std::make_unique<unsigned char[]>(size);
@@ -104,7 +104,7 @@ namespace FileUtils {
 		return std::string(data.get(), data.get() + size);
 	}
 
-	inline void SaveTextFile(std::string const &file, std::string &data) {
+	inline void SaveTextFile(std::string const &file, std::string data) {
 		std::ofstream stream;
 		stream.open(file);
 		stream << data;

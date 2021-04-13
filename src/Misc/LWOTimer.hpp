@@ -10,7 +10,7 @@
 
 
 class LWOTimer {
-	std::unordered_map<Entity::GameObject*, std::unordered_map<std::u16string, long long>> timers;
+	std::unordered_map<Entity::GameObject*, std::unordered_map<std::u16string, std::int64_t>> timers;
 public:
 	void Update();
 

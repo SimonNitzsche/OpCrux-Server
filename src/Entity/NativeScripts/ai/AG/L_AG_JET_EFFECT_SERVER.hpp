@@ -9,7 +9,7 @@ class NATIVESCRIPT__AI__AG__L_AG_JET_EFFECT_SERVER : public NativeScript {
 public:
 	void onUse(Entity::GameObject* self, GM::RequestUse msg) {
 		if (self->GetLOT() == 6859 && !self->GetVar(u"isInUse")) {
-			auto obj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"Jet_FX", 0Ui64, true).at(0);
+			auto obj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"Jet_FX", std::uint64_t(0), true).at(0);
 
 			{GM::NotifyClientObject nmsg; nmsg.name = u"toggleInUse"; nmsg.param1 = 1; GameMessages::Broadcast(self, nmsg); }
 			self->SetVar(u"isInUse", true);
@@ -23,7 +23,7 @@ public:
 
 	void onRebuildComplete(Entity::GameObject* self, GM::RebuildNotifyState msg) {
 		if (self->GetLOT() == 6209) {
-			auto obj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"Jet_FX", 0Ui64, true).at(0);
+			auto obj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"Jet_FX", std::uint64_t(0), true).at(0);
 			auto objGroup = self->GetVar<std::u16string>(u"groupID");
 
 			{GM::PlayAnimation nmsg; nmsg.animationID = u"jetFX"; GameMessages::Broadcast(obj, nmsg); }
@@ -41,7 +41,7 @@ public:
 		}
 		else if (msg.name == u"PlayEffect") {
 			// -- group name = mortarmain
-			auto obj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"mortarMain", 0Ui64, true);
+			auto obj = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(u"mortarMain", std::uint64_t(0), true);
 			std::uniform_int_distribution<> testDist(0, obj.size());
 			auto test = testDist(RandomUtil::GetEngine());
 			if (test > 0) {

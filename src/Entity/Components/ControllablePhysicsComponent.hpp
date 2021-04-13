@@ -14,7 +14,7 @@
 #include "GameCache/PhysicsComponent.hpp"
 #include "Entity/GameObject.hpp"
 #include "Server/WorldServer.hpp"
-#include <GameCache\Objects.hpp>
+#include "GameCache/Objects.hpp"
 
 using namespace DataTypes;
 
@@ -295,11 +295,11 @@ public:
 
 		// find the angle around rotation axis
 		std::float_t dot = Vector3::Dot(Vector3::forward(), toVector);
-		std::float_t ang = std::acosf(dot);
+		std::float_t ang = acosf(dot);
 
-		auto s = std::sinf(ang * 0.5f);
+		auto s = sinf(ang * 0.5f);
 		auto u = rotAxis.normalized();
-		auto newRotation = DataTypes::Quaternion(u.x * s, u.y * s, u.z * s, std::cosf(ang * 0.5));
+		auto newRotation = DataTypes::Quaternion(u.x * s, u.y * s, u.z * s, cosf(ang * 0.5));
 		if (Vector3::Distance(Quaternion::toEuler(rotation), Quaternion::toEuler(newRotation)) > 1.0f)
 			SetRotation(newRotation);
 		else

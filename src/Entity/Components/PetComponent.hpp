@@ -12,8 +12,8 @@ private:
 	std::uint32_t unknown1 = 0x80;
 	std::uint32_t unknown2 = 0x80;
 
-	DataTypes::LWOOBJID interactionObject = 0ULL;
-	DataTypes::LWOOBJID ownerID = 0ULL;
+	DataTypes::LWOOBJID interactionObject = std::uint64_t(0);
+	DataTypes::LWOOBJID ownerID = std::uint64_t(0);
 
 	bool _isNameDirty = false;
 	std::uint32_t moderationStatus = 0;
@@ -32,13 +32,13 @@ public:
 			factory->Write(unknown1);
 			factory->Write(unknown2);
 
-			factory->Write(interactionObject != 0ULL);
-			if (interactionObject != 0ULL) {
+			factory->Write(interactionObject != std::uint64_t(0));
+			if (interactionObject != std::uint64_t(0)) {
 				factory->Write(interactionObject);
 			}
 
-			factory->Write(ownerID != 0ULL);
-			if (ownerID != 0ULL) {
+			factory->Write(ownerID != std::uint64_t(0));
+			if (ownerID != std::uint64_t(0)) {
 				factory->Write(ownerID);
 			}
 

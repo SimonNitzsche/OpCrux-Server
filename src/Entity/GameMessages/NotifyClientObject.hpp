@@ -12,7 +12,7 @@ namespace GM {
 		std::u16string name;
 		std::int32_t param1 = 0;
 		std::int32_t param2 = 0;
-		DataTypes::LWOOBJID paramObj = 0ULL;
+		DataTypes::LWOOBJID paramObj = std::uint64_t(0);
 		std::string paramStr = "";
 
 		NotifyClientObject() : GMBase() {}

@@ -22,7 +22,7 @@ namespace DataTypes {
 			static const unsigned char idSize = 64 - flagSize;
 
 			// The Data, the object id.
-			unsigned long long data;
+			std::uint64_t data;
 
 		public:
 
@@ -39,7 +39,7 @@ namespace DataTypes {
 			/*
 				Transforms LWOOBJID into unsigned long long.
 			*/
-			operator unsigned long long() const {
+			operator std::uint64_t() const {
 				// Return data.
 				return data;
 			}
@@ -47,7 +47,7 @@ namespace DataTypes {
 			/*
 				Sets LWOOBJID.
 			*/
-			LWOOBJID & operator=(const unsigned long long other) {
+			LWOOBJID & operator=(const std::uint64_t other) {
 				// Set data to the received obj id.
 				this->data = other;
 
@@ -66,7 +66,7 @@ namespace DataTypes {
 			/*
 				Constructs a LWOOBJID with specified obj id.
 			*/
-			LWOOBJID(unsigned long long unsll) {
+			LWOOBJID(std::uint64_t unsll) {
 				// Check if received obj id is -1, if it is, set it to 0.
 				if (unsll == -1) unsll = 0;
 
@@ -102,9 +102,9 @@ namespace DataTypes {
 			/*
 				Return this LWOOBJID pure ID.
 			*/
-			unsigned long long getPureID() {
+			std::uint64_t getPureID() {
 				// Return the pure ID.
-				return (this->data & 0x00FFFFFFFFFFFFFFULL);
+				return (this->data & std::uint64_t(0x00FFFFFFFFFFFFFF));
 			}
 
 			/*
@@ -124,7 +124,7 @@ namespace DataTypes {
 					return CATEGORY::GLOBAL;
 
 				// Check for Local obj id.
-				if ((flags & (1ULL << (57 - idSize))) && (flags & (1ULL << (45 - idSize))))
+				if ((flags & (std::uint64_t(1) << (57 - idSize))) && (flags & (std::uint64_t(1) << (45 - idSize))))
 					return CATEGORY::LOCAL;
 
 				// Check for Static obj id.
@@ -139,7 +139,7 @@ namespace DataTypes {
 			/*
 				Makes Player OBJID
 			*/
-			static LWOOBJID makePlayerObjectID(unsigned long long base) {
+			static LWOOBJID makePlayerObjectID(std::uint64_t base) {
 				return 0x1000000000000000 | (base & 0xffffffff);
 			}
 	};

@@ -56,7 +56,7 @@
 #include "Entity/GameMessages/NotifyRacingClient.hpp"
 #include "Entity/Components/RacingControlComponent.hpp"
 #include "Entity/Components/MinigameComponent.hpp"
-#include <Entity\Components\ScriptComponent.hpp>
+#include "Entity/Components/ScriptComponent.hpp"
 
 #include "../../libs/recastnavigation/Recast/Include/Recast.h"
 
@@ -203,7 +203,7 @@ WorldServer::WorldServer(int zone, int instanceID, int cloneID, int port) : m_po
 				if (*objT.LOT == this->zoneControlObject->GetLOT()) continue;
 
 				auto* go = new Entity::GameObject(this, *objT.LOT);
-				go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ 70368744177664ULL | *objT.objectID));
+				go->SetObjectID(DataTypes::LWOOBJID(/*(1ULL << 45)*/ std::uint64_t(70368744177664) | *objT.objectID));
 				LDFCollection ldfCollection = LDFUtils::ParseCollectionFromWString(objT.config.ToString());
 
 				// If Spawner
@@ -561,7 +561,7 @@ void WorldServer::handlePacket(RakPeerInterface* rakServer, LUPacket * packet) {
 					auto charStyle = Database::GetCharStyle(GetDBConnection(), info.styleID);
 
 					// shirt and pants got deleted, make new!
-					if (info.shirtObjectID == 0ULL && info.pantsObjectID == 0ULL) {
+					if (info.shirtObjectID == 0 && info.pantsObjectID == 0) {
 						bool err = false;
 						int shirtObjectLOT = 0;
 						{

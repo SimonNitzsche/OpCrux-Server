@@ -31,7 +31,7 @@ namespace PacketFactory {
 			returnBSHead.packetID = static_cast<std::uint32_t>(EServerPacketID::VERSION_CONFIRM);
 			returnBS.Write(returnBSHead);
 			//Data
-			returnBS.Write(SERVER_VERSION); // version
+			returnBS.Write<std::uint32_t>(SERVER_VERSION); // version
 			returnBS.Write<std::uint32_t>(0x93); // ???
 			returnBS.Write<std::uint32_t>(isAuth ? 1 : 4 ); // connType
 			returnBS.Write(ServerInfo::processID);

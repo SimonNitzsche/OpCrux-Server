@@ -116,7 +116,7 @@ void LUZone::Read() {
 	// Head
 	version = *reinterpret_cast<uint32_t*>(data + 0);
 	currentOffset += 4;
-	if (version >= 0x24UL) {
+	if (version >= std::uint32_t(0x24)) {
 		revision = *reinterpret_cast<uint32_t*>(currentOffset);
 		currentOffset += 4;
 	}
@@ -124,7 +124,7 @@ void LUZone::Read() {
 
 	zoneID = *reinterpret_cast<uint32_t*>((currentOffset));
 	currentOffset += 4;
-	if (version >= 0x26UL) {
+	if (version >= std::uint32_t(0x26)) {
 		spawnPos = *reinterpret_cast<Position*>(currentOffset);
 
 		float tmpX, tmpY, tmpZ, tmpW;

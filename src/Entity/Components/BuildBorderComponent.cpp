@@ -69,7 +69,7 @@ void BuildBorderComponent::OnModularBuildFinish(Entity::GameObject* sender, GM::
 	if (msg->count == 3) {
 		// Rocket
 		if (!invComp->HasItem(6416)) {
-			auto subkey = DataTypes::LWOOBJID((1ULL << 60) + 104120439353844ULL + Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER));
+			auto subkey = DataTypes::LWOOBJID((std::uint64_t(1) << 60) + std::uint64_t(104120439353844) + Database::reserveCountedID(owner->GetZoneInstance()->GetDBConnection(), Database::DBCOUNTERID::PLAYER));
 			invComp->AddItem(6416, 1U, owner->GetPosition(), subkey, metadata);
 		}
 

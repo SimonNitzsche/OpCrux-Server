@@ -37,8 +37,9 @@ typedef std::uint64_t QWORD;
 #define sleep_ms(ms) nanosleep(&(timespec){ms / 1000, (ms % 1000) * 1000000}, NULL)
 
 #endif
-
-#ifndef NOMINMAX
+// For some reason this is not working on linux. Renaming the max and min functions will do the job.
+// I used std::max and std::min in the linux-compatibility branch.
+/*#ifndef NOMINMAX
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -48,6 +49,6 @@ typedef std::uint64_t QWORD;
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-#endif  /* NOMINMAX */
+#endif*/  /* NOMINMAX */
 
 #endif // !__COMMON__CROSSPLATFORM_HPP__

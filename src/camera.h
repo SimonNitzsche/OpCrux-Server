@@ -1,10 +1,9 @@
+#ifdef CAMERA_DEF
+
 #ifndef CAMERA_H
 #define CAMERA_H
 #include <cmath>
 #include <iostream>
-//#include <SDL/include/SDL.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
 
 #include "DataTypes/Vector3.hpp"
 typedef DataTypes::Vector3 vector3d;
@@ -40,5 +39,7 @@ public:
 
 	bool isMoved();
 };
+
+#endif
 
 #endif

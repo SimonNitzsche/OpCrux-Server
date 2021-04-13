@@ -14,7 +14,7 @@ private:
 	ReplicaManager * RM = nullptr;
 	std::unordered_map<std::uint64_t, Entity::GameObject *> object_list;
 	std::list<std::uint64_t> object_garbage;
-	unsigned long long spawnedObjectIDCounter = 0;
+	std::uint64_t spawnedObjectIDCounter = 0;
 public:
 	ObjectsManager();
 	ObjectsManager(WorldServer * Instance);
@@ -25,7 +25,7 @@ public:
 	Entity::GameObject * GetObjectByID(DataTypes::LWOOBJID objID);
 	std::vector<Entity::GameObject*> GetObjects();
     std::vector<Entity::GameObject*> GetControllableObjects();
-    std::vector<Entity::GameObject*> GetObjectsInGroup(std::u16string groupName, DataTypes::LWOOBJID ignoreSelf = 0ULL, bool ignoreSpawners = false);
+    std::vector<Entity::GameObject*> GetObjectsInGroup(std::u16string groupName, DataTypes::LWOOBJID ignoreSelf = std::uint64_t(0), bool ignoreSpawners = false);
 	void Construct(DataTypes::LWOOBJID objID, SystemAddress addr = UNASSIGNED_SYSTEM_ADDRESS);
 	void Construct(Entity::GameObject * object, SystemAddress addr = UNASSIGNED_SYSTEM_ADDRESS);
 	void Serialize();

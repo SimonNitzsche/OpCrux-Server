@@ -28,7 +28,7 @@ public:
 	static void Deserialize(WorldServer * Instance, ClientSession * session, RakNet::BitStream *bs);
 
 	template<typename T = GM::GMBase>
-	static void Send(WorldServer * Instance, SystemAddress systemAddress, DataTypes::LWOOBJID target, T gm, DataTypes::LWOOBJID exclude = 0ULL) {
+	static void Send(WorldServer * Instance, SystemAddress systemAddress, DataTypes::LWOOBJID target, T gm, DataTypes::LWOOBJID exclude = std::uint64_t(0)) {
 		RakNet::BitStream bs = RakNet::BitStream();
 
 		LUPacketHeader returnBSHead;
@@ -65,7 +65,7 @@ public:
 	}
 
 	template<typename T = GM::GMBase>
-	static void Send(Entity::GameObject * playerReceiver, DataTypes::LWOOBJID sender, T gm, DataTypes::LWOOBJID exclude = 0ULL) {
+	static void Send(Entity::GameObject * playerReceiver, DataTypes::LWOOBJID sender, T gm, DataTypes::LWOOBJID exclude = std::uint64_t(0)) {
 		ClientSession * session = playerReceiver->GetZoneInstance()->sessionManager.GetSession(playerReceiver->GetObjectID());
 		if (session == nullptr) return;
 		Send(playerReceiver->GetZoneInstance(), session->systemAddress, sender, gm);
@@ -85,7 +85,7 @@ public:
 
 	template<typename T = GM::GMBase>
 	static inline void Broadcast(Entity::GameObject* target, T gm, bool excludeSelf = false) {
-		Send(target->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm, excludeSelf ? target->GetObjectID() : DataTypes::LWOOBJID(0ULL));
+		Send(target->GetZoneInstance(), UNASSIGNED_SYSTEM_ADDRESS, target->GetObjectID(), gm, excludeSelf ? target->GetObjectID() : DataTypes::LWOOBJID(std::uint64_t(0)));
 	}
 };
 

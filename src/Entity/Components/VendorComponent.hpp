@@ -6,7 +6,7 @@
 #include "GameCache/VendorComponent.hpp"
 
 #include "Entity/GameMessages/VendorOpenWindow.hpp"
-#include <Entity\GameMessages\VendorTransactionResult.hpp>
+#include "Entity/GameMessages/VendorTransactionResult.hpp"
 
 using namespace DataTypes;
 
@@ -100,7 +100,7 @@ public:
 				InventoryComponent* invComp = sender->GetComponent<InventoryComponent>();
 
 				if (invComp != nullptr) {
-					invComp->AddItem(msg->item, msg->count, DataTypes::Vector3(), 0ULL, {
+					invComp->AddItem(msg->item, msg->count, DataTypes::Vector3(), std::uint64_t(0), {
 						LDF_COLLECTION_INIT_ENTRY(u"_Metric_Currency_Delta_Int", -sumValue),
 						LDF_COLLECTION_INIT_ENTRY(u"_Metric_Source_LOT_Int", owner->GetLOT())
 					});

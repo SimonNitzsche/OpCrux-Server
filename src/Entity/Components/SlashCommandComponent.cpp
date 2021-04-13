@@ -185,7 +185,10 @@ void SlashCommandComponent::OnParseChatMessage(Entity::GameObject* sender, GM::P
 
 				Reply(u"Requesting map change...", sender);
 
-				if (FileUtils::FileExists("res/maps/" + CacheZoneTable::GetZoneName(zoneID).operator std::string())) {
+				std::string zoneName = CacheZoneTable::GetZoneName(zoneID).operator std::string(); // Linux is case sensitive. TODO: Find better approach
+				StringUtils::ToLowerSelf(zoneName);
+
+				if (FileUtils::FileExists("res/maps/" + zoneName)) {
 
 					ClientSession* clSession = sender->GetZoneInstance()->sessionManager.GetSession(sender->GetObjectID());
 					DataTypes::ZoneInfo zi;

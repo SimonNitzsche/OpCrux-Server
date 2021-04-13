@@ -102,7 +102,7 @@ namespace RAW {
 			return m;
 		}
 
-		void SaveMesh(std::string& path) {
+		void SaveMesh(std::string path) {
 			auto m = MakeUnoptimizedMesh();
 
 			std::stringstream ss;

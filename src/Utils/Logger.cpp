@@ -45,9 +45,9 @@ void Logger::log(const std::string &from, const std::string &message, LogType ty
 	std::cout << "[" << from << "] " << message << std::endl;
 
 	SetConsoleTextAttribute(hConsole, 15);
+
+	writeLogfile("[" + from + "] " + message + "\n");
 #else
 	std::cout << "\033[" << static_cast<int>(type) << "m[" << from << "] " << message << "\033[0m" << std::endl;
 #endif
-
-	writeLogfile("[" + from + "] " + message + "\n");
 }

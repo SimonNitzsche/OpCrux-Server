@@ -22,7 +22,7 @@
 #include "Utils/PacketUtil.hpp"
 #include "Utils/LDFUtils.hpp"
 #include "Database/Database.hpp"
-#include <Sessions\ClientSession.hpp>
+#include "Sessions/ClientSession.hpp"
 #include "../libs/libbcrypt/include/bcrypt/BCrypt.hpp"
 using namespace Enums;
 
@@ -197,7 +197,7 @@ void MasterServer::Listen() {
 						bool isPending = false;
 						if (!isWorldRequest) {
 
-							static const char * key_charset { "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz\\+*~#'!§$%&/()=?ß`´@€" };
+							static const char * key_charset { "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz\\+*~#'!ï¿½$%&/()=?ï¿½`ï¿½@ï¿½" };
 
 							std::string outkey = std::string( 512, '\0' );
 
@@ -238,7 +238,7 @@ void MasterServer::Listen() {
 							// Get last player location
 							//Database::GetChar()
 
-							if (sessionMRInList->objectID == 0ULL) {
+							if (sessionMRInList->objectID == std::uint64_t(0)) {
 								// We go to char
 							}
 							else {

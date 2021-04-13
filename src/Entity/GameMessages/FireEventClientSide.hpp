@@ -20,8 +20,8 @@ namespace GM {
 		void Serialize(RakNet::BitStream* bs) {
 			GM_VAR_SERIALIZE_WSTRING(bs, args);
 			GM_VAR_SERIALIZE(bs, object);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, param1, 0LL);
-			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, param2, -1L);
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, param1, std::int64_t(0));
+			GM_VAR_SERIALIZE_WITH_DEFAULT(bs, param2, std::int32_t(-1));
 			GM_VAR_SERIALIZE(bs, senderID);
 		}
 

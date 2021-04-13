@@ -32,7 +32,7 @@ public:
 	}
 
 	virtual void checkForOwner(Entity::GameObject* self) {
-		auto propertyPlaques = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(*Group.at(u"PropertyPlaque").begin(), 0Ui64, true);
+		auto propertyPlaques = self->GetZoneInstance()->objectsManager->GetObjectsInGroup(*Group.at(u"PropertyPlaque").begin(), std::uint64_t(0), true);
 
 		if (propertyPlaques.empty()) {
 			LWOTimer* timer = new LWOTimer;
@@ -60,7 +60,7 @@ public:
 			checkForOwner(self);
 		DataTypes::LWOOBJID propertyOwner = self->GetVar<DataTypes::LWOOBJID>(u"PropertyOwner");
 		bool rented = false;
-		if (propertyOwner != 0ULL)
+		if (propertyOwner != std::uint64_t(0))
 			rented = true;
 
 		Entity::GameObject* player = self->GetZoneInstance()->objectsManager->GetObjectByID(msg.playerID);

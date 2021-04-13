@@ -22,12 +22,12 @@ struct SkillStackParameters {
 	std::float_t fCasterLatency = 0.0f;
 	std::int32_t iCastType = 0;
 	DataTypes::Vector3 lastClickedPosit = DataTypes::Vector3::zero();
-	DataTypes::LWOOBJID optionalOriginatorID = 0ULL;
-	DataTypes::LWOOBJID optionalTargetID = 0ULL;
+	DataTypes::LWOOBJID optionalOriginatorID = std::uint64_t(0);
+	DataTypes::LWOOBJID optionalTargetID = std::uint64_t(0);
 	DataTypes::Quaternion originatorRot = DataTypes::Quaternion();
 	std::uint32_t uiBehvaiorHandle = 0;
 	std::uint32_t uiSkillHandle = 0;
-	DataTypes::LWOOBJID currentTarget = 0ULL;
+	DataTypes::LWOOBJID currentTarget = std::uint64_t(0);
 	bool bDone = false;
 };
 
@@ -40,8 +40,8 @@ private:
 	std::uint32_t currentHandle = 0;
 	std::uint32_t currentSkill = 0;
 
-	void UnCast(const std::string sBitStream, long behaviorID = 0);
-	void Cast(std::string * sBitStream, long behaviorID = 0);
+	void UnCast(const std::string sBitStream, std::int32_t behaviorID = 0);
+	void Cast(std::string * sBitStream, std::int32_t behaviorID = 0);
 
 	std::unordered_map<std::uint32_t /*behaviorHandle*/, std::pair<std::int32_t /*behaviorAction*/, std::uint64_t /* time, only used for casting*/>> behaviorHandles;
 	std::mutex mutex_behaviorHandles;
@@ -291,14 +291,14 @@ public:
 #include "Entity/Components/SkillComponent/AbstractAggregateBehavior.hpp"
 
 
-void SkillComponent::UnCast(const std::string sBitStream, long behaviorID) {
+void SkillComponent::UnCast(const std::string sBitStream, std::int32_t behaviorID) {
 	currentStackDepth = 0;
 	RakNet::BitStream bs = RakNet::BitStream(reinterpret_cast<unsigned char*>(const_cast<char*>(sBitStream.c_str())), sBitStream.size(), false);
 	if (behaviorID <= 0) behaviorID = CacheSkillBehavior::GetBehaviorID(currentSkill);
 	AbstractAggregateBehavior::StartUnCast(this, behaviorID, &bs);
 }
 
-void SkillComponent::Cast(std::string* sBitStream, long behaviorID) {
+void SkillComponent::Cast(std::string* sBitStream, std::int32_t behaviorID) {
 	currentStackDepth = 0;
 	RakNet::BitStream bs;
 
@@ -311,7 +311,7 @@ void SkillComponent::Cast(std::string* sBitStream, long behaviorID) {
 #include "Entity/Components/DestructibleComponent.hpp"
 void SkillComponent::DoDamageOnTarget(std::int32_t damage) {
 	// Make sure objectID is not empty
-	if (parameters.currentTarget == 0ULL) {
+	if (parameters.currentTarget == std::uint64_t(0)) {
 		Logger::log("WRLD", "Unable to do damage on empty objectID", LogType::WARN);
 		return;
 	}

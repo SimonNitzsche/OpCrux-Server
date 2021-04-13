@@ -21,8 +21,8 @@ public:
 		if (packetType == ReplicaTypes::PacketTypes::CONSTRUCTION) {
 			factory->Write(isDirty);
 			if (isDirty) {
-				factory->Write(subkey != 0ULL);
-				if (subkey != 0ULL) {
+				factory->Write(subkey != std::uint64_t(0));
+				if (subkey != std::uint64_t(0)) {
 					factory->Write(subkey);
 				}
 				factory->Write(useOptionalParts);

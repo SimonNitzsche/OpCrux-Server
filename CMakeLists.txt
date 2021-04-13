@@ -4,7 +4,7 @@ project(OpCrux_Server)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-SET(USE_MSVC_RUNTIME_LIBRARY_DLL true)
+set(USE_MSVC_RUNTIME_LIBRARY_DLL true)
 
 add_definitions(-D_RAKNET_THREADSAFE)
 
@@ -12,23 +12,24 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
 	add_definitions(-D_USE_MATH_DEFINES)
-endif()
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	add_compile_options(-g)
 	add_compile_options(-w)
 	add_compile_options(-fshort-wchar)
 	add_compile_options(-fpermissive)
 endif()
 
-set(BUILD_EXTRAS OFF)
-set(BUILD_CPU_DEMOS OFF)
-set(BUILD_OPENGL3_DEMOS OFF)
-set(BUILD_BULLET2_DEMOS OFF)
-set(BUILD_UNIT_TESTS OFF)
+if(UNIX)
+set(OpenGL_GL_PREFERENCE GLVND)
+endif()
 
-set(RECASTNAVIGATION_DEMO ON)
+set(RECASTNAVIGATION_DEMO OFF)
 set(RECASTNAVIGATION_TESTS OFF)
-set(RECASTNAVIGATION_EXAMPLES ON)
+set(RECASTNAVIGATION_EXAMPLES OFF)
+
+if (IS_RELEASE)
+add_definitions(-DRELEASE)
+endif()
 
 add_subdirectory(libs)
 include_directories(include)
@@ -37,11 +38,7 @@ include_directories(libs/odbc-cpp-wrapper/src)
 include_directories(src)
 include_directories(tests)
 
-INCLUDE_DIRECTORIES(
-${BULLET_PHYSICS_SOURCE_DIR}/src
-)
-
-find_package(ODBC REQUIRED)
+include_directories(${BULLET_PHYSICS_SOURCE_DIR}/src)
 
 add_executable(OpCrux_Server
 	libs/glad/include/glad/glad.h
@@ -403,33 +400,9 @@ IF(WIN32)
 	SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Shared Libs" FORCE)
 ENDIF(WIN32)
 
-#some code to support OpenGL and Glew cross platform
-IF (WIN32)
-    #    INCLUDE_DIRECTORIES(
-    #         ${BULLET_PHYSICS_SOURCE_DIR}/btgui/OpenGLWindow/GlewWindows
-    #    )
-    #    ADD_DEFINITIONS(-DGLEW_STATIC)
-	#LINK_LIBRARIES( ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} )
-ELSE(WIN32)
-        IF(APPLE)
-                find_library(COCOA NAMES Cocoa)
-                MESSAGE(${COCOA})
-                link_libraries(${COCOA} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
-
-        ELSE(APPLE)
-                INCLUDE_DIRECTORIES(
-                        ${BULLET_PHYSICS_SOURCE_DIR}/btgui/OpenGLWindow/GlewWindows
-                )
-                ADD_DEFINITIONS("-DGLEW_INIT_OPENGL11_FUNCTIONS=1")
-                ADD_DEFINITIONS("-DGLEW_STATIC")
-                ADD_DEFINITIONS("-DGLEW_DYNAMIC_LOAD_ALL_GLX_FUNCTIONS=1")
-
-                LINK_LIBRARIES(  pthread ${DL} )
-        ENDIF(APPLE)
-ENDIF(WIN32)
-
 if(WIN32)
 	target_link_libraries(OpCrux_Server
+		#OpenGLWindow
 		wsock32
 		ws2_32
 		odbc32
@@ -438,16 +411,9 @@ if(WIN32)
 		../../../libs/SDL/lib/x64/SDL2
 		../../../libs/SDL/lib/x64/SDL2main
 	)
-endif()
-if(UNIX)
-	target_link_libraries(OpCrux_Server
-		pthread
-		odbc
-		GL
-		GLU
-		SDL2
-		SDL2main
-	)
+	add_definitions(-DCAMERA_DEF)
+elseif (UNIX)
+	target_link_libraries(OpCrux_Server	pthread	odbccpp)
 endif()
 
 target_link_libraries(OpCrux_Server
@@ -461,5 +427,4 @@ target_link_libraries(OpCrux_Server
 	Detour
 	TinyXML2
 )
-
 
