@@ -83,8 +83,11 @@ public:
 	}
 
 	~ControllablePhysicsComponent() {
-		delete rigidBody;
-		delete collisionShape;
+		if (rigidBody != nullptr) {
+			rigidBody->removeCollider(collider);
+			owner->GetZoneInstance()->physicsWorld->destroyRigidBody(rigidBody);
+
+		}
 	}
 
 	static constexpr int GetTypeID() { return 1; }
