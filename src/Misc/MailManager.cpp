@@ -5,8 +5,8 @@
 #include "Structs/Networking/General/StructPacketHeader.hpp"
 #include "Enums/ERemoteConnection.hpp"
 #include "Enums/EPackets.hpp"
-#include <Entity\Components\InventoryComponent.hpp>
-#include <Entity\Components\CharacterComponent.hpp>
+#include "Entity/Components/InventoryComponent.hpp"
+#include "Entity/Components/CharacterComponent.hpp"
 
 void MailManager::SendMailListToClient(WorldServer* ws, ClientSession* cl) {
 	RakNet::BitStream returnBS;

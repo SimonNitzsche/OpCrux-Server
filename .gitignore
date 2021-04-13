@@ -337,7 +337,6 @@ ASALocalRun/
 bin/*
 !bin/res/HTTP/
 !bin/res/include_global.txt
-!bin/res/README.txt
 
 # Linux CMake build files
 CMakeLists.txt.user
@@ -355,14 +354,12 @@ CMakeDoxygenDefaults.cmake
 # MSSQL creds
 bin/conf/*.ini
 
-# Bullet Data
-libs/bullet3-*/data/*
-bin.zip
+# ReactPhysics3D artifacts
+libs/reactphysics3d/ReactPhysics3DConfigVersion.cmake
 
-# Bullet artifacts
-libs/bullet3-2.89/BulletConfig.cmake
-libs/bullet3-2.89/Extras/BulletRobotics/bullet_robotics.pc
-libs/bullet3-2.89/bullet.pc
+# odbc-cpp-wrapper artifacts
+libs/odbc-cpp-wrapper/doc/Doxyfile.doc
+libs/odbc-cpp-wrapper/src/odbc/libodbccpp.so
 
 # GLFW artifacts
 libs/glfw-3.3.2/docs/Doxyfile

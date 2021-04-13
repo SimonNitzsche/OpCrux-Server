@@ -1,1 +1,0 @@
-Download and extract the assets into this folder from: https://gamefiles.opcrux.org/Server_Assets.zip

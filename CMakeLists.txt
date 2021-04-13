@@ -168,7 +168,7 @@ add_executable(OpCrux_Server
 	src/Entity/GameMessages/NotifyMission.hpp
 	src/Entity/GameMessages/NotifyMissionTask.hpp
 	src/Entity/GameMessages/NotifyRacingClient.hpp
-	src/Entity/GameMessages/NotifyVehicleOfRacingObject
+	src/Entity/GameMessages/NotifyVehicleOfRacingObject.hpp
 	src/Entity/GameMessages/OfferMission.hpp
 	src/Entity/GameMessages/PickupItem.hpp
 	src/Entity/GameMessages/PlayAnimation.hpp
