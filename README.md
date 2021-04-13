@@ -38,7 +38,7 @@ Building OpCrux is handled using a [CMake](https://cmake.org/) toolchain, which 
 
 #### Linux CLI
 ```sh
-cmake . && make
+cmake . -B ./build && cmake --build ./build
 cd bin
 ./OpCrux_Server
 ```
