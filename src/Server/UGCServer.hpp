@@ -3,10 +3,7 @@
 
 #include "Interfaces/ILUServer.hpp"
 
-#include "Rendering/UGCRenderer.hpp"
-
 class UGCServer : public ILUServer {
-	UGCRenderer renderer;
 
 public:
 	UGCServer();

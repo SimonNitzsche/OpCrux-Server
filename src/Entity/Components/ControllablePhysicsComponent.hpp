@@ -73,6 +73,7 @@ public:
 			rigidBody->enableGravity(false);
 			collider = rigidBody->addCollider(collisionShape, transform);
 		}
+
 		SetPosition(position);
 		SetRotation(rotation);
 	}

@@ -15,7 +15,6 @@ UGCServer::UGCServer() : ILUServer() {
 
 	while (ServerInfo::bRunning) {
 		RakSleep(1);
-		renderer.Paint();
 	}
 
 	// QUIT

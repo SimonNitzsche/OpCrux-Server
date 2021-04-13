@@ -53,10 +53,6 @@ int givenWorldID = 2000;
 #include "Server/Manager/WorldInstanceManager.hpp"
 
 #include <iostream>
-#include <SDL/include/SDL.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include "camera.h"
 #include <vector>
 
 WorldServer* viewWs;

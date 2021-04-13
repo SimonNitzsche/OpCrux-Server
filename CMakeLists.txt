@@ -41,8 +41,6 @@ include_directories(tests)
 include_directories(${BULLET_PHYSICS_SOURCE_DIR}/src)
 
 add_executable(OpCrux_Server
-	libs/glad/include/glad/glad.h
-	libs/glad/src/glad.c
 	libs/libbcrypt/include/bcrypt/bcrypt.h
 	libs/libbcrypt/include/bcrypt/BCrypt.hpp
 	libs/libbcrypt/include/bcrypt/crypt.h
@@ -345,10 +343,6 @@ add_executable(OpCrux_Server
 	src/PacketFactory/General/GeneralPackets.hpp
 	src/PacketFactory/World/WorldPackets.hpp
 	src/PacketFactory/Chat/ChatPackets.hpp
-	src/Rendering/DebugRenderer.cpp
-	src/Rendering/DebugRenderer.hpp
-	src/Rendering/UGCRenderer.cpp
-	src/Rendering/UGCRenderer.hpp
 	src/Replica/ReplicaTypes.hpp
 	src/Server/Bridges/BridgeMasterServer.cpp
 	src/Server/Bridges/BridgeMasterServer.hpp
@@ -378,14 +372,10 @@ add_executable(OpCrux_Server
 	src/Utils/StringUtils.hpp
 	src/Utils/RandomUtil.hpp 
 	src/Utils/RandomUtil.cpp
-	
 	"src/Server/API.hpp"
 	src/Main.cpp
-	src/camera.h
-	src/camera.cpp
-	${SDL_INCLUDE}  "src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp"  "src/Configuration/ConfGeneral.hpp" "src/Entity/Components/SlashCommandComponent.cpp" "src/Entity/GameMessages/SetPlayerControlScheme.hpp" "src/Entity/Components/RocketLaunchComponent.cpp" "src/Entity/GameMessages/TransferToZone.hpp" "src/Entity/GameMessages/TransferToZoneCheckedIM.hpp" "src/Entity/Components/PhantomPhysicsComponent.cpp" "src/GameCache/ObjectSkills.hpp" "src/Entity/GameMessages/AddSkill.hpp" "src/Entity/GameMessages/SetEmoteLockState.hpp" "src/Entity/GameMessages/VendorStatusUpdate.hpp" "src/Entity/GameMessages/BuyFromVendor.hpp" "src/Entity/GameMessages/VendorTransactionResult.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp" "src/Entity/GameMessages/MatchRequest.hpp" "src/Entity/GameMessages/MatchUpdate.hpp" "src/Entity/NativeScripts/ai/ACT/L_ACT_GENERIC_ACTIVITY_MGR.hpp" "src/Entity/NativeScripts/ai/MINIGAME/SURVIVAL/BASE_SURVIVAL_SERVER.hpp" "src/Entity/NativeScripts/zone/AG/L_ZONE_AG_SURVIVAL.hpp" "src/Entity/GameMessages/ScriptNetworkVarUpdate.hpp" "src/Entity/GameMessages/PlayerSetCameraCyclingMode.hpp" "src/Entity/GameMessages/ClientItemConsumed.hpp" "src/Entity/GameMessages/UseItemResult.hpp" "src/Entity/Components/SkillComponent/BehaviorSpawnObject.hpp" "src/Entity/NativeScripts/02_server/Equipment/L_MAESTROM_EXTRACTICATOR_SERVER.hpp" "src/Entity/Components/ScriptComponent.cpp" "src/Entity/NativeScripts/02_server/Map/AG/L_AG_CAGED_BRICKS_SERVER.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_FANS.hpp" "src/Entity/NativeScripts/02_server/Map/AG/L_AG_MONUMENT_BIRDS.hpp" "src/Entity/NativeScripts/02_server/Map/Property/AG_Small/L_ZONE_AG_PROPERTY.hpp" "src/Entity/NativeScripts/zone/PROPERTY/L_BASE_PROPERTY_SERVER.hpp" "src/Entity/GameMessages/NotifyClientObject.hpp" "src/Entity/GMBase.hpp" "src/Entity/NativeScripts/ai/NS/L_NS_GET_FACTION_MISSION_SERVER.hpp" "src/Entity/GameMessages/StartCelebrationEffect.hpp" "src/Entity/Components/PackageComponent.hpp" "src/GameCache/PackageComponent.hpp" "src/Entity/NativeScripts/ai/FV/L_ACT_CANDLE.hpp" "src/Entity/GameMessages/TimerDone.hpp"  "src/Entity/GameMessages/UseNonEquipmentItem.hpp" "src/Entity/GameMessages/ItemEquipped.hpp" "src/Entity/GameMessages/FactionTriggerItemEquipped.hpp" "src/Entity/GameMessages/FactionTriggerItemUnEquipped.hpp" "src/Entity/NativeScripts/equipmenttriggers/ASSEMBLY1.hpp" "src/Entity/NativeScripts/ai/NS/L_NS_CONCERT_INSTRUMENT_QB.hpp" "src/Entity/GameMessages/PlayCinematic.hpp" "src/Entity/GameMessages/DeactivateNDAudioMusicCue.hpp" "src/FileTypes/RAWFile/RAWFile.cpp" "src/FileTypes/RAWFile/RAWHeader.hpp" "src/FileTypes/RAWFile/RAWChunk.hpp" "src/FileTypes/RAWFile/RAWHeightmap.hpp" "src/FileTypes/RAWFile/RAWHeightmap.cpp" "src/Misc/NavMeshManager.hpp" "src/Misc/NavMeshManager.cpp" "src/Entity/Components/MovementAIComponent.cpp" "src/Entity/GameMessages/CastSkill.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_JET_EFFECT_SERVER.hpp" "src/Entity/Components/SkillComponent/BehaviorAreaOfEffect.hpp" "src/Entity/GameMessages/SetInventorySize.hpp" "src/Entity/GameMessages/UpdateReputation.hpp" "src/Entity/GameMessages/ModifyLegoScore.hpp" "src/Misc/MailManager.hpp" "src/Misc/MailManager.cpp" "src/Entity/GameMessages/NotifyRewardMailed.hpp" "src/Entity/GameMessages/RemoveSkill.hpp" "src/Entity/GameMessages/MoveItemBetweenInventoryTypes.hpp" "src/Entity/GameMessages/StopPathing.hpp" "src/Entity/GameMessages/PlatfromResync.hpp" "src/Entity/NativeScripts/02_server/Map/General/L_POI_MISSION.hpp") 
+	"src/Entity/GameMessages/PickupCurrency.hpp" "src/Entity/GameMessages/UpdatePlayerStatistic.hpp" "src/Entity/GameMessages/SetCurrency.hpp"  "src/Configuration/ConfGeneral.hpp" "src/Entity/Components/SlashCommandComponent.cpp" "src/Entity/GameMessages/SetPlayerControlScheme.hpp" "src/Entity/Components/RocketLaunchComponent.cpp" "src/Entity/GameMessages/TransferToZone.hpp" "src/Entity/GameMessages/TransferToZoneCheckedIM.hpp" "src/Entity/Components/PhantomPhysicsComponent.cpp" "src/GameCache/ObjectSkills.hpp" "src/Entity/GameMessages/AddSkill.hpp" "src/Entity/GameMessages/SetEmoteLockState.hpp" "src/Entity/GameMessages/VendorStatusUpdate.hpp" "src/Entity/GameMessages/BuyFromVendor.hpp" "src/Entity/GameMessages/VendorTransactionResult.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_DARKLING_MECH.hpp" "src/Entity/GameMessages/MatchRequest.hpp" "src/Entity/GameMessages/MatchUpdate.hpp" "src/Entity/NativeScripts/ai/ACT/L_ACT_GENERIC_ACTIVITY_MGR.hpp" "src/Entity/NativeScripts/ai/MINIGAME/SURVIVAL/BASE_SURVIVAL_SERVER.hpp" "src/Entity/NativeScripts/zone/AG/L_ZONE_AG_SURVIVAL.hpp" "src/Entity/GameMessages/ScriptNetworkVarUpdate.hpp" "src/Entity/GameMessages/PlayerSetCameraCyclingMode.hpp" "src/Entity/GameMessages/ClientItemConsumed.hpp" "src/Entity/GameMessages/UseItemResult.hpp" "src/Entity/Components/SkillComponent/BehaviorSpawnObject.hpp" "src/Entity/NativeScripts/02_server/Equipment/L_MAESTROM_EXTRACTICATOR_SERVER.hpp" "src/Entity/Components/ScriptComponent.cpp" "src/Entity/NativeScripts/02_server/Map/AG/L_AG_CAGED_BRICKS_SERVER.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_FANS.hpp" "src/Entity/NativeScripts/02_server/Map/AG/L_AG_MONUMENT_BIRDS.hpp" "src/Entity/NativeScripts/02_server/Map/Property/AG_Small/L_ZONE_AG_PROPERTY.hpp" "src/Entity/NativeScripts/zone/PROPERTY/L_BASE_PROPERTY_SERVER.hpp" "src/Entity/GameMessages/NotifyClientObject.hpp" "src/Entity/GMBase.hpp" "src/Entity/NativeScripts/ai/NS/L_NS_GET_FACTION_MISSION_SERVER.hpp" "src/Entity/GameMessages/StartCelebrationEffect.hpp" "src/Entity/Components/PackageComponent.hpp" "src/GameCache/PackageComponent.hpp" "src/Entity/NativeScripts/ai/FV/L_ACT_CANDLE.hpp" "src/Entity/GameMessages/TimerDone.hpp"  "src/Entity/GameMessages/UseNonEquipmentItem.hpp" "src/Entity/GameMessages/ItemEquipped.hpp" "src/Entity/GameMessages/FactionTriggerItemEquipped.hpp" "src/Entity/GameMessages/FactionTriggerItemUnEquipped.hpp" "src/Entity/NativeScripts/equipmenttriggers/ASSEMBLY1.hpp" "src/Entity/NativeScripts/ai/NS/L_NS_CONCERT_INSTRUMENT_QB.hpp" "src/Entity/GameMessages/PlayCinematic.hpp" "src/Entity/GameMessages/DeactivateNDAudioMusicCue.hpp" "src/FileTypes/RAWFile/RAWFile.cpp" "src/FileTypes/RAWFile/RAWHeader.hpp" "src/FileTypes/RAWFile/RAWChunk.hpp" "src/FileTypes/RAWFile/RAWHeightmap.hpp" "src/FileTypes/RAWFile/RAWHeightmap.cpp" "src/Misc/NavMeshManager.hpp" "src/Misc/NavMeshManager.cpp" "src/Entity/Components/MovementAIComponent.cpp" "src/Entity/GameMessages/CastSkill.hpp" "src/Entity/NativeScripts/ai/AG/L_AG_JET_EFFECT_SERVER.hpp" "src/Entity/Components/SkillComponent/BehaviorAreaOfEffect.hpp" "src/Entity/GameMessages/SetInventorySize.hpp" "src/Entity/GameMessages/UpdateReputation.hpp" "src/Entity/GameMessages/ModifyLegoScore.hpp" "src/Misc/MailManager.hpp" "src/Misc/MailManager.cpp" "src/Entity/GameMessages/NotifyRewardMailed.hpp" "src/Entity/GameMessages/RemoveSkill.hpp" "src/Entity/GameMessages/MoveItemBetweenInventoryTypes.hpp" "src/Entity/GameMessages/StopPathing.hpp" "src/Entity/GameMessages/PlatfromResync.hpp" "src/Entity/NativeScripts/02_server/Map/General/L_POI_MISSION.hpp") 
 
-set_property(TARGET glad PROPERTY CXX_STANDARD 98)
 set_property(TARGET json PROPERTY CXX_STANDARD 98)
 set_property(TARGET Mongoose PROPERTY CXX_STANDARD 98)
 set_property(TARGET RakNet PROPERTY CXX_STANDARD 98)
@@ -400,23 +390,16 @@ ENDIF(WIN32)
 
 if(WIN32)
 	target_link_libraries(OpCrux_Server
-		#OpenGLWindow
 		wsock32
 		ws2_32
 		odbc32
-		opengl32
-		glu32
-		../../../libs/SDL/lib/x64/SDL2
-		../../../libs/SDL/lib/x64/SDL2main
 	)
-	add_definitions(-DCAMERA_DEF)
 elseif (UNIX)
 	target_link_libraries(OpCrux_Server	pthread	odbccpp)
 endif()
 
 target_link_libraries(OpCrux_Server
 	reactphysics3d
-	glfw
 	json
 	Mongoose
 	RakNet
