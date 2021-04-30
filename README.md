@@ -59,6 +59,8 @@ INSERT INTO OPCRUX_AD.dbo.Accounts (username, email, password, rank)
 VALUES ("<username>", "<email>", "<SHA512 hashed password>", 9);
 ```
 
+You can also use bcrypt by using the AccountService conained in /services/CruxAuthService
+
 ## Community
 We have a public discord server with a development channel [here](http://discord.opcrux.org)
 
