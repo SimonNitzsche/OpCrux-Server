@@ -8,8 +8,6 @@ using namespace DataTypes;
 
 class BouncerComponent : public IEntityComponent {
 private:
-	bool _isDirtyFlag = true;
-	bool bEnabled = true;
 
 public:
 
@@ -18,18 +16,11 @@ public:
 	static constexpr int GetTypeID() { return 6; }
 
 	void Serialize(RakNet::BitStream * factory, ReplicaTypes::PacketTypes packetType) {
-		_isDirtyFlag = _isDirtyFlag || packetType == ReplicaTypes::PacketTypes::CONSTRUCTION;
-
-		factory->Write(_isDirtyFlag);
-		if (_isDirtyFlag) {
-			factory->Write(bEnabled);
-			_isDirtyFlag = false;
-		}
+		factory->Write(true);
+		factory->Write(owner->GetLOT() != 7625); // is not pet bouncer 
 	}
 
 	void SetEnabled(bool enabled) {
-		bEnabled = enabled;
-		_isDirtyFlag = true;
 		owner->SetDirty();
 	}
 
