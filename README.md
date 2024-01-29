@@ -17,8 +17,7 @@ For more information, see the [LU Server Projects website](https://lusprojects.g
 [Python 3](https://www.python.org/) is required for some utility scripts
 
 #### Client Files
-Some resources from the LEGO Universe client are needed. An easy way to get them is by downloading an
-[unpacked client](https://mega.nz/#!zhRzBa4C!B5eY94-6vYmjJYqXkDXDM5hiqkPhZ7yb9ShCHG3Lgo8). The contents of the `res`
+Some resources from the LEGO Universe client are needed. An easy way to get them is by downloading an unpacked client. The contents of the `res`
 folder of the client should be placed in `bin/res`. Note that not all files are needed - see `bin/res/include_global.txt`
 for a list of required files.
 
